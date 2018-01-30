@@ -2,10 +2,10 @@ export const environment = {
     production: true,
     firebaseConfig: {
         apiKey: '[REDACTED_GOOGLE_KEY]',
-        authDomain: 'chat-f21.firebaseapp.com',
-        databaseURL: 'https://chat-f21.firebaseio.com',
-        projectId: 'chat-f21',
-        storageBucket: 'chat-f21.appspot.com',
-        messagingSenderId: '573386371492',
+        authDomain: 'chat-v2-dev.firebaseapp.com',
+        databaseURL: 'https://chat-v2-dev.firebaseio.com',
+        projectId: 'chat-v2-dev',
+        storageBucket: 'chat-v2-dev.appspot.com',
+        messagingSenderId: '77360455507',
     },
 };
