@@ -5,27 +5,42 @@ import { Observable } from 'rxjs/Observable';
 import { Contact } from '../models/contact-model';
 import { Http, Headers, RequestOptions } from '@angular/http';
 import 'rxjs/add/operator/map';
+import { MongodbConfService } from '../utils/mongodb-conf.service';
+
 @Injectable()
 export class ContactsService {
 
   // Contact: Contact[];
   http: Http;
+  MONGODB_BASE_URL: any;
+  TOKEN: any;
 
-  constructor(http: Http) {
+  constructor(
+    http: Http,
+    private mongodbConfService: MongodbConfService,
+  ) {
+
     this.http = http;
+
+    this.MONGODB_BASE_URL = mongodbConfService.MONGODB_CONTACTS_BASE_URL;
+    console.log('MONGODB_CONTACTS_BASE_URL ! ', mongodbConfService.MONGODB_CONTACTS_BASE_URL );
+
+    this.TOKEN = mongodbConfService.TOKEN;
   }
 
   /**
    * READ (GET)
    */
   public getMongDbContacts(): Observable<Contact[]> {
-    const url = `http://localhost:3000/app1/contacts`;
+    const url = this.MONGODB_BASE_URL;
+    // const url = `http://localhost:3000/app1/contacts`;
     // const url = `http://api.chat21.org/app1/contacts`;
     console.log('MONGO DB CONTACTS URL', url);
 
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
-    headers.append('Authorization', 'JWT [REDACTED_JWT]');
+    headers.append('Authorization', this.TOKEN);
+    // headers.append('Authorization', 'JWT [REDACTED_JWT]');
     // headers.append('Authorization', 'JWT [REDACTED_JWT]');
     return this.http
       .get(url, { headers })
@@ -40,14 +55,14 @@ export class ContactsService {
     const headers = new Headers();
     headers.append('Accept', 'application/json');
     headers.append('Content-type', 'application/json');
-    headers.append('Authorization', 'JWT [REDACTED_JWT]');
+    headers.append('Authorization', this.TOKEN);
     const options = new RequestOptions({ headers });
 
     const body = { 'fullname': `${fullName}` };
 
     console.log('POST REQUEST BODY ', body);
 
-    const url = `http://localhost:3000/app1/contacts`;
+    const url = this.MONGODB_BASE_URL;
 
     this.http.post(url, JSON.stringify(body), options)
       .map((res) => res.json())
@@ -70,14 +85,14 @@ export class ContactsService {
    */
   public deleteMongoDbContact(id: string) {
 
-    let url = `http://localhost:3000/app1/contacts/`;
+    let url = this.MONGODB_BASE_URL;
     url += `${id}# chat21-api-nodejs`;
     console.log('DELETE URL ', url);
 
     const headers = new Headers();
     headers.append('Accept', 'application/json');
     headers.append('Content-type', 'application/json');
-    headers.append('Authorization', 'JWT [REDACTED_JWT]');
+    headers.append('Authorization', this.TOKEN);
     const options = new RequestOptions({ headers });
 
     this.http.delete(url, options)
@@ -102,14 +117,14 @@ export class ContactsService {
    */
   public updateMongoDbContact(id: string, fullName: string) {
 
-    let url = `http://localhost:3000/app1/contacts/`;
+    let url = this.MONGODB_BASE_URL;
     url = url += `${id}`;
     console.log('PUT URL ', url);
 
     const headers = new Headers();
     headers.append('Accept', 'application/json');
     headers.append('Content-type', 'application/json');
-    headers.append('Authorization', 'JWT [REDACTED_JWT]');
+    headers.append('Authorization', this.TOKEN);
     const options = new RequestOptions({ headers });
 
     const body = { 'fullname': `${fullName}` };
@@ -117,18 +132,18 @@ export class ContactsService {
     console.log('PUT REQUEST BODY ', body);
 
     this.http.put(url, JSON.stringify(body), options)
-    .map((res) => res.json())
-    .subscribe((data) => {
-      console.log('PUT DATA ', data);
-    },
-    (error) => {
+      .map((res) => res.json())
+      .subscribe((data) => {
+        console.log('PUT DATA ', data);
+      },
+      (error) => {
 
-      console.log('PUT REQUEST ERROR ', error);
+        console.log('PUT REQUEST ERROR ', error);
 
-    },
-    () => {
-      console.log('PUT REQUEST * COMPLETE *');
-    });
+      },
+      () => {
+        console.log('PUT REQUEST * COMPLETE *');
+      });
 
   }
 
