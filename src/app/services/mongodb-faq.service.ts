@@ -1,48 +1,37 @@
-// tslint:disable:max-line-length
 import { Injectable } from '@angular/core';
+import { environment } from '../../environments/environment';
 import { Observable } from 'rxjs/Observable';
-import { Department } from '../models/department-model';
+import { Faq } from '../models/faq-model';
 import { Http, Headers, RequestOptions } from '@angular/http';
 import 'rxjs/add/operator/map';
-import { MongodbConfService } from '../utils/mongodb-conf.service';
-import { environment } from '../../environments/environment';
 
 @Injectable()
-export class MongodbDepartmentService {
+export class MongodbFaqService {
 
   http: Http;
-
-  // MONGODB_BASE_URL: any;
-  // TOKEN: any;
-  MONGODB_BASE_URL = environment.mongoDbConfig.MONGODB_DEPARTMENTS_BASE_URL;
+  MONGODB_BASE_URL = environment.mongoDbConfig.MONGODB_FAQ_BASE_URL;
   TOKEN =  environment.mongoDbConfig.TOKEN;
 
   constructor(
     http: Http,
-    private mongodbConfService: MongodbConfService,
-  ) {
+   ) {
 
     this.http = http;
-
-    // this.MONGODB_BASE_URL = mongodbConfService.MONGODB_DEPARTMENTS_BASE_URL;
-    // console.log('MONGODB_DEPARTMENTS_BASE_URL ! ', this.MONGODB_BASE_URL);
-    // this.TOKEN = mongodbConfService.TOKEN;
   }
 
   /**
    * READ (GET)
    */
-  public getMongDbDepartments(): Observable<Department[]> {
+  public getMongDbFaq(): Observable<Faq[]> {
     const url = this.MONGODB_BASE_URL;
-    // const url = `http://localhost:3000/app1/contacts`;
-    // const url = `http://api.chat21.org/app1/contacts`;
-    console.log('MONGO DB DEPARTMENTS URL', url);
+
+    console.log('MONGO DB FAQ URL', url);
+    // console.log('MONGO DB TOKEN', this.TOKEN);
 
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
     headers.append('Authorization', this.TOKEN);
-    // headers.append('Authorization', 'JWT [REDACTED_JWT]');
-    // headers.append('Authorization', 'JWT [REDACTED_JWT]');
+
     return this.http
       .get(url, { headers })
       .map((response) => response.json());
@@ -50,16 +39,16 @@ export class MongodbDepartmentService {
 
   /**
    * CREATE (POST)
-   * @param fullName
+   * @param question
    */
-  public addMongoDbDepartments(deptName: string) {
+  public addMongoDbFaq(question: string, answer: string) {
     const headers = new Headers();
     headers.append('Accept', 'application/json');
     headers.append('Content-type', 'application/json');
     headers.append('Authorization', this.TOKEN);
     const options = new RequestOptions({ headers });
 
-    const body = { 'name': `${deptName}` };
+    const body = { 'question': `${question}`, 'answer': `${answer}` };
 
     console.log('POST REQUEST BODY ', body);
 
@@ -68,24 +57,14 @@ export class MongodbDepartmentService {
     return this.http
       .post(url, JSON.stringify(body), options)
       .map((res) => res.json());
-    // .subscribe((data) => {
-    //   console.log('POST DATA ', data);
-    // },
-    // (error) => {
 
-    //   console.log('POST REQUEST ERROR ', error);
-
-    // },
-    // () => {
-    //   console.log('POST REQUEST * COMPLETE *');
-    // });
   }
 
   /**
    * DELETE (DELETE)
    * @param id
    */
-  public deleteMongoDbDeparment(id: string) {
+  public deleteMongoDbFaq(id: string) {
 
     let url = this.MONGODB_BASE_URL;
     url += `${id}# chat21-api-nodejs`;
@@ -100,26 +79,17 @@ export class MongodbDepartmentService {
     return this.http
       .delete(url, options)
       .map((res) => res.json());
-    // .subscribe((data) => {
-    //   console.log('DELETE DATA ', data);
-    // },
-    // (error) => {
 
-    //   console.log('DELETE REQUEST ERROR ', error);
-
-    // },
-    // () => {
-    //   console.log('DELETE REQUEST * COMPLETE *');
-    // });
   }
 
   /**
    * UPDATE (PUT)
    * @param id
-   * @param deptName
+   * @param question
+   * @param answer
    */
-  public updateMongoDbDepartment(id: string, deptName: string) {
-
+  public updateMongoDbFaq(id: string, question: string, answer: string) {
+    console.log('ID IN FAQ SERVICE ', id);
     let url = this.MONGODB_BASE_URL;
     url = url += `${id}`;
     console.log('PUT URL ', url);
@@ -130,24 +100,13 @@ export class MongodbDepartmentService {
     headers.append('Authorization', this.TOKEN);
     const options = new RequestOptions({ headers });
 
-    const body = { 'name': `${deptName}` };
+    const body = { 'question': `${question}`, 'answer': `${answer}`};
 
     console.log('PUT REQUEST BODY ', body);
 
     return this.http
       .put(url, JSON.stringify(body), options)
       .map((res) => res.json());
-      // .subscribe((data) => {
-      //   console.log('PUT DATA ', data);
-      // },
-      // (error) => {
-
-      //   console.log('PUT REQUEST ERROR ', error);
-
-      // },
-      // () => {
-      //   console.log('PUT REQUEST * COMPLETE *');
-      // });
 
   }
 
