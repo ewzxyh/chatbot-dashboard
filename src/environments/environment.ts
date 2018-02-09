@@ -14,6 +14,7 @@ export const environment = {
         MONGODB_DEPARTMENTS_BASE_URL: 'http://localhost:3000/app1/departments/',
         MONGODB_FAQ_BASE_URL: 'http://localhost:3000/app1/faq/',
         MONGODB_BOTS_BASE_URL: 'http://localhost:3000/app1/bots/',
+        MONGODB_FAQKB_BASE_URL: 'http://localhost:3000/app1/faq_kb/',
         TOKEN: 'JWT [REDACTED_JWT]',
     },
 };
