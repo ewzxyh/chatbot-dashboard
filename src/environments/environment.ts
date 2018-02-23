@@ -17,4 +17,8 @@ export const environment = {
         MONGODB_FAQKB_BASE_URL: 'http://localhost:3000/app1/faq_kb/',
         TOKEN: 'JWT [REDACTED_JWT]',
     },
+    cloudFunctions: {
+        cloud_functions_base_url: 'https://us-central1-chat-v2-dev.cloudfunctions.net/api/tilechat/groups/',
+        firebase_IdToken: 'Bearer [REDACTED_JWT]',
+    },
 };
