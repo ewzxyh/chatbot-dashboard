@@ -32,34 +32,50 @@ export class MongodbDepartmentService {
   /**
    * READ (GET)
    */
+  // headers.append('Authorization', 'JWT [REDACTED_JWT]');
+    // headers.append('Authorization', 'JWT [REDACTED_JWT]');
   public getMongDbDepartments(): Observable<Department[]> {
     const url = this.MONGODB_BASE_URL;
-    // const url = `http://localhost:3000/app1/contacts`;
-    // const url = `http://api.chat21.org/app1/contacts`;
+    // const url = `http://localhost:3000/app1/departments/`;
+    // const url = `http://api.chat21.org/app1/departments/;
     console.log('MONGO DB DEPARTMENTS URL', url);
-
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
     headers.append('Authorization', this.TOKEN);
-    // headers.append('Authorization', 'JWT [REDACTED_JWT]');
-    // headers.append('Authorization', 'JWT [REDACTED_JWT]');
     return this.http
       .get(url, { headers })
       .map((response) => response.json());
   }
 
   /**
+ * READ DETAIL (GET BOT BY BOT ID)
+ * @param id
+ */
+public getMongDbDeptById(id: string): Observable<Department[]> {
+  let url = this.MONGODB_BASE_URL;
+  url += `${id}`;
+  console.log('MONGO DB GET DEPT BY DEPT ID URL', url);
+
+  const headers = new Headers();
+  headers.append('Content-Type', 'application/json');
+  headers.append('Authorization', this.TOKEN);
+  return this.http
+    .get(url, { headers })
+    .map((response) => response.json());
+}
+
+  /**
    * CREATE (POST)
    * @param fullName
    */
-  public addMongoDbDepartments(deptName: string) {
+  public addMongoDbDepartments(deptName: string, id_bot: string, routing: string) {
     const headers = new Headers();
     headers.append('Accept', 'application/json');
     headers.append('Content-type', 'application/json');
     headers.append('Authorization', this.TOKEN);
     const options = new RequestOptions({ headers });
 
-    const body = { 'name': `${deptName}` };
+    const body = { 'name': `${deptName}`, 'id_bot': `${id_bot}`, 'routing': `${routing}`  };
 
     console.log('POST REQUEST BODY ', body);
 
@@ -118,7 +134,7 @@ export class MongodbDepartmentService {
    * @param id
    * @param deptName
    */
-  public updateMongoDbDepartment(id: string, deptName: string) {
+  public updateMongoDbDepartment(id: string, deptName: string, id_bot: string, routing: string) {
 
     let url = this.MONGODB_BASE_URL;
     url = url += `${id}`;
@@ -130,7 +146,7 @@ export class MongodbDepartmentService {
     headers.append('Authorization', this.TOKEN);
     const options = new RequestOptions({ headers });
 
-    const body = { 'name': `${deptName}` };
+    const body = { 'name': `${deptName}`, 'id_bot': `${id_bot}`, 'routing': `${routing}` };
 
     console.log('PUT REQUEST BODY ', body);
 
