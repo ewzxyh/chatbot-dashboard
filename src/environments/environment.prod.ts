@@ -15,10 +15,11 @@ export const environment = {
         MONGODB_FAQ_BASE_URL: 'http://api.chat21.org/app1/faq/',
         MONGODB_BOTS_BASE_URL: 'http://api.chat21.org/app1/bots/',
         MONGODB_FAQKB_BASE_URL: 'http://api.chat21.org/app1/faq_kb/',
+        MONGODB_PROJECTS_BASE_URL: 'http://api.chat21.org/app1/projects/',
         TOKEN: 'JWT [REDACTED_JWT]',
     },
     cloudFunctions: {
         cloud_functions_base_url: 'https://us-central1-chat-v2-dev.cloudfunctions.net/api/tilechat/groups/',
-        firebase_IdToken: 'Bearer [REDACTED_JWT]',
+        // firebase_IdToken: 'Bearer [REDACTED_JWT]',
     },
 };
