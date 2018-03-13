@@ -16,6 +16,8 @@ export const environment = {
         MONGODB_BOTS_BASE_URL: 'http://localhost:3000/app1/bots/',
         MONGODB_FAQKB_BASE_URL: 'http://localhost:3000/app1/faq_kb/',
         MONGODB_PROJECTS_BASE_URL: 'http://localhost:3000/app1/projects/',
+        MONGODB_SIGNUP_BASE_URL: 'http://localhost:3000/auth/signup',
+        MONGODB_PEOPLE_BASE_URL: 'http://localhost:3000/app1/people/',
         TOKEN: 'JWT [REDACTED_JWT]',
     },
     cloudFunctions: {

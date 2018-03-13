@@ -16,6 +16,8 @@ export const environment = {
         MONGODB_BOTS_BASE_URL: 'http://api.chat21.org/app1/bots/',
         MONGODB_FAQKB_BASE_URL: 'http://api.chat21.org/app1/faq_kb/',
         MONGODB_PROJECTS_BASE_URL: 'http://api.chat21.org/app1/projects/',
+        MONGODB_SIGNUP_BASE_URL: 'http://api.chat21.org/app1/auth/signup',
+        MONGODB_PEOPLE_BASE_URL: 'http://api.chat21.org/app1/people/',
         TOKEN: 'JWT [REDACTED_JWT]',
     },
     cloudFunctions: {
