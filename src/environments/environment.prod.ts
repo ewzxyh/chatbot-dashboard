@@ -20,7 +20,7 @@ export const environment = {
         SIGNIN_BASE_URL: 'http://api.chat21.org/auth/signin',
         MONGODB_PEOPLE_BASE_URL: 'http://api.chat21.org/app1/people/',
 
-        FIREBASE_SIGNIN_BASE_URL: 'http://api.chat21.org/app1/firebase/auth/signin',
+        FIREBASE_SIGNIN_BASE_URL: 'http://api.chat21.org/firebase/auth/signin',
         TOKEN: 'JWT [REDACTED_JWT]',
     },
     cloudFunctions: {
