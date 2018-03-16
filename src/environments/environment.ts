@@ -15,11 +15,13 @@ export const environment = {
         FAQ_BASE_URL: 'http://localhost:3000/app1/faq/',
         BOTS_BASE_URL: 'http://localhost:3000/app1/bots/',
         FAQKB_BASE_URL: 'http://localhost:3000/app1/faq_kb/',
-        MONGODB_PROJECTS_BASE_URL: 'http://localhost:3000/app1/projects/',
+        PROJECTS_BASE_URL: 'http://localhost:3000/app1/projects/',
+        PROJECT_USER_BASE_URL: 'http://localhost:3000/app1/project_users/',
         SIGNUP_BASE_URL: 'http://localhost:3000/auth/signup',
         SIGNIN_BASE_URL: 'http://localhost:3000/auth/signin',
         MONGODB_PEOPLE_BASE_URL: 'http://localhost:3000/app1/people/',
         FIREBASE_SIGNIN_BASE_URL: 'http://localhost:3000/firebase/auth/signin',
+
         TOKEN: 'JWT [REDACTED_JWT]',
     },
     cloudFunctions: {
