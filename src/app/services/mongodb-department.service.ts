@@ -51,6 +51,9 @@ export class MongodbDepartmentService {
 
   /**
    * READ (GET)
+   *    * !!! NO MORE USED
+   *    * IN DEPT COMPONENT THE DEPT'S LIST IS CURRENTLY OBTAINED BY FILTERING
+   *      ALL THE DEPTS FOR THE ID OF THE CURRENT PROJECT (see BELOW getDeptsByProjectId)
    */
   // headers.append('Authorization', 'JWT [REDACTED_JWT]');
   // headers.append('Authorization', 'JWT [REDACTED_JWT]');
@@ -59,6 +62,19 @@ export class MongodbDepartmentService {
     // const url = `http://localhost:3000/app1/departments/`;
     // const url = `http://api.chat21.org/app1/departments/;
     console.log('MONGO DB DEPARTMENTS URL', url);
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+    headers.append('Authorization', this.TOKEN);
+    return this.http
+      .get(url, { headers })
+      .map((response) => response.json());
+  }
+
+  public getDeptsByProjectId(id_project: string): Observable<Department[]> {
+    let url = this.MONGODB_BASE_URL;
+    url += '?id_project=' + id_project;
+
+    console.log('DEPARTMENTS URL', url);
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
     headers.append('Authorization', this.TOKEN);
@@ -88,14 +104,14 @@ export class MongodbDepartmentService {
    * CREATE (POST)
    * @param fullName
    */
-  public addMongoDbDepartments(deptName: string, id_bot: string, routing: string) {
+  public addMongoDbDepartments(deptName: string, id_bot: string, routing: string, id_project: string) {
     const headers = new Headers();
     headers.append('Accept', 'application/json');
     headers.append('Content-type', 'application/json');
     headers.append('Authorization', this.TOKEN);
     const options = new RequestOptions({ headers });
 
-    const body = { 'name': `${deptName}`, 'id_bot': `${id_bot}`, 'routing': `${routing}` };
+    const body = { 'name': `${deptName}`, 'id_bot': `${id_bot}`, 'routing': `${routing}`, 'id_project': id_project  };
 
     console.log('POST REQUEST BODY ', body);
 
