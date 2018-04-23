@@ -11,22 +11,25 @@ export const environment = {
     },
     mongoDbConfig: {
         BASE_URL: 'http://localhost:3000/',
+        PROJECTS_BASE_URL: 'http://localhost:3000/projects/',
+        SIGNUP_BASE_URL: 'http://localhost:3000/auth/signup',
+        SIGNIN_BASE_URL: 'http://localhost:3000/auth/signin',
+        FIREBASE_SIGNIN_BASE_URL: 'http://localhost:3000/firebase/auth/signin',
+
         // DEPARTMENTS_BASE_URL: 'http://localhost:3000/app1/departments/', // URL BUILT directly IN DEPARTMENTS SERVICE
         // FAQKB_BASE_URL: 'http://localhost:3000/app1/faq_kb/', // URL BUILT directly IN FAQ-KB SERVICE
         // FAQ_BASE_URL: 'http://localhost:3000/app1/faq/', // URL BUILT directly IN FAQ SERVICE
         CONTACTS_BASE_URL: 'http://localhost:3000/app1/contacts/',
         BOTS_BASE_URL: 'http://localhost:3000/app1/bots/',
         // PROJECT_USER_BASE_URL: 'http://localhost:3000/app1/project_users/', // NO MORE USED - THE RELATION PROJECT -> PROJECT USER IT'S DONE chat21-api-node.js
-        PROJECTS_BASE_URL: 'http://localhost:3000/projects/',
-        SIGNUP_BASE_URL: 'http://localhost:3000/auth/signup',
-        SIGNIN_BASE_URL: 'http://localhost:3000/auth/signin',
         MONGODB_PEOPLE_BASE_URL: 'http://localhost:3000/app1/people/',
-        FIREBASE_SIGNIN_BASE_URL: 'http://localhost:3000/firebase/auth/signin',
-
         TOKEN: 'JWT [REDACTED_JWT]',
     },
     cloudFunctions: {
         cloud_functions_base_url: 'https://us-central1-chat-v2-dev.cloudfunctions.net/api/tilechat/groups/',
         // firebase_IdToken: 'Bearer [REDACTED_JWT]',
     },
+    chat: {
+        CHAT_BASE_URL: 'https://support.tiledesk.com/chat/',
+    }
 };
