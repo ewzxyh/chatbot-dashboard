@@ -28,6 +28,9 @@ export const environment = {
         TOKEN: 'JWT [REDACTED_JWT]',
     },
     cloudFunctions: {
+        // https://us-central1-<FIREBASE_PROJECT_ID>.cloudfunctions.net/api/<APP_ID>/groups/<GROUP_ID>/members/<MEMBERID>
+
+        cloud_func_close_support_group_base_url: 'https://us-central1-chat-v2-dev.cloudfunctions.net/supportapi/tilechat/groups/',
         cloud_functions_base_url: 'https://us-central1-chat-v2-dev.cloudfunctions.net/api/tilechat/groups/',
         // firebase_IdToken: 'Bearer [REDACTED_JWT]',
     },

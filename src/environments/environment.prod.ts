@@ -36,6 +36,7 @@ export const environment = {
         TOKEN: 'JWT [REDACTED_JWT]',
     },
     cloudFunctions: {
+        cloud_func_close_support_group_base_url: 'https://us-central1-chat-v2-dev.cloudfunctions.net/supportapi/tilechat/groups/',
         cloud_functions_base_url: 'https://us-central1-chat-v2-dev.cloudfunctions.net/api/tilechat/groups/',
         // firebase_IdToken: 'Bearer [REDACTED_JWT]',
     },
