@@ -240,8 +240,8 @@ export class RequestsService {
     // r.hasAgent(this.currentUserID)) PASS THE CURRENT USER ID TO THE 'REQUEST' MODEL WHICH AFTER COMPARING
     // THE CURRENT USER ID WITH THE 'USER ID' CONTAINED IN THE ARRAY 'AGENTS' (NESTED IN THE 'REQUEST' OBJECT) 
     // RETURNS TRUE OR FALSE
-    // || !r.hasAgent(this.currentUserID)
-    if (r === null || r === undefined) {
+    // 
+    if (r === null || r === undefined || !r.hasAgent(this.currentUserID)) {
       // console.log('THE REQUEST AS ME AS AGENT ', r.hasAgent(this.currentUserID))
       return;
     }
@@ -584,65 +584,25 @@ export class RequestsService {
       .map((res) => res.json());
   }
 
+  // CLOSE SUPPORT GROUP
   public closeSupportGroup(group_id: string, firebaseToken: any) {
-    this.FIREBASE_ID_TOKEN = firebaseToken;
-    // https://us-central1-chat-v2-dev.cloudfunctions.net/supportapi/tilechat/groups/'
-
-    // example: https://us-central1-chat-v2-dev.cloudfunctions.net/supportapi/tilechat/groups/support-group-L5xro2P81zHs7YA7-DX/
-    // https://us-central1-chat-v2-dev.cloudfunctions.net/supportapi/tilechat/groups/support-group-LDawab4g-RmUB6Xp6H3
-
-    // https://us-central1-chat-v2-dev.cloudfunctions.net/supportapi/tilechat/groups/'
-
-    // const url = 'https://us-central1-chat-v2-dev.cloudfunctions.net/supportapi/tilechat/groups/support-group-LDawTPrh6qERTSHxnRN/'
-
 
     const headers = new Headers();
     headers.append('Accept', 'application/json');
     headers.append('Content-type', 'application/json');
-    headers.append('Authorization', 'Bearer ' + this.FIREBASE_ID_TOKEN);
-    // headers.append('Authorization', 'Bearer [REDACTED_JWT]');
+    headers.append('Authorization', 'Bearer ' + firebaseToken);
 
     const options = new RequestOptions({ headers });
     console.log('CLOUD FUNCT CLOSE SUPPORT OPTIONS  ', options)
 
-    const body = { 'group_id': group_id };
-    console.log('JOIN TO GROUP POST REQUEST BODY ', body);
+    const body = {  };
+    // console.log('CLOUD FUNCT CLOSE SUPPORT GROUP REQUEST BODY ', body);
 
-    const url = this.CHAT21_CLOUD_FUNC_CLOSE_GROUP_BASE_URL;
+    const url = this.CHAT21_CLOUD_FUNC_CLOSE_GROUP_BASE_URL + group_id;
     console.log('CLOUD FUNCT CLOSE SUPPORT GROUP URL ', url);
     return this.http
-      // .put('https://us-central1-chat-v2-dev.cloudfunctions.net/supportapi/tilechat/groups/support-group-LDawTPrh6qERTSHxnRN/', options)
-      .put(url, options)
+      .put(url, body, options)
       .map((res) => res.json());
   }
-
-  /**
-    * UPDATE (PUT)
-    * @param id
-    * @param fullName
-    */
-  // public updateMongoDbBot(id: string, fullName: string, id_faq_kb: string) {
-
-  //   let url = this.MONGODB_BASE_URL;
-  //   url = url += `${id}`;
-  //   console.log('PUT URL ', url);
-
-  //   const headers = new Headers();
-  //   headers.append('Accept', 'application/json');
-  //   headers.append('Content-type', 'application/json');
-  //   headers.append('Authorization', this.TOKEN);
-  //   const options = new RequestOptions({ headers });
-
-  //   const body = { 'fullname': `${fullName}`, 'id_faq_kb': `${id_faq_kb}` };
-
-  //   console.log('PUT REQUEST BODY ', body);
-
-  //   return this.http
-  //     .put(url, JSON.stringify(body), options)
-  //     .map((res) => res.json());
-
-  // }
-
-
 
 }
