@@ -33,6 +33,7 @@ export const environment = {
 
         cloud_func_close_support_group_base_url: 'https://us-central1-chat-v2-dev.cloudfunctions.net/supportapi/tilechat/groups/',
         cloud_functions_base_url: 'https://us-central1-chat-v2-dev.cloudfunctions.net/api/tilechat/groups/',
+        cloud_func_update_firstname_and_lastname: 'https://us-central1-chat-v2-dev.cloudfunctions.net/api/tilechat/contacts/me'
         // firebase_IdToken: 'Bearer [REDACTED_JWT]',
     },
     chat: {
