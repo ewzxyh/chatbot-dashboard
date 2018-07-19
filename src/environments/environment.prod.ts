@@ -17,24 +17,47 @@ export const environment = {
         // SIGNIN_BASE_URL: 'http://api.chat21.org/auth/signin',
         // FIREBASE_SIGNIN_BASE_URL: 'http://api.chat21.org/firebase/auth/signin',
 
-        // NEW IS HTTPS
-        BASE_URL: 'https://chat21-api-nodejs.herokuapp.com/',
-        PROJECTS_BASE_URL: 'https://chat21-api-nodejs.herokuapp.com/projects/',
-        SIGNUP_BASE_URL: 'https://chat21-api-nodejs.herokuapp.com/auth/signup',
-        SIGNIN_BASE_URL: 'https://chat21-api-nodejs.herokuapp.com/auth/signin',
-        FIREBASE_SIGNIN_BASE_URL: 'https://chat21-api-nodejs.herokuapp.com/firebase/auth/signin',
-        VERIFY_EMAIL_BASE_URL: 'https://chat21-api-nodejs.herokuapp.com/auth/verifyemail/',
-        PSW_RESET_REQUEST: 'https://chat21-api-nodejs.herokuapp.com/auth/pswresetrequest',
-        UPDATE_USER_LASTNAME_FIRSTNAME: 'https://chat21-api-nodejs.herokuapp.com/users/updateuser/',
-        CHANGE_PSW: 'https://chat21-api-nodejs.herokuapp.com/users/changepsw/',
+        // NEW IS HTTPS -- REPLACE https://chat21-api-nodejs.herokuapp.com/ WITH https://api.tiledesk.com/v1
+        // ********* SEE BELOW *********
+        // BASE_URL: 'https://chat21-api-nodejs.herokuapp.com/',
+        // PROJECTS_BASE_URL: 'https://chat21-api-nodejs.herokuapp.com/projects/',
+        // SIGNUP_BASE_URL: 'https://chat21-api-nodejs.herokuapp.com/auth/signup',
+        // SIGNIN_BASE_URL: 'https://chat21-api-nodejs.herokuapp.com/auth/signin',
+        // FIREBASE_SIGNIN_BASE_URL: 'https://chat21-api-nodejs.herokuapp.com/firebase/auth/signin',
+        // VERIFY_EMAIL_BASE_URL: 'https://chat21-api-nodejs.herokuapp.com/auth/verifyemail/',
+        // PSW_RESET_REQUEST: 'https://chat21-api-nodejs.herokuapp.com/auth/pswresetrequest',
+        // UPDATE_USER_LASTNAME_FIRSTNAME: 'https://chat21-api-nodejs.herokuapp.com/users/updateuser/',
+        // CHANGE_PSW: 'https://chat21-api-nodejs.herokuapp.com/users/changepsw/',
+
+        /* NEW IS HTTPS & https://api.tiledesk.com/v1 */
+        BASE_URL: 'https://api.tiledesk.com/v1/',
+        PROJECTS_BASE_URL: 'https://api.tiledesk.com/v1projects/',
+        SIGNUP_BASE_URL: 'https://api.tiledesk.com/v1/auth/signup',
+        SIGNIN_BASE_URL: 'https://api.tiledesk.com/v1/auth/signin',
+        FIREBASE_SIGNIN_BASE_URL: 'https://api.tiledesk.com/v1/firebase/auth/signin',
+        VERIFY_EMAIL_BASE_URL: 'https://api.tiledesk.com/v1/auth/verifyemail/',
+        PSW_RESET_REQUEST: 'https://api.tiledesk.com/v1/auth/pswresetrequest',
+        UPDATE_USER_LASTNAME_FIRSTNAME: 'https://api.tiledesk.com/v1/users/updateuser/',
+        CHANGE_PSW: 'https://api.tiledesk.com/v1/users/changepsw/',
+
+
+
 
         // DEPARTMENTS_BASE_URL: 'http://api.chat21.org/app1/departments/', // URL BUILT directly IN DEPARTMENTS SERVICE
         // FAQKB_BASE_URL: 'http://api.chat21.org/app1/faq_kb/', // URL BUILT directly IN FAQ-KB SERVICE
         // FAQ_BASE_URL: 'http://api.chat21.org/app1/faq/', // URL BUILT directly IN FAQ SERVICE
-        CONTACTS_BASE_URL: 'http://api.chat21.org/app1/contacts/',
-        BOTS_BASE_URL: 'http://api.chat21.org/app1/bots/',
         // PROJECT_USER_BASE_URL: 'http://api.chat21.org/app1/project_users/', // NO MORE USED - THE RELATION PROJECT -> PROJECT USER IT'S DONE chat21-api-node.js
-        MONGODB_PEOPLE_BASE_URL: 'http://api.chat21.org/app1/people/',
+
+        /* EVEN IF NO MORE USED REPLACE http://api.chat21.org WITH https://api.tiledesk.com/v1 */
+        // ********* SEE BELOW *********
+        // CONTACTS_BASE_URL: 'http://api.chat21.org/app1/contacts/',
+        // BOTS_BASE_URL: 'http://api.chat21.org/app1/bots/',
+        // MONGODB_PEOPLE_BASE_URL: 'http://api.chat21.org/app1/people/',
+
+        CONTACTS_BASE_URL: 'https://api.tiledesk.com/v1/app1/contacts/',
+        BOTS_BASE_URL: 'https://api.tiledesk.com/v1/app1/bots/',
+        MONGODB_PEOPLE_BASE_URL: 'https://api.tiledesk.com/v1/app1/people/',
+
         TOKEN: 'JWT [REDACTED_JWT]',
     },
     cloudFunctions: {
