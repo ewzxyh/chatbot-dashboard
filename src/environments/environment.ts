@@ -33,11 +33,10 @@ export const environment = {
         TOKEN: 'JWT [REDACTED_JWT]',
     },
     cloudFunctions: {
-        // https://us-central1-<FIREBASE_PROJECT_ID>.cloudfunctions.net/api/<APP_ID>/groups/<GROUP_ID>/members/<MEMBERID>
-
-        cloud_func_close_support_group_base_url: 'https://us-central1-chat-v2-dev.cloudfunctions.net/supportapi/tilechat/groups/',
-        cloud_functions_base_url: 'https://us-central1-chat-v2-dev.cloudfunctions.net/api/tilechat/groups/',
-        cloud_func_update_firstname_and_lastname: 'https://us-central1-chat-v2-dev.cloudfunctions.net/api/tilechat/contacts/me'
+        cloud_func_close_support_group_base_url: 'https://api.tiledesk.com/v1/chat/support/tilechat/groups/',  // old address: https://us-central1-chat-v2-dev.cloudfunctions.net/supportapi/tilechat/groups/
+        cloud_functions_base_url: 'https://api.tiledesk.com/v1/chat/tilechat/groups/', // old address: https://us-central1-chat-v2-dev.cloudfunctions.net/api/tilechat/groups/,
+        cloud_func_create_contact_url: 'https://api.tiledesk.com/v1/chat/tilechat/contacts', // old address: https://us-central1-chat-v2-dev.cloudfunctions.net/api/tilechat/contacts
+        cloud_func_update_firstname_and_lastname: 'https://api.tiledesk.com/v1/chat/tilechat/contacts/me', // old address: https://us-central1-chat-v2-dev.cloudfunctions.net/api/tilechat/contacts/me
         // firebase_IdToken: 'Bearer [REDACTED_JWT]',
     },
     chat: {
