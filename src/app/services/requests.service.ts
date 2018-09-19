@@ -239,7 +239,7 @@ export class RequestsService {
     // THE CURRENT USER ID WITH THE 'USER ID' CONTAINED IN THE ARRAY 'AGENTS' (NESTED IN THE 'REQUEST' OBJECT)
     // RETURNS TRUE OR FALSE
     // || !r.hasAgent(this.currentUserID)
-    if (r === null || r === undefined || !r.hasAgent(this.currentUserID)) {
+    if (r === null || r === undefined) {
       console.log('THE REQUEST AS ME AS AGENT ', r.hasAgent(this.currentUserID))
       return;
     }
@@ -653,6 +653,22 @@ export class RequestsService {
     // commented because the service not return nothing and if try to map the json obtain the error:
     // ERROR  SyntaxError: Unexpected end of JSON
     // .map((res) => res.json());
+  }
+
+  public requestsByDay() {
+    // USED TO TEST (note: this service doen't work in localhost)
+    // const url = 'https://api.tiledesk.com/v1/' + '5b44c82def5dca0014d777ac' + '/analytics/requests/aggregate/day';
+    const url = this.BASE_URL + this.project._id + '/analytics/requests/aggregate/day';
+    console.log('!!! ANALYTICS - REQUESTS BY DAY - URL ', url);
+
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+    // USED TO TEST (note: this service doen't work in localhost)
+    // headers.append('Authorization', 'JWT [REDACTED_JWT]');
+    headers.append('Authorization', this.TOKEN);
+    return this.http
+      .get(url, { headers })
+      .map((response) => response.json());
   }
 
 }
