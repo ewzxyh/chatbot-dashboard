@@ -239,7 +239,7 @@ export class RequestsService {
     // THE CURRENT USER ID WITH THE 'USER ID' CONTAINED IN THE ARRAY 'AGENTS' (NESTED IN THE 'REQUEST' OBJECT)
     // RETURNS TRUE OR FALSE
     // || !r.hasAgent(this.currentUserID)
-    if (r === null || r === undefined) {
+    if (r === null || r === undefined || !r.hasAgent(this.currentUserID)) {
       console.log('THE REQUEST AS ME AS AGENT ', r.hasAgent(this.currentUserID))
       return;
     }
@@ -657,15 +657,15 @@ export class RequestsService {
 
   public requestsByDay() {
     // USED TO TEST (note: this service doen't work in localhost)
-    const url = 'https://api.tiledesk.com/v1/' + '5b44c82def5dca0014d777ac' + '/analytics/requests/aggregate/day';
-    // const url = this.BASE_URL + this.project._id + '/analytics/requests/aggregate/day';
+    // const url = 'https://api.tiledesk.com/v1/' + '5ba35f0b9acdd40015d350b6' + '/analytics/requests/aggregate/day';
+    const url = this.BASE_URL + this.project._id + '/analytics/requests/aggregate/day';
     console.log('!!! ANALYTICS - REQUESTS BY DAY - URL ', url);
 
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
     // USED TO TEST (note: this service doen't work in localhost)
-    headers.append('Authorization', 'JWT [REDACTED_JWT]');
-    // headers.append('Authorization', this.TOKEN);
+    // headers.append('Authorization', 'JWT [REDACTED_JWT]');
+    headers.append('Authorization', this.TOKEN);
     return this.http
       .get(url, { headers })
       .map((response) => response.json());
@@ -674,15 +674,15 @@ export class RequestsService {
   // https://api.tiledesk.com/v1/5ab0f32757066e0014bfd718/analytics/requests/count
   public lastMonthRequetsCount() {
   // USED TO TEST (note: this service doen't work in localhost)
-   const url = 'https://api.tiledesk.com/v1/' + '5b44c82def5dca0014d777ac' + '/analytics/requests/count';
-  //  const url = this.BASE_URL + this.project._id + '/analytics/requests/count';
+  //  const url = 'https://api.tiledesk.com/v1/' + '5ba35f0b9acdd40015d350b6' + '/analytics/requests/count';
+   const url = this.BASE_URL + this.project._id + '/analytics/requests/count';
    console.log('!!! ANALYTICS - REQUESTS BY DAY - URL ', url);
 
    const headers = new Headers();
    headers.append('Content-Type', 'application/json');
   //  USED TO TEST (note: this service doen't work in localhost)
-   headers.append('Authorization', 'JWT [REDACTED_JWT]');
-  //  headers.append('Authorization', this.TOKEN);
+  //  headers.append('Authorization', 'JWT [REDACTED_JWT]');
+   headers.append('Authorization', this.TOKEN);
    return this.http
      .get(url, { headers })
      .map((response) => response.json());
