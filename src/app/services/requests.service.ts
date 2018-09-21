@@ -244,7 +244,7 @@ export class RequestsService {
     // THE CURRENT USER ID WITH THE 'USER ID' CONTAINED IN THE ARRAY 'AGENTS' (NESTED IN THE 'REQUEST' OBJECT)
     // RETURNS TRUE OR FALSE
     // || !r.hasAgent(this.currentUserID)
-    if (r === null || r === undefined || !r.hasAgent(this.currentUserID)) {
+    if (r === null || r === undefined) {
       console.log('THE REQUEST AS ME AS AGENT ', r.hasAgent(this.currentUserID))
       return;
     }
@@ -703,14 +703,14 @@ export class RequestsService {
   }
 
   public requestsByDay() {
-    // USED TO TEST (note: this service doen't work in localhost)
+    // USED TO TEST (note: this service doesn't work in localhost)
     // const url = 'https://api.tiledesk.com/v1/' + '5ba35f0b9acdd40015d350b6' + '/analytics/requests/aggregate/day';
     const url = this.BASE_URL + this.project._id + '/analytics/requests/aggregate/day';
     console.log('!!! ANALYTICS - REQUESTS BY DAY - URL ', url);
 
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
-    // USED TO TEST (note: this service doen't work in localhost)
+    // USED TO TEST (note: this service doesn't work in localhost)
     // headers.append('Authorization', 'JWT [REDACTED_JWT]');
     headers.append('Authorization', this.TOKEN);
     return this.http
@@ -720,14 +720,14 @@ export class RequestsService {
 
   // https://api.tiledesk.com/v1/5ab0f32757066e0014bfd718/analytics/requests/count
   public lastMonthRequetsCount() {
-  // USED TO TEST (note: this service doen't work in localhost)
+  // USED TO TEST (note: this service doesn't work in localhost)
   //  const url = 'https://api.tiledesk.com/v1/' + '5ba35f0b9acdd40015d350b6' + '/analytics/requests/count';
    const url = this.BASE_URL + this.project._id + '/analytics/requests/count';
    console.log('!!! ANALYTICS - REQUESTS BY DAY - URL ', url);
 
    const headers = new Headers();
    headers.append('Content-Type', 'application/json');
-  //  USED TO TEST (note: this service doen't work in localhost)
+  //  USED TO TEST (note: this service doesn't work in localhost)
   //  headers.append('Authorization', 'JWT [REDACTED_JWT]');
    headers.append('Authorization', this.TOKEN);
    return this.http
@@ -737,18 +737,18 @@ export class RequestsService {
 
   public getNodeJsRequests() {
     // USED TO TEST (note: this service doen't work in localhost)
-    //  const url = 'https://api.tiledesk.com/v1/' + '5ba35f0b9acdd40015d350b6' + '/analytics/requests/count';
-     const url = this.BASE_URL + this.project._id + '/requests';
+     const url = 'https://api.tiledesk.com/v1/' + '5ba35f0b9acdd40015d350b6' + '/requests';
+    //  const url = this.BASE_URL + this.project._id + '/requests';
      console.log('!!! ANALYTICS - REQUESTS FROM NODEJS URL ', url);
-  
+
      const headers = new Headers();
      headers.append('Content-Type', 'application/json');
-    //  USED TO TEST (note: this service doen't work in localhost)
-    //  headers.append('Authorization', 'JWT [REDACTED_JWT]');
-     headers.append('Authorization', this.TOKEN);
+    //  USED TO TEST (note: this service doesn't work in localhost)
+     headers.append('Authorization', 'JWT [REDACTED_JWT]');
+    //  headers.append('Authorization', this.TOKEN);
      return this.http
        .get(url, { headers })
        .map((response) => response.json());
     }
-  
+
 }
