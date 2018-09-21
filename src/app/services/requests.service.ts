@@ -720,35 +720,35 @@ export class RequestsService {
 
   // https://api.tiledesk.com/v1/5ab0f32757066e0014bfd718/analytics/requests/count
   public lastMonthRequetsCount() {
-  // USED TO TEST (note: this service doesn't work in localhost)
-  //  const url = 'https://api.tiledesk.com/v1/' + '5ba35f0b9acdd40015d350b6' + '/analytics/requests/count';
-   const url = this.BASE_URL + this.project._id + '/analytics/requests/count';
-   console.log('!!! ANALYTICS - REQUESTS BY DAY - URL ', url);
+    // USED TO TEST (note: this service doesn't work in localhost)
+    //  const url = 'https://api.tiledesk.com/v1/' + '5ba35f0b9acdd40015d350b6' + '/analytics/requests/count';
+    const url = this.BASE_URL + this.project._id + '/analytics/requests/count';
+    console.log('!!! ANALYTICS - REQUESTS BY DAY - URL ', url);
 
-   const headers = new Headers();
-   headers.append('Content-Type', 'application/json');
-  //  USED TO TEST (note: this service doesn't work in localhost)
-  //  headers.append('Authorization', 'JWT [REDACTED_JWT]');
-   headers.append('Authorization', this.TOKEN);
-   return this.http
-     .get(url, { headers })
-     .map((response) => response.json());
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+    //  USED TO TEST (note: this service doesn't work in localhost)
+    //  headers.append('Authorization', 'JWT [REDACTED_JWT]');
+    headers.append('Authorization', this.TOKEN);
+    return this.http
+      .get(url, { headers })
+      .map((response) => response.json());
   }
 
-  public getNodeJsRequests() {
+  public getNodeJsRequests(querystring) {
     // USED TO TEST (note: this service doen't work in localhost)
-     const url = 'https://api.tiledesk.com/v1/' + '5ba35f0b9acdd40015d350b6' + '/requests';
+    const url = 'https://api.tiledesk.com/v1/' + '5ba35f0b9acdd40015d350b6' + '/requests' + '?' + querystring;
     //  const url = this.BASE_URL + this.project._id + '/requests';
-     console.log('!!! ANALYTICS - REQUESTS FROM NODEJS URL ', url);
+    console.log('!!! NEW REQUESTS HISTORY - REQUESTS SERVICE URL ', url);
 
-     const headers = new Headers();
-     headers.append('Content-Type', 'application/json');
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/json');
     //  USED TO TEST (note: this service doesn't work in localhost)
-     headers.append('Authorization', 'JWT [REDACTED_JWT]');
+    headers.append('Authorization', 'JWT [REDACTED_JWT]');
     //  headers.append('Authorization', this.TOKEN);
-     return this.http
-       .get(url, { headers })
-       .map((response) => response.json());
-    }
+    return this.http
+      .get(url, { headers })
+      .map((response) => response.json());
+  }
 
 }
