@@ -238,17 +238,17 @@ export class RequestsService {
   }
 
   addOrUpdateRequestsList(r: Request) {
-    console.log('****** ADD OR UPDATE REQUEST LIST ******')
+    // console.log('****** ADD OR UPDATE REQUEST LIST ******')
 
     // r.hasAgent(this.currentUserID)) PASS THE CURRENT USER ID TO THE 'REQUEST' MODEL WHICH AFTER COMPARING
     // THE CURRENT USER ID WITH THE 'USER ID' CONTAINED IN THE ARRAY 'AGENTS' (NESTED IN THE 'REQUEST' OBJECT)
     // RETURNS TRUE OR FALSE
     // || !r.hasAgent(this.currentUserID)
-    if (r === null || r === undefined || !r.hasAgent(this.currentUserID)) {
+    if (r === null || r === undefined ) {
       console.log('THE REQUEST AS ME AS AGENT ', r.hasAgent(this.currentUserID))
       return;
     }
-    console.log('THE REQUEST AS ME AS AGENT ', r.hasAgent(this.currentUserID))
+    // console.log('THE REQUEST AS ME AS AGENT ', r.hasAgent(this.currentUserID))
     for (let i = 0; i < this.requestList.length; i++) {
       // IF THE ID OF THE REQUEST RETURNED FROM DOCUMENT CHANGE (i.e. r.recipient) IS ALREADY IN THE REQUEST LIST this.requestList[i].recipient
       // THIS MEAN THAT THE TYPE OF DocumentChange RETURNED FROM THE QUERY IS MODIFIED OR REMOVED
@@ -737,17 +737,17 @@ export class RequestsService {
 
   public getNodeJsRequests(querystring, pagenumber) {
     // USED TO TEST (note: this service doen't work in localhost)
-    // const url = 'https://api.tiledesk.com/v1/' + '5ba35f0b9acdd40015d350b6' + '/requests?status=1000&' + querystring + '&page=' + pagenumber;
+    const url = 'https://api.tiledesk.com/v1/' + '5ba35f0b9acdd40015d350b6' + '/requests?status=1000&' + querystring + '&page=' + pagenumber;
 
-    const url = this.BASE_URL + this.project._id + '/requests?status=1000&' + querystring + '&page=' + pagenumber;
+    // const url = this.BASE_URL + this.project._id + '/requests?status=1000&' + querystring + '&page=' + pagenumber;
 
     console.log('!!! NEW REQUESTS HISTORY - REQUESTS SERVICE URL ', url);
 
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
     //  USED TO TEST (note: this service doesn't work in localhost)
-    // headers.append('Authorization', 'JWT [REDACTED_JWT]');
-    headers.append('Authorization', this.TOKEN);
+    headers.append('Authorization', 'JWT [REDACTED_JWT]');
+    // headers.append('Authorization', this.TOKEN);
     return this.http
       .get(url, { headers })
       .map((response) => response.json());
