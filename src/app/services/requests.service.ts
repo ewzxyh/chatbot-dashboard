@@ -244,7 +244,7 @@ export class RequestsService {
     // THE CURRENT USER ID WITH THE 'USER ID' CONTAINED IN THE ARRAY 'AGENTS' (NESTED IN THE 'REQUEST' OBJECT)
     // RETURNS TRUE OR FALSE
     // || !r.hasAgent(this.currentUserID)
-    if (r === null || r === undefined ) {
+    if (r === null || r === undefined || !r.hasAgent(this.currentUserID)) {
       console.log('THE REQUEST AS ME AS AGENT ', r.hasAgent(this.currentUserID))
       return;
     }
@@ -736,18 +736,27 @@ export class RequestsService {
   }
 
   public getNodeJsRequests(querystring, pagenumber) {
-    // USED TO TEST (note: this service doen't work in localhost)
-    const url = 'https://api.tiledesk.com/v1/' + '5ba35f0b9acdd40015d350b6' + '/requests?status=1000&' + querystring + '&page=' + pagenumber;
 
-    // const url = this.BASE_URL + this.project._id + '/requests?status=1000&' + querystring + '&page=' + pagenumber;
+    let _querystring = '&' + querystring
+    if (querystring === undefined) {
+      _querystring = ''
+    }
+
+    /* USED TO TEST IN LOCALHOST (note: this service doen't work in localhost) */
+    // const url = 'https://api.tiledesk.com/v1/' + '5ba35f0b9acdd40015d350b6' + '/requests?status=1000' + _querystring + '&page=' + pagenumber;
+
+    /* USED IN PRODUCTION */
+    const url = this.BASE_URL + this.project._id + '/requests?status=1000' + _querystring + '&page=' + pagenumber;
 
     console.log('!!! NEW REQUESTS HISTORY - REQUESTS SERVICE URL ', url);
 
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
-    //  USED TO TEST (note: this service doesn't work in localhost)
-    headers.append('Authorization', 'JWT [REDACTED_JWT]');
-    // headers.append('Authorization', this.TOKEN);
+    /* USED TO TEST IN LOCALHOST (note: this service doesn't work in localhost) */
+    // headers.append('Authorization', 'JWT [REDACTED_JWT]');
+
+    /* USED IN PRODUCTION */
+    headers.append('Authorization', this.TOKEN);
     return this.http
       .get(url, { headers })
       .map((response) => response.json());
