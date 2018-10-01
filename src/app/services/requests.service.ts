@@ -742,21 +742,20 @@ export class RequestsService {
       _querystring = ''
     }
 
-    /* USED TO TEST IN LOCALHOST (note: this service doen't work in localhost) */
+    /* *** USED TO TEST IN LOCALHOST (note: this service doen't work in localhost) *** */
     // const url = 'https://api.tiledesk.com/v1/' + '5ba35f0b9acdd40015d350b6' + '/requests?status=1000' + _querystring + '&page=' + pagenumber;
-
-    /* USED IN PRODUCTION */
+    /* *** USED IN PRODUCTION *** */
     const url = this.BASE_URL + this.project._id + '/requests?status=1000' + _querystring + '&page=' + pagenumber;
 
     console.log('!!! NEW REQUESTS HISTORY - REQUESTS SERVICE URL ', url);
 
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
-    /* USED TO TEST IN LOCALHOST (note: this service doesn't work in localhost) */
+    /* *** USED TO TEST IN LOCALHOST (note: this service doesn't work in localhost) *** */
     // headers.append('Authorization', 'JWT [REDACTED_JWT]');
-
-    /* USED IN PRODUCTION */
+    /* *** USED IN PRODUCTION *** */
     headers.append('Authorization', this.TOKEN);
+
     return this.http
       .get(url, { headers })
       .map((response) => response.json());
