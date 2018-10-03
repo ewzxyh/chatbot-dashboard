@@ -7,31 +7,85 @@ import { Http, Headers, RequestOptions } from '@angular/http';
 import 'rxjs/add/operator/map';
 // import { MongodbConfService } from '../utils/mongodb-conf.service';
 import { environment } from '../../environments/environment';
+import { AuthService } from '../core/auth.service';
 
 @Injectable()
 export class MongoDbContactsService {
 
   // Contact: Contact[];
   http: Http;
+  projectId: string;
+  user: any;
+  TOKEN: any;
+  currentUserID: string;
 
-  // MONGODB_BASE_URL: any;
-  // TOKEN: any;
-
+  BASE_URL = environment.mongoDbConfig.BASE_URL;
   MONGODB_BASE_URL = environment.mongoDbConfig.CONTACTS_BASE_URL;
-  TOKEN =  environment.mongoDbConfig.TOKEN;
+
 
   constructor(
     http: Http,
-    // private mongodbConfService: MongodbConfService,
+    public auth: AuthService
+
   ) {
 
     this.http = http;
-
     // this.MONGODB_BASE_URL = mongodbConfService.MONGODB_CONTACTS_BASE_URL;
     // console.log('MONGODB_CONTACTS_BASE_URL ! ', mongodbConfService.MONGODB_CONTACTS_BASE_URL);
     // this.TOKEN = mongodbConfService.TOKEN;
+    this.getCurrentProject();
+
+    this.user = auth.user_bs.value
+    this.checkUser()
+
+    this.auth.user_bs.subscribe((user) => {
+
+      this.user = user;
+      this.checkUser()
+    });
   }
 
+  getCurrentProject() {
+    this.auth.project_bs.subscribe((project) => {
+      console.log('!!!! CONTACTS SERVICE: SUBSCRIBE TO THE PROJECT PUBLISHED BY AUTH SERVICE ', project)
+
+      if (project) {
+        this.projectId = project._id
+      }
+    })
+  }
+
+
+  checkUser() {
+    if (this.user) {
+      this.TOKEN = this.user.token
+
+      this.currentUserID = this.user._id
+      console.log('!!!! CONTACTS SERVICE - USER UID  ', this.currentUserID);
+
+    } else {
+      console.log('No user is signed in');
+    }
+  }
+
+
+  // GET LEADS
+  public getLeads(): Observable<Contact[]> {
+    const url = this.BASE_URL + this.projectId + '/leads';
+    // use this to test
+    // const url = 'https://api.tiledesk.com/v1/5ba35f0b9acdd40015d350b6/leads'
+    console.log('!!!! CONTACTS SERVICE - GET CONTACTS URL', url);
+
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+    headers.append('Authorization', this.TOKEN);
+    // use this to test
+    // headers.append('Authorization', 'JWT [REDACTED_JWT]');
+
+    return this.http
+      .get(url, { headers })
+      .map((response) => response.json());
+  }
   /**
    * READ (GET)
    */
