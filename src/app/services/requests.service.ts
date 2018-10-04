@@ -735,7 +735,7 @@ export class RequestsService {
       .map((response) => response.json());
   }
 
-  public getNodeJsRequests(querystring, pagenumber) {
+  public getNodeJsHistoryRequests(querystring, pagenumber) {
 
     let _querystring = '&' + querystring
     if (querystring === undefined || !querystring) {
@@ -755,6 +755,29 @@ export class RequestsService {
     // headers.append('Authorization', 'JWT [REDACTED_JWT]');
     /* *** USED IN PRODUCTION *** */
     headers.append('Authorization', this.TOKEN);
+
+    return this.http
+      .get(url, { headers })
+      .map((response) => response.json());
+  }
+
+
+  public getNodeJsRequestsByRequesterId(requesterid) {
+
+
+    /* *** USED TO TEST IN LOCALHOST (note: this service doen't work in localhost) *** */
+    const url = 'https://api.tiledesk.com/v1/' + '5ba35f0b9acdd40015d350b6' + '/requests?requester_id=' + requesterid;
+    /* *** USED IN PRODUCTION *** */
+    // const url = this.BASE_URL + this.project._id + '/requests?requester_id=' + requesterid;
+
+    console.log('!!!! CONTACT DETAILS - REQUESTS SERVICE URL ', url);
+
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+    /* *** USED TO TEST IN LOCALHOST (note: this service doesn't work in localhost) *** */
+    headers.append('Authorization', 'JWT [REDACTED_JWT]');
+    /* *** USED IN PRODUCTION *** */
+    // headers.append('Authorization', this.TOKEN);
 
     return this.http
       .get(url, { headers })

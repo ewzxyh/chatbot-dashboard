@@ -92,20 +92,20 @@ export class ContactsService {
       .map((response) => response.json());
   }
 
-  /**
-   * READ (GET)
-   */
-  public getMongDbContacts(): Observable<Contact[]> {
-    const url = this.MONGODB_BASE_URL;
-    // const url = `http://localhost:3000/app1/contacts`;
-    // const url = `http://api.chat21.org/app1/contacts`;
-    console.log('MONGO DB CONTACTS URL', url);
+  // GET LEAD BY ID
+  public getLeadById(id: string): Observable<Contact[]> {
+    // const url = this.BASE_URL + this.projectId + '/leads/' + id;
+    
+    // use this to test
+    const url = 'https://api.tiledesk.com/v1/5ba35f0b9acdd40015d350b6/leads/' + id;
+    console.log('!!!! CONTACTS SERVICE - GET CONTACT BY ID URL', url);
 
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
-    headers.append('Authorization', this.TOKEN);
-    // headers.append('Authorization', 'JWT [REDACTED_JWT]');
-    // headers.append('Authorization', 'JWT [REDACTED_JWT]');
+    // headers.append('Authorization', this.TOKEN);
+    // use this to test
+    headers.append('Authorization', 'JWT [REDACTED_JWT]');
+
     return this.http
       .get(url, { headers })
       .map((response) => response.json());
