@@ -104,11 +104,13 @@ export class DepartmentService {
    */
   public getDeptsByProjectId(): Observable<Department[]> {
     const url = this.MONGODB_BASE_URL;
-
+    // const url = 'https://api.tiledesk.com/v1/5b44c82def5dca0014d777ac/departments/'
     console.log('DEPARTMENTS URL', url);
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
     headers.append('Authorization', this.TOKEN);
+    // tslint:disable-next-line:quotemark
+    // headers.append('Authorization', "JWT [REDACTED_JWT]");
     return this.http
       .get(url, { headers })
       .map((response) => response.json());
