@@ -13,6 +13,7 @@ export class ProjectService {
 
   http: Http;
   PROJECT_BASE_URL = environment.mongoDbConfig.PROJECTS_BASE_URL;
+  BASE_URL = environment.mongoDbConfig.BASE_URL;
   UPDATE_OPERATING_HOURS_URL: any;
   // PROJECT_USER_BASE_URL = environment.mongoDbConfig.PROJECT_USER_BASE_URL;
   // TOKEN = environment.mongoDbConfig.TOKEN;
@@ -212,12 +213,34 @@ export class ProjectService {
     headers.append('Authorization', this.TOKEN);
     const options = new RequestOptions({ headers });
 
-    const body = { 'widget': widget_settings};
+    const body = { 'widget': widget_settings };
 
     console.log('UPDATE WIDGET PROJECT - BODY ', body);
 
     return this.http
       .put(url, JSON.stringify(body), options)
+      .map((res) => res.json());
+  }
+
+  /// ================ GENERATE SHARED SECRET =REDACTED_SECRET ///
+  // https://api.tiledesk.com/v1/PROJECTID/keys/generate
+  public generateSharedSecret() {
+    const headers = new Headers();
+    headers.append('Accept', 'application/json');
+    headers.append('Content-type', 'application/json');
+
+    headers.append('Authorization', this.TOKEN);
+    const url = this.BASE_URL + this.projectID + '/keys/generate';
+
+    /** ********* FOR TEST  ********* **/
+    // headers.append('Authorization', 'JWT [REDACTED_JWT]');
+    // const url = 'https://api.tiledesk.com/v1/5b55e806c93dde00143163dd/keys/generate'
+
+    console.log('GENERATE SHARED SECRET URL ', url);
+    const body = {  };
+    const options = new RequestOptions({ headers });
+    return this.http
+      .post(url, JSON.stringify(body), options)
       .map((res) => res.json());
   }
 
