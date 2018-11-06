@@ -75,16 +75,16 @@ export class ContactsService {
     if (querystring === undefined || !querystring) {
       _querystring = ''
     }
-    // const url = this.BASE_URL + this.projectId + '/leads?page=' + pagenumber + _querystring;
+    const url = this.BASE_URL + this.projectId + '/leads?page=' + pagenumber + _querystring;
     // use this to test
-    const url = 'https://api.tiledesk.com/v1/5ba35f0b9acdd40015d350b6/leads?page=' + pagenumber + _querystring;
+    // const url = 'https://api.tiledesk.com/v1/5ba35f0b9acdd40015d350b6/leads?page=' + pagenumber + _querystring;
     console.log('!!!! CONTACTS SERVICE - GET CONTACTS URL', url);
 
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
-    // headers.append('Authorization', this.TOKEN);
+    headers.append('Authorization', this.TOKEN);
     // use this to test
-    headers.append('Authorization', 'JWT [REDACTED_JWT]');
+    // headers.append('Authorization', 'JWT [REDACTED_JWT]');
 
     return this.http
       .get(url, { headers })
