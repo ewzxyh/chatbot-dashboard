@@ -101,7 +101,7 @@ export class ContactsService {
 
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
-    // headers.append('Authorization', this.TOKEN);
+    headers.append('Authorization', this.TOKEN);
 
     /****** use this to test *******/
     // headers.append('Authorization', 'JWT [REDACTED_JWT]');
