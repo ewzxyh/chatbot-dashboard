@@ -812,6 +812,28 @@ export class RequestsService {
       .map((response) => response.json());
   }
 
+  public downloadNodeJsHistoryRequestsAsCsv(querystring: string, pagenumber: number) {
+    let _querystring = '&' + querystring
+    if (querystring === undefined || !querystring) {
+      _querystring = ''
+    }
+    const url = this.BASE_URL + this.project._id + '/requests/csv?status=1000' + _querystring + '&page=' + pagenumber;
+    console.log('!!! NEW REQUESTS HISTORY - DOWNLOAD REQUESTS AS CSV URL ', url);
+
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/csv');
+    /* *** USED TO TEST IN LOCALHOST (note: this service doesn't work in localhost) *** */
+    // headers.append('Authorization', 'JWT [REDACTED_JWT]');
+    /* *** USED IN PRODUCTION *** */
+    headers.append('Authorization', this.TOKEN);
+
+    return this.http
+      .get(url, { headers })
+      .map((response) => response.text());
+      // .map((response) => JSON.stringify(response.text()));
+  }
+
+
   public getNodeJsHistoryRequests(querystring: string, pagenumber: number) {
     let _querystring = '&' + querystring
     if (querystring === undefined || !querystring) {
