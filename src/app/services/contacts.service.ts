@@ -91,6 +91,32 @@ export class ContactsService {
       .map((response) => response.json());
   }
 
+  // GET LEADS
+  public exportLeadToCsv(querystring, pagenumber) {
+    let _querystring = '&' + querystring
+    if (querystring === undefined || !querystring) {
+      _querystring = ''
+    }
+    const url = this.BASE_URL + this.projectId + '/leads/csv?page=' + pagenumber + _querystring;
+    // use this to test
+    // 5bcf51dbc375420015542b5f is the id og the project (in production ) progetto test 23 ott of the user redacted@example.invalid
+    // const url = 'https://api.tiledesk.com/v1/5bcf51dbc375420015542b5f/leads?page=' + pagenumber + _querystring;
+    console.log('!!!! CONTACTS SERVICE - GET CONTACTS URL', url);
+
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/csv');
+    headers.append('Authorization', this.TOKEN);
+
+    /****** use this to test *******/
+    // headers.append('Authorization', 'JWT [REDACTED_JWT]');
+
+    return this.http
+      .get(url, { headers })
+      .map((response) => response.text());
+  }
+
+
+
   // GET LEAD BY ID
   public getLeadById(id: string): Observable<Contact[]> {
     const url = this.BASE_URL + this.projectId + '/leads/' + id;
@@ -150,10 +176,10 @@ export class ContactsService {
       .map((res) => res.json());
   }
 
- /**
-  * DELETE (DELETE)
-  * @param id
-  */
+  /**
+   * DELETE (DELETE)
+   * @param id
+   */
   public deleteLead(id: string) {
 
     const url = this.BASE_URL + this.projectId + '/leads/' + id;
