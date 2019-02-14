@@ -796,6 +796,42 @@ export class RequestsService {
   }
 
 
+  // Waiting Time Average
+  public averageWait() {
+
+      // USED TO TEST (note: this service doesn't work in localhost)
+    // const url = 'https://api.tiledesk.com/v1/' + '5ad5bd52c975820014ba900a' + '/analytics/requests/waiting';
+
+    const url = this.BASE_URL + this.project._id + '/analytics/requests/waiting';
+    console.log('!!! ANALYTICS - AVERAGE WAIT - URL ', url);
+
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+    // USED TO TEST (note: this service doesn't work in localhost)
+    // headers.append('Authorization', 'JWT [REDACTED_JWT]');
+    headers.append('Authorization', this.TOKEN);
+    return this.http
+      .get(url, { headers })
+      .map((response) => response.json());
+
+  }
+
+  // NOT YET USED (NOTE the timezone is variable - see email 3 jan)
+  public daysHoursRequestsDistribution() {
+    const url = this.BASE_URL + this.project._id + '/analytics/requests/aggregate/dayoftheweek/hours?timezone=%2B01';
+    console.log('!!! ANALYTICS - Requests Distribution IN THE HOURS OF THE DAYS - URL ', url);
+
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+    // USED TO TEST (note: this service doesn't work in localhost)
+    // headers.append('Authorization', 'JWT [REDACTED_JWT]');
+    headers.append('Authorization', this.TOKEN);
+    return this.http
+      .get(url, { headers })
+      .map((response) => response.json());
+  }
+
+
   public lastMonthRequetsCount() {
     // USED TO TEST (note: this service doesn't work in localhost)
     //  const url = 'https://api.tiledesk.com/v1/' + '5ba35f0b9acdd40015d350b6' + '/analytics/requests/count';
