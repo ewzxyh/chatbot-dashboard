@@ -548,17 +548,18 @@ export class RequestsService {
     // .map((res) => res.json());
   }
 
+  //-------------MOVE TO ANALYTICS SERVICE----------------------
   public requestsByDay() {
     // USED TO TEST (note: this service doesn't work in localhost)
-     const url = 'https://api.tiledesk.com/v1/' + '5c28b587348b680015feecca' + '/analytics/requests/aggregate/day';
-    //const url = this.BASE_URL + this.project._id + '/analytics/requests/aggregate/day';
+    //const url = 'https://api.tiledesk.com/v1/' + '5c28b587348b680015feecca' + '/analytics/requests/aggregate/day';
+    const url = this.BASE_URL + this.project._id + '/analytics/requests/aggregate/day';
     console.log('!!! ANALYTICS - REQUESTS BY DAY - URL ', url);
 
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
     // USED TO TEST (note: this service doesn't work in localhost)
-     headers.append('Authorization', 'JWT [REDACTED_JWT]');
-    //headers.append('Authorization', this.TOKEN);
+    //headers.append('Authorization', 'JWT [REDACTED_JWT]');
+    headers.append('Authorization', this.TOKEN);
     return this.http
       .get(url, { headers })
       .map((response) => response.json());

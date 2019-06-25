@@ -60,6 +60,26 @@ export class AnalyticsService {
     }
   }
 
+  requestsByDay(): Observable<[]> {
+    // USED TO TEST (note: this service doesn't work in localhost)
+     const url = 'https://api.tiledesk.com/v1/' + '5c28b587348b680015feecca' + '/analytics/requests/aggregate/day';
+    //const url = this.BASE_URL + this.project._id + '/analytics/requests/aggregate/day';
+    console.log('!!! AANALYTICS - REQUESTS BY DAY - URL ', url);
+
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        //'Authorization': this.TOKEN
+         'Authorization': 'JWT [REDACTED_JWT]'
+      })
+    
+    };
+
+    return this.http.get<[]>(url, httpOptions)
+    //return this.http.get<[]>(this.BASE_URL + this.projectID + '/analytics/requests/aggregate/day',httpOptions);
+  }
+
+
   getDataHeatMap(): Observable<[]> {
 
     const httpOptions = {
