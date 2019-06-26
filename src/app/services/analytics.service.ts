@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from 'app/core/auth.service';
 import { environment } from '../../environments/environment';
@@ -71,9 +71,13 @@ export class AnalyticsService {
         'Content-Type': 'application/json',
         //'Authorization': this.TOKEN
          'Authorization': 'JWT [REDACTED_JWT]'
-      })
+      }),
+
+      
     
     };
+
+    //let param={params:{lastdays: lastdays, department_id: department_id}}
 
     return this.http.get<[]>(url, httpOptions)
     //return this.http.get<[]>(this.BASE_URL + this.projectID + '/analytics/requests/aggregate/day',httpOptions);
@@ -89,7 +93,7 @@ export class AnalyticsService {
          'Authorization': 'Basic ' + btoa('redacted@example.invalid:123456')
       })
     };
-    return this.http.get<[]>('https://api.tiledesk.com/v1/5ad5bd52c975820014ba900a'+ '/analytics/requests/waiting', httpOptions);
+    return this.http.get<[]>('https://api.tiledesk.com/v1/5ad5bd52c975820014ba900a'+ '/analytics/requests/aggregate/dayoftheweek/hours', httpOptions);
     //return this.http.get<[]>(this.BASE_URL + this.projectID + '/analytics/requests/aggregate/dayoftheweek/hours', httpOptions);
 
   }
