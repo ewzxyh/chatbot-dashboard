@@ -4,13 +4,15 @@ import { Observable } from 'rxjs';
 import { AuthService } from 'app/core/auth.service';
 import { environment } from '../../environments/environment';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { URLSearchParams } from 'url';
 @Injectable()
 export class AnalyticsService {
 
   // baseURL = 'https://api.tiledesk.com/v1/';
 
   BASE_URL = environment.mongoDbConfig.BASE_URL;
-
+  baseURL_local = 'http://localhost:3000/'
+  ww='http://127.0.0.1:3000/'
   projectID: string;
   user: any;
   TOKEN: string;
@@ -60,26 +62,43 @@ export class AnalyticsService {
     }
   }
 
-  requestsByDay(): Observable<[]> {
+  requestsByDay(lastdays, department_id): Observable<[]> {
     // USED TO TEST (note: this service doesn't work in localhost)
      const url = 'https://api.tiledesk.com/v1/' + '5c28b587348b680015feecca' + '/analytics/requests/aggregate/day';
     //const url = this.BASE_URL + this.project._id + '/analytics/requests/aggregate/day';
     console.log('!!! AANALYTICS - REQUESTS BY DAY - URL ', url);
-
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        //'Authorization': this.TOKEN
-         'Authorization': 'JWT [REDACTED_JWT]'
-      }),
-
-      
     
-    };
+  
+    // const httpOptions = {
+    //   headers: new HttpHeaders({
+    //     'Content-Type': 'application/json',
+    //     //'Authorization': this.TOKEN
+    //      'Authorization': 'JWT [REDACTED_JWT]'
+    //      //'Authorization': 'Basic ' + btoa('redacted@example.invalid:123456')
+    //     }),
+      
+    //   params: new HttpParams({
+    //     fromObject: {
+    //          lastday: lastdays,
+    //          dep_id:department_id
+    //       }
+       
+    //   })
+    // };
 
-    //let param={params:{lastdays: lastdays, department_id: department_id}}
 
-    return this.http.get<[]>(url, httpOptions)
+    let headers= new HttpHeaders({
+      'Content-Type': 'application/json',
+      //'Authorization': this.TOKEN
+       'Authorization': 'JWT [REDACTED_JWT]'
+       //'Authorization': 'Basic ' + btoa('redacted@example.invalid:123456')
+      });
+    let params= new HttpParams()
+                .set('lastdays', lastdays)
+                .set('department_id', department_id);
+    
+  
+    return this.http.get<[]>(this.baseURL_local+ this.projectID + '/analytics/requests/aggregate/day' ,{ headers:headers, params:params})
     //return this.http.get<[]>(this.BASE_URL + this.projectID + '/analytics/requests/aggregate/day',httpOptions);
   }
 
@@ -115,7 +134,7 @@ export class AnalyticsService {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
         //'Authorization': this.TOKEN
-         'Authorization': 'Basic ' + btoa('redacted@example.invalid:123456')
+        'Authorization': 'Basic ' + btoa('redacted@example.invalid:123456')
       })
     };
    
@@ -128,7 +147,7 @@ export class AnalyticsService {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
         //'Authorization': this.TOKEN
-         'Authorization': 'Basic ' + btoa('redacted@example.invalid:123456')
+        'Authorization': 'Basic ' + btoa('redacted@example.invalid:123456')
       })
     };
    
@@ -141,7 +160,7 @@ export class AnalyticsService {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
         //'Authorization': this.TOKEN
-         'Authorization': 'Basic ' + btoa('redacted@example.invalid:123456')
+        'Authorization': 'Basic ' + btoa('redacted@example.invalid:123456')
       })
     };
 
