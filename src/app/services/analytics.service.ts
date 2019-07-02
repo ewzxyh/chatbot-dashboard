@@ -64,42 +64,24 @@ export class AnalyticsService {
 
   requestsByDay(lastdays, department_id): Observable<[]> {
     // USED TO TEST (note: this service doesn't work in localhost)
-     const url = 'https://api.tiledesk.com/v1/' + '5c28b587348b680015feecca' + '/analytics/requests/aggregate/day';
+    //const url = 'https://api.tiledesk.com/v1/' + '5c28b587348b680015feecca' + '/analytics/requests/aggregate/day';
     //const url = this.BASE_URL + this.project._id + '/analytics/requests/aggregate/day';
-    console.log('!!! AANALYTICS - REQUESTS BY DAY - URL ', url);
+    //console.log('!!! AANALYTICS - REQUESTS BY DAY - URL ', url);
     
-  
-    // const httpOptions = {
-    //   headers: new HttpHeaders({
-    //     'Content-Type': 'application/json',
-    //     //'Authorization': this.TOKEN
-    //      'Authorization': 'JWT [REDACTED_JWT]'
-    //      //'Authorization': 'Basic ' + btoa('redacted@example.invalid:123456')
-    //     }),
-      
-    //   params: new HttpParams({
-    //     fromObject: {
-    //          lastday: lastdays,
-    //          dep_id:department_id
-    //       }
-       
-    //   })
-    // };
-
-
     let headers= new HttpHeaders({
       'Content-Type': 'application/json',
-      //'Authorization': this.TOKEN
-       'Authorization': 'JWT [REDACTED_JWT]'
+      'Authorization': this.TOKEN
+       //'Authorization': 'JWT [REDACTED_JWT]'
        //'Authorization': 'Basic ' + btoa('redacted@example.invalid:123456')
       });
     let params= new HttpParams()
                 .set('lastdays', lastdays)
                 .set('department_id', department_id);
     
-  
-    return this.http.get<[]>(this.baseURL_local+ this.projectID + '/analytics/requests/aggregate/day' ,{ headers:headers, params:params})
-    //return this.http.get<[]>(this.BASE_URL + this.projectID + '/analytics/requests/aggregate/day',httpOptions);
+    //const url = 'https://api.tiledesk.com/v1/'
+    //return this.http.get<[]>(this.baseURL_local + this.projectID + '/analytics/requests/aggregate/day',{ headers:headers, params:params});
+    return this.http.get<[]>(this.BASE_URL+ this.projectID + '/analytics/requests/aggregate/day' ,{ headers:headers, params:params})
+    
   }
 
 
@@ -108,12 +90,15 @@ export class AnalyticsService {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
-        //'Authorization': this.TOKEN
-         'Authorization': 'Basic ' + btoa('redacted@example.invalid:123456')
+        'Authorization': this.TOKEN
+        //'Authorization': 'JWT [REDACTED_JWT]'
+        //'Authorization': 'Basic ' + btoa('redacted@example.invalid:123456')
       })
     };
-    return this.http.get<[]>('https://api.tiledesk.com/v1/5ad5bd52c975820014ba900a'+ '/analytics/requests/aggregate/dayoftheweek/hours', httpOptions);
-    //return this.http.get<[]>(this.BASE_URL + this.projectID + '/analytics/requests/aggregate/dayoftheweek/hours', httpOptions);
+    //const url = 'https://api.tiledesk.com/v1/5ad5bd52c975820014ba900a'
+    //return this.http.get<[]>(this.baseURL_local + this.projectID + '/analytics/requests/aggregate/dayoftheweek/hours', httpOptions);
+    return this.http.get<[]>(this.BASE_URL + this.projectID+ '/analytics/requests/aggregate/dayoftheweek/hours', httpOptions);
+   
 
   }
 
@@ -121,51 +106,51 @@ export class AnalyticsService {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
-        //'Authorization': this.TOKEN
-         'Authorization': 'Basic ' + btoa('redacted@example.invalid:123456')
+        'Authorization': this.TOKEN
+        //'Authorization': 'Basic ' + btoa('redacted@example.invalid:123456')
       })
     };
-    return this.http.get<[]>('https://api.tiledesk.com/v1/5ad5bd52c975820014ba900a'+ '/analytics/requests/waiting', httpOptions);
-    //return this.http.get<[]>(this.BASE_URL + this.projectID + '/analytics/requests/waiting', httpOptions);
+    //return this.http.get<[]>('https://api.tiledesk.com/v1/5ad5bd52c975820014ba900a'+ '/analytics/requests/waiting', httpOptions);
+    return this.http.get<[]>(this.BASE_URL + this.projectID + '/analytics/requests/waiting', httpOptions);
   }
 
   getavarageWaitingTimeDataChart(): Observable<[]> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
-        //'Authorization': this.TOKEN
-        'Authorization': 'Basic ' + btoa('redacted@example.invalid:123456')
+        'Authorization': this.TOKEN
+        //'Authorization': 'Basic ' + btoa('redacted@example.invalid:123456')
       })
     };
    
-    return this.http.get<[]>('https://api.tiledesk.com/v1/5ad5bd52c975820014ba900a' + '/analytics/requests/waiting/day', httpOptions);
-    //return this.http.get<[]>(this.BASE_URL + this.projectID + '/analytics/requests/waiting/day', httpOptions);
+    //return this.http.get<[]>('https://api.tiledesk.com/v1/5ad5bd52c975820014ba900a' + '/analytics/requests/waiting/day', httpOptions);
+    return this.http.get<[]>(this.BASE_URL + this.projectID + '/analytics/requests/waiting/day', httpOptions);
   }
 
   getDurationConversationTimeDataCLOCK(): Observable<[]> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
-        //'Authorization': this.TOKEN
-        'Authorization': 'Basic ' + btoa('redacted@example.invalid:123456')
+        'Authorization': this.TOKEN
+        //'Authorization': 'Basic ' + btoa('redacted@example.invalid:123456')
       })
     };
    
-    return this.http.get<[]>('https://api.tiledesk.com/v1/5ad5bd52c975820014ba900a' + '/analytics/requests/duration', httpOptions);
-    //return this.http.get<[]>(this.BASE_URL + this.projectID + '/analytics/requests/duration', httpOptions);
+    //return this.http.get<[]>('https://api.tiledesk.com/v1/5ad5bd52c975820014ba900a' + '/analytics/requests/duration', httpOptions);
+    return this.http.get<[]>(this.BASE_URL + this.projectID + '/analytics/requests/duration', httpOptions);
   }
 
   getDurationConversationTimeDataChart(): Observable<[]> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
-        //'Authorization': this.TOKEN
-        'Authorization': 'Basic ' + btoa('redacted@example.invalid:123456')
+        'Authorization': this.TOKEN
+        //'Authorization': 'Basic ' + btoa('redacted@example.invalid:123456')
       })
     };
 
-    return this.http.get<[]>('https://api.tiledesk.com/v1/5ad5bd52c975820014ba900a' + '/analytics/requests/duration/day', httpOptions);
-    //return this.http.get<[]>(this.BASE_URL + this.projectID + '/analytics/requests/duration/day', httpOptions);
+    //return this.http.get<[]>('https://api.tiledesk.com/v1/5ad5bd52c975820014ba900a' + '/analytics/requests/duration/day', httpOptions);
+    return this.http.get<[]>(this.BASE_URL + this.projectID + '/analytics/requests/duration/day', httpOptions);
   }
 
   goToRichieste(){
