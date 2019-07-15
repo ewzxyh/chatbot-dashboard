@@ -15,7 +15,7 @@ export class AnalyticsService {
   projectID: string;
   user: any;
   TOKEN: string;
-  staticRemoteToken='JWT [REDACTED_JWT]'
+  //staticRemoteToken='JWT [REDACTED_JWT]'
 
   public richieste_bs: BehaviorSubject<string> = new BehaviorSubject<string>(null);
 
