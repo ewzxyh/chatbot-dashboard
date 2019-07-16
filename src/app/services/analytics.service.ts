@@ -11,12 +11,11 @@ export class AnalyticsService {
   // baseURL = 'https://api.tiledesk.com/v1/';
 
   BASE_URL = environment.mongoDbConfig.BASE_URL;
-  baseURL_local = 'http://localhost:3000/'
+  //BASE_URL = 'https://api.tiledesk.com/v1/'
   projectID: string;
   user: any;
   TOKEN: string;
-  //staticRemoteToken='JWT [REDACTED_JWT]'
-
+  
   public richieste_bs: BehaviorSubject<string> = new BehaviorSubject<string>(null);
 
   constructor(
@@ -74,8 +73,7 @@ export class AnalyticsService {
                 .set('lastdays', lastdays)
                 .set('department_id', department_id);
     
-    //const url = 'https://api.tiledesk.com/v1/'
-    //return this.http.get<[]>('https://api.tiledesk.com/v1/' + this.projectID + '/analytics/requests/aggregate/day',{ headers:headers, params:params});
+    
     return this.http.get<[]>(this.BASE_URL+ this.projectID + '/analytics/requests/aggregate/day' ,{ headers:headers, params:params})
     
   }
@@ -97,9 +95,7 @@ export class AnalyticsService {
                   .set('lastdays', lastdays)
                   .set('department_id', department_id);
     
-    //const url = 'https://api.tiledesk.com/v1/'
-    //return this.http.get<[]>('https://api.tiledesk.com/v1/'+ this.projectID + '/analytics/requests/aggregate/day/2',{ headers:headers, params:params});
-    return this.http.get<[]>(this.BASE_URL+ this.projectID + '/analytics/requests/aggregate/day/2' ,{ headers:headers, params:params})
+   return this.http.get<[]>(this.BASE_URL+ this.projectID + '/analytics/requests/aggregate/day/2' ,{ headers:headers, params:params})
     
   }
 
@@ -114,9 +110,8 @@ export class AnalyticsService {
         //'Authorization': 'Basic ' + btoa('redacted@example.invalid:123456')
       })
     };
-    //const url = 'https://api.tiledesk.com/v1/5ad5bd52c975820014ba900a'
-    //return this.http.get<[]>('https://api.tiledesk.com/v1/' + this.projectID + '/analytics/requests/aggregate/dayoftheweek/hours', httpOptions);
-    return this.http.get<[]>(this.BASE_URL + this.projectID+ '/analytics/requests/aggregate/dayoftheweek/hours', httpOptions);
+   
+   return this.http.get<[]>(this.BASE_URL + this.projectID+ '/analytics/requests/aggregate/dayoftheweek/hours', httpOptions);
    
 
   }
@@ -131,7 +126,7 @@ export class AnalyticsService {
        //'Authorization': 'Basic ' + btoa('redacted@example.invalid:123456')
       })
     };
-    //return this.http.get<[]>('https://api.tiledesk.com/v1/'+ this.projectID + '/analytics/requests/waiting', httpOptions);
+    
     return this.http.get<[]>(this.BASE_URL + this.projectID + '/analytics/requests/waiting', httpOptions);
   }
 
@@ -154,7 +149,7 @@ export class AnalyticsService {
                 .set('lastdays', lastdays)
                 .set('department_id', department_id);
    
-    //return this.http.get<[]>('https://api.tiledesk.com/v1/'+ this.projectID + '/analytics/requests/waiting/day',{ headers:headers, params:params});
+    
     return this.http.get<[]>(this.BASE_URL + this.projectID + '/analytics/requests/waiting/day', { headers:headers, params:params});
   }
 
@@ -169,8 +164,7 @@ export class AnalyticsService {
       })
     };
    
-    //return this.http.get<[]>('https://api.tiledesk.com/v1/'+this.projectID + '/analytics/requests/duration', httpOptions);
-    return this.http.get<[]>(this.BASE_URL + this.projectID + '/analytics/requests/duration', httpOptions);
+   return this.http.get<[]>(this.BASE_URL + this.projectID + '/analytics/requests/duration', httpOptions);
   }
 
   getDurationConversationTimeDataCHART(lastdays, department_id): Observable<[]> {
@@ -192,7 +186,7 @@ export class AnalyticsService {
                 .set('lastdays', lastdays)
                 .set('department_id', department_id);
 
-    //return this.http.get<[]>('https://api.tiledesk.com/v1/'+ this.projectID + '/analytics/requests/duration/day', { headers:headers, params:params});
+    
     return this.http.get<[]>(this.BASE_URL + this.projectID + '/analytics/requests/duration/day', { headers:headers, params:params});
   }
 
