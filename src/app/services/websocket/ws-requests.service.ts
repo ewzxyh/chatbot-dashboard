@@ -6,7 +6,7 @@ import { AuthService } from '../../core/auth.service';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 // const CHAT_URL = "ws://echo.websocket.org/";
-const CHAT_URL = "ws://tiledesk-server-pre.herokuapp.com?token=JWT [REDACTED_JWT]";
+const CHAT_URL = "wss://tiledesk-server-pre.herokuapp.com?token=JWT [REDACTED_JWT]";
 
 export interface Message {
   action: string;
@@ -34,8 +34,8 @@ export class WsRequestsService {
     console.log("HI WsRequestsService ");
     //this.wsConnect(); !no more used
 
-    this.getWsRequests();
-    this.getCurrentProject();
+    // this.getWsRequests();
+    // this.getCurrentProject();
 
   }
 

@@ -3,7 +3,7 @@ import { WebSocketJs } from "./websocketjs";
 import { AuthService } from '../../core/auth.service';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
-const CHAT_URL = "ws://tiledesk-server-pre.herokuapp.com?token=JWT [REDACTED_JWT]";
+const CHAT_URL = "wss://tiledesk-server-pre.herokuapp.com?token=JWT [REDACTED_JWT]";
 @Injectable()
 
 export class WsMsgsService {
@@ -19,8 +19,8 @@ export class WsMsgsService {
 
   ) {
 
-    this.getCurrentProject();
-    this.getWsRequests();
+    // this.getCurrentProject();
+    // this.getWsRequests();
   }
 
   getCurrentProject() {
@@ -116,7 +116,7 @@ export class WsMsgsService {
       action: 'subscribe',
       payload: {
 
-        topic: '/' + '5dc924a13fa2b8001798b9c1' + '/requests/' + request_id + '/messages/',
+        topic: '/' + this.project_id + '/requests/' + request_id + '/messages/',
         message: undefined,
         method: undefined
       },
