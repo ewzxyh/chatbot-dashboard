@@ -5,9 +5,8 @@ import { Subject } from "rxjs/Rx";
 import { AuthService } from '../../core/auth.service';
 import { WebSocketJs } from "./websocket-js";
 import { environment } from '../../../environments/environment';
-// const CHAT_URL = "ws://echo.websocket.org/";
 
-// const CHAT_URL = "ws://tiledesk-server-pre.herokuapp.com?token=JWT [REDACTED_JWT]";
+
 export interface Message {
   action: string;
   payload: {
@@ -52,75 +51,19 @@ export class WsRequestsService {
     // -----------------------------------------------------------------------------------------------------
     // REQUESTS - @ the publication of the 'current project' subscribes to the websocket requests
     // -----------------------------------------------------------------------------------------------------
-    // this.getCurrentUserAndConnectToWs();
-    this.getCurrentProjectAndSubscribeTo_WsRequests()
+ 
+    
+    // this.getCurrentProjectAndSubscribeTo_WsRequests()
+
 
   }
 
-  // websocketIsReady(websocketReadyState: number) {
-  //   this.WS_IS_CONNECTED = websocketReadyState
-  //   console.log('% »»» WebSocketJs WF - WS-REQUESTS-SERVICE - websocketIsReady ', websocketReadyState);
-
-  //   if (websocketReadyState === 1) {
-  //     // this.getCurrentProjectAndSubscribeTo_WsRequests()
-      
-  //     // this.WS_IS_CONNECTED = true;
-  //   } else {
-  //     // this.WS_IS_CONNECTED = false;
-  //   }
-  // }
-
-  // getCurrentUserAndConnectToWs() {
-  //   this.auth.user_bs.subscribe((user) => {
-  //     console.log('% WsRequestsService - LoggedUser ', user);
-
-  //     if (user && user.token) {
-
-  //       this.CHAT_URL = 'ws://tiledesk-server-pre.herokuapp.com?token=' + user.token
-
-  //       // -----------------------------------------------------------------------------------------------------
-  //       // REQUESTS - Create websocket connection and listen @ websocket requests
-  //       // -----------------------------------------------------------------------------------------------------
-
-  //       // ***** UNCOMMENT *****
-  //       this.initWsjsRequestsService();
-
-  //     }
-  //   });
-  // }
-
+ 
   // -----------------------------------------------------------------------------------------------------
   // methods for REQUESTS 
   // -----------------------------------------------------------------------------------------------------
 
-  /**
-   * Create websocket connection and listen @ websocket requests
-   */
-  // initWsjsRequestsService() {
-  //   console.log('% »»» WebSocketJs WF ****** WsRequestsService ****** CALLING INIT ****** ');
-  //   const self = this;
-  //   self.wsRequestsList = []
-
-
-
-  //   // init(url, onCreate, onUpdate, onOpen=undefined, onOpenCallback=undefined) {
-  //   //  init(url, onCreate, onUpdate, onOpen=undefined, onOpenCallback=undefined, _topics=[], _callbacks=new Map() ) {
-  //   this.webSocketJs.init(
-  //     this.CHAT_URL,
-  //     undefined,
-  //     undefined,
-  //     function () {
-  //       self.getCurrentProjectAndSubscribeTo_WsRequests();
-  //     }
-  //   );
-
-  //   // this.webSocketJs.init(
-  //   //   this.CHAT_URL,
-  //   //   undefined,
-  //   //   undefined,
-  //   // );
-
-  // }
+ 
   resetWsRequestList() {
     this.wsRequestsList = [];
     this.wsRequestsList$.next(this.wsRequestsList);

@@ -6,7 +6,6 @@ import { environment } from '../../../environments/environment';
 import { Subject } from 'rxjs/Subject';
 import { WsMessage } from '../../models/ws-message-model';
 
-// const CHAT_URL = "ws://tiledesk-server-pre.herokuapp.com?token=JWT [REDACTED_JWT]";
 @Injectable()
 
 export class WsMsgsService {
