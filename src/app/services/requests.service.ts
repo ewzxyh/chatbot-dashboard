@@ -107,19 +107,10 @@ export class RequestsService {
     
     // this.getMyDepts(); // !! NO MORE USED
 
-    // const firebase_conf = JSON.parse(appConfigService.getConfig().firebase);
-    const firebase_conf = appConfigService.getConfig().firebase;
-    // console.log('nk --> RequestsService firebase_conf ', firebase_conf);
-    const cloudBaseUrl = firebase_conf['chat21ApiUrl']
-    // console.log('nk --> RequestsService cloudBaseUrl ', cloudBaseUrl);
-
-    this.CHAT21_CLOUD_FUNCTIONS_BASE_URL = cloudBaseUrl + '/api/tilechat/groups/'
-    console.log('nk --> RequestsService cloudFunctions.cloud_functions_base_url', this.CHAT21_CLOUD_FUNCTIONS_BASE_URL);
-
-
-    // this.CHAT21_CLOUD_FUNC_CLOSE_GROUP_BASE_URL = cloudBaseUrl + '/support/tilechat/groups/'
-    this.CHAT21_CLOUD_FUNC_CLOSE_GROUP_BASE_URL = cloudBaseUrl + '/supportapi/tilechat/groups/'
-    console.log('nk --> RequestsService cloud_func_close_support_group_base_url ', this.CHAT21_CLOUD_FUNC_CLOSE_GROUP_BASE_URL);
+    // const firebase_conf = appConfigService.getConfig().firebase;
+    // const cloudBaseUrl = firebase_conf['chat21ApiUrl']
+    // this.CHAT21_CLOUD_FUNCTIONS_BASE_URL = cloudBaseUrl + '/api/tilechat/groups/'
+    // this.CHAT21_CLOUD_FUNC_CLOSE_GROUP_BASE_URL = cloudBaseUrl + '/supportapi/tilechat/groups/'
 
     this.SERVER_BASE_PATH = appConfigService.getConfig().SERVER_BASE_URL;
     console.log('AppConfigService getAppConfig (REQUESTS SERV.) SERVER_BASE_PATH ', this.SERVER_BASE_PATH);
@@ -576,58 +567,56 @@ export class RequestsService {
     // .map((res) => res.json());
   }
 
-  // -------------MOVE TO ANALYTICS SERVICE----------------------
-  public requestsByDay() {
-    // USED TO TEST (note: this service doesn't work in localhost)
-    // const url = 'https://api.tiledesk.com/v1/' + '5c28b587348b680015feecca' + '/analytics/requests/aggregate/day';
-    const url = this.SERVER_BASE_PATH + this.project._id + '/analytics/requests/aggregate/day';
-    console.log('!!! ANALYTICS - REQUESTS BY DAY - URL ', url);
+  // ------------- MOVED TO ANALYTICS SERVICE----------------------
+  // public requestsByDay() {
+  //   // USED TO TEST (note: this service doesn't work in localhost)
+  //   // const url = 'https://api.tiledesk.com/v1/' + '5c28b587348b680015feecca' + '/analytics/requests/aggregate/day';
+  //   const url = this.SERVER_BASE_PATH + this.project._id + '/analytics/requests/aggregate/day';
+  //   console.log('!!! ANALYTICS - REQUESTS BY DAY - URL ', url);
 
-    const headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-    // USED TO TEST (note: this service doesn't work in localhost)
-    // headers.append('Authorization', 'JWT [REDACTED_JWT]');
-    headers.append('Authorization', this.TOKEN);
-    return this.http
-      .get(url, { headers })
-      .map((response) => response.json());
-  }
+  //   const headers = new Headers();
+  //   headers.append('Content-Type', 'application/json');
+  //   // USED TO TEST (note: this service doesn't work in localhost)
+  //   // headers.append('Authorization', 'JWT [REDACTED_JWT]');
+  //   headers.append('Authorization', this.TOKEN);
+  //   return this.http
+  //     .get(url, { headers })
+  //     .map((response) => response.json());
+  // }
 
 
   // Waiting Time Average
-  public averageWait() {
+  // public averageWait() {
+  //   // USED TO TEST (note: this service doesn't work in localhost)
+  //   // const url = 'https://api.tiledesk.com/v1/' + '5ad5bd52c975820014ba900a' + '/analytics/requests/waiting';
+  //   const url = this.SERVER_BASE_PATH + this.project._id + '/analytics/requests/waiting';
+  //   console.log('!!! ANALYTICS - AVERAGE WAIT - URL ', url);
 
-    // USED TO TEST (note: this service doesn't work in localhost)
-    // const url = 'https://api.tiledesk.com/v1/' + '5ad5bd52c975820014ba900a' + '/analytics/requests/waiting';
+  //   const headers = new Headers();
+  //   headers.append('Content-Type', 'application/json');
+  //   // USED TO TEST (note: this service doesn't work in localhost)
+  //   // headers.append('Authorization', 'JWT [REDACTED_JWT]');
+  //   headers.append('Authorization', this.TOKEN);
+  //   return this.http
+  //     .get(url, { headers })
+  //     .map((response) => response.json());
 
-    const url = this.SERVER_BASE_PATH + this.project._id + '/analytics/requests/waiting';
-    console.log('!!! ANALYTICS - AVERAGE WAIT - URL ', url);
+  // }
 
-    const headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-    // USED TO TEST (note: this service doesn't work in localhost)
-    // headers.append('Authorization', 'JWT [REDACTED_JWT]');
-    headers.append('Authorization', this.TOKEN);
-    return this.http
-      .get(url, { headers })
-      .map((response) => response.json());
+  // NOT  USED (NOTE the timezone is variable - see email 3 jan)
+  // public daysHoursRequestsDistribution() {
+  //   const url = this.SERVER_BASE_PATH + this.project._id + '/analytics/requests/aggregate/dayoftheweek/hours?timezone=%2B01';
+  //   console.log('!!! ANALYTICS - Requests Distribution IN THE HOURS OF THE DAYS - URL ', url);
 
-  }
-
-  // NOT YET USED (NOTE the timezone is variable - see email 3 jan)
-  public daysHoursRequestsDistribution() {
-    const url = this.SERVER_BASE_PATH + this.project._id + '/analytics/requests/aggregate/dayoftheweek/hours?timezone=%2B01';
-    console.log('!!! ANALYTICS - Requests Distribution IN THE HOURS OF THE DAYS - URL ', url);
-
-    const headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-    // USED TO TEST (note: this service doesn't work in localhost)
-    // headers.append('Authorization', 'JWT [REDACTED_JWT]');
-    headers.append('Authorization', this.TOKEN);
-    return this.http
-      .get(url, { headers })
-      .map((response) => response.json());
-  }
+  //   const headers = new Headers();
+  //   headers.append('Content-Type', 'application/json');
+  //   // USED TO TEST (note: this service doesn't work in localhost)
+  //   // headers.append('Authorization', 'JWT [REDACTED_JWT]');
+  //   headers.append('Authorization', this.TOKEN);
+  //   return this.http
+  //     .get(url, { headers })
+  //     .map((response) => response.json());
+  // }
 
 
   public lastMonthRequetsCount() {
