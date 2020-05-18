@@ -152,8 +152,8 @@ export class DepartmentService {
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
     headers.append('Authorization', this.TOKEN);
-    // tslint:disable-next-line:quotemark
-    // headers.append('Authorization', "JWT [REDACTED_JWT]");
+   
+    
     return this.http
       .get(url, { headers })
       .map((response) => response.json());
@@ -161,18 +161,14 @@ export class DepartmentService {
 
   public getDeptsByProjectIdToPromise():any {
     const url = this.DEPTS_URL + 'allstatus';
-
-    // const url = 'https://api.tiledesk.com/v1/5c28b587348b680015feecca/departments/'+'allstatus'
     console.log('DEPARTMENTS URL', url);
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
     headers.append('Authorization', this.TOKEN);
-    // tslint:disable-next-line:quotemark
-    // headers.append('Authorization', "JWT [REDACTED_JWT]");
     return this.http
       .get(url, { headers })
       .map((response) => { 
-        // some response manipulation
+      
         return response.json()
       })
       .toPromise();
