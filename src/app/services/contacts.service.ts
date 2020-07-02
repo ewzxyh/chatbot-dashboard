@@ -64,22 +64,28 @@ export class ContactsService {
   checkUser() {
     if (this.user) {
       this.TOKEN = this.user.token
-
       this.currentUserID = this.user._id
       console.log('!!!! CONTACTS SERVICE - USER UID  ', this.currentUserID);
-
     } else {
       console.log('No user is signed in');
     }
   }
 
   // GET LEADS
-  public getLeads(querystring, pagenumber): Observable<Contact[]> {
+  public getLeadsActiveOrTrashed(querystring, pagenumber, hasclickedtrash): Observable<Contact[]> {
     let _querystring = '&' + querystring
+    console.log('!!!! CONTACTS SERVICE - GET CONTACTS hasclickedtrashL', hasclickedtrash);
+
     if (querystring === undefined || !querystring) {
       _querystring = ''
     }
-    const url = this.SERVER_BASE_PATH + this.projectId + '/leads?page=' + pagenumber + _querystring;
+
+    let trashed_contacts = ''
+    if (hasclickedtrash === true) {
+      trashed_contacts = '&status=1000'
+    }
+
+    const url = this.SERVER_BASE_PATH + this.projectId + '/leads?page=' + pagenumber + _querystring + trashed_contacts;
     // use this to test
     // 5bcf51dbc375420015542b5f is the id og the project (in production ) progetto test 23 ott of the user redacted@example.invalid
     // const url = 'https://api.tiledesk.com/v1/5bcf51dbc375420015542b5f/leads?page=' + pagenumber + _querystring;
@@ -98,7 +104,6 @@ export class ContactsService {
   }
 
   getLeadsTrashed(): Observable<Contact[]> {
-  
     const url = this.SERVER_BASE_PATH + this.projectId + '/leads?page=0&status=1000';
     // use this to test
     // 5bcf51dbc375420015542b5f is the id og the project (in production ) progetto test 23 ott of the user redacted@example.invalid
@@ -114,12 +119,34 @@ export class ContactsService {
       .map((response) => response.json());
   }
 
+  getLeadsActive(): Observable<Contact[]> {
+    const url = this.SERVER_BASE_PATH + this.projectId + '/leads?page=0';
+    // use this to test
+    // 5bcf51dbc375420015542b5f is the id og the project (in production ) progetto test 23 ott of the user redacted@example.invalid
+    // const url = 'https://api.tiledesk.com/v1/5bcf51dbc375420015542b5f/leads?page=' + pagenumber + _querystring;
+    console.log('!!!! CONTACTS SERVICE - GET ACIVE CONTACTS URL', url);
 
-  public exportLeadToCsv(querystring, pagenumber) {
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+    headers.append('Authorization', this.TOKEN);
+
+    return this.http
+      .get(url, { headers })
+      .map((response) => response.json());
+  }
+
+
+  public exportLeadToCsv(querystring, pagenumber, hasclickedtrash) {
     let _querystring = '&' + querystring
     if (querystring === undefined || !querystring) {
       _querystring = ''
     }
+
+    let trashed_contacts = ''
+    if (hasclickedtrash === true) {
+      trashed_contacts = '&status=1000'
+    }
+    // + trashed_contacts // IL SERVIZIO NON PRENDE I STATUS 1000
     const url = this.SERVER_BASE_PATH + this.projectId + '/leads/csv?page=' + pagenumber + _querystring;
     // use this to test
     // 5bcf51dbc375420015542b5f is the id og the project (in production ) progetto test 23 ott of the user redacted@example.invalid
@@ -132,11 +159,11 @@ export class ContactsService {
 
     /****** use this to test *******/
     // headers.append('Authorization', 'JWT [REDACTED_JWT]');
-
     return this.http
       .get(url, { headers })
       .map((response) => response.text());
   }
+
 
 
 
@@ -227,7 +254,6 @@ export class ContactsService {
    * @param id
    */
   public deleteLead(id: string) {
-
     const url = this.SERVER_BASE_PATH + this.projectId + '/leads/' + id;
 
     /****** use this to test *******/
@@ -245,6 +271,60 @@ export class ContactsService {
     const options = new RequestOptions({ headers });
     return this.http
       .delete(url, options)
+      .map((res) => res.json());
+
+  }
+
+  /**
+ * DELETE (DELETE)
+ * @param id
+ */
+  public deleteLeadForever(id: string) {
+
+    const url = this.SERVER_BASE_PATH + this.projectId + '/leads/' + id + '/physical';
+
+    /****** use this to test *******/
+    // const url = 'https://api.tiledesk.com/v1/5bcf51dbc375420015542b5f/leads/' + id;
+
+    console.log('DELETE LEAD FOREVER URL ', url);
+
+    const headers = new Headers();
+    headers.append('Accept', 'application/json');
+    headers.append('Content-type', 'application/json');
+    headers.append('Authorization', this.TOKEN);
+
+    /****** use this to test *******/
+    // headers.append('Authorization', 'JWT [REDACTED_JWT]');
+    const options = new RequestOptions({ headers });
+    return this.http
+      .delete(url, options)
+      .map((res) => res.json());
+
+  }
+
+  public restoreContact(id: string) {
+    const url = this.SERVER_BASE_PATH + this.projectId + '/leads/' + id;
+
+    /****** use this to test *******/
+    // const url = 'https://api.tiledesk.com/v1/5bcf51dbc375420015542b5f/leads/' + id;
+    console.log('UPDATE CONTACT URL ', url);
+
+    const headers = new Headers();
+
+    headers.append('Accept', 'application/json');
+    headers.append('Content-type', 'application/json');
+    headers.append('Authorization', this.TOKEN);
+
+    /****** use this to test *******/
+    // headers.append('Authorization', 'JWT [REDACTED_JWT]');
+
+    const options = new RequestOptions({ headers });
+    
+    const body = { 'status': 100, };
+
+    console.log('UPDATE CONTACT REQUEST BODY ', body);
+    return this.http
+      .put(url, JSON.stringify(body), options)
       .map((res) => res.json());
 
   }
