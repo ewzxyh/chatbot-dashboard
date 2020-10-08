@@ -9,10 +9,13 @@ import 'rxjs/add/operator/map';
 import { environment } from '../../environments/environment';
 import { AuthService } from '../core/auth.service';
 import { AppConfigService } from '../services/app-config.service';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { WebSocketJs } from "./websocket/websocket-js";
 
 @Injectable()
 export class ContactsService {
 
+  public wsRequesterStatus$: BehaviorSubject<any> = new BehaviorSubject<any>({});
   // Contact: Contact[];
   http: Http;
   projectId: string;
@@ -27,7 +30,8 @@ export class ContactsService {
   constructor(
     http: Http,
     public auth: AuthService,
-    public appConfigService: AppConfigService
+    public appConfigService: AppConfigService,
+    public webSocketJs: WebSocketJs
 
   ) {
 
@@ -70,6 +74,42 @@ export class ContactsService {
       console.log('No user is signed in');
     }
   }
+
+  subscribeToWS_RequesterPresence(requesterid) {
+    var self = this;
+    console.log("wsRequesterPresence - HERE ");
+    const path = '/' + this.projectId + '/project_users/users/' + requesterid;
+    // const path = "/5f61efc28f90f300345edd75/project_users/5f623d5c56065e0034fce69c";
+    console.log('wsRequesterPresence PATH ', path);
+    this.webSocketJs.ref(path,
+      function (data, notification) {
+        console.log("wsRequesterPresence (contacts service) - CREATE - data ", data);
+        // console.log("% WsMsgsService notification", notification);
+        
+        self.wsRequesterStatus$.next(data);
+
+      }, function (data, notification) {
+
+        console.log("wsRequesterPresence (contacts service) - UPDATE - data ", data);
+        // console.log("% WsMsgsService notification", notification);
+      }, function (data, notification) {
+
+        if (data) {
+          console.log("wsRequesterPresence (contacts service) - ON-DATA - data", data);
+
+        }
+      }
+    );
+
+  }
+
+  unsubscribeToWS_RequesterPresence(requesterid) {
+    const path = '/' + this.projectId + '/project_users/users/' + requesterid;
+    this.webSocketJs.unsubscribe(path);
+    console.log("wsRequesterPresence UNSUBSCRIBE To WS Requester Presence (contacts service) ");
+
+  }
+
 
   // GET LEADS
   public getLeadsActiveOrTrashed(querystring, pagenumber, hasclickedtrash): Observable<Contact[]> {
@@ -319,7 +359,7 @@ export class ContactsService {
     // headers.append('Authorization', 'JWT [REDACTED_JWT]');
 
     const options = new RequestOptions({ headers });
-    
+
     const body = { 'status': 100, };
 
     console.log('UPDATE CONTACT REQUEST BODY ', body);
