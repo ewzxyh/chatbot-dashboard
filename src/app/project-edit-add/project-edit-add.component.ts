@@ -833,9 +833,11 @@ export class ProjectEditAddComponent implements OnInit, OnDestroy {
   }
 
   launchWidget() {
-    if (window && window['tiledesk']) {
-      window['tiledesk'].open();
-    }
+    // if (window && window['tiledesk']) {
+    //   window['tiledesk'].open();
+    // }
+
+    window.open('mailto:redacted@example.invalid', 'mail')
   }
 
   goToPricing() {
