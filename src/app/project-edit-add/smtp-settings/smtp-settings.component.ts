@@ -208,16 +208,6 @@ export class SmtpSettingsComponent implements OnInit {
       });
   }
 
-  //   "email" : {
-//     "from" : "redacted@example.invalid",
-//     "config" : {
-//         "host" : "smtp.gmail.com",
-//         "port" : 465,
-//         "secure" : true,
-//         "user" : "redacted@example.invalid",
-//         "pass" : "googlefronti21,"
-//     }
-// }
 
   sendTestEmail(recipientemail) {
     this.smtp_usermame, this.smtp_pswd, this.smtp_connetion_security
