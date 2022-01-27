@@ -499,18 +499,6 @@ export class ProjectService {
       .map((res) => res.json());
   }
 
-//   "email" : {
-//     "from" : "redacted@example.invalid",
-//     "config" : {
-//         "host" : "smtp.gmail.com",
-//         "port" : 465,
-//         "secure" : true,
-//         "user" : "redacted@example.invalid",
-//         "pass" : "googlefronti21,"
-//     }
-// }
-  
-
 
   // -----------------------------------------------------------------
   // UPDATE WIDGET PROJECT  - todo from put to patch
