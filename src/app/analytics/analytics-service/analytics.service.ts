@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 import { AuthService } from 'app/core/auth.service';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { AppConfigService } from '../../services/app-config.service';
 import { LoggerService } from '../../services/logger/logger.service';
 @Injectable()
@@ -21,13 +20,11 @@ export class AnalyticsService {
   public richieste_bs: BehaviorSubject<string> = new BehaviorSubject<string>(null);
 
   constructor(
-   
     private httpClient: HttpClient,
     public auth: AuthService,
     public appConfigService: AppConfigService,
     private logger: LoggerService
   ) {
-   
     this.user = auth.user_bs.value
     this.checkUser()
 
@@ -35,7 +32,6 @@ export class AnalyticsService {
       this.user = user;
       this.checkUser()
     });
-
 
     this.getCurrentProject();
     this.getAppConfig();
@@ -47,15 +43,12 @@ export class AnalyticsService {
   }
 
   getCurrentProject() {
-
     this.auth.project_bs.subscribe((project) => {
 
       this.logger.log('[ANALYTICS-SERV] - SUBSCRIBE TO CURRENT PROJCT: ', project)
       if (project) {
-
         this.projectID = project._id;
         this.logger.log('[ANALYTICS-SERV] ID PROJECT ', this.projectID);
-
       }
     });
   }
@@ -70,7 +63,7 @@ export class AnalyticsService {
     }
   }
 
-  requestsByDay(lastdays, department_id?, participant_id?): Observable<[]> {
+  requestsByDay(lastdays, department_id?, participant_id?): Observable<[any]> {
     if (!department_id) {
       department_id = ''
     }
@@ -90,10 +83,11 @@ export class AnalyticsService {
       .set('department_id', department_id)
       .set('participant', participant_id)
 
-    return this.httpClient.get<[]>(this.SERVER_BASE_PATH + this.projectID + '/analytics/requests/aggregate/day', { headers: headers, params: params })
+    return this.httpClient
+    .get<[any]>(this.SERVER_BASE_PATH + this.projectID + '/analytics/requests/aggregate/day', { headers: headers, params: params })
   }
 
-  requestsByDayBotServed(lastdays, department_id?, participant_id?): Observable<[]> {
+  requestsByDayBotServed(lastdays, department_id?, participant_id?): Observable<[any]> {
     if (!department_id) {
       department_id = ''
     }
@@ -104,7 +98,6 @@ export class AnalyticsService {
     this.logger.log("[ANALYTICS-SERV] requestsByDayBotServed DEPT-ID", department_id);
     this.logger.log("[ANALYTICS-SERV] requestsByDayBotServed PARTICIPANT-ID", participant_id);
 
-
     let headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Authorization': this.TOKEN
@@ -114,42 +107,45 @@ export class AnalyticsService {
       .set('department_id', department_id)
       .set('participant', participant_id)
 
-    return this.httpClient.get<[]>(this.SERVER_BASE_PATH + this.projectID + '/analytics/requests/aggregate/hasBot/day', { headers: headers, params: params })
-
+    return this.httpClient
+    .get<[any]>(this.SERVER_BASE_PATH + this.projectID + '/analytics/requests/aggregate/hasBot/day', { headers: headers, params: params })
   }
 
-  getDataHeatMap(): Observable<[]> {
+  getDataHeatMap(): Observable<[any]> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
         'Authorization': this.TOKEN
       })
     };
-    return this.httpClient.get<[]>(this.SERVER_BASE_PATH + this.projectID + '/analytics/requests/aggregate/dayoftheweek/hours', httpOptions);
+    return this.httpClient
+    .get<[any]>(this.SERVER_BASE_PATH + this.projectID + '/analytics/requests/aggregate/dayoftheweek/hours', httpOptions);
   }
 
-  getDataAVGWaitingCLOCK(): Observable<[]> {
+  getDataAVGWaitingCLOCK(): Observable<[any]> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
         'Authorization': this.TOKEN
       })
     };
-    return this.httpClient.get<[]>(this.SERVER_BASE_PATH + this.projectID + '/analytics/requests/waiting', httpOptions);
+    return this.httpClient
+    .get<[any]>(this.SERVER_BASE_PATH + this.projectID + '/analytics/requests/waiting', httpOptions);
   }
 
 
-  getCurrentWaitingTime(): Observable<[]> {
+  getCurrentWaitingTime(): Observable<[any]> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
         'Authorization': this.TOKEN
       })
     };
-    return this.httpClient.get<[]>(this.SERVER_BASE_PATH + this.projectID + '/publicanalytics/waiting/current', httpOptions);
+    return this.httpClient
+    .get<[any]>(this.SERVER_BASE_PATH + this.projectID + '/publicanalytics/waiting/current', httpOptions);
   }
 
-  getavarageWaitingTimeDataCHART(lastdays, department_id?, participant_id?): Observable<[]> {
+  getavarageWaitingTimeDataCHART(lastdays, department_id?, participant_id?): Observable<[any]> {
     this.logger.log("[ANALYTICS-SERV] getavarageWaitingTimeDataCHART PARAM", lastdays, department_id, participant_id);
 
     if (!department_id) {
@@ -170,22 +166,24 @@ export class AnalyticsService {
       .set('department_id', department_id)
       .set('participant', participant_id);
 
-    return this.httpClient.get<[]>(this.SERVER_BASE_PATH + this.projectID + '/analytics/requests/waiting/day', { headers: headers, params: params });
+    return this.httpClient
+    .get<[any]>(this.SERVER_BASE_PATH + this.projectID + '/analytics/requests/waiting/day', { headers: headers, params: params });
   }
 
   // HTTP SERVICE CLIENT VERSION
-  getDurationConversationTimeDataCLOCK(): Observable<[]> {
+  getDurationConversationTimeDataCLOCK(): Observable<[any]> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
         'Authorization': this.TOKEN
       })
     };
-    return this.httpClient.get<[]>(this.SERVER_BASE_PATH + this.projectID + '/analytics/requests/duration', httpOptions);
+    return this.httpClient
+    .get<[any]>(this.SERVER_BASE_PATH + this.projectID + '/analytics/requests/duration', httpOptions);
   }
 
 
-  getDurationConversationTimeDataCHART(lastdays, department_id?, participant_id?): Observable<[]> {
+  getDurationConversationTimeDataCHART(lastdays, department_id?, participant_id?): Observable<[any]> {
     this.logger.log("[ANALYTICS-SERV] getDurationConversationTimeDataCHART PARAM", lastdays, department_id, participant_id);
     if (!department_id) {
       department_id = ''
@@ -213,18 +211,20 @@ export class AnalyticsService {
     const url = this.SERVER_BASE_PATH + this.projectID + '/analytics/requests/duration/day'
     this.logger.log("[ANALYTICS-SERV] getDurationConversationTimeDataCHART url", url);
 
-    return this.httpClient.get<[]>(url, { headers: headers, params: params });
+    return this.httpClient
+    .get<[any]>(url, { headers: headers, params: params });
   }
 
-  getSatisfactionDataHEART(): Observable<[]> {
+  getSatisfactionDataHEART(): Observable<[any]> {
     let headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Authorization': this.TOKEN
     });
-    return this.httpClient.get<[]>(this.SERVER_BASE_PATH + this.projectID + '/analytics/requests/satisfaction', { headers: headers });
+    return this.httpClient
+    .get<[any]>(this.SERVER_BASE_PATH + this.projectID + '/analytics/requests/satisfaction', { headers: headers });
   }
 
-  getSatisfactionDataCHART(lastdays, department_id?): Observable<[]> {
+  getSatisfactionDataCHART(lastdays, department_id?): Observable<[any]> {
     this.logger.log("[ANALYTICS-SERV] getSatisfactionDataCHART PARAM", lastdays, department_id);
 
     if (!department_id) {
@@ -239,19 +239,21 @@ export class AnalyticsService {
     let params = new HttpParams()
       .set('lastdays', lastdays)
       .set('department_id', department_id);
-    return this.httpClient.get<[]>(this.SERVER_BASE_PATH + this.projectID + '/analytics/requests/satisfaction/day', { headers: headers, params: params });
+    return this.httpClient
+    .get<[any]>(this.SERVER_BASE_PATH + this.projectID + '/analytics/requests/satisfaction/day', { headers: headers, params: params });
   }
 
-  getVisitors(): Observable<[]> {
+  getVisitors(): Observable<[any]> {
     let headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Authorization': this.TOKEN
     })
 
-    return this.httpClient.get<[]>(this.SERVER_BASE_PATH + this.projectID + '/analytics/project_users/count', { headers: headers })
+    return this.httpClient
+    .get<[any]>(this.SERVER_BASE_PATH + this.projectID + '/analytics/project_users/count', { headers: headers })
   }
 
-  getVisitorsByDay(lastdays, department_id?): Observable<[]> {
+  getVisitorsByDay(lastdays, department_id?): Observable<[any]> {
     if (!department_id) {
       department_id = ""
     }
@@ -265,26 +267,29 @@ export class AnalyticsService {
       .set('lastdays', lastdays)
       .set('department_id', department_id);
 
-    return this.httpClient.get<[]>(this.SERVER_BASE_PATH + this.projectID + '/analytics/project_users/aggregate/day', { headers: headers, params: params })
+    return this.httpClient
+    .get<[any]>(this.SERVER_BASE_PATH + this.projectID + '/analytics/project_users/aggregate/day', { headers: headers, params: params })
   }
 
-  getVisitorsByLast7Days(): Observable<[]> {
+  getVisitorsByLast7Days(): Observable<[any]> {
     let headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Authorization': this.TOKEN
     })
-    return this.httpClient.get<[]>(this.SERVER_BASE_PATH + this.projectID + '/analytics/project_users/aggregate/week', { headers: headers })
+    return this.httpClient
+    .get<[any]>(this.SERVER_BASE_PATH + this.projectID + '/analytics/project_users/aggregate/week', { headers: headers })
   }
 
-  getVisitorsByLastMonth(): Observable<[]> {
+  getVisitorsByLastMonth(): Observable<[any]> {
     let headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Authorization': this.TOKEN
     })
-    return this.httpClient.get<[]>(this.SERVER_BASE_PATH + this.projectID + '/analytics/project_users/aggregate/month', { headers: headers })
+    return this.httpClient
+    .get<[any]>(this.SERVER_BASE_PATH + this.projectID + '/analytics/project_users/aggregate/month', { headers: headers })
   }
 
-  getMessagesByDay(lastdays, sender_id?): Observable<[]> {
+  getMessagesByDay(lastdays, sender_id?): Observable<[any]> {
     if (!sender_id) {
       sender_id = ""
     }
@@ -298,7 +303,8 @@ export class AnalyticsService {
       .set('lastdays', lastdays)
       .set('sender', sender_id)
 
-    return this.httpClient.get<[]>(this.SERVER_BASE_PATH + this.projectID + '/analytics/messages/aggregate/day', { headers: headers, params: params })
+    return this.httpClient
+    .get<[any]>(this.SERVER_BASE_PATH + this.projectID + '/analytics/messages/aggregate/day', { headers: headers, params: params })
   }
 
   getAvgSatisfaction() {
@@ -320,7 +326,7 @@ export class AnalyticsService {
     return promise;
   }
 
-  getSatisfactionByDay(lastdays, department_id?, participant_id?): Observable<[]> {
+  getSatisfactionByDay(lastdays, department_id?, participant_id?): Observable<[any]> {
     this.logger.log("[ANALYTICS-SERV] getSatisfactionByDay PARAM", lastdays, department_id, participant_id);
     if (!department_id) {
       department_id = ''
@@ -340,45 +346,43 @@ export class AnalyticsService {
       .set('department_id', department_id)
       .set('participant', participant_id)
 
-    return this.httpClient.get<[]>(this.SERVER_BASE_PATH + this.projectID + '/analytics/requests/satisfaction/day', { headers: headers, params: params })
-
+    return this.httpClient
+    .get<[any]>(this.SERVER_BASE_PATH + this.projectID + '/analytics/requests/satisfaction/day', { headers: headers, params: params })
   }
 
-  getLastMountMessagesCount(): Observable<[]> {
+  getLastMountMessagesCount(): Observable<[any]> {
     let headers = new HttpHeaders({
       'Content-type': 'application/json',
       'Authorization': this.TOKEN
     })
-    return this.httpClient.get<[]>(this.SERVER_BASE_PATH + this.projectID + '/analytics/messages/count', { headers: headers })
+    return this.httpClient
+    .get<[any]>(this.SERVER_BASE_PATH + this.projectID + '/analytics/messages/count', { headers: headers })
   }
 
-  getLastMountConversationsCount(): Observable<[]> {
+  getLastMountConversationsCount(): Observable<[any]> {
     let headers = new HttpHeaders({
       'Content-type': 'application/json',
       'Authorization': this.TOKEN
     })
-    return this.httpClient.get<[]>(this.SERVER_BASE_PATH + this.projectID + '/analytics/requests/count', { headers: headers })
+    return this.httpClient
+    .get<[any]>(this.SERVER_BASE_PATH + this.projectID + '/analytics/requests/count', { headers: headers })
   }
-
-
 
   getRequestsHasBotCount() {
     let headers = new HttpHeaders({
       'Content-type': 'application/json',
       'Authorization': this.TOKEN
     })
-    return this.httpClient.get<[]>(this.SERVER_BASE_PATH + this.projectID + '/analytics/requests/hasBot/count', { headers: headers })
+    return this.httpClient
+    .get<[any]>(this.SERVER_BASE_PATH + this.projectID + '/analytics/requests/hasBot/count', { headers: headers })
   }
-
-
 
   goToRichieste() {
     this.richieste_bs.next("hasClickedNumberOfRequestLast7Days");
   }
 
-  getEventsList(): Observable<[]> {
+  getEventsList(): Observable<[any]> {
     let lastdays = "360";
-
     let headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Authorization': this.TOKEN
@@ -386,11 +390,11 @@ export class AnalyticsService {
 
     let params = new HttpParams()
       .set('lastdays', lastdays)
-
-    return this.httpClient.get<[]>(this.SERVER_BASE_PATH + this.projectID + '/analytics/events/aggregate/day', { headers: headers });
+    return this.httpClient
+    .get<[any]>(this.SERVER_BASE_PATH + this.projectID + '/analytics/events/aggregate/day', { headers: headers });
   }
 
-  getEventByDay(lastdays, eventName): Observable<[]> {
+  getEventByDay(lastdays, eventName): Observable<[any]> {
 
     let headers = new HttpHeaders({
       'Content-Type': 'application/json',
@@ -401,10 +405,11 @@ export class AnalyticsService {
       .set('lastdays', lastdays)
       .set('name', eventName)
 
-    return this.httpClient.get<[]>(this.SERVER_BASE_PATH + this.projectID + '/analytics/events/aggregate/day', { headers: headers, params: params })
+    return this.httpClient
+    .get<[any]>(this.SERVER_BASE_PATH + this.projectID + '/analytics/events/aggregate/day', { headers: headers, params: params })
   }
 
-  public lastMonthRequetsCount() {
+  public lastMonthRequetsCount(): Observable<[any]> {
     // USED TO TEST (note: this service doesn't work in localhost)
     //  const url = 'https://api.tiledesk.com/v1/' + '5ba35f0b9acdd40015d350b6' + '/analytics/requests/count';
     const url = this.SERVER_BASE_PATH + this.projectID + '/analytics/requests/count';
@@ -417,8 +422,8 @@ export class AnalyticsService {
     //  USED TO TEST (note: this service doesn't work in localhost)
     //  headers.append('Authorization', 'JWT [REDACTED_JWT]');
 
-    return this.httpClient.get<[]>(url, { headers: headers })
-
+    return this.httpClient
+    .get<[any]>(url, { headers: headers })
   }
 
 }
