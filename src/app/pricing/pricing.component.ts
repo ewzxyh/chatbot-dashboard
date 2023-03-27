@@ -811,7 +811,9 @@ export class PricingComponent implements OnInit, OnDestroy {
 
     // const mailTo = "mailto:redacted@example.invalid";
     // window.location.href = mailTo;
-    window.open('mailto:{{contactUsEmail}}', 'mail')
+    // window.open('mailto:{{contactUsEmail}}', 'mail')
+    window.open('mailto:redacted@example.invalid?subject=Upgrade Tiledesk plan');
+
   }
 
   openReportPaymentModal() {
