@@ -371,7 +371,7 @@ export class KnowledgeBasesComponent implements OnInit, OnDestroy {
   }
   contactSalesForChatGptKey() {
     this.closeSecretsModal()
-    window.open(`mailto:redacted@example.invalid?subject=I don't have a GPT-key`);
+    window.open(`mailto:redacted@example.invalid?subject=I don't have a GPT-Key`);
   }
 
 
