@@ -38,11 +38,7 @@ export class SuperUser {
     public email: string, // FOR SUPERUSER
   ) { }
 }
-const superusers = [
-  new SuperUser('redacted@example.invalid'),
-  new SuperUser('redacted@example.invalid'),
-  new SuperUser('redacted@example.invalid'),
-]
+
 // .end SUPER USER
 
 @Injectable()
@@ -808,21 +804,21 @@ export class AuthService {
   }
 
   ////// SUPER USER AUTH //////
-  superUserAuth(currentUserEmailgetFromStorage) {
-    const authenticatedSuperUser = superusers.find(
-      (u) => u.email === currentUserEmailgetFromStorage,
-    )
-    if (
-      authenticatedSuperUser &&
-      authenticatedSuperUser.email === currentUserEmailgetFromStorage
-    ) {
-      // this.logger.log('AUTENTICATED SUPER USER ', authenticatedUser)
-      // this.logger.log('AUTENTICATED SUPER USER EMAIL ', authenticatedUser.email)
-      // this.logger.log('AUTH SERVICE C. USER EMAIL ', authenticatedUser.email)
-      return true
-    }
-    return false
-  }
+  // superUserAuth(currentUserEmailgetFromStorage) {
+  //   const authenticatedSuperUser = superusers.find(
+  //     (u) => u.email === currentUserEmailgetFromStorage,
+  //   )
+  //   if (
+  //     authenticatedSuperUser &&
+  //     authenticatedSuperUser.email === currentUserEmailgetFromStorage
+  //   ) {
+  //     // this.logger.log('AUTENTICATED SUPER USER ', authenticatedUser)
+  //     // this.logger.log('AUTENTICATED SUPER USER EMAIL ', authenticatedUser.email)
+  //     // this.logger.log('AUTH SERVICE C. USER EMAIL ', authenticatedUser.email)
+  //     return true
+  //   }
+  //   return false
+  // }
 
   hasClickedGoToProjects() {
     this.project_bs.next(null)
