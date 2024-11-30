@@ -5,7 +5,8 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class SleekplanApiService {
- SLEEKPLAN_API_KEY = 'REDACTED_SECRET';
+ SLEEKPLAN_API_KEY = 'REDACTED_SECRET'; // The good one
+//  SLEEKPLAN_API_KEY = 'REDACTED_SECRET'; // for test
  SLEEKPLAN_API_URL = 'https://api.sleekplan.com/v1/updates';
 
   constructor(
@@ -19,7 +20,7 @@ export class SleekplanApiService {
   //   );
   // }
 
-  getNewChangelogCount(lastSeen: number) {
+  getNewChangelogCount() {
     const httpOptions = {
       headers: new HttpHeaders({ 
         Authorization: `Bearer ${this.SLEEKPLAN_API_KEY}`,
