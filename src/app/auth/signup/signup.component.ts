@@ -685,24 +685,7 @@ export class SignupComponent extends WidgetSetUpBaseComponent implements OnInit,
 
         if (!self.EXIST_STORED_ROUTE) {
           if (self.SKIP_WIZARD === false) {
-
-            self.logger.log('self.areActivePay: ', self.areActivePay);
-            // self.router.navigate(['/create-project']);
-
-            // self.createNewProject(signupResponse)
-
-            // self.router.navigate(['/create-new-project']);
-            // self.router.navigate(['/onboarding']);
-
-            if (self.areActivePay) {
-              self.router.navigate(['/onboarding']);
-
-            } else if (!self.areActivePay) {
-              // self.router.navigate(['/create-new-project']);
-              self.createNewProject(signupResponse)
-
-            }
-
+            self.router.navigate(['/verify-email-waiting']);
           } else {
             self.router.navigate(['/projects']);
           }
