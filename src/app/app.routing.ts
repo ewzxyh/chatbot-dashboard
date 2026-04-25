@@ -187,6 +187,12 @@ const routes: Routes = [
   },
   // { path: 'signup', component: SignupComponent },// now lazy
 
+  // Verify Email Waiting
+  {
+    path: 'verify-email-waiting',
+    loadChildren: () => import('app/verify-email-waiting/verify-email-waiting.module').then(m => m.VerifyEmailWaitingModule)
+  },
+
   // RESET PASSORD (i.e. page forgot psw & reset psw )
   {
     path: 'forgotpsw',

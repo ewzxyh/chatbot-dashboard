@@ -1,0 +1,48 @@
+<div class="verify-email-container">
+  <div class="verify-email-card">
+    <div class="verify-email-icon">
+      <i class="material-icons">mark_email_read</i>
+    </div>
+
+    <h2>Verifique seu email</h2>
+    <p class="subtitle">
+      Enviamos um código de verificação para
+      <strong>{{ userEmail }}</strong>
+    </p>
+
+    <div class="code-input-group">
+      <input
+        type="text"
+        [(ngModel)]="verificationCode"
+        placeholder="Digite o código"
+        maxlength="10"
+        (keyup.enter)="verifyCode()"
+        [disabled]="isLoading"
+        autofocus
+      />
+      <button
+        class="btn btn-primary verify-btn"
+        (click)="verifyCode()"
+        [disabled]="isLoading || !verificationCode"
+      >
+        <span *ngIf="!isLoading">Verificar</span>
+        <span *ngIf="isLoading" class="spinner-border spinner-border-sm"></span>
+      </button>
+    </div>
+
+    <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
+    <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
+
+    <div class="resend-section">
+      <p>Não recebeu o email?</p>
+      <button class="btn btn-link" (click)="resendEmail()" [disabled]="isResending">
+        <span *ngIf="!isResending">Reenviar email</span>
+        <span *ngIf="isResending">Enviando...</span>
+      </button>
+    </div>
+
+    <div class="back-section">
+      <a routerLink="/signup">Usou o email errado? Cadastre-se novamente</a>
+    </div>
+  </div>
+</div>
