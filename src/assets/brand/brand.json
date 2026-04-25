@@ -53,14 +53,14 @@
   },
   "WIDGET": {
     "LOGO_CHAT": "https://tiledesk.com/tiledesk-logo-white.png",
-    "POWERED_BY": "<a tabindex='-1' target='_blank href='https://www.tiledesk.com/?utm_source=widget'><img src='https://panel.tiledesk.com/v3/dashboard/assets/img/logos/tiledesk-solo_logo_new_gray.svg'/><span> Powered by Tiledesk</span></a>"
+    "POWERED_BY": "<a tabindex='-1' target='_blank' href='https://chatcase.com.br'><span>Powered by ChatCase</span></a>"
   },
   "CHAT": {
 
   },
   "CDS": {
     "META_TITLE": "ChatCase Design Studio",
-    "FAVICON_URL": "https://tiledesk.com/wp-content/uploads/2022/07/tiledesk_v13-300x300.png",
+    "FAVICON_URL": "assets/img/logos/favicon.ico",
     "INFO_MENU_ITEMS": [
       { "key": "FEEDBACK", "icon": "", "src": "", "status": "inactive" },
       { "key": "CHANGELOG", "icon": "", "src": "", "status": "inactive" }
