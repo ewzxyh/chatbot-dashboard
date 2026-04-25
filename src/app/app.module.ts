@@ -4,6 +4,7 @@ import { MarkerService } from './services/marker.service';
 import { LoggerService } from './services/logger/logger.service';
 import { HomeService } from './services/home.service';
 import { ActivitiesService } from './activities/activities-service/activities.service';
+import { OnboardingChecklistComponent } from './onboarding-checklist/onboarding-checklist.component';
 
 
 // import { LoggerInstance } from './services/logger/LoggerInstance';
@@ -733,7 +734,8 @@ const appInitializerFn = (appConfig: AppConfigService, brandService: BrandServic
     LogoutModalComponent,
     UnauthorizedToUpgradeComponent,
     HttpStatsDashboardComponent,
-    MaintenancePageComponent
+    MaintenancePageComponent,
+    OnboardingChecklistComponent
     // ModalAddContentComponent,
     // ModalChatbotReassignmentComponent,
     // ModalAddNamespaceComponent,

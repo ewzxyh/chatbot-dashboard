@@ -1,0 +1,33 @@
+<div class="checklist-overlay" *ngIf="isVisible" [class.minimized]="isMinimized">
+  <div class="checklist-header" (click)="toggleMinimize()">
+    <span class="checklist-title">
+      <i class="material-icons">rocket_launch</i>
+      Primeiros passos
+    </span>
+    <span class="checklist-progress">{{ completedCount }}/{{ items.length }}</span>
+    <div class="checklist-actions">
+      <button class="btn-icon" (click)="toggleMinimize(); $event.stopPropagation()">
+        <i class="material-icons">{{ isMinimized ? 'expand_less' : 'expand_more' }}</i>
+      </button>
+      <button class="btn-icon" (click)="dismiss(); $event.stopPropagation()">
+        <i class="material-icons">close</i>
+      </button>
+    </div>
+  </div>
+
+  <div class="checklist-body" *ngIf="!isMinimized">
+    <div class="progress-bar-container">
+      <div class="progress-bar-fill" [style.width.%]="(completedCount / items.length) * 100"></div>
+    </div>
+
+    <div *ngFor="let item of items" class="checklist-item" [class.completed]="item.completed">
+      <button class="check-btn" (click)="toggleItem(item)">
+        <i class="material-icons">{{ item.completed ? 'check_circle' : 'radio_button_unchecked' }}</i>
+      </button>
+      <span class="item-label" (click)="navigateTo(item)">
+        <i class="material-icons item-icon">{{ item.icon }}</i>
+        {{ item.label }}
+      </span>
+    </div>
+  </div>
+</div>
