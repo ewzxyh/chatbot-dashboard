@@ -60,6 +60,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
     route: string;
     LOGIN_PAGE: boolean;
+    user: any;
     // USER_ROLE: string;
     userIsSignedIn: boolean;
     IS_REQUEST_X_PANEL_ROUTE: boolean;
@@ -1019,6 +1020,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     getCurrentUserAndConnectToWs() {
         let isActivePAY = this.getPAYValue()
         this.auth.user_bs.subscribe((user) => {
+            this.user = user;
             this.logger.log('% »»» WebSocketJs WF - APP-COMPONENT - LoggedUser ', user);
 
             this.logger.log('% »»» WebSocketJs WF - APP-COMPONENT - isActivePAY ', isActivePAY);
