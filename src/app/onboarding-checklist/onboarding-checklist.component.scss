@@ -95,3 +95,14 @@
 }
 
 .item-icon { font-size: 18px; color: #888; }
+
+.dismiss-section {
+  text-align: center;
+  padding: 8px 16px 12px;
+  a {
+    font-size: 11px;
+    color: #bbb;
+    cursor: pointer;
+    &:hover { color: #999; text-decoration: underline; }
+  }
+}
