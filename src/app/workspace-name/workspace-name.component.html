@@ -1,0 +1,33 @@
+<div class="workspace-container">
+  <div class="workspace-card">
+    <div class="workspace-icon">
+      <i class="material-icons">business</i>
+    </div>
+
+    <h2>Crie seu workspace</h2>
+    <p class="subtitle">Como se chama sua empresa?</p>
+
+    <div class="name-input-group">
+      <input
+        type="text"
+        [(ngModel)]="workspaceName"
+        placeholder="Ex: Minha Empresa"
+        maxlength="100"
+        (keyup.enter)="createWorkspace()"
+        [disabled]="isLoading"
+        autofocus
+      />
+    </div>
+
+    <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
+
+    <button
+      class="btn btn-primary create-btn"
+      (click)="createWorkspace()"
+      [disabled]="isLoading || !workspaceName.trim()"
+    >
+      <span *ngIf="!isLoading">Criar workspace</span>
+      <span *ngIf="isLoading" class="spinner-border spinner-border-sm"></span>
+    </button>
+  </div>
+</div>

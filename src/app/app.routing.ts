@@ -193,6 +193,13 @@ const routes: Routes = [
     loadChildren: () => import('app/verify-email-waiting/verify-email-waiting.module').then(m => m.VerifyEmailWaitingModule)
   },
 
+  // Workspace Name
+  {
+    path: 'workspace-name',
+    loadChildren: () => import('app/workspace-name/workspace-name.module').then(m => m.WorkspaceNameModule),
+    canActivate: [AuthGuard]
+  },
+
   // RESET PASSORD (i.e. page forgot psw & reset psw )
   {
     path: 'forgotpsw',

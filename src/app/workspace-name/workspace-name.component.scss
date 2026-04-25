@@ -1,0 +1,47 @@
+.workspace-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.workspace-card {
+  background: white;
+  border-radius: 8px;
+  padding: 48px;
+  max-width: 460px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+.workspace-icon i {
+  font-size: 64px;
+  color: #1e88e5;
+  margin-bottom: 16px;
+}
+
+h2 { margin-bottom: 8px; font-size: 24px; color: #333; }
+.subtitle { color: #666; margin-bottom: 32px; }
+
+.name-input-group {
+  margin-bottom: 16px;
+  input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
+    &:focus { outline: none; border-color: #1e88e5; }
+  }
+}
+
+.create-btn { width: 100%; padding: 14px; font-size: 16px; margin-top: 8px; }
+
+.alert {
+  margin-bottom: 12px;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+}
