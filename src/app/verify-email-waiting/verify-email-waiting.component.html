@@ -15,7 +15,7 @@
         type="text"
         [(ngModel)]="verificationCode"
         placeholder="Digite o código"
-        maxlength="10"
+        maxlength="50"
         (keyup.enter)="verifyCode()"
         [disabled]="isLoading"
         autofocus
