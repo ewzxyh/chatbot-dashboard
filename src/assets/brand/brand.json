@@ -1,19 +1,19 @@
 {
 "DASHBOARD": {
-    "META_TITLE": "Tiledesk Design Studio",
+    "META_TITLE": "ChatCase",
     "FAVICON_URL": "assets/img/logos/favicon.ico",
     "CUSTOM_COMPANY_HOME_LOGO": false,
     "COMPANY_LOGO_PLANET": "assets/img/logos/tiledesk_planet.svg",
-    "privacy_policy_link_text": "Privacy Policy",
-    "privacy_policy_url": "https://www.tiledesk.com/privacy.html",
+    "privacy_policy_link_text": "Política de Privacidade",
+    "privacy_policy_url": "https://chatcase.com.br/privacidade",
     "display_terms_and_conditions_link": true,
-    "terms_and_conditions_url": "https://www.tiledesk.com/termsofservice.html",
+    "terms_and_conditions_url": "https://chatcase.com.br/termos",
     "display_dpa_link": true,
     "dpa_url": "https://tiledesk.com/dpa/",
     "contact_us_email": "redacted@example.invalid",
     "display-news-and-documentation": true,
     "display_google_auth_btn": false,
-    "display_forgot_pwd": false,
+    "display_forgot_pwd": true,
     "display_help_in_installation": true,
     "display_invite_teammate_btn": true,
     "display_contact_us_email": true,
@@ -45,7 +45,7 @@
     },
     "signup_page": {
       "display_terms_and_conditions_link": true, 
-      "display_social_proof_container":  true
+      "display_social_proof_container":  false
     },
     "handle_invitation_page": {
       "company_logo_45x45": "assets/img/logos/tiledesk-solo-logo.png"
@@ -59,7 +59,7 @@
 
   },
   "CDS": {
-    "META_TITLE": "Design Studio",
+    "META_TITLE": "ChatCase Design Studio",
     "FAVICON_URL": "https://tiledesk.com/wp-content/uploads/2022/07/tiledesk_v13-300x300.png",
     "INFO_MENU_ITEMS": [
       { "key": "FEEDBACK", "icon": "", "src": "", "status": "inactive" },
@@ -71,10 +71,10 @@
     "COMPANY_LOGO_NO_TEXT": "assets/img/logos/tiledesk_logo_no_text.svg",
     "BASE_LOGO": "assets/img/logos/tiledesk_logo.svg",
     "BASE_LOGO_NO_TEXT": "assets/img/logos/tiledesk_logo_no_text.svg",
-    "COMPANY_NAME": "Tiledesk",
-    "BRAND_NAME": "Tiledesk",
-    "COMPANY_SITE_NAME": "tiledesk.com",
-    "COMPANY_SITE_URL": "https://www.tiledesk.com",
+    "COMPANY_NAME": "ChatCase",
+    "BRAND_NAME": "ChatCase",
+    "COMPANY_SITE_NAME": "chatcase.com.br",
+    "COMPANY_SITE_URL": "https://chatcase.com.br",
     "CONTACT_US_EMAIL": "redacted@example.invalid",
     "CONTACT_SALES_EMAIL": "redacted@example.invalid",
     "BRAND_PRIMARY_COLOR": "#f0806f",
