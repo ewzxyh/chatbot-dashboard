@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { AuthService } from '../core/auth.service';
+import { FaqKbService } from '../services/faq-kb.service';
+import { UsersService } from '../services/users.service';
 
 interface ChecklistItem {
   id: string;
@@ -10,6 +12,7 @@ interface ChecklistItem {
   route: string;
   icon: string;
   completed: boolean;
+  autoDetect: boolean;
 }
 
 @Component({
@@ -29,7 +32,9 @@ export class OnboardingChecklistComponent implements OnInit, OnDestroy {
 
   constructor(
     private auth: AuthService,
-    private router: Router
+    private router: Router,
+    private faqKbService: FaqKbService,
+    private usersService: UsersService
   ) { }
 
   ngOnInit() {
@@ -47,6 +52,7 @@ export class OnboardingChecklistComponent implements OnInit, OnDestroy {
         }
 
         this.loadState();
+        this.checkAutoDetectedItems(project);
         this.isVisible = !this.isDismissed() && !this.allCompleted();
       });
   }
@@ -61,25 +67,61 @@ export class OnboardingChecklistComponent implements OnInit, OnDestroy {
     var completedIds: string[] = saved ? (JSON.parse(saved).completed || []) : [];
 
     this.items = [
-      { id: 'whatsapp', label: 'Conectar WhatsApp', route: '/project/' + this.projectId + '/integrations?name=whatsapp', icon: 'chat', completed: completedIds.indexOf('whatsapp') > -1 },
-      { id: 'flow', label: 'Criar primeiro fluxo', route: '/project/' + this.projectId + '/bots/my-chatbots/all', icon: 'account_tree', completed: completedIds.indexOf('flow') > -1 },
-      { id: 'welcome', label: 'Personalizar boas-vindas', route: '/project/' + this.projectId + '/widget-set-up', icon: 'waving_hand', completed: completedIds.indexOf('welcome') > -1 },
-      { id: 'hours', label: 'Definir horário de atendimento', route: '/project/' + this.projectId + '/hours', icon: 'schedule', completed: completedIds.indexOf('hours') > -1 },
-      { id: 'agent', label: 'Convidar um agente', route: '/project/' + this.projectId + '/users', icon: 'person_add', completed: completedIds.indexOf('agent') > -1 }
+      { id: 'whatsapp', label: 'Conectar WhatsApp', route: '/project/' + this.projectId + '/integrations?name=whatsapp', icon: 'chat', completed: completedIds.indexOf('whatsapp') > -1, autoDetect: false },
+      { id: 'flow', label: 'Criar primeiro fluxo', route: '/project/' + this.projectId + '/bots/my-chatbots/all', icon: 'account_tree', completed: false, autoDetect: true },
+      { id: 'welcome', label: 'Personalizar boas-vindas', route: '/project/' + this.projectId + '/widget-set-up', icon: 'waving_hand', completed: completedIds.indexOf('welcome') > -1, autoDetect: false },
+      { id: 'hours', label: 'Definir horário de atendimento', route: '/project/' + this.projectId + '/hours', icon: 'schedule', completed: false, autoDetect: true },
+      { id: 'agent', label: 'Convidar um agente', route: '/project/' + this.projectId + '/users', icon: 'person_add', completed: false, autoDetect: true }
     ];
 
+    this.updateCount();
+  }
+
+  private checkAutoDetectedItems(project: any) {
+    var hoursItem = this.items.find(i => i.id === 'hours');
+    if (hoursItem && project.activeOperatingHours) {
+      hoursItem.completed = true;
+    }
+
+    this.faqKbService.getFaqKbByProjectId().subscribe(
+      (bots: any[]) => {
+        var flowItem = this.items.find(i => i.id === 'flow');
+        if (flowItem && bots && bots.length > 0) {
+          flowItem.completed = true;
+          this.updateCount();
+        }
+      },
+      (err) => {}
+    );
+
+    this.usersService.getProjectUsersByProjectId().subscribe(
+      (users: any[]) => {
+        var agentItem = this.items.find(i => i.id === 'agent');
+        if (agentItem && users && users.length > 1) {
+          agentItem.completed = true;
+          this.updateCount();
+        }
+      },
+      (err) => {}
+    );
+
+    this.updateCount();
+  }
+
+  private updateCount() {
     this.completedCount = this.items.filter(i => i.completed).length;
   }
 
   private saveState() {
     var storageKey = 'checklist_' + this.projectId;
-    var completedIds = this.items.filter(i => i.completed).map(i => i.id);
+    var completedIds = this.items.filter(i => i.completed && !i.autoDetect).map(i => i.id);
     localStorage.setItem(storageKey, JSON.stringify({ completed: completedIds }));
   }
 
   toggleItem(item: ChecklistItem) {
+    if (item.autoDetect) return;
     item.completed = !item.completed;
-    this.completedCount = this.items.filter(i => i.completed).length;
+    this.updateCount();
     this.saveState();
     if (this.allCompleted()) this.isVisible = false;
   }
