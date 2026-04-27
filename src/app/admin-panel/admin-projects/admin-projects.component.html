@@ -1,0 +1,95 @@
+<div class="admin-filters">
+  <select [(ngModel)]="filterPlanType" (change)="page=0; loadProjects()">
+    <option value="">Todos os tipos</option>
+    <option value="free">Free</option>
+    <option value="payment">Pagos</option>
+  </select>
+  <select [(ngModel)]="filterPlanName" (change)="page=0; loadProjects()">
+    <option value="">Todos os planos</option>
+    <option value="Free">Free</option>
+    <option value="Starter">Starter</option>
+    <option value="Pro">Pro</option>
+    <option value="Business">Business</option>
+    <option value="Custom">Custom</option>
+  </select>
+</div>
+
+<div *ngIf="isLoading" style="text-align: center; padding: 40px;">Carregando...</div>
+
+<table *ngIf="!isLoading">
+  <thead>
+    <tr>
+      <th>Nome</th><th>Owner</th><th>Plano</th><th>Tipo</th><th>Contatos</th><th>Membros</th><th>Criado em</th><th>Acoes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let p of projects">
+      <td>{{ p.name }}</td>
+      <td>{{ p.ownerEmail }}</td>
+      <td>{{ planDisplayNames[p.profile?.name] || p.profile?.name }}</td>
+      <td><span [style.color]="p.profile?.type === 'payment' ? '#4caf50' : '#999'">{{ p.profile?.type }}</span></td>
+      <td>{{ p.profile?.quotes?.contacts || '—' }}</td>
+      <td>{{ p.profile?.agents || '—' }}</td>
+      <td>{{ p.createdAt | date:'dd/MM/yyyy' }}</td>
+      <td>
+        <button type="button" class="btn-action" (click)="openPlanModal(p)">Plano</button>
+        <button type="button" class="btn-action" (click)="openTrialModal(p)">Trial</button>
+        <button type="button" class="btn-action" (click)="openQuotasModal(p)">Quotas</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="admin-pagination">
+  <span>{{ totalCount }} projetos | Pagina {{ page + 1 }}</span>
+  <div>
+    <button type="button" [disabled]="page === 0" (click)="prevPage()">Anterior</button>
+    <button type="button" [disabled]="(page + 1) * limit >= totalCount" (click)="nextPage()">Proxima</button>
+  </div>
+</div>
+
+<div *ngIf="showPlanModal" class="modal-overlay" (click)="closeModals()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <h3>Alterar plano: {{ selectedProject?.name }}</h3>
+    <select [(ngModel)]="modalPlanKey">
+      <option value="">Selecione...</option>
+      <option value="free">Iniciante (Free)</option>
+      <option value="starter">Standard (Starter)</option>
+      <option value="pro">Pro</option>
+      <option value="business">Enterprise (Business)</option>
+    </select>
+    <div *ngIf="modalMessage" class="modal-message">{{ modalMessage }}</div>
+    <div class="modal-actions">
+      <button type="button" class="btn-secondary" (click)="closeModals()">Cancelar</button>
+      <button type="button" class="btn-primary" (click)="savePlan()" [disabled]="!modalPlanKey">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="showTrialModal" class="modal-overlay" (click)="closeModals()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <h3>Estender trial: {{ selectedProject?.name }}</h3>
+    <label>Dias de trial</label>
+    <input type="number" [(ngModel)]="modalTrialDays" min="1" max="365" />
+    <div *ngIf="modalMessage" class="modal-message">{{ modalMessage }}</div>
+    <div class="modal-actions">
+      <button type="button" class="btn-secondary" (click)="closeModals()">Cancelar</button>
+      <button type="button" class="btn-primary" (click)="saveTrial()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="showQuotasModal" class="modal-overlay" (click)="closeModals()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <h3>Override quotas: {{ selectedProject?.name }}</h3>
+    <div *ngFor="let field of ['contacts', 'platforms', 'agents', 'chatbots', 'kbs']">
+      <label>{{ field }}</label>
+      <input type="number" [(ngModel)]="modalQuotas[field]" min="0" />
+    </div>
+    <div *ngIf="modalMessage" class="modal-message">{{ modalMessage }}</div>
+    <div class="modal-actions">
+      <button type="button" class="btn-secondary" (click)="closeModals()">Cancelar</button>
+      <button type="button" class="btn-primary" (click)="saveQuotas()">Salvar</button>
+    </div>
+  </div>
+</div>

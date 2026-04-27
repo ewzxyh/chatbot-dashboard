@@ -264,6 +264,7 @@ export class SidebarComponent implements OnInit, AfterViewInit {
   isVisibleCNT: boolean;
   isVisibleINT: boolean;
   isVisibleAUT: boolean;
+  isSuperAdmin: boolean = false;
   storageBucket: string;
   baseUrl: string;
   default_dept_id: string;
@@ -374,6 +375,7 @@ export class SidebarComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
+    this.isSuperAdmin = localStorage.getItem('superadmin_role') === 'admin';
     this.getLoggedUser();
     this.getCurrentProjectProjectUsersProjectBots();
     this.translateChangeAvailabilitySuccessMsg();

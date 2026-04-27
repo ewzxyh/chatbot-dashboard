@@ -1,0 +1,36 @@
+<div class="admin-filters">
+  <select [(ngModel)]="filterStatus" (change)="onFilterChange()">
+    <option value="">Todos os status</option>
+    <option value="created">Criado</option>
+    <option value="AUTHORIZED">Autorizado</option>
+    <option value="active">Ativo</option>
+    <option value="canceled">Cancelado</option>
+  </select>
+</div>
+
+<div *ngIf="isLoading" style="text-align: center; padding: 40px;">Carregando...</div>
+
+<table *ngIf="!isLoading">
+  <thead>
+    <tr><th>Projeto</th><th>Plano</th><th>Valor</th><th>Tipo</th><th>Status</th><th>Mandate</th><th>Data</th></tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let p of payments">
+      <td>{{ p.projectName || p.project_id }}</td>
+      <td>{{ p.plan_name }}</td>
+      <td>{{ p.amount ? 'R$ ' + p.amount : '—' }}</td>
+      <td>{{ p.event_type }}</td>
+      <td><span [style.color]="p.status === 'AUTHORIZED' || p.status === 'active' ? '#4caf50' : (p.status === 'canceled' ? '#e53935' : '#999')">{{ p.status }}</span></td>
+      <td style="font-size: 11px;">{{ p.mandate_id ? (p.mandate_id | slice:0:12) + '...' : '—' }}</td>
+      <td>{{ p.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="admin-pagination">
+  <span>{{ totalCount }} pagamentos | Pagina {{ page + 1 }}</span>
+  <div>
+    <button type="button" [disabled]="page === 0" (click)="prevPage()">Anterior</button>
+    <button type="button" [disabled]="(page + 1) * limit >= totalCount" (click)="nextPage()">Proxima</button>
+  </div>
+</div>

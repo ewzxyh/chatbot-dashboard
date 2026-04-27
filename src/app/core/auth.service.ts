@@ -74,6 +74,10 @@ export class AuthService {
   public isChromeVerGreaterThan100: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null)
   public hasChangedProject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false)
 
+  get isSuperAdmin(): boolean {
+    return localStorage.getItem('superadmin_role') === 'admin';
+  }
+
   show_ExpiredSessionPopup: boolean
 
   _user_role: string
@@ -707,7 +711,11 @@ export class AuthService {
         // ASSIGN THE RETURNED TOKEN TO THE USER OBJECT
         user.token = jsonRes['token']
 
-        // const userRole = 
+          if (jsonRes['role']) {
+            localStorage.setItem('superadmin_role', jsonRes['role']);
+          }
+
+        // const userRole =
 
 
         // PUBLISH THE USER OBJECT
@@ -1294,6 +1302,7 @@ export class AuthService {
     localStorage.removeItem('user')
     localStorage.removeItem('project')
     localStorage.removeItem('role')
+    localStorage.removeItem('superadmin_role')
     localStorage.removeItem('current_project_user')
 
 
