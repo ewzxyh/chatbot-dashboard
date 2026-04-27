@@ -1,0 +1,221 @@
+<!-- Trial Banners -->
+<div class="trial-banner expired" *ngIf="trialExpired && !isLoading">
+  <i class="material-icons">warning</i>
+  <span>Seu periodo de teste expirou. Escolha um plano para continuar utilizando o ChatCase.</span>
+</div>
+
+<div class="trial-banner active" *ngIf="isTrialing && !trialExpired && !isLoading">
+  <i class="material-icons">info</i>
+  <span>Voce esta no periodo de teste. Restam <strong>{{ trialDaysLeft }}</strong> dias.</span>
+</div>
+
+<div class="pricing-container">
+
+  <!-- Header -->
+  <div class="pricing-header">
+    <h1>Escolha seu plano</h1>
+    <p class="pricing-subtitle">Selecione o plano ideal para o seu negocio</p>
+
+    <!-- Billing Toggle -->
+    <div class="billing-toggle">
+      <span [class.active]="!annualBilling">Mensal</span>
+      <label class="switch">
+        <input type="checkbox" [(ngModel)]="annualBilling" aria-label="Alternar entre cobranca mensal e anual">
+        <span class="slider"></span>
+      </label>
+      <span [class.active]="annualBilling">Anual</span>
+      <span class="save-badge" *ngIf="annualBilling">Economize 15%</span>
+    </div>
+  </div>
+
+  <!-- Skeleton Loading -->
+  <div class="plans-grid" *ngIf="isLoading">
+    <div class="plan-card skeleton" *ngFor="let i of [1,2,3,4,5]">
+      <div class="skeleton-badge"></div>
+      <div class="skeleton-title"></div>
+      <div class="skeleton-price"></div>
+      <div class="skeleton-line" *ngFor="let j of [1,2,3,4,5]"></div>
+      <div class="skeleton-button"></div>
+    </div>
+  </div>
+
+  <!-- Error Banner -->
+  <div class="error-banner" *ngIf="errorMessage && !isLoading">
+    <i class="material-icons">error_outline</i>
+    <span>{{ errorMessage }}</span>
+    <button type="button" class="btn-retry" (click)="loadData()">Tentar novamente</button>
+  </div>
+
+  <!-- Plans Grid -->
+  <div class="plans-grid" *ngIf="!isLoading && plans.length > 0">
+
+    <div
+      class="plan-card"
+      *ngFor="let plan of plans"
+      [class.recommended]="plan.name?.toLowerCase() === 'pro'"
+      [class.current]="isCurrentPlan(plan)"
+    >
+      <!-- Badge -->
+      <div class="plan-badge recommended-badge" *ngIf="plan.name?.toLowerCase() === 'pro' && !isCurrentPlan(plan)">
+        Recomendado
+      </div>
+      <div class="plan-badge current-badge" *ngIf="isCurrentPlan(plan) && !isTrialing">
+        Plano Atual
+      </div>
+      <div class="plan-badge trial-badge" *ngIf="isCurrentPlan(plan) && isTrialing">
+        Em teste
+      </div>
+
+      <!-- Plan Name -->
+      <h2 class="plan-name">{{ plan.displayName || plan.name }}</h2>
+
+      <!-- Price -->
+      <div class="plan-price" *ngIf="plan.monthlyPrice !== undefined">
+        <span class="currency">R$</span>
+        <span class="amount">{{ getMonthlyEquivalent(plan) }}</span>
+        <span class="period">/mes</span>
+      </div>
+      <div class="plan-price-note" *ngIf="annualBilling && plan.annualPrice">
+        Cobrado R$ {{ getPrice(plan) }}/ano
+      </div>
+
+      <!-- Features -->
+      <ul class="feature-list">
+        <li *ngFor="let feature of getFeatureList(plan)">
+          <i class="material-icons">check</i>
+          <span>{{ feature }}</span>
+        </li>
+      </ul>
+
+      <!-- Action Button -->
+      <button
+        type="button"
+        class="btn-plan"
+        [class.btn-primary]="plan.name?.toLowerCase() === 'pro'"
+        [class.btn-secondary]="plan.name?.toLowerCase() !== 'pro'"
+        [class.btn-current]="isCurrentPlan(plan) && !isTrialing"
+        [disabled]="!canSubscribe(plan) || isSubscribing"
+        (click)="subscribePlan(plan)"
+      >
+        <span *ngIf="isCurrentPlan(plan) && !isTrialing">Plano Atual</span>
+        <span *ngIf="isCurrentPlan(plan) && isTrialing">Assinar agora</span>
+        <span *ngIf="!isCurrentPlan(plan) && plan.name?.toLowerCase() !== 'free'">Escolher plano</span>
+        <span *ngIf="plan.name?.toLowerCase() === 'free' && !isCurrentPlan(plan)">Plano Gratuito</span>
+      </button>
+
+      <!-- Owner Warning -->
+      <p class="role-warning" *ngIf="userRole && !isOwner()">
+        Apenas o proprietario pode alterar o plano.
+      </p>
+    </div>
+
+    <!-- Scale+ Card -->
+    <div class="plan-card scale-plus">
+      <h2 class="plan-name">Scale+</h2>
+      <div class="plan-price">
+        <span class="custom-price">Sob consulta</span>
+      </div>
+      <ul class="feature-list">
+        <li><i class="material-icons">check</i><span>Tudo do plano anterior</span></li>
+        <li><i class="material-icons">check</i><span>Agentes ilimitados</span></li>
+        <li><i class="material-icons">check</i><span>Contatos ilimitados</span></li>
+        <li><i class="material-icons">check</i><span>Suporte prioritario</span></li>
+        <li><i class="material-icons">check</i><span>Gerente de conta dedicado</span></li>
+        <li><i class="material-icons">check</i><span>SLA personalizado</span></li>
+      </ul>
+      <a
+        class="btn-plan btn-whatsapp"
+        [href]="getScaleWhatsAppLink()"
+        target="_blank"
+        rel="noopener"
+      >
+        <i class="material-icons">chat</i>
+        Falar no WhatsApp
+      </a>
+    </div>
+  </div>
+
+  <!-- Usage Section -->
+  <div class="usage-section" *ngIf="projectStatus?.usage && !isLoading">
+    <h2>Uso atual</h2>
+    <div class="usage-bars">
+
+      <div class="usage-item" *ngIf="projectStatus.usage.contacts">
+        <div class="usage-label">
+          <span>Contatos</span>
+          <span>{{ projectStatus.usage.contacts.current }} / {{ projectStatus.usage.contacts.limit === -1 ? 'Ilimitado' : projectStatus.usage.contacts.limit }}</span>
+        </div>
+        <div class="usage-bar" *ngIf="projectStatus.usage.contacts.limit > 0">
+          <div
+            class="usage-fill"
+            [style.width.%]="(projectStatus.usage.contacts.current / projectStatus.usage.contacts.limit) * 100"
+            [class.warning]="(projectStatus.usage.contacts.current / projectStatus.usage.contacts.limit) >= 0.75 && (projectStatus.usage.contacts.current / projectStatus.usage.contacts.limit) < 0.95"
+            [class.danger]="(projectStatus.usage.contacts.current / projectStatus.usage.contacts.limit) >= 0.95"
+          ></div>
+        </div>
+      </div>
+
+      <div class="usage-item" *ngIf="projectStatus.usage.platforms">
+        <div class="usage-label">
+          <span>Plataformas</span>
+          <span>{{ projectStatus.usage.platforms.current }} / {{ projectStatus.usage.platforms.limit === -1 ? 'Ilimitado' : projectStatus.usage.platforms.limit }}</span>
+        </div>
+        <div class="usage-bar" *ngIf="projectStatus.usage.platforms.limit > 0">
+          <div
+            class="usage-fill"
+            [style.width.%]="(projectStatus.usage.platforms.current / projectStatus.usage.platforms.limit) * 100"
+            [class.warning]="(projectStatus.usage.platforms.current / projectStatus.usage.platforms.limit) >= 0.75 && (projectStatus.usage.platforms.current / projectStatus.usage.platforms.limit) < 0.95"
+            [class.danger]="(projectStatus.usage.platforms.current / projectStatus.usage.platforms.limit) >= 0.95"
+          ></div>
+        </div>
+      </div>
+
+      <div class="usage-item" *ngIf="projectStatus.usage.agents">
+        <div class="usage-label">
+          <span>Agentes</span>
+          <span>{{ projectStatus.usage.agents.current }} / {{ projectStatus.usage.agents.limit === -1 ? 'Ilimitado' : projectStatus.usage.agents.limit }}</span>
+        </div>
+        <div class="usage-bar" *ngIf="projectStatus.usage.agents.limit > 0">
+          <div
+            class="usage-fill"
+            [style.width.%]="(projectStatus.usage.agents.current / projectStatus.usage.agents.limit) * 100"
+            [class.warning]="(projectStatus.usage.agents.current / projectStatus.usage.agents.limit) >= 0.75 && (projectStatus.usage.agents.current / projectStatus.usage.agents.limit) < 0.95"
+            [class.danger]="(projectStatus.usage.agents.current / projectStatus.usage.agents.limit) >= 0.95"
+          ></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Polling Overlay -->
+  <div class="polling-overlay" *ngIf="isPolling">
+    <div class="polling-card">
+      <div class="spinner"></div>
+      <h3>Aguardando confirmacao do pagamento...</h3>
+      <p>Complete o pagamento na aba aberta e aguarde a confirmacao.</p>
+      <button type="button" class="btn-check-payment" (click)="checkPayment()">Verificar pagamento</button>
+    </div>
+  </div>
+
+  <!-- Cancel Modal -->
+  <div class="modal-overlay" *ngIf="showCancelModal" (click)="showCancelModal = false">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <h3>Cancelar assinatura</h3>
+      <p>Tem certeza que deseja cancelar sua assinatura? Voce perdera acesso aos recursos premium ao final do periodo atual.</p>
+      <div class="modal-actions">
+        <button type="button" class="btn-modal-cancel" (click)="showCancelModal = false" [disabled]="isCanceling">Voltar</button>
+        <button type="button" class="btn-modal-confirm" (click)="cancelSubscription()" [disabled]="isCanceling">
+          <span *ngIf="!isCanceling">Confirmar cancelamento</span>
+          <span *ngIf="isCanceling">Cancelando...</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cancel link for active subscriptions -->
+  <div class="cancel-section" *ngIf="projectStatus && projectStatus.type === 'payment' && projectStatus.mandateId && isOwner() && !isLoading">
+    <button type="button" class="btn-cancel-link" (click)="showCancelModal = true">Cancelar assinatura</button>
+  </div>
+
+</div>

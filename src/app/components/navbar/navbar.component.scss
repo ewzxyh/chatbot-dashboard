@@ -1856,6 +1856,30 @@ button.close.custom-hover:hover {
   padding: 6px 15px !important;
 }
 
+.plan-badge-li {
+  display: flex;
+  align-items: center;
+  margin-right: 8px;
+}
+
+.plan-badge-navbar {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #e3f2fd;
+  color: #1565c0;
+  cursor: default;
+  white-space: nowrap;
+}
+
+.plan-badge-enterprise {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
 .simulate-visitor-btn {
   background: transparent;
   border: unset;

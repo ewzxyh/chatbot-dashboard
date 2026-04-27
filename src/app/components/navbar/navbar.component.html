@@ -146,15 +146,22 @@
 
 
         <!--  ------------------------------------------------ -->
-        <!--  UPGRADE BTN (PROFILE TYPE = FREE)  -->
+        <!--  PLAN BADGE / UPGRADE BTN  -->
         <!--  ------------------------------------------------ -->
-        <ng-container *ngIf="isVisiblePay">
-          <li id="upgrade-plan-btn-wpr" *ngIf="project && prjct_profile_type === 'free'">
+        <ng-container *ngIf="isVisiblePay && project">
+          <!-- Free plan: show upgrade button -->
+          <li id="upgrade-plan-btn-wpr" *ngIf="prjct_profile_type === 'free'">
             <a class="upgrade-btn-trial-expired" (click)="goToPricingPlanFree()">
               <button class="btn btn-success-no-boxshadow upgrade-plan-btn">
                 {{ "Pricing.UpgradePlan" | translate }}
               </button>
             </a>
+          </li>
+          <!-- Paid plan: show plan name badge -->
+          <li id="plan-badge-wpr" *ngIf="prjct_profile_type === 'payment'" class="plan-badge-li">
+            <span class="plan-badge-navbar" [ngClass]="{'plan-badge-enterprise': profile_name === 'Business' || profile_name === 'Custom'}">
+              {{ getPlanDisplayName() }}
+            </span>
           </li>
         </ng-container>
 
@@ -372,6 +379,100 @@
                         </div>
                       </div>
                     </div>
+
+                    <!-- --------------------------------------------- -->
+                    <!-- Contatos -->
+                    <!-- --------------------------------------------- -->
+                    <div aria-label="Usage limit for Contacts" class="quota-section-main">
+                      <div class="quota-container-wpr">
+                        <div class="quota-container">
+                          <div class="quota-left-column-wpr">
+                            <div class="quota-title-wpr">
+                              <h2 class="quota-title">Contatos</h2>
+                            </div>
+                          </div>
+                          <div class="quota-right-column-wpr">
+                            <div class="quota-count-and-limit-wpr">
+                              <p class="quota-right-title">Total de contatos</p>
+                              <div class="quota-limit-wpr">
+                                <p class="quota-limit">{{contacts_count | number:'1.0-0'}} /&nbsp;</p>
+                                <p class="quota-limit">{{contacts_limit | number:'1.0-0'}}</p>
+                              </div>
+                            </div>
+                            <div class="quota-pie" style="width: 50px; height: 50px;">
+                              <mat-progress-spinner class="example-margin" [strokeWidth]="5" [diameter]="50"
+                                [color]="'primary'" [mode]="'determinate'" [value]="contacts_perc"
+                                [ngClass]="{'mat-progress-spinner-conversations-runned-out': contacts_perc >= 100}">
+                              </mat-progress-spinner>
+                              <div class="quota-pie-label">{{ contacts_perc }}%</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- --------------------------------------------- -->
+                    <!-- Plataformas -->
+                    <!-- --------------------------------------------- -->
+                    <div aria-label="Usage limit for Platforms" class="quota-section-main">
+                      <div class="quota-container-wpr">
+                        <div class="quota-container">
+                          <div class="quota-left-column-wpr">
+                            <div class="quota-title-wpr">
+                              <h2 class="quota-title">Plataformas</h2>
+                            </div>
+                          </div>
+                          <div class="quota-right-column-wpr">
+                            <div class="quota-count-and-limit-wpr">
+                              <p class="quota-right-title">Total de plataformas</p>
+                              <div class="quota-limit-wpr">
+                                <p class="quota-limit">{{platforms_count | number:'1.0-0'}} /&nbsp;</p>
+                                <p class="quota-limit">{{platforms_limit | number:'1.0-0'}}</p>
+                              </div>
+                            </div>
+                            <div class="quota-pie" style="width: 50px; height: 50px;">
+                              <mat-progress-spinner class="example-margin" [strokeWidth]="5" [diameter]="50"
+                                [color]="'primary'" [mode]="'determinate'" [value]="platforms_perc"
+                                [ngClass]="{'mat-progress-spinner-conversations-runned-out': platforms_perc >= 100}">
+                              </mat-progress-spinner>
+                              <div class="quota-pie-label">{{ platforms_perc }}%</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- --------------------------------------------- -->
+                    <!-- Membros -->
+                    <!-- --------------------------------------------- -->
+                    <div aria-label="Usage limit for Members" class="quota-section-main last">
+                      <div class="quota-container-wpr">
+                        <div class="quota-container">
+                          <div class="quota-left-column-wpr">
+                            <div class="quota-title-wpr">
+                              <h2 class="quota-title">Membros</h2>
+                            </div>
+                          </div>
+                          <div class="quota-right-column-wpr">
+                            <div class="quota-count-and-limit-wpr">
+                              <p class="quota-right-title">Total de membros</p>
+                              <div class="quota-limit-wpr">
+                                <p class="quota-limit">{{members_count | number:'1.0-0'}} /&nbsp;</p>
+                                <p class="quota-limit">{{members_limit | number:'1.0-0'}}</p>
+                              </div>
+                            </div>
+                            <div class="quota-pie" style="width: 50px; height: 50px;">
+                              <mat-progress-spinner class="example-margin" [strokeWidth]="5" [diameter]="50"
+                                [color]="'primary'" [mode]="'determinate'" [value]="members_perc"
+                                [ngClass]="{'mat-progress-spinner-conversations-runned-out': members_perc >= 100}">
+                              </mat-progress-spinner>
+                              <div class="quota-pie-label">{{ members_perc }}%</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
                     <!-- *ngIf="quotaResetEndDateLabel" -->
                     <div class="quota-resets" >
                       <!-- {{ 'QuotaResetsOn' | translate: { reset_date: quotaResetEndDateLabel } }} -->
@@ -384,9 +485,9 @@
                 <!-- ------------ -->
 
                 <div class="quotas-upgrade-btn-wpr">
-                  <button *ngIf="isVisiblePay" class="btn upgrade--btn" (click)="goToPricing()">
+                  <button *ngIf="isVisiblePay && canUpgradePlan() && USER_ROLE === 'owner'" class="btn upgrade--btn" (click)="goToPricing()">
                     <span class="material-icons-outlined">bolt</span>
-                    {{ "Pricing.UpgradePlan" | translate }}
+                    {{ prjct_profile_type === 'free' ? ('Pricing.UpgradePlan' | translate) : 'Fazer upgrade' }}
                   </button>
                 </div>
 

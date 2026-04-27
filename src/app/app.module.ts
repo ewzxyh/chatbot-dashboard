@@ -148,6 +148,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 // import { HoursStaticComponent } from './static-pages/hours-static/hours-static.component'; // now lazy
 // import { DepartmentsStaticComponent } from './static-pages/departments-static/departments-static.component'; // now lazy
 import { ProjectPlanService } from './services/project-plan.service';
+import { CasepayService } from './services/casepay.service';
+import { AdminService } from './services/admin.service';
+import { SuperAdminGuard } from './core/super-admin.guard';
 import { TriggerComponent } from './trigger/trigger.component';
 import { BasetriggerComponent } from './trigger/basetrigger/basetrigger.component';
 import { TriggerService } from './services/trigger.service';
@@ -852,6 +855,9 @@ const appInitializerFn = (appConfig: AppConfigService, brandService: BrandServic
     WidgetService,
     WebhookService,
     ProjectPlanService,
+    CasepayService,
+    AdminService,
+    SuperAdminGuard,
     AnalyticsService,
     HttpClientModule,
     TriggerService,

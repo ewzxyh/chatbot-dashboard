@@ -9,6 +9,7 @@ import { UserProfileComponent } from './user-profile/user-profile.component';
 
 import { AuthGuard } from './core/auth.guard';
 import { AdminGuard } from './core/admin.guard';
+import { SuperAdminGuard } from './core/super-admin.guard';
 import { ProjectProfileGuard } from './core/project-profile.guard';
 import { PendingChangesGuard } from './core/pending-changes.guard';
 import { CoreModule } from './core/core.module';
@@ -165,6 +166,13 @@ import { MaintenancePageComponent } from './auth/maintenance-page/maintenance-pa
 
 const routes: Routes = [
 
+  // Super Admin Panel
+  {
+    path: 'admin',
+    loadChildren: () => import('app/admin-panel/admin-panel.module').then(m => m.AdminPanelModule),
+    canActivate: [AuthGuard, SuperAdminGuard],
+  },
+
   // no-auth page
   {
     // path: 'project/:projectid/wsrequests-no-auth',
@@ -263,28 +271,25 @@ const routes: Routes = [
   // { path: 'project/:projectid/home', component: HomeComponent, canActivate: [AuthGuard] }, // now Lazy
 
 
-  // Pricing 
+  // Pricing (CasePay)
   {
     path: 'project/:projectid/pricing',
-    loadChildren: () => import('app/pricing/pricing.module').then(m => m.PricingModule),
-    canActivate: [AuthGuard, RoleGuard],
-    data: [{ roles: ['owner'] }]
+    loadChildren: () => import('app/casepay-pricing/casepay-pricing.module').then(m => m.CasepayPricingModule),
+    canActivate: [AuthGuard],
   },
 
-  // Pricing  trial expired
+  // Pricing trial expired (CasePay)
   {
     path: 'project/:projectid/pricing/te',
-    loadChildren: () => import('app/pricing/pricing.module').then(m => m.PricingModule),
-    canActivate: [AuthGuard, RoleGuard],
-    data: [{ roles: ['owner'] }]
+    loadChildren: () => import('app/casepay-pricing/casepay-pricing.module').then(m => m.CasepayPricingModule),
+    canActivate: [AuthGuard],
   },
 
-  // { path: 'project/:projectid/pricing', component: PricingComponent, canActivate: [AuthGuard] }, // now Lazy
+  // Chat panel pricing (CasePay)
   {
     path: 'project/:projectid/chat-pricing',
-    loadChildren: () => import('app/pricing/pricing.module').then(m => m.PricingModule),
-    canActivate: [AuthGuard, RoleGuard],
-    data: [{ roles: ['owner'] }]
+    loadChildren: () => import('app/casepay-pricing/casepay-pricing.module').then(m => m.CasepayPricingModule),
+    canActivate: [AuthGuard],
   },
   // { path: 'project/:projectid/chat-pricing', component: PricingComponent, canActivate: [AuthGuard] }, // now Lazy
   {

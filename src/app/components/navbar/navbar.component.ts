@@ -51,6 +51,7 @@ import { browserRefresh } from 'app/app.component';
 import { PERMISSIONS } from 'app/utils/permissions.constants';
 import { RolesService } from 'app/services/roles.service';
 import { NavigationService } from 'app/services/navigation.service';
+import { CasepayService } from '../../services/casepay.service';
 
 const swal = require('sweetalert');
 const Swal = require('sweetalert2')
@@ -201,6 +202,18 @@ export class NavbarComponent extends PricingBaseComponent implements OnInit, Aft
   voiceRunnedOut: boolean = false;
   diplayVXMLVoiceQuota: boolean;
 
+  contacts_count: number = 0;
+  contacts_limit: number = 0;
+  contacts_perc: number = 0;
+
+  platforms_count: number = 0;
+  platforms_limit: number = 0;
+  platforms_perc: number = 0;
+
+  members_count: number = 0;
+  members_limit: number = 0;
+  members_perc: number = 0;
+
   requestsPieStroke: string;
   requestsPieGreenStroke: boolean;
   requestsPieYellowStroke: boolean;
@@ -270,7 +283,8 @@ export class NavbarComponent extends PricingBaseComponent implements OnInit, Aft
     private sleekplanService: SleekplanService,
     public rolesService: RolesService,
     private navSvc: NavigationService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private casepayService: CasepayService
   ) {
 
     super(prjctPlanService, notifyService);
@@ -922,6 +936,24 @@ export class NavbarComponent extends PricingBaseComponent implements OnInit, Aft
     if (currentURL.indexOf('/home') !== -1) {
       this.logger.log('[NAVBAR] - currentURL 2 ', currentURL);
       // this.quotesService.hasOpenedNavbarQuotasMenu()
+    }
+
+    if (this.projectId) {
+      this.casepayService.getStatus(this.projectId).subscribe((status: any) => {
+        if (status && status.usage) {
+          this.contacts_count = status.usage.contacts ? status.usage.contacts.current : 0;
+          this.contacts_limit = status.usage.contacts ? status.usage.contacts.limit : 0;
+          this.contacts_perc = this.contacts_limit > 0 ? Math.min(100, Math.floor((this.contacts_count / this.contacts_limit) * 100)) : 0;
+
+          this.platforms_count = status.usage.platforms ? status.usage.platforms.current : 0;
+          this.platforms_limit = status.usage.platforms ? status.usage.platforms.limit : 0;
+          this.platforms_perc = this.platforms_limit > 0 ? Math.min(100, Math.floor((this.platforms_count / this.platforms_limit) * 100)) : 0;
+
+          this.members_count = status.usage.agents ? status.usage.agents.current : 0;
+          this.members_limit = status.usage.agents ? status.usage.agents.limit : 0;
+          this.members_perc = this.members_limit > 0 ? Math.min(100, Math.floor((this.members_count / this.members_limit) * 100)) : 0;
+        }
+      });
     }
   }
 
@@ -2829,6 +2861,22 @@ export class NavbarComponent extends PricingBaseComponent implements OnInit, Aft
         this.newChangelogCount = true;
       }
     );
+  }
+
+  getPlanDisplayName(): string {
+    const displayNames = {
+      'Starter': 'Standard',
+      'Pro': 'Pro',
+      'Business': 'Enterprise',
+      'Custom': 'Custom'
+    };
+    return displayNames[this.profile_name] || this.profile_name || 'Plano';
+  }
+
+  canUpgradePlan(): boolean {
+    if (this.prjct_profile_type === 'free') return true;
+    if (this.profile_name === 'Business' || this.profile_name === 'Custom') return false;
+    return true;
   }
 
   // changeThemeColor() {
