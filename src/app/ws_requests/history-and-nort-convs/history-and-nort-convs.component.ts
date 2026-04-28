@@ -2318,9 +2318,9 @@ export class HistoryAndNortConvsComponent extends WsSharedComponent implements O
 
       if (this.USER_ROLE === 'owner') {
         if (this.prjct_profile_type === 'payment' && this.subscription_is_active === false) {
-          if (this.profile_name !== PLAN_NAME.C && this.profile_name !== PLAN_NAME.F) {
+          if (this.profile_name !== PLAN_NAME.C && this.profile_name !== PLAN_NAME.F && this.profile_name !== PLAN_NAME.E && this.profile_name !== PLAN_NAME.EE) {
             this.notify.displaySubscripionHasExpiredModal(true, this.profile_name, this.subscription_end_date);
-          } else if (this.profile_name === PLAN_NAME.C || this.profile_name === PLAN_NAME.F) {
+          } else if (this.profile_name === PLAN_NAME.C || this.profile_name === PLAN_NAME.F || this.profile_name === PLAN_NAME.E || this.profile_name === PLAN_NAME.EE) {
             this.notify.displayEnterprisePlanHasExpiredModal(true, this.profile_name, this.subscription_end_date);
           }
 
@@ -3420,8 +3420,6 @@ export class HistoryAndNortConvsComponent extends WsSharedComponent implements O
       return false
 
     } else if ((this.profile_name === PLAN_NAME.D) ||
-      (this.profile_name === PLAN_NAME.E && this.subscription_is_active === false) ||
-      (this.profile_name === PLAN_NAME.EE && this.subscription_is_active === false) ||
       (this.profile_name === PLAN_NAME.F && this.subscription_is_active === false) ||
       (this.profile_name === 'Sandbox' && this.trial_expired === true)) {
       this.notify._displayContactUsModal(true, 'upgrade_plan');
@@ -3443,8 +3441,6 @@ export class HistoryAndNortConvsComponent extends WsSharedComponent implements O
         return false
       }
     } else if ((this.profile_name === PLAN_NAME.D) ||
-      (this.profile_name === PLAN_NAME.E && this.subscription_is_active === false) ||
-      (this.profile_name === PLAN_NAME.EE && this.subscription_is_active === false) ||
       (this.profile_name === PLAN_NAME.F && this.subscription_is_active === false) ||
       (this.profile_name === 'Sandbox' && this.trial_expired === true)) {
 

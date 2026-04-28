@@ -2727,9 +2727,7 @@ _presentDialogImportContents() {
         } else if (
           this.profile_name === PLAN_NAME.A ||
           this.profile_name === PLAN_NAME.B ||
-          this.profile_name === PLAN_NAME.D ||
-          this.profile_name === PLAN_NAME.E ||
-          this.profile_name === PLAN_NAME.EE
+          this.profile_name === PLAN_NAME.D
 
         ) {
           this.logger.log('[KNOWLEDGE-BASES-COMP] goToPricing HERE 4 ')

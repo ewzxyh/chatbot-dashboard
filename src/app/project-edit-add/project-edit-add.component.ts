@@ -1687,7 +1687,7 @@ export class ProjectEditAddComponent implements OnInit, OnDestroy, AfterViewInit
     this.logger.log('goToCustomizeNotificationEmailPage profile_name ', this.profile_name)
 
     if (this.USER_ROLE === 'owner' || this.USER_ROLE === 'admin') {
-      if (this.profile_name === PLAN_NAME.C || this.profile_name === PLAN_NAME.F) {
+      if (this.profile_name === PLAN_NAME.C || this.profile_name === PLAN_NAME.F || this.profile_name === PLAN_NAME.E || this.profile_name === PLAN_NAME.EE) {
         // this.logger.log('goToCustomizeNotificationEmailPage HERE 1 ')
         if (this.subscription_is_active === true) {
           // this.logger.log('goToCustomizeNotificationEmailPage HERE 2 ')
@@ -1711,8 +1711,6 @@ export class ProjectEditAddComponent implements OnInit, OnDestroy, AfterViewInit
         this.profile_name === PLAN_NAME.A ||
         this.profile_name === PLAN_NAME.B ||
         this.profile_name === PLAN_NAME.D ||
-        this.profile_name === PLAN_NAME.E ||
-        this.profile_name === PLAN_NAME.EE ||
         this.prjct_profile_type === 'free'
       ) {
         // this.logger.log('goToCustomizeNotificationEmailPage HERE 4 ')
@@ -1727,7 +1725,7 @@ export class ProjectEditAddComponent implements OnInit, OnDestroy, AfterViewInit
 
   goToManageEmailSettings() {
     if (this.USER_ROLE === 'owner') {
-      if (this.profile_name === PLAN_NAME.C || this.profile_name === PLAN_NAME.F) {
+      if (this.profile_name === PLAN_NAME.C || this.profile_name === PLAN_NAME.F || this.profile_name === PLAN_NAME.E || this.profile_name === PLAN_NAME.EE) {
         // this.logger.log('goToManageEmailSettings HERE 1 ')
         if (this.subscription_is_active === true) {
           // this.logger.log('goToManageEmailSettings HERE 2 ')
@@ -1756,8 +1754,6 @@ export class ProjectEditAddComponent implements OnInit, OnDestroy, AfterViewInit
         this.profile_name === PLAN_NAME.A ||
         this.profile_name === PLAN_NAME.B ||
         this.profile_name === PLAN_NAME.D ||
-        this.profile_name === PLAN_NAME.E ||
-        this.profile_name === PLAN_NAME.EE ||
         this.prjct_profile_type === 'free'
       ) {
         // this.logger.log('goToManageEmailSettings HERE 4 ')
@@ -1801,13 +1797,13 @@ export class ProjectEditAddComponent implements OnInit, OnDestroy, AfterViewInit
         if (this.isVisiblePaymentTab) {
           if (this.USER_ROLE === 'owner') {
             if (this.prjct_profile_type === 'payment' && this.subscription_is_active === true) {
-              if (this.profile_name === PLAN_NAME.A || this.profile_name === PLAN_NAME.B || this.profile_name === PLAN_NAME.D || this.profile_name === PLAN_NAME.E || this.profile_name === PLAN_NAME.EE) {
+              if (this.profile_name === PLAN_NAME.A || this.profile_name === PLAN_NAME.B || this.profile_name === PLAN_NAME.D) {
                 // this.logger.log('HERE Y')
                 this.notify._displayContactUsModal(true, 'upgrade_plan');
               }
             } else if (this.prjct_profile_type === 'payment' && this.subscription_is_active === false) {
 
-              if (this.profile_name === PLAN_NAME.A || this.profile_name === PLAN_NAME.B || this.profile_name === PLAN_NAME.D || this.profile_name === PLAN_NAME.E || this.profile_name === PLAN_NAME.EE) {
+              if (this.profile_name === PLAN_NAME.A || this.profile_name === PLAN_NAME.B || this.profile_name === PLAN_NAME.D) {
                 // this.logger.log('HERE Y')
                 this.notify.displaySubscripionHasExpiredModal(true, this.profile_name, this.subscription_end_date)
               }
@@ -1855,13 +1851,13 @@ export class ProjectEditAddComponent implements OnInit, OnDestroy, AfterViewInit
         if (this.isVisiblePaymentTab) {
           if (this.USER_ROLE === 'owner') {
             if (this.prjct_profile_type === 'payment' && this.subscription_is_active === true) {
-              if (this.profile_name === PLAN_NAME.A || this.profile_name === PLAN_NAME.B || this.profile_name === PLAN_NAME.D || this.profile_name === PLAN_NAME.E || this.profile_name === PLAN_NAME.EE) {
+              if (this.profile_name === PLAN_NAME.A || this.profile_name === PLAN_NAME.B || this.profile_name === PLAN_NAME.D) {
                 // this.logger.log('HERE Y')
                 this.notify._displayContactUsModal(true, 'upgrade_plan');
               }
             } else if (this.prjct_profile_type === 'payment' && this.subscription_is_active === false) {
 
-              if (this.profile_name === PLAN_NAME.A || this.profile_name === PLAN_NAME.B || this.profile_name === PLAN_NAME.D || this.profile_name === PLAN_NAME.E || this.profile_name === PLAN_NAME.EE) {
+              if (this.profile_name === PLAN_NAME.A || this.profile_name === PLAN_NAME.B || this.profile_name === PLAN_NAME.D) {
                 // this.logger.log('HERE Y')
                 this.notify.displaySubscripionHasExpiredModal(true, this.profile_name, this.subscription_end_date)
               }
@@ -4456,9 +4452,9 @@ export class ProjectEditAddComponent implements OnInit, OnDestroy, AfterViewInit
 
             if (this.USER_ROLE === 'owner') {
               if (this.prjct_profile_type === 'payment' && this.subscription_is_active === false) {
-                if (this.profile_name !== PLAN_NAME.C && this.profile_name !== PLAN_NAME.F) {
+                if (this.profile_name !== PLAN_NAME.C && this.profile_name !== PLAN_NAME.F && this.profile_name !== PLAN_NAME.E && this.profile_name !== PLAN_NAME.EE) {
                   this.notify.displaySubscripionHasExpiredModal(true, this.profile_name, this.subscription_end_date);
-                } else if (this.profile_name === PLAN_NAME.C || this.profile_name === PLAN_NAME.F) {
+                } else if (this.profile_name === PLAN_NAME.C || this.profile_name === PLAN_NAME.F || this.profile_name === PLAN_NAME.E || this.profile_name === PLAN_NAME.EE) {
                   this.notify.displayEnterprisePlanHasExpiredModal(true, this.profile_name, this.subscription_end_date);
                 }
 

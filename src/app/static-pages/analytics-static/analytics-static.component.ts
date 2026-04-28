@@ -246,11 +246,11 @@ export class AnalyticsStaticComponent extends PricingBaseComponent implements On
         if (this.USER_ROLE === 'owner') {
           if (this.profile_name !== PLAN_NAME.A && this.profile_name !== PLAN_NAME.D) {
 
-            if (this.profile_name === PLAN_NAME.B || this.profile_name === PLAN_NAME.E || this.profile_name === PLAN_NAME.EE) {
+            if (this.profile_name === PLAN_NAME.B) {
 
               this.notify.displaySubscripionHasExpiredModal(true, this.prjct_profile_name, this.subscription_end_date)
 
-            } else if (this.profile_name === PLAN_NAME.C || this.profile_name === PLAN_NAME.F) {
+            } else if (this.profile_name === PLAN_NAME.C || this.profile_name === PLAN_NAME.F || this.profile_name === PLAN_NAME.E || this.profile_name === PLAN_NAME.EE) {
 
               this.notify.displayEnterprisePlanHasExpiredModal(true, this.prjct_profile_name, this.subscription_end_date);
             }

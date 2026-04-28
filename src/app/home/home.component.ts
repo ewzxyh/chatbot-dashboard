@@ -1800,8 +1800,6 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
     } else if (
       (appTitle === "WhatsApp Business" || appTitle === "Facebook Messenger") &&
       ((this.profile_name === PLAN_NAME.D) ||
-        (this.profile_name === PLAN_NAME.E && this.subscription_is_active === false) ||
-        (this.profile_name === PLAN_NAME.EE && this.subscription_is_active === false) ||
         (this.profile_name === PLAN_NAME.F && this.subscription_is_active === false) ||
         (this.profile_name === 'Sandbox' && this.prjct_trial_expired === true))
     ) {
@@ -1868,8 +1866,6 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
     } else if (
       (appTitle === "WhatsApp Business" || appTitle === "Facebook Messenger") &&
       ((this.profile_name === PLAN_NAME.D) ||
-        (this.profile_name === PLAN_NAME.E && this.subscription_is_active === false) ||
-        (this.profile_name === PLAN_NAME.EE && this.subscription_is_active === false) ||
         (this.profile_name === PLAN_NAME.F && this.subscription_is_active === false) ||
         (this.profile_name === 'Sandbox' && this.prjct_trial_expired === true))) {
       if (!this.appSumoProfile) {
@@ -2490,10 +2486,10 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
 
       } else if (this.prjct_profile_type === 'payment' && this.subscription_is_active === false) {
 
-        if (this.profile_name !== PLAN_NAME.C && this.profile_name !== PLAN_NAME.F) {
+        if (this.profile_name !== PLAN_NAME.C && this.profile_name !== PLAN_NAME.F && this.profile_name !== PLAN_NAME.E && this.profile_name !== PLAN_NAME.EE) {
           this.notify.displaySubscripionHasExpiredModal(true, this.prjct_profile_name, this.subscription_end_date);
 
-        } else if (this.profile_name === PLAN_NAME.C || this.profile_name === PLAN_NAME.F) {
+        } else if (this.profile_name === PLAN_NAME.C || this.profile_name === PLAN_NAME.F || this.profile_name === PLAN_NAME.E || this.profile_name === PLAN_NAME.EE) {
 
           this.notify.displayEnterprisePlanHasExpiredModal(true, this.prjct_profile_name, this.subscription_end_date);
         }
