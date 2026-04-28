@@ -1517,7 +1517,7 @@ export class ProjectEditAddComponent implements OnInit, OnDestroy, AfterViewInit
     if ((this.isVisiblePaymentTab && !this.overridePay) || (!this.isVisiblePaymentTab && this.overridePay)) {
       if (this.USER_ROLE !== 'agent') {
       
-        if (this.profile_name === PLAN_NAME.C || this.profile_name === PLAN_NAME.F) {
+        if (this.profile_name === PLAN_NAME.C || this.profile_name === PLAN_NAME.F || this.profile_name === PLAN_NAME.E || this.profile_name === PLAN_NAME.EE) {
           // this.logger.log('goToProjectSettings_SmartAssignment HERE 1 ')
           if (this.subscription_is_active === true) {
             // this.logger.log('goToProjectSettings_SmartAssignment HERE 2 ')
@@ -1534,8 +1534,6 @@ export class ProjectEditAddComponent implements OnInit, OnDestroy, AfterViewInit
           this.profile_name === PLAN_NAME.A ||
           this.profile_name === PLAN_NAME.B ||
           this.profile_name === PLAN_NAME.D ||
-          this.profile_name === PLAN_NAME.E ||
-          this.profile_name === PLAN_NAME.EE ||
           this.prjct_profile_type === 'free'
         ) {
           // this.logger.log('goToProjectSettings_SmartAssignment HERE 4 ')
@@ -1563,7 +1561,7 @@ export class ProjectEditAddComponent implements OnInit, OnDestroy, AfterViewInit
   goToProjectSettings_Security() {
     if ((this.isVisiblePaymentTab && !this.overridePay) || (!this.isVisiblePaymentTab && this.overridePay)) {
       if (this.USER_ROLE === 'owner' || this.PERMISSION_TO_VIEW_SECURITY) {
-        if (this.profile_name === PLAN_NAME.C || this.profile_name === PLAN_NAME.F) {
+        if (this.profile_name === PLAN_NAME.C || this.profile_name === PLAN_NAME.F || this.profile_name === PLAN_NAME.E || this.profile_name === PLAN_NAME.EE) {
           // this.logger.log('goToProjectSettings_Security HERE 1 ')
           if (this.subscription_is_active === true) {
             // this.logger.log('goToProjectSettings_Security HERE 2 ')
@@ -1580,8 +1578,6 @@ export class ProjectEditAddComponent implements OnInit, OnDestroy, AfterViewInit
           this.profile_name === PLAN_NAME.A ||
           this.profile_name === PLAN_NAME.B ||
           this.profile_name === PLAN_NAME.D ||
-          this.profile_name === PLAN_NAME.E ||
-          this.profile_name === PLAN_NAME.EE ||
           this.prjct_profile_type === 'free'
         ) {
           // this.logger.log('goToProjectSettings_Security HERE 4 ')
@@ -1602,7 +1598,7 @@ export class ProjectEditAddComponent implements OnInit, OnDestroy, AfterViewInit
     if ((this.isVisiblePaymentTab && !this.overridePay) || (!this.isVisiblePaymentTab && this.overridePay)) {
       // || this.USER_ROLE === 'admin'
       if ((this.USER_ROLE === 'owner') || (this.USER_ROLE !== 'owner' && this.USER_ROLE !== 'admin' && this.USER_ROLE !== 'agent' && this.PERMISSION_TO_VIEW_BANNED )) {
-        if (this.profile_name === PLAN_NAME.C || this.profile_name === PLAN_NAME.F) {
+        if (this.profile_name === PLAN_NAME.C || this.profile_name === PLAN_NAME.F || this.profile_name === PLAN_NAME.E || this.profile_name === PLAN_NAME.EE) {
           // this.logger.log('displayModalBanVisitor HERE 1 ')
           if (this.subscription_is_active === true) {
             // this.logger.log('displayModalBanVisitor HERE 2 ')
@@ -1619,8 +1615,6 @@ export class ProjectEditAddComponent implements OnInit, OnDestroy, AfterViewInit
           this.profile_name === PLAN_NAME.A ||
           this.profile_name === PLAN_NAME.B ||
           this.profile_name === PLAN_NAME.D ||
-          this.profile_name === PLAN_NAME.E ||
-          this.profile_name === PLAN_NAME.EE ||
           this.prjct_profile_type === 'free'
         ) {
           // this.logger.log('displayModalBanVisitor HERE 4 ')
@@ -1654,7 +1648,7 @@ export class ProjectEditAddComponent implements OnInit, OnDestroy, AfterViewInit
     if ((this.isVisiblePaymentTab && !this.overridePay) || (!this.isVisiblePaymentTab && this.overridePay)) {
       this.logger.log('[PRJCT-EDIT-ADD] goToProjectSettings_Advanced USER_ROLE' , this.USER_ROLE, ' PERMISSION_TO_VIEW_ADVANCED ', this.PERMISSION_TO_VIEW_ADVANCED) 
       if ((this.USER_ROLE === 'owner' || this.USER_ROLE === 'admin') || (this.USER_ROLE !== 'owner' && this.USER_ROLE !== 'admin' && this.USER_ROLE !== 'agent' && this.PERMISSION_TO_VIEW_ADVANCED )) {
-        if (this.profile_name === PLAN_NAME.C || this.profile_name === PLAN_NAME.F) {
+        if (this.profile_name === PLAN_NAME.C || this.profile_name === PLAN_NAME.F || this.profile_name === PLAN_NAME.E || this.profile_name === PLAN_NAME.EE) {
           // this.logger.log('displayModalBanVisitor HERE 1 ')
           if (this.subscription_is_active === true) {
             // this.logger.log('displayModalBanVisitor HERE 2 ')
@@ -1671,8 +1665,6 @@ export class ProjectEditAddComponent implements OnInit, OnDestroy, AfterViewInit
           this.profile_name === PLAN_NAME.A ||
           this.profile_name === PLAN_NAME.B ||
           this.profile_name === PLAN_NAME.D ||
-          this.profile_name === PLAN_NAME.E ||
-          this.profile_name === PLAN_NAME.EE ||
           this.prjct_profile_type === 'free'
         ) {
           // this.logger.log('displayModalBanVisitor HERE 4 ')
@@ -2839,7 +2831,7 @@ export class ProjectEditAddComponent implements OnInit, OnDestroy, AfterViewInit
         if (this.profile_name !== PLAN_NAME.C && this.profile_name !== PLAN_NAME.F) {
           this.notify.displaySubscripionHasExpiredModal(true, this.prjct_profile_name, this.subscription_end_date);
         } else {
-          if (this.profile_name === PLAN_NAME.C || this.profile_name === PLAN_NAME.F) {
+          if (this.profile_name === PLAN_NAME.C || this.profile_name === PLAN_NAME.F || this.profile_name === PLAN_NAME.E || this.profile_name === PLAN_NAME.EE) {
 
             this.notify.displayEnterprisePlanHasExpiredModal(true, this.prjct_profile_name, this.subscription_end_date);
           }
@@ -3269,8 +3261,6 @@ export class ProjectEditAddComponent implements OnInit, OnDestroy, AfterViewInit
           this.profile_name === PLAN_NAME.A ||
           this.profile_name === PLAN_NAME.B ||
           this.profile_name === PLAN_NAME.D ||
-          this.profile_name === PLAN_NAME.E ||
-          this.profile_name === PLAN_NAME.EE ||
           this.prjct_profile_type === 'free'
 
         ) {
