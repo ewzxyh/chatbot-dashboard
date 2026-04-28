@@ -121,7 +121,7 @@ export class CasezapComponent implements OnInit, OnDestroy {
       'Content-Type': 'application/json',
       Authorization: this.TOKEN
     });
-    const body = { baseUrl: this.serverBaseUrl.replace(/\/$/, '') };
+    const body = { externalUrl: window.location.origin };
 
     this.http.post(url, body, { headers }).subscribe(
       () => {
