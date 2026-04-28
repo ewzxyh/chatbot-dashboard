@@ -513,6 +513,10 @@ export class IntegrationsComponent implements OnInit, OnDestroy {
         this.selectedIntegration = this.initializeIntegration(integration.key);
       }
       this.logger.log("[INTEGRATIONS]- onIntegrationSelect integration.category", integration.category, ' INTEGRATIONS_CATEGORIES.CHANNEL ', INTEGRATIONS_CATEGORIES.CHANNEL)
+      if (integration && integration.key === INTEGRATIONS_KEYS.CASEZAP) {
+        this.router.navigate(['project/' + this.projectID + '/casezap']);
+        return;
+      }
       if (integration && integration.category === INTEGRATIONS_CATEGORIES.CHANNEL) {
         this.logger.log("[INTEGRATIONS]- OLLa ")
         // this.integrationSelectedName = "external";
