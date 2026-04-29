@@ -150,12 +150,7 @@ export class NotificationMessageComponent extends PricingBaseComponent implement
 
       } else if (this.prjct_profile_type === 'payment' && this.subscription_is_active === false) {
         this.notify.closeDataExportNotAvailable();
-        if (this.profile_name !== PLAN_NAME.C  && this.profile_name !== PLAN_NAME.F && this.profile_name !== PLAN_NAME.E && this.profile_name !== PLAN_NAME.EE) {
-          this.notify.displaySubscripionHasExpiredModal(true, this.prjct_profile_name, this.subscription_end_date);
-        } else if (this.profile_name === PLAN_NAME.C || this.profile_name === PLAN_NAME.F || this.profile_name === PLAN_NAME.E || this.profile_name === PLAN_NAME.EE) {
-
-          this.notify.displayEnterprisePlanHasExpiredModal(true, this.prjct_profile_name, this.subscription_end_date);
-        }
+        this.notify.displaySubscripionHasExpiredModal(true, this.prjct_profile_name, this.subscription_end_date);
       }
 
     } else {

@@ -274,7 +274,7 @@
 
 
                                   <span *ngIf="!appSumoProfile">
-                                    <!-- <span *ngIf="profile_name !== PLAN_NAME?.C && profile_name !== PLAN_NAME?.F"> -->
+                                    <!-- <span *ngIf="prjct_profile_type === 'free'"> -->
                                     ( {{ seatsLimit}} {{ "AgentSeats" | translate }} )
                                     <!-- <span *ngIf="!isSripeSub"> 
                                     )
@@ -360,14 +360,14 @@
 
                                 <ng-container *ngIf="!appSumoProfile">
                                   <span *ngIf="!SUBSCRIPTION_BUFFER_DAYS">
-                                    <span *ngIf="profile_name !== PLAN_NAME?.C && profile_name !== PLAN_NAME?.F">
+                                    <span *ngIf="prjct_profile_type === 'free'">
                                       {{ "Pricing.YourSubscriptionIsActive" | translate }}.
                                     </span>
-                                    <span *ngIf="profile_name === PLAN_NAME?.C || profile_name === PLAN_NAME?.F">
+                                    <span *ngIf="prjct_profile_type !== 'free'">
                                       {{ "Pricing.ThePlanIsActive" | translate }}.
                                     </span>
 
-                                    <span *ngIf="profile_name !== PLAN_NAME?.C && profile_name !== PLAN_NAME?.F">
+                                    <span *ngIf="prjct_profile_type === 'free'">
                                       {{ "NextRenew" | translate }}
                                       <span *ngIf="days_to_next_renew === 0">
                                         {{ "Today" | translate}} {{ "At" | translate}} {{ timeOfNextRenew }}
@@ -511,7 +511,7 @@
                         <ng-container *ngIf="!appSumoProfile && isSripeSub">
                           <!-- prjct_profile_type !== 'free' && profile_name !== PLAN_NAME?.C &&  subscription_is_active === true -->
                           <div class="row flex--row"
-                            *ngIf="prjct_profile_type !== 'free' &&  subscription_is_active === true && profile_name !== PLAN_NAME?.C && profile_name !== PLAN_NAME?.F"
+                            *ngIf="prjct_profile_type !== 'free' &&  subscription_is_active === true && prjct_profile_type === 'free'"
                             style="margin-top: 16px;">
                             <label class="col-sm-3 custom-label">
                               {{"PaymentInformation" | translate }}
@@ -544,11 +544,11 @@
                         <ng-container *ngIf="!appSumoProfile">
                           <div class="row flex--row" *ngIf="prjct_profile_type !== 'free'" style="margin-top: 16px;">
                             <label class="col-sm-3 custom-label"
-                              *ngIf="profile_name !== PLAN_NAME?.C && profile_name !== PLAN_NAME?.F">
+                              *ngIf="prjct_profile_type === 'free'">
                               {{ "SubscriptionStartDate" | translate }}
                             </label>
                             <label class="col-sm-3 custom-label"
-                              *ngIf="profile_name === PLAN_NAME?.C || profile_name === PLAN_NAME?.F">
+                              *ngIf="prjct_profile_type !== 'free'">
                               {{ "PlanStartDate" | translate }}
                             </label>
                             <div class="col-12 col-sm-6 col-md-6 col-lg-6">
@@ -560,10 +560,10 @@
                                 <span style="font-weight: 400;  padding: 5px;height:31px;position: relative;top: 2px;">
 
                                   <!-- IF THE  subscription_creation_date IS OBTAINED FROM THE SUBSCRIPTION PAYMENT OBJECT -->
-                                  <!-- <span class="subscription-creation-date" *ngIf="profile_name === PLAN_NAME?.C || profile_name === PLAN_NAME?.F">
+                                  <!-- <span class="subscription-creation-date" *ngIf="prjct_profile_type !== 'free'">
                                   {{ subscription_creation_date | amDateFormat: 'LL' }}
                                   </span> -->
-                                  <span *ngIf="profile_name !== PLAN_NAME?.C && profile_name !== PLAN_NAME?.F">
+                                  <span *ngIf="prjct_profile_type === 'free'">
 
                                     <span *ngIf="isSripeSub">
                                       <!-- {{ subscription_creation_date }} -->
@@ -574,7 +574,7 @@
                                       {{subscription_creation_date | amDateFormat: 'LL'}}
                                     </span>
                                   </span>
-                                  <span *ngIf="profile_name === PLAN_NAME?.C || profile_name === PLAN_NAME?.F">
+                                  <span *ngIf="prjct_profile_type !== 'free'">
 
                                     <span *ngIf="isSripeSub">
                                       {{ subscription_creation_date * 1000 | amDateFormat: 'LL' }}
@@ -596,7 +596,7 @@
                         <ng-container *ngIf="!appSumoProfile">
                           <!-- prjct_profile_type !== 'free' && profile_name !== PLAN_NAME?.C -->
                           <div class="row flex--row"
-                            *ngIf="prjct_profile_type !== 'free' && profile_name !== PLAN_NAME?.C && profile_name !== PLAN_NAME?.F"
+                            *ngIf="prjct_profile_type !== 'free' && prjct_profile_type === 'free'"
                             style="margin-top: 16px;">
                             <label class="col-sm-3 custom-label">
                               {{ "CurrentInvoiceStartDate" | translate }}
@@ -624,11 +624,11 @@
                         <ng-container *ngIf="!appSumoProfile">
                           <div class="row flex--row" *ngIf="prjct_profile_type !== 'free'" style="margin-top: 16px;">
                             <label class="col-sm-3 custom-label"
-                              *ngIf="profile_name !== PLAN_NAME?.C && profile_name !== PLAN_NAME?.F">
+                              *ngIf="prjct_profile_type === 'free'">
                               {{ "CurrentInvoiceEndDate" | translate }}
                             </label>
                             <label class="col-sm-3 custom-label"
-                              *ngIf="profile_name === PLAN_NAME?.C || profile_name === PLAN_NAME?.F">
+                              *ngIf="prjct_profile_type !== 'free'">
                               {{ "PlanExpirationDate" | translate }}
                             </label>
                             <div class="col-12 col-sm-6 col-md-6 col-lg-6">
@@ -682,7 +682,7 @@
 
                         <!-- ------------------------------------------------------------------------------------------------ -->
                         <!-- SUBSCRIPTION STATUS - PROFILE TYPE: PAYMENT - SEE PAYMENTS BTN  -->
-                        <!-- && profile_name !== PLAN_NAME?.C && profile_name !== PLAN_NAME?.F -->
+                        <!-- && prjct_profile_type === 'free' -->
                         <!-- ------------------------------------------------------------------------------------------------ -->
 
                         <ng-container *ngIf="!appSumoProfile && isSripeSub">
@@ -706,7 +706,7 @@
 
 
 
-                        <!-- *ngIf="prjct_profile_type !== 'free' && profile_name !== PLAN_NAME?.C && profile_name !== PLAN_NAME?.F" -->
+                        <!-- *ngIf="prjct_profile_type !== 'free' && prjct_profile_type === 'free'" -->
                         <ng-container *ngIf="!appSumoProfile && isSripeSub && prjct_profile_type !== 'free'">
 
                           <div class="row">

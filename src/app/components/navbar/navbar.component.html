@@ -72,10 +72,10 @@
                 <span class="expired__Tooltiptext"
                   style="font-size:12px; top: 27px;text-transform:none; cursor: pointer; height: fit-content;vertical-align: middle;">
 
-                  <span *ngIf="profile_name !== PLAN_NAME?.C && profile_name !== PLAN_NAME?.F">
+                  <span *ngIf="prjct_profile_type === 'free'">
                     {{ 'Pricing.SubscriptionPaymentProblem' | translate }}
                   </span>
-                  <span *ngIf="profile_name === PLAN_NAME?.C || profile_name === PLAN_NAME?.F">
+                  <span *ngIf="prjct_profile_type !== 'free'">
                     {{ 'Pricing.ThePlanHasExpired' | translate }}
                   </span>
                 </span>

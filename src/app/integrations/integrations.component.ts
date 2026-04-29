@@ -820,80 +820,7 @@ export class IntegrationsComponent implements OnInit, OnDestroy {
     } else if (this.profileType === 'payment') {
       if (this.subscriptionIsActive === true) {
         this.logger.log('[INTEGRATION-COMP] USE CASE PROFILE TYPE ', this.profileType, ' SUB ACTIVE ', this.subscriptionIsActive)
-        if (projectProfileData.profile_name === PLAN_NAME.A || projectProfileData.profile_name === PLAN_NAME.D) {
-
-          this.logger.log('[INTEGRATION-COMP] >>> CURRENT PLAN ', projectProfileData.profile_name)
-          // BASIC
-          if (integration.plan === PLAN_NAME.D) {
-            this.logger.log('[INTEGRATION-COMP] INTEGRATION NAME ', integration.name, '  AVAILABLE FOM ', integration.plan, ' PLAN ')
-            integration['displayBadge'] = false
-          }
-          // PREMIUM
-          if (integration.plan === PLAN_NAME.E) {
-            this.logger.log('[INTEGRATION-COMP] INTEGRATION NAME ', integration.name, '  AVAILABLE FOM ', integration.plan, ' PLAN ')
-            integration['displayBadge'] = true
-          }
-          // Team
-          if (integration.plan === PLAN_NAME.EE) {
-            this.logger.log('[INTEGRATION-COMP] INTEGRATION NAME ', integration.name, '  AVAILABLE FOM ', integration.plan, ' PLAN ')
-            integration['displayBadge'] = true
-          }
-          // CUSTOM
-          if (integration.plan === PLAN_NAME.F) {
-            this.logger.log('[INTEGRATION-COMP] INTEGRATION NAME ', integration.name, '  AVAILABLE FOM ', integration.plan, ' PLAN ')
-            integration['displayBadge'] = true
-          }
-
-        } else if (projectProfileData.profile_name === PLAN_NAME.B || projectProfileData.profile_name === PLAN_NAME.E || projectProfileData.profile_name === PLAN_NAME.EE) {
-          this.logger.log('[INTEGRATION-COMP] >>> CURRENT PLAN ', projectProfileData.profile_name)
-          // BASIC
-          if (integration.plan === PLAN_NAME.D) {
-            this.logger.log('[INTEGRATION-COMP] INTEGRATION NAME ', integration.name, '  AVAILABLE FOM ', integration.plan, ' PLAN ')
-            integration['displayBadge'] = false
-          }
-          // PREMIUM
-          if (integration.plan === PLAN_NAME.E) {
-            this.logger.log('[INTEGRATION-COMP] INTEGRATION NAME ', integration.name, '  AVAILABLE FOM ', integration.plan, ' PLAN ')
-            integration['displayBadge'] = false
-          }
-
-          // TEAM
-          if (integration.plan === PLAN_NAME.EE) {
-            this.logger.log('[INTEGRATION-COMP] INTEGRATION NAME ', integration.name, '  AVAILABLE FOM ', integration.plan, ' PLAN ')
-            integration['displayBadge'] = false
-          }
-          // CUSTOM
-          if (integration.plan === PLAN_NAME.F) {
-            this.logger.log('[INTEGRATION-COMP] INTEGRATION NAME ', integration.name, '  AVAILABLE FOM ', integration.plan, ' PLAN ')
-            integration['displayBadge'] = true
-          }
-        } else if (projectProfileData.profile_name === PLAN_NAME.C || projectProfileData.profile_name === PLAN_NAME.F) {
-          this.logger.log('[INTEGRATION-COMP] >>> CURRENT PLAN ', projectProfileData.profile_name)
-          // BASIC
-          if (integration.plan === PLAN_NAME.D) {
-            this.logger.log('[INTEGRATION-COMP] INTEGRATION NAME ', integration.name, '  AVAILABLE FOM ', integration.plan, ' PLAN ')
-            integration['displayBadge'] = false
-          }
-
-
-          // PREMIUM
-          if (integration.plan === PLAN_NAME.E) {
-            this.logger.log('[INTEGRATION-COMP] INTEGRATION NAME ', integration.name, '  AVAILABLE FOM ', integration.plan, ' PLAN ')
-            integration['displayBadge'] = false
-          }
-
-          // TEAM
-          if (integration.plan === PLAN_NAME.EE) {
-            this.logger.log('[INTEGRATION-COMP] INTEGRATION NAME ', integration.name, '  AVAILABLE FOM ', integration.plan, ' PLAN ')
-            integration['displayBadge'] = false
-          }
-
-          // CUSTOM
-          if (integration.plan === PLAN_NAME.F) {
-            this.logger.log('[INTEGRATION-COMP] INTEGRATION NAME ', integration.name, '  AVAILABLE FOM ', integration.plan, ' PLAN ')
-            integration['displayBadge'] = false
-          }
-        }
+        integration['displayBadge'] = false
       } else if (this.subscriptionIsActive === false) {
         // BASIC
         if (integration.plan === PLAN_NAME.D) {
@@ -992,39 +919,13 @@ export class IntegrationsComponent implements OnInit, OnDestroy {
       //   resolve(true)
       // }
 
-      // BASIC PLAN ubscription Is Active // nk
-      else if ((this.profile_name === PLAN_NAME.A && this.subscriptionIsActive) || (this.profile_name === PLAN_NAME.D && this.subscriptionIsActive)) {
-        if (integration_plan === PLAN_NAME.E || integration_plan === PLAN_NAME.EE || integration_plan === PLAN_NAME.F) {
-          reject(false);
-        }
+      // PAID PLAN subscription Is Active
+      else if (this.profileType === 'payment' && this.subscriptionIsActive) {
         resolve(true)
       }
 
-      // BASIC PLAN ubscription Is Not Active // nk
-      else if ((this.profile_name === PLAN_NAME.A && !this.subscriptionIsActive) || (this.profile_name === PLAN_NAME.D && !this.subscriptionIsActive)) {
-        if (integration_plan !== 'Sandbox') {
-          reject(false);
-        }
-        resolve(true)
-      }
-
-      // PREMIUM PLAN
-      // else if (this.profile_name === PLAN_NAME.B || this.profile_name === PLAN_NAME.E || this.profile_name === PLAN_NAME.EE) {
-      //   if (integration_plan === PLAN_NAME.F) {
-      //     reject(false);
-      //   }
-      //   resolve(true)
-      // }
-
-      // PREMIUM PLAN subscription Is Active // nk
-      else if ((this.profile_name === PLAN_NAME.B && this.subscriptionIsActive) || (this.profile_name === PLAN_NAME.E && this.subscriptionIsActive) || (this.profile_name === PLAN_NAME.EE && this.subscriptionIsActive)) {
-        if (integration_plan === PLAN_NAME.F) {
-          reject(false);
-        }
-        resolve(true)
-      }
-      // PREMIUM PLAN subscription Is Not Active // nk
-      else if ((this.profile_name === PLAN_NAME.B && !this.subscriptionIsActive) || (this.profile_name === PLAN_NAME.E && !this.subscriptionIsActive) || (this.profile_name === PLAN_NAME.EE && !this.subscriptionIsActive) || (this.profile_name === PLAN_NAME.C && !this.subscriptionIsActive) || (this.profile_name === PLAN_NAME.F && !this.subscriptionIsActive)) {
+      // PAID PLAN subscription Is Not Active
+      else if (this.profileType === 'payment' && !this.subscriptionIsActive) {
         if (integration_plan !== 'Sandbox') {
           reject(false);
         }

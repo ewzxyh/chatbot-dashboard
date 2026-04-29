@@ -2318,9 +2318,9 @@ export class HistoryAndNortConvsComponent extends WsSharedComponent implements O
 
       if (this.USER_ROLE === 'owner') {
         if (this.prjct_profile_type === 'payment' && this.subscription_is_active === false) {
-          if (this.profile_name !== PLAN_NAME.C && this.profile_name !== PLAN_NAME.F && this.profile_name !== PLAN_NAME.E && this.profile_name !== PLAN_NAME.EE) {
+          if (this.prjct_profile_type === 'free') {
             this.notify.displaySubscripionHasExpiredModal(true, this.profile_name, this.subscription_end_date);
-          } else if (this.profile_name === PLAN_NAME.C || this.profile_name === PLAN_NAME.F || this.profile_name === PLAN_NAME.E || this.profile_name === PLAN_NAME.EE) {
+          } else if (this.prjct_profile_type !== 'free') {
             this.notify.displayEnterprisePlanHasExpiredModal(true, this.profile_name, this.subscription_end_date);
           }
 
@@ -3411,41 +3411,19 @@ export class HistoryAndNortConvsComponent extends WsSharedComponent implements O
   }
 
   checkPlanAndPresentModalContactUs() {
-    if ((this.profile_name === PLAN_NAME.A) ||
-      (this.profile_name === PLAN_NAME.B && this.subscription_is_active === false) ||
-      (this.profile_name === PLAN_NAME.C && this.subscription_is_active === false) ||
-      (this.profile_name === 'free' && this.trial_expired === true)) {
-
-      this.notify._displayContactUsModal(true, 'upgrade_plan');
-      return false
-
-    } else if ((this.profile_name === PLAN_NAME.D) ||
-      (this.profile_name === PLAN_NAME.F && this.subscription_is_active === false) ||
-      (this.profile_name === 'Sandbox' && this.trial_expired === true)) {
+    if (this.prjct_profile_type === 'free' && this.trial_expired === true) {
       this.notify._displayContactUsModal(true, 'upgrade_plan');
       return false
     }
   }
 
   checkPlanAndPresentModal() {
-    if ((this.profile_name === PLAN_NAME.A) ||
-      (this.profile_name === PLAN_NAME.B && this.subscription_is_active === false) ||
-      (this.profile_name === PLAN_NAME.C && this.subscription_is_active === false) ||
-      (this.profile_name === 'free' && this.trial_expired === true)) {
+    if (this.prjct_profile_type === 'free' && this.trial_expired === true) {
       if (!this.appSumoProfile) {
-        // this.presentModalFeautureAvailableFromTier2Plan(this.featureAvailableFromBPlan)
         this.presentModalFeautureAvailableFromTier2Plan(this.featureAvailableFromEPlan)
         return false
       } else {
         this.presentModalAppSumoFeautureAvailableFromBPlan()
-        return false
-      }
-    } else if ((this.profile_name === PLAN_NAME.D) ||
-      (this.profile_name === PLAN_NAME.F && this.subscription_is_active === false) ||
-      (this.profile_name === 'Sandbox' && this.trial_expired === true)) {
-
-      if (!this.appSumoProfile) {
-        this.presentModalFeautureAvailableFromTier2Plan(this.featureAvailableFromEPlan)
         return false
       }
     }
@@ -3484,8 +3462,6 @@ export class HistoryAndNortConvsComponent extends WsSharedComponent implements O
             this.logger.log('[HISTORY & NORT-CONVS] HERE 2')
             if (this.prjct_profile_type === 'payment' && this.subscription_is_active === false) {
               this.logger.log('[HISTORY & NORT-CONVS] HERE 3')
-              this.notify._displayContactUsModal(true, 'upgrade_plan');
-            } else if (this.prjct_profile_type === 'payment' && this.subscription_is_active === true && (this.profile_name === PLAN_NAME.A || this.profile_name === PLAN_NAME.D)) {
               this.notify._displayContactUsModal(true, 'upgrade_plan');
             } else if (this.prjct_profile_type === 'free') { // && this.trial_expired === true
               this.logger.log('[HISTORY & NORT-CONVS] HERE 4')

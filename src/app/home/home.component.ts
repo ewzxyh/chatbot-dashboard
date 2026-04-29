@@ -1784,30 +1784,9 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   checkPlan(appTitle) {
     if (
       (appTitle === "WhatsApp Business" || appTitle === "Facebook Messenger") &&
-      ((this.profile_name === PLAN_NAME.A) ||
-        (this.profile_name === PLAN_NAME.B && this.subscription_is_active === false) ||
-        (this.profile_name === PLAN_NAME.C && this.subscription_is_active === false) ||
-        (this.profile_name === 'free' && this.prjct_trial_expired === true))
+      (this.prjct_profile_type === 'free' && this.prjct_trial_expired === true)
     ) {
-
-      if (!this.appSumoProfile) {
-
-        return false
-      } else {
-
-        return false
-      }
-    } else if (
-      (appTitle === "WhatsApp Business" || appTitle === "Facebook Messenger") &&
-      ((this.profile_name === PLAN_NAME.D) ||
-        (this.profile_name === PLAN_NAME.F && this.subscription_is_active === false) ||
-        (this.profile_name === 'Sandbox' && this.prjct_trial_expired === true))
-    ) {
-      if (!this.appSumoProfile) {
-        // this.presentModalFeautureAvailableFromTier2Plan(this.featureAvailableFromEPlan)
-        return false
-      }
-
+      return false
     }
   }
 
@@ -1850,29 +1829,15 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
     this.logger.log('[HOME] checkPlanAndPresentModal appTitle', appTitle, 'appSumoProfile ', this.appSumoProfile)
     if (
       (appTitle === "WhatsApp Business" || appTitle === "Facebook Messenger") &&
-      ((this.profile_name === PLAN_NAME.A) ||
-        (this.profile_name === PLAN_NAME.B && this.subscription_is_active === false) ||
-        (this.profile_name === PLAN_NAME.C && this.subscription_is_active === false) ||
-        (this.profile_name === 'free' && this.prjct_trial_expired === true))) {
+      (this.prjct_profile_type === 'free' && this.prjct_trial_expired === true)) {
 
       if (!this.appSumoProfile) {
-        // this.presentModalFeautureAvailableFromTier2Plan(this.featureAvailableFromBPlan)
         this.presentModalFeautureAvailableFromTier2Plan(this.featureAvailableFromEPlan)
         return false
       } else {
         this.presentModalAppSumoFeautureAvailableFromBPlan()
         return false
       }
-    } else if (
-      (appTitle === "WhatsApp Business" || appTitle === "Facebook Messenger") &&
-      ((this.profile_name === PLAN_NAME.D) ||
-        (this.profile_name === PLAN_NAME.F && this.subscription_is_active === false) ||
-        (this.profile_name === 'Sandbox' && this.prjct_trial_expired === true))) {
-      if (!this.appSumoProfile) {
-        this.presentModalFeautureAvailableFromTier2Plan(this.featureAvailableFromEPlan)
-        return false
-      }
-
     }
   }
 
@@ -1911,8 +1876,6 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
               // this.logger.log('[APP-STORE] HERE 2')
               if (this.prjct_profile_type === 'payment' && this.subscription_is_active === false) {
                 // this.logger.log('[APP-STORE] HERE 3')
-                this.notify._displayContactUsModal(true, 'upgrade_plan');
-              } else if (this.prjct_profile_type === 'payment' && this.subscription_is_active === true && (this.profile_name === PLAN_NAME.A || this.profile_name === PLAN_NAME.D)) {
                 this.notify._displayContactUsModal(true, 'upgrade_plan');
               } else if (this.prjct_profile_type === 'free' && this.prjct_trial_expired === true) {
                 // this.logger.log('[APP-STORE] HERE 4')
@@ -1965,8 +1928,6 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
             // this.logger.log('[HOME] HERE 2')
             if (this.prjct_profile_type === 'payment' && this.subscription_is_active === false) {
               // this.logger.log('[HOME] HERE 3')
-              this.notify._displayContactUsModal(true, 'upgrade_plan');
-            } else if (this.prjct_profile_type === 'payment' && this.subscription_is_active === true && this.profile_name === PLAN_NAME.A) {
               this.notify._displayContactUsModal(true, 'upgrade_plan');
             } else if (this.prjct_profile_type === 'free' && this.prjct_trial_expired === true) {
               // this.logger.log('[HOME] HERE 4')
@@ -2486,10 +2447,10 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
 
       } else if (this.prjct_profile_type === 'payment' && this.subscription_is_active === false) {
 
-        if (this.profile_name !== PLAN_NAME.C && this.profile_name !== PLAN_NAME.F && this.profile_name !== PLAN_NAME.E && this.profile_name !== PLAN_NAME.EE) {
+        if (this.prjct_profile_type === 'free') {
           this.notify.displaySubscripionHasExpiredModal(true, this.prjct_profile_name, this.subscription_end_date);
 
-        } else if (this.profile_name === PLAN_NAME.C || this.profile_name === PLAN_NAME.F || this.profile_name === PLAN_NAME.E || this.profile_name === PLAN_NAME.EE) {
+        } else if (this.prjct_profile_type !== 'free') {
 
           this.notify.displayEnterprisePlanHasExpiredModal(true, this.prjct_profile_name, this.subscription_end_date);
         }

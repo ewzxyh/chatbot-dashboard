@@ -405,10 +405,10 @@
               <!-- prjct_profile_type > {{prjct_profile_type}} subscription_is_active {{subscription_is_active}} -->
               <span *ngIf="prjct_profile_type === 'payment' && subscription_is_active === false">
 
-                <span *ngIf="profile_name !== PLAN_NAME?.C && profile_name !== PLAN_NAME?.F">
+                <span *ngIf="prjct_profile_type === 'free'">
                   {{ 'Pricing.SubscriptionPaymentProblem' | translate }}. <span class="sales-mail-to" (click)="contacUsViaEmailToUpdadePaymentInformation()">{{'Pricing.PleaseContactUs' | translate }}</span> {{'Pricing.ToUpdateYourPaymentInformation' | translate}}
                 </span>
-                <span *ngIf="profile_name === PLAN_NAME?.C || profile_name === PLAN_NAME?.F">
+                <span *ngIf="prjct_profile_type !== 'free'">
                   {{ 'Pricing.ThePlanHasExpired' | translate }}. <span class="sales-mail-to" (click)="contacUsViaEmailToUpdadePaymentInformation()">{{'Pricing.PleaseContactUs' | translate }}</span> {{'Pricing.ToUpdateYourPaymentInformation' | translate}}
                 </span>
               </span>

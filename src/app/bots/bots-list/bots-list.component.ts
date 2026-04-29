@@ -2126,29 +2126,9 @@ export class BotListComponent extends PricingBaseComponent implements OnInit, On
     if (this.isVisiblePAY) {
       if (this.USER_ROLE === 'owner') {
         if (this.prjct_profile_type === 'payment' && this.subscription_is_active === false) {
-          if (this.profile_name === PLAN_NAME.C) {
-            this.logger.log('[KNOWLEDGE-BASES-COMP] goToPricing HERE 1 ')
-            this.notify.displayEnterprisePlanHasExpiredModal(true, PLAN_NAME.C + ' plan', this.subscription_end_date);
-
-          } else if (this.profile_name === PLAN_NAME.F) {
-            this.notify.displayEnterprisePlanHasExpiredModal(true, PLAN_NAME.F + ' plan', this.subscription_end_date);
-            this.logger.log('[KNOWLEDGE-BASES-COMP] goToPricing HERE 2 ')
-          } else if (this.profile_name !== PLAN_NAME.C && this.profile_name !== PLAN_NAME.F) {
-            // this.notify._displayContactUsModal(true, 'upgrade_plan');
-            this.notify.displaySubscripionHasExpiredModal(true, this.profile_name, this.subscription_end_date);
-            this.logger.log('[KNOWLEDGE-BASES-COMP] goToPricing HERE 3 ')
-          }
+          this.notify.displaySubscripionHasExpiredModal(true, this.profile_name, this.subscription_end_date);
         } else if (this.prjct_profile_type === 'free') {
           this.router.navigate(['project/' + this.currentProjectId + '/pricing']);
-        } else if (
-          this.profile_name === PLAN_NAME.A ||
-          this.profile_name === PLAN_NAME.B ||
-          this.profile_name === PLAN_NAME.D
-
-        ) {
-          this.logger.log('[KNOWLEDGE-BASES-COMP] goToPricing HERE 4 ')
-          // this.presentModalFeautureAvailableOnlyWithPlanC()
-          this.notify._displayContactUsModal(true, 'upgrade_plan');
         }
       } else {
         this.presentModalOnlyOwnerCanManageTheAccountPlan();

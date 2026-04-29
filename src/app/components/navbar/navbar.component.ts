@@ -1880,9 +1880,9 @@ export class NavbarComponent extends PricingBaseComponent implements OnInit, Aft
   openModalSubsExpired() {
     if (this.isVisiblePay) {
       if (this.USER_ROLE === 'owner') {
-        if (this.profile_name !== PLAN_NAME.C && this.profile_name !== PLAN_NAME.F && this.profile_name !== PLAN_NAME.E && this.profile_name !== PLAN_NAME.EE) {
+        if (this.prjct_profile_type === 'free') {
           this.notifyService.displaySubscripionHasExpiredModal(true, this.prjct_profile_name, this.subscription_end_date);
-        } else if (this.profile_name === PLAN_NAME.C || this.profile_name === PLAN_NAME.F || this.profile_name === PLAN_NAME.E || this.profile_name === PLAN_NAME.EE) {
+        } else if (this.prjct_profile_type !== 'free') {
           this.notifyService.displayEnterprisePlanHasExpiredModal(true, this.prjct_profile_name, this.subscription_end_date);
         }
       } else {

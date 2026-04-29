@@ -565,9 +565,9 @@ export class HomeCreateTeammateComponent extends PricingBaseComponent implements
   openModalSubsExpired() {
     this.logger.log('[HOME-CREATE-TEAMMATE] openModalSubsExpired ')
     if (this.USER_ROLE === 'owner') {
-      if (this.profile_name !== PLAN_NAME.C && this.profile_name !== PLAN_NAME.F && this.profile_name !== PLAN_NAME.E && this.profile_name !== PLAN_NAME.EE) {
+      if (this.prjct_profile_type === 'free') {
         this.notify.displaySubscripionHasExpiredModal(true, this.prjct_profile_name, this.subscription_end_date);
-      } else if (this.profile_name === PLAN_NAME.C || this.profile_name === PLAN_NAME.F || this.profile_name === PLAN_NAME.E || this.profile_name === PLAN_NAME.EE) {
+      } else if (this.prjct_profile_type !== 'free') {
         this.notify.displayEnterprisePlanHasExpiredModal(true, this.prjct_profile_name, this.subscription_end_date);
       }
     } else {

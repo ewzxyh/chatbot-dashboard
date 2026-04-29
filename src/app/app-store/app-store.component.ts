@@ -429,37 +429,15 @@ export class AppStoreComponent extends PricingBaseComponent implements OnInit, O
         appTitle === "Zapier" ||
         appTitle === 'Help Center' ||
         appTitle === 'Send transcript by email') &&
-      ((this.profile_name === PLAN_NAME.A) ||
-        (this.profile_name === PLAN_NAME.B && this.subscription_is_active === false) ||
-        (this.profile_name === PLAN_NAME.C && this.subscription_is_active === false) ||
-        (this.profile_name === 'free' && this.trial_expired === true))) {
+      (this.prjct_profile_type === 'free' && this.trial_expired === true)) {
 
       if (!this.appSumoProfile) {
-
-
-
         this.presentModalFeautureAvailableFromTier2Plan(this.featureAvailableFromEPlan)
         return false
       } else {
         this.presentModalAppSumoFeautureAvailableFromBPlan()
         return false
       }
-    } else if (
-      (appTitle === "WhatsApp Business" ||
-        appTitle === "Facebook Messenger" ||
-        appTitle === "Zapier" ||
-        appTitle === 'Help Center' ||
-        appTitle === 'Send transcript by email') &&
-      ((this.profile_name === PLAN_NAME.D) ||
-        (this.profile_name === PLAN_NAME.E && this.subscription_is_active === false) ||
-        (this.profile_name === PLAN_NAME.EE && this.subscription_is_active === false) ||
-        (this.profile_name === PLAN_NAME.F && this.subscription_is_active === false) ||
-        (this.profile_name === 'Sandbox' && this.trial_expired === true))) {
-      if (!this.appSumoProfile) {
-        this.presentModalFeautureAvailableFromTier2Plan(this.featureAvailableFromEPlan)
-        return false
-      }
-
     }
   }
 
@@ -951,8 +929,6 @@ export class AppStoreComponent extends PricingBaseComponent implements OnInit, O
               // this.logger.log('[APP-STORE] HERE 2')
               if (this.prjct_profile_type === 'payment' && this.subscription_is_active === false) {
                 // this.logger.log('[APP-STORE] HERE 3')
-                this.notify._displayContactUsModal(true, 'upgrade_plan');
-              } else if (this.prjct_profile_type === 'payment' && this.subscription_is_active === true && (this.profile_name === PLAN_NAME.A || this.profile_name === PLAN_NAME.D)) {
                 this.notify._displayContactUsModal(true, 'upgrade_plan');
               } else if (this.prjct_profile_type === 'free' && this.trial_expired === true) {
                 // this.logger.log('[APP-STORE] HERE 4')
