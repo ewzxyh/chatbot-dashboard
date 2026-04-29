@@ -1188,11 +1188,7 @@ export class WidgetSetUp extends WidgetSetUpBaseComponent implements OnInit, Aft
           if (this.USER_ROLE === 'owner') {
             // this.logger.log('[APP-STORE] HERE 2')
             if (this.prjct_profile_type === 'payment' && this.subscription_is_active === false) {
-              if (this.prjct_profile_type === 'free') {
-                this.notify.displaySubscripionHasExpiredModal(true, this.prjct_profile_name, this.subscription_end_date);
-              } else if (this.prjct_profile_type !== 'free') {
-                this.notify.displayEnterprisePlanHasExpiredModal(true, this.prjct_profile_name, this.subscription_end_date);
-              }
+              this.notify.displayEnterprisePlanHasExpiredModal(true, this.prjct_profile_name, this.subscription_end_date);
             } else if (this.prjct_profile_type === 'free') {
               // this.logger.log('[APP-STORE] HERE 4')
               this.router.navigate(['project/' + this.id_project + '/pricing']);

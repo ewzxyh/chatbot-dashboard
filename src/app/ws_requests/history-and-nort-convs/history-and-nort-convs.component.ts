@@ -2318,11 +2318,7 @@ export class HistoryAndNortConvsComponent extends WsSharedComponent implements O
 
       if (this.USER_ROLE === 'owner') {
         if (this.prjct_profile_type === 'payment' && this.subscription_is_active === false) {
-          if (this.prjct_profile_type === 'free') {
-            this.notify.displaySubscripionHasExpiredModal(true, this.profile_name, this.subscription_end_date);
-          } else if (this.prjct_profile_type !== 'free') {
-            this.notify.displayEnterprisePlanHasExpiredModal(true, this.profile_name, this.subscription_end_date);
-          }
+          this.notify.displayEnterprisePlanHasExpiredModal(true, this.profile_name, this.subscription_end_date);
 
         } else if (this.profile_name === 'free' || this.profile_name === 'Sandbox') {  // && this.trial_expired === true
           this.router.navigate(['project/' + this.projectId + '/pricing']);

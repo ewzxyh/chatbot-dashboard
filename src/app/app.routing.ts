@@ -271,6 +271,13 @@ const routes: Routes = [
   // { path: 'project/:projectid/home', component: HomeComponent, canActivate: [AuthGuard] }, // now Lazy
 
 
+  // CaseZap
+  {
+    path: 'project/:projectid/casezap',
+    loadChildren: () => import('app/casezap/casezap.module').then(m => m.CasezapModule),
+    canActivate: [AuthGuard]
+  },
+
   // Pricing (CasePay)
   {
     path: 'project/:projectid/pricing',
