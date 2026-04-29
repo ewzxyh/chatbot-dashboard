@@ -1134,35 +1134,9 @@ export class WidgetSetUp extends WidgetSetUpBaseComponent implements OnInit, Aft
             }
           }
         } else if (this.prjct_profile_type === 'payment') {
-          if (this.subscription_is_active) {
-            if (this.profile_name === PLAN_NAME.A) {
-              // this.presentModalFeautureAvailableFromTier2(this.featureAvailableFromBPlan)
-              this.presentModalFeautureAvailableFromTier2(this.featureAvailableFromEPlan)
-            } else if (this.profile_name === PLAN_NAME.D) {
-              // this.presentModalFeautureAvailableFromTier2(this.featureAvailableFromEPlan)
-              this.presentModalFeautureAvailableFromTier2(this.featureAvailableFromEPlan)
-            }
-          } else if (!this.subscription_is_active) {
-            if (this.profile_name === PLAN_NAME.A) {
-              // this.presentModalFeautureAvailableFromTier2(this.featureAvailableFromBPlan)
-              this.presentModalFeautureAvailableFromTier2(this.featureAvailableFromEPlan)
-            } else if (this.profile_name === PLAN_NAME.B) {
-              // this.presentModalFeautureAvailableFromTier2(this.featureAvailableFromBPlan)
-              this.presentModalFeautureAvailableFromTier2(this.featureAvailableFromEPlan)
-            } else if (this.profile_name === PLAN_NAME.C) {
-              // this.presentModalFeautureAvailableFromTier2(this.featureAvailableFromBPlan)
-              this.presentModalFeautureAvailableFromTier2(this.featureAvailableFromEPlan)
-            } else if (this.profile_name === PLAN_NAME.D) {
-              this.presentModalFeautureAvailableFromTier2(this.featureAvailableFromEPlan)
-            } else if (this.profile_name === PLAN_NAME.E) {
-              this.presentModalFeautureAvailableFromTier2(this.featureAvailableFromEPlan)
-            } else if (this.profile_name === PLAN_NAME.EE) {
-              this.presentModalFeautureAvailableFromTier2(this.featureAvailableFromEPlan)
-            } else if (this.profile_name === PLAN_NAME.F) {
-              this.presentModalFeautureAvailableFromTier2(this.featureAvailableFromEPlan)
-            }
+          if (!this.subscription_is_active) {
+            this.presentModalFeautureAvailableFromTier2(this.featureAvailableFromEPlan)
           }
-
         }
       } else {
         if (this.USER_ROLE === 'owner') {
