@@ -1435,11 +1435,7 @@ export class ContactsComponent implements OnInit, OnDestroy, AfterViewInit {
 
           if (this.USER_ROLE === 'owner') {
             if (this.prjct_profile_type === 'payment' && this.subscription_is_active === false) {
-              if (this.prjct_profile_type === 'free') {
-                this.notify.displaySubscripionHasExpiredModal(true, this.profile_name, this.subscription_end_date);
-              } else if (this.prjct_profile_type !== 'free') {
                 this.notify.displayEnterprisePlanHasExpiredModal(true, this.profile_name, this.subscription_end_date);
-              }
 
             } else if (this.prjct_profile_type === 'payment' && this.subscription_is_active === true) {
               this.notify._displayContactUsModal(true, 'upgrade_plan');

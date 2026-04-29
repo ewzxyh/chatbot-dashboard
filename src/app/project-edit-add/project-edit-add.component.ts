@@ -1744,17 +1744,9 @@ export class ProjectEditAddComponent implements OnInit, OnDestroy, AfterViewInit
         if (this.isVisiblePaymentTab) {
           if (this.USER_ROLE === 'owner') {
             if (this.prjct_profile_type === 'payment' && this.subscription_is_active === true) {
-              if (this.prjct_profile_type !== 'free') {
-                // this.logger.log('HERE Y')
                 this.notify._displayContactUsModal(true, 'upgrade_plan');
-              }
             } else if (this.prjct_profile_type === 'payment' && this.subscription_is_active === false) {
-
-              if (this.prjct_profile_type !== 'free') {
-                // this.logger.log('HERE Y')
                 this.notify.displaySubscripionHasExpiredModal(true, this.profile_name, this.subscription_end_date)
-              }
-
             } else if (this.prjct_profile_type === 'free') {
               this.router.navigate(['project/' + this.id_project + '/pricing']);
 
@@ -1770,7 +1762,7 @@ export class ProjectEditAddComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
     presentModalFeautureAvailableOnlyWithPlanB() {
-    
+
     Swal.fire({
       // content: el,
       title: this.upgradePlan,
@@ -1798,17 +1790,9 @@ export class ProjectEditAddComponent implements OnInit, OnDestroy, AfterViewInit
         if (this.isVisiblePaymentTab) {
           if (this.USER_ROLE === 'owner') {
             if (this.prjct_profile_type === 'payment' && this.subscription_is_active === true) {
-              if (this.prjct_profile_type !== 'free') {
-                // this.logger.log('HERE Y')
                 this.notify._displayContactUsModal(true, 'upgrade_plan');
-              }
             } else if (this.prjct_profile_type === 'payment' && this.subscription_is_active === false) {
-
-              if (this.prjct_profile_type !== 'free') {
-                // this.logger.log('HERE Y')
                 this.notify.displaySubscripionHasExpiredModal(true, this.profile_name, this.subscription_end_date)
-              }
-
             } else if (this.prjct_profile_type === 'free') {
               this.router.navigate(['project/' + this.id_project + '/pricing']);
 

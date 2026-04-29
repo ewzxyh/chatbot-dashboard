@@ -172,14 +172,7 @@ export class ContactsStaticComponent extends PricingBaseComponent implements OnI
     if (this.payIsVisible) {
       if (this.prjct_profile_type === 'payment' && this.subscription_is_active === false) {
         if (this.USER_ROLE === 'owner') {
-          if (this.prjct_profile_type === 'free') {
-
-            this.notify.displaySubscripionHasExpiredModal(true, this.prjct_profile_name, this.subscription_end_date)
-
-          } else if (this.prjct_profile_type !== 'free') {
-
             this.notify.displayEnterprisePlanHasExpiredModal(true, this.prjct_profile_name, this.subscription_end_date);
-          }
         }
       }
     }
