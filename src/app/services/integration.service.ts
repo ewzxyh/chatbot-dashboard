@@ -140,7 +140,7 @@ export class IntegrationService {
       })
     };
     const url = this.SERVER_BASE_PATH + this.project_id + '/integration/' + integration_id;
-    return this.http.put(url, JSON.stringify(data), httpOptions);
+    return this.http.put(url, data, httpOptions);
   }
 
   getIntegrationInstances(name: string) {
