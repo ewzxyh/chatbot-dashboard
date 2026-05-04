@@ -994,6 +994,7 @@ export const CHANNELS_NAME = {
     VOICE_VXML: 'voice-vxml',
     VOICE_TWILIO: 'voice_twilio',
     SMS_TWILIO: 'sms-twilio',
+    CASEZAP: 'casezap',
 }
 
 export const CHANNELS = [
