@@ -132,6 +132,28 @@ export class IntegrationService {
     return this.http.delete(url, httpOptions);
   }
 
+  updateIntegration(integration_id: string, data: any) {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Authorization': this.TOKEN
+      })
+    };
+    const url = this.SERVER_BASE_PATH + this.project_id + '/integration/' + integration_id;
+    return this.http.put(url, JSON.stringify(data), httpOptions);
+  }
+
+  getIntegrationInstances(name: string) {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Authorization': this.TOKEN
+      })
+    };
+    const url = this.SERVER_BASE_PATH + this.project_id + '/integration/name/' + name + '/instances';
+    return this.http.get(url, httpOptions);
+  }
+
   checkIntegrationKeyValidity(url: string, key?: string, api_key?: string) {
     
     let headers = new HttpHeaders({
