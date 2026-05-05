@@ -28,7 +28,7 @@ import { CohereIntegrationComponent } from './list/cohere-integration/cohere-int
 import { OllamaIntegrationComponent } from './list/ollama-integration/ollama-integration.component';
 import { DeepseekIntegrationComponent } from './list/deepseek-integration/deepseek-integration.component';
 import { UnauthorizedForSettingsModule } from 'app/auth/unauthorized-for-settings/unauthorized-for-settings.module';
-import { CasezapModule } from '../casezap/casezap.module';
+import { CasezapSharedModule } from '../casezap/casezap-shared.module';
 import { VLLMComponent } from './list/v-llm/v-llm.component';
 import { McpIntegrationComponent } from './list/mcp-integration/mcp-integration.component';
 import { McpServerTableComponent } from './list/mcp-integration/mcp-server-table/mcp-server-table.component';
@@ -79,7 +79,7 @@ const routes: Routes = [
     SharedModule,
     FormsModule,
     UnauthorizedForSettingsModule,
-    CasezapModule
+    CasezapSharedModule
   ]
 })
 export class IntegrationsModule { }

@@ -1,8 +1,6 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { CasezapSharedModule } from './casezap-shared.module';
 import { CasezapComponent } from './casezap.component';
 
 const routes: Routes = [
@@ -10,13 +8,9 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [CasezapComponent],
   imports: [
-    CommonModule,
-    FormsModule,
-    TranslateModule,
+    CasezapSharedModule,
     RouterModule.forChild(routes)
-  ],
-  exports: [CasezapComponent]
+  ]
 })
 export class CasezapModule { }
