@@ -16,6 +16,7 @@ const routes: Routes = [
     FormsModule,
     TranslateModule,
     RouterModule.forChild(routes)
-  ]
+  ],
+  exports: [CasezapComponent]
 })
 export class CasezapModule { }

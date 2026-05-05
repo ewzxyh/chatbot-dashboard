@@ -7,16 +7,43 @@
       <h2>CaseZap</h2>
       <span class="casezap-subtitle">WhatsApp via QR Code (UazApi)</span>
     </div>
-    <div *ngIf="status" class="casezap-status" [class.active]="status === 'active'" [class.disconnected]="status === 'disconnected'">
-      {{ status === 'active' ? 'Conectado' : 'Desconectado' }}
+    <div class="casezap-header-right">
+      <span *ngIf="!loading && platformsLimit > 0" class="casezap-quota">{{ platformsUsed }}/{{ platformsLimit }} plataformas usadas</span>
+      <button *ngIf="view === 'list'" class="btn-primary" (click)="startAdd()">+ Adicionar</button>
+      <button *ngIf="view !== 'list'" class="btn-back" (click)="cancelForm()">Voltar</button>
     </div>
   </div>
 
+  <div *ngIf="error" class="casezap-alert error">{{ error }}</div>
+  <div *ngIf="success" class="casezap-alert success">{{ success }}</div>
+
   <div *ngIf="loading" class="casezap-loading">Carregando...</div>
 
-  <div *ngIf="!loading" class="casezap-form">
-    <div *ngIf="error" class="casezap-alert error">{{ error }}</div>
-    <div *ngIf="success" class="casezap-alert success">{{ success }}</div>
+  <div *ngIf="!loading && view === 'list'" class="casezap-list">
+    <div *ngIf="instances.length === 0" class="casezap-empty">
+      Nenhuma instancia conectada. Clique em "+ Adicionar" para conectar sua primeira instancia WhatsApp.
+    </div>
+
+    <div *ngFor="let inst of instances" class="instance-card">
+      <div class="instance-info">
+        <strong class="instance-name">{{ inst.value?.instanceName || 'Sem nome' }}</strong>
+        <span class="instance-number">{{ inst.value?.number }}</span>
+        <span class="instance-domain">{{ truncateDomain(inst.value?.domain) }}</span>
+      </div>
+      <div class="instance-status"
+           [class.active]="inst.value?.status === 'active'"
+           [class.disconnected]="inst.value?.status !== 'active'">
+        {{ inst.value?.status === 'active' ? 'Conectado' : 'Desconectado' }}
+      </div>
+      <div class="instance-actions">
+        <button class="btn-edit" (click)="startEdit(inst)" [disabled]="saving">Editar</button>
+        <button class="btn-danger-sm" (click)="removeInstance(inst)" [disabled]="saving">Remover</button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && (view === 'add' || view === 'edit')" class="casezap-form">
+    <h3>{{ view === 'add' ? 'Adicionar instancia' : 'Editar instancia' }}</h3>
 
     <div class="casezap-field">
       <label>Numero do WhatsApp *</label>
@@ -40,22 +67,11 @@
       <input type="text" [(ngModel)]="instanceName" placeholder="Nome da sua instancia" [disabled]="saving">
     </div>
 
-    <div class="casezap-actions">
+    <div class="casezap-form-actions">
       <button class="btn-primary" (click)="save()" [disabled]="saving">
-        {{ saving ? 'Salvando...' : (existingIntegration ? 'Atualizar' : 'Conectar') }}
+        {{ saving ? 'Salvando...' : (view === 'add' ? 'Conectar' : 'Atualizar') }}
       </button>
-      <button *ngIf="existingIntegration" class="btn-danger" (click)="remove()" [disabled]="saving">
-        Remover
-      </button>
-    </div>
-
-    <div *ngIf="!existingIntegration" class="casezap-instructions">
-      <h3>Como conectar</h3>
-      <ol>
-        <li>Acesse o CaseZap e crie/conecte uma instancia WhatsApp</li>
-        <li>Copie as 4 informacoes da instancia conectada</li>
-        <li>Cole nos campos acima e clique em Conectar</li>
-      </ol>
+      <button class="btn-cancel" (click)="cancelForm()" [disabled]="saving">Cancelar</button>
     </div>
   </div>
 </div>

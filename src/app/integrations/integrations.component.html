@@ -167,6 +167,8 @@
                                             (onDeleteIntegration)=integrationDeletedEvent($event)>
                                         </qapla-integration>
 
+                                        <app-casezap *ngIf="integrationSelectedName === 'casezap'"></app-casezap>
+
                                         <ext-integration *ngIf="integrationSelectedType === 'external'"
                                             [integration]="selectedIntegration"
                                             [renderUrl]="renderUrl"
