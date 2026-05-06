@@ -1,17 +1,17 @@
 {
-"DASHBOARD": {
+  "DASHBOARD": {
     "META_TITLE": "ChatCase",
     "FAVICON_URL": "assets/img/logos/favicon.ico",
     "CUSTOM_COMPANY_HOME_LOGO": false,
-    "COMPANY_LOGO_PLANET": "assets/img/logos/tiledesk_planet.svg",
+    "COMPANY_LOGO_PLANET": "assets/img/logos/chatcase-icon.svg",
     "privacy_policy_link_text": "Política de Privacidade",
     "privacy_policy_url": "https://chatcase.com.br/privacidade",
     "display_terms_and_conditions_link": true,
     "terms_and_conditions_url": "https://chatcase.com.br/termos",
-    "display_dpa_link": true,
-    "dpa_url": "https://tiledesk.com/dpa/",
+    "display_dpa_link": false,
+    "dpa_url": "",
     "contact_us_email": "redacted@example.invalid",
-    "display-news-and-documentation": true,
+    "display-news-and-documentation": false,
     "display_google_auth_btn": false,
     "display_forgot_pwd": true,
     "display_help_in_installation": true,
@@ -25,39 +25,37 @@
     "EXTREME_MEASURES": true,
     "SUPPORT_MENU": false,
     "footer": {
-        "display_terms_and_conditions_link": true,
-        "display_star_us_on_github": true,
-        "display_leave_us_a_feedback": true,
-        "display_followus_on_x": true,
-        "followus_on_x_URL": "https://twitter.com/tiledesk",
-        "display_followus_on_fb": true,
-        "followus_on_fb_URL": "https://www.facebook.com/tiledesk",
-        "display_followus_on_in": true,
-        "followus_on_in_URL": "https://www.linkedin.com/company/tiledesk",
-        "display_followus_on_instagram": true,
-        "followus_on_instagram_URL": "https://www.instagram.com/tiledesk/",
-        "display_followus_on_youtube": true,
-        "followus_on_youtube_URL": "https://www.youtube.com/@tiledesk"
+      "display_terms_and_conditions_link": true,
+      "display_star_us_on_github": false,
+      "display_leave_us_a_feedback": false,
+      "display_followus_on_x": false,
+      "followus_on_x_URL": "",
+      "display_followus_on_fb": false,
+      "followus_on_fb_URL": "",
+      "display_followus_on_in": false,
+      "followus_on_in_URL": "",
+      "display_followus_on_instagram": true,
+      "followus_on_instagram_URL": "https://www.instagram.com/chatbotcase/",
+      "display_followus_on_youtube": false,
+      "followus_on_youtube_URL": ""
     },
     "recent_project_page": {
-      "company_logo_width": "130px",
-      "company_logo_height": "30px"
+      "company_logo_width": "150px",
+      "company_logo_height": "40px"
     },
     "signup_page": {
-      "display_terms_and_conditions_link": true, 
-      "display_social_proof_container":  false
+      "display_terms_and_conditions_link": true,
+      "display_social_proof_container": false
     },
     "handle_invitation_page": {
-      "company_logo_45x45": "assets/img/logos/tiledesk-solo-logo.png"
+      "company_logo_45x45": "assets/img/logos/chatcase-icon.svg"
     }
   },
   "WIDGET": {
-    "LOGO_CHAT": "https://tiledesk.com/tiledesk-logo-white.png",
+    "LOGO_CHAT": "assets/img/logos/chatcase-icon-white.png",
     "POWERED_BY": "<a tabindex='-1' target='_blank' href='https://chatcase.com.br'><span>Powered by ChatCase</span></a>"
   },
-  "CHAT": {
-
-  },
+  "CHAT": {},
   "CDS": {
     "META_TITLE": "ChatCase Design Studio",
     "FAVICON_URL": "assets/img/logos/favicon.ico",
@@ -67,20 +65,20 @@
     ]
   },
   "COMMON": {
-    "COMPANY_LOGO": "assets/img/logos/tiledesk_logo.svg",
-    "COMPANY_LOGO_NO_TEXT": "assets/img/logos/tiledesk_logo_no_text.svg",
-    "BASE_LOGO": "assets/img/logos/tiledesk_logo.svg",
-    "BASE_LOGO_NO_TEXT": "assets/img/logos/tiledesk_logo_no_text.svg",
+    "COMPANY_LOGO": "assets/img/logos/chatcase-logo.svg",
+    "COMPANY_LOGO_NO_TEXT": "assets/img/logos/chatcase-icon.svg",
+    "BASE_LOGO": "assets/img/logos/chatcase-logo.svg",
+    "BASE_LOGO_NO_TEXT": "assets/img/logos/chatcase-icon.svg",
     "COMPANY_NAME": "ChatCase",
     "BRAND_NAME": "ChatCase",
     "COMPANY_SITE_NAME": "chatcase.com.br",
     "COMPANY_SITE_URL": "https://chatcase.com.br",
     "CONTACT_US_EMAIL": "redacted@example.invalid",
     "CONTACT_SALES_EMAIL": "redacted@example.invalid",
-    "BRAND_PRIMARY_COLOR": "#f0806f",
-    "BRAND_SECONDARY_COLOR": "#f0806f",
+    "BRAND_PRIMARY_COLOR": "#02D05C",
+    "BRAND_SECONDARY_COLOR": "#F8A405",
     "DOCS": true,
     "LOGOUT_ENABLED": true,
-    "DISPLAY_EDIT_PROFILE": false
+    "DISPLAY_EDIT_PROFILE": true
   }
 }
