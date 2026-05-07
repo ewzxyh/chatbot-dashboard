@@ -16,10 +16,10 @@
           <div class="flex flex-col w-full max-w-screen-xl mx-auto padding-l-r">
 
             <div class="flex flex-row flex-auto items-center min-w-0 my-8 sm:my-12">
-              <div class="flex flex-auto items-center min-w-0">
-                <div class="flex-0 overflow-hidden" style="display: flex; align-items: center;">
+              <div class="flex flex-auto items-center min-w-0" style="align-items: center;">
+                <div class="flex-0 overflow-hidden" style="display: flex; align-items: center; flex-shrink: 0;">
 
-                  <img *ngIf="isVisiblePay" [src]="companyLogoNoText" style="height: 40px; width: auto;" />
+                  <img *ngIf="isVisiblePay" [src]="companyLogoNoText" style="height: 36px; width: 36px; object-fit: contain;" />
 
                   <div *ngIf="!isVisiblePay && !custom_company_home_logo" class="logo-no--text">
                     <img [src]="companyLogoNoText" class="img-fluid" style="max-width: 35px; height: auto;" />
