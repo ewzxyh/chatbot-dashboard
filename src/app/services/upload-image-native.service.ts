@@ -9,6 +9,13 @@ import { formatBytesWithDecimal } from 'app/utils/util';
 import { NotifyService } from 'app/core/notify.service';
 import { TranslateService } from '@ngx-translate/core';
 
+export interface NativeAttachmentUploadResult {
+  downloadURL: string;
+  thumbnailURL?: string;
+  filename?: string;
+  thumbnail?: string;
+}
+
 @Injectable()
 export class UploadImageNativeService {
 
@@ -254,6 +261,10 @@ export class UploadImageNativeService {
 
   // this.URL_TILEDESK_FILE = this.getBaseUrl() + projectId + '/files'
   uploadAttachment_Native(upload): Promise<any> {
+    return this.uploadAttachmentNativeResult(upload).then((result: NativeAttachmentUploadResult) => result.downloadURL);
+  }
+
+  uploadAttachmentNativeResult(upload): Promise<NativeAttachmentUploadResult> {
     //  this.logger.log('[NATIVE UPLOAD] - upload new image/file ... upload', upload)
     const headers = new HttpHeaders({
       Authorization: this.TOKEN,
@@ -264,45 +275,32 @@ export class UploadImageNativeService {
     formData.append('file', upload);
 
     const that = this;
-    if ((upload.type.startsWith('image') && (!upload.type.includes('svg')))) {
-      // this.logger.log('[NATIVE UPLOAD] - upload new image')
-      //USE IMAGE API
-      // const url = this.BASE_URL + 'images' + '/users'
-      const url = this.BASE_URL + this.projectId + '/files/chat'
-      return new Promise((resolve, reject) => {
-        that.uploadAttachment$.next(0);
-        that._httpClient.post(url, formData, requestOptions).subscribe(data => {
-          const downloadURL = this.BASE_URL + 'files' + '?path=' + data['filename'];
-          resolve(downloadURL)
-          that.uploadAttachment$.next(100);
-        }, (error) => {
-          that.uploadAttachment$.next(100);
-          this.manageUploadError(error)
-          this.logger.log('uploadAttachment_Native error 1', error)
-          reject(error)
-        });
+    const url = this.BASE_URL + this.projectId + '/files/chat'
+    return new Promise<NativeAttachmentUploadResult>((resolve, reject) => {
+      that.uploadAttachment$.next(0);
+      that._httpClient.post(url, formData, requestOptions).subscribe((data: any) => {
+        const result: NativeAttachmentUploadResult = {
+          downloadURL: this.buildFilesUrl(data['filename']),
+          filename: data['filename'],
+          thumbnail: data['thumbnail'],
+          thumbnailURL: data['thumbnail'] ? this.buildFilesUrl(data['thumbnail']) : undefined,
+        };
+
+        resolve(result)
+        that.uploadAttachment$.next(100);
+        // that.BSStateUpload.next({upload: upload});
+      }, (error) => {
+        that.uploadAttachment$.next(100);
+        this.manageUploadError(error)
+        this.logger.error('[NATIVE UPLOAD] - ERROR upload new file ', error)
+        this.logger.log('[NATIVE UPLOAD] uploadAttachment_Native error 2', error)
+        reject(error)
       });
-    } else {
-      // this.logger.log('[NATIVE UPLOAD] - upload new file')
-      // USE FILE API
-      // const url = this.BASE_URL + 'files' + '/users'
-      const url = this.BASE_URL + this.projectId + '/files/chat'
-      return new Promise((resolve, reject) => {
-        that.uploadAttachment$.next(0);
-        that._httpClient.post(url, formData, requestOptions).subscribe(data => {
-          const downloadURL = this.BASE_URL + 'files' + '?path=' + encodeURIComponent(data['filename']);
-          resolve(downloadURL)
-          that.uploadAttachment$.next(100);
-          // that.BSStateUpload.next({upload: upload});
-        }, (error) => {
-          that.uploadAttachment$.next(100);
-          this.manageUploadError(error)
-          this.logger.error('[NATIVE UPLOAD] - ERROR upload new file ', error)
-          this.logger.log('[NATIVE UPLOAD] uploadAttachment_Native error 2', error)
-          reject(error)
-        });
-      });
-    }
+    });
+  }
+
+  private buildFilesUrl(filename: string): string {
+    return this.BASE_URL + 'files' + '?path=' + encodeURIComponent(filename);
   }
 
 

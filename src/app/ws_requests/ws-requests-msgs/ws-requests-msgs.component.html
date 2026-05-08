@@ -223,7 +223,7 @@
                               <!-- style="height:200px; width:200px;" -->
                               <div class="image-container" style="cursor:pointer"
                                 (click)="openImageViewerModal(message?.metadata)">
-                                <img src={{message.metadata.src}} class="message-img" />
+                                <img [src]="message.metadata.thumbnail || message.metadata.src" class="message-img" />
                                 <!-- message >   {{message | json}} -->
                                 <p *ngIf="message?.text" [innerHTML]="message?.text | htmlEntitiesEncode | marked ">
                                 </p>
@@ -328,7 +328,7 @@
                               <!-- style="height:200px; width:200px;" -->
                               <div class="image-container" style="cursor:pointer"
                                 (click)="openImageViewerModal(message?.metadata)">
-                                <img src={{message.metadata.src}} class="message-img" />
+                                <img [src]="message.metadata.thumbnail || message.metadata.src" class="message-img" />
 
                                 <p *ngIf="message?.text" [innerHTML]="message?.text | htmlEntitiesEncode | marked"></p>
 

@@ -7320,7 +7320,8 @@ extractUrls(text: string): string[] {
       });
     }
     else {
-      this.uploadImageNativeService.uploadAttachment_Native(uploadedFiles).then(downloadURL => {
+      this.uploadImageNativeService.uploadAttachmentNativeResult(uploadedFiles).then(uploadResult => {
+        const downloadURL = uploadResult.downloadURL;
         this.logger.log(`[WS-REQUESTS-MSGS] - upload native downloadURL `, downloadURL);
 
         if (downloadURL) {
@@ -7329,6 +7330,11 @@ extractUrls(text: string): string[] {
           this.uploadedFiles['downloadURL'] = downloadURL
         }
         this.metadata.src = downloadURL
+        if (uploadResult.thumbnailURL) {
+          this.metadata.thumbnail = uploadResult.thumbnailURL;
+        } else {
+          delete this.metadata.thumbnail;
+        }
         this.metadata.width = this.imgWidth;
         this.metadata.height = this.imgHeight;
         this.logger.log(`[WS-REQUESTS-MSGS] - upload native metadata `, this.metadata);
