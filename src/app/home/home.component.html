@@ -261,22 +261,10 @@
                     matTooltip="Current usage" #tooltip="matTooltip" matTooltipPosition='above' matTooltipHideDelay="100">
                      {{'Conversations' | translate}}
                   </p>
-                  <div class="quote-count">{{requests_count | number:'1.0-0'}} / {{requests_limit | number:'1.0-0'}}</div>
+                  <div class="quote-count">{{requests_count | number:'1.0-0'}}<ng-container *ngIf="requests_limit >= 0"> / {{requests_limit | number:'1.0-0'}}</ng-container></div>
                   <div class="quota-runned-out-msg" *ngIf="conversationsRunnedOut">
                     <!-- You run out of conversations -->
                      {{'YouRunOutOfConversations' | translate}}
-                  </div>
-                </div>
-
-                <div class="quote">
-                  <mat-progress-spinner class="example-margin" [strokeWidth]="5" [diameter]="50" [color]="'primary'"
-                    [mode]="'determinate'" [value]="requests_perc"
-                    [ngClass]="{'mat-progress-spinner-conversations-runned-out': conversationsRunnedOut}">
-                  </mat-progress-spinner>
-
-                  <div class="percentage" [ngClass]="{'percentage-conversations-runned-out': conversationsRunnedOut}">
-                    {{ requests_perc }}
-                    <span style="font-size: 10px; margin-top: 2px; margin-left: 1px"> %</span>
                   </div>
                 </div>
               </div>

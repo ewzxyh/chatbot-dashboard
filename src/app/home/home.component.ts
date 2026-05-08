@@ -746,7 +746,7 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
             }
 
 
-            if (this.allQuotas.requests.quote >= this.requests_limit) {
+            if (this.requests_limit >= 0 && this.allQuotas.requests.quote >= this.requests_limit) {
               this.conversationsRunnedOut = true;
               this.logger.log('[HOME] conversationsRunnedOut', this.conversationsRunnedOut)
             } else {
@@ -782,7 +782,7 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
             }
 
 
-            this.requests_perc = Math.min(100, Math.floor((this.allQuotas.requests.quote / this.requests_limit) * 100));
+            this.requests_perc = this.requests_limit <= 0 ? 0 : Math.min(100, Math.floor((this.allQuotas.requests.quote / this.requests_limit) * 100));
             this.messages_perc = Math.min(100, Math.floor((this.allQuotas.messages.quote / this.messages_limit) * 100));
             this.email_perc = Math.min(100, Math.floor((this.allQuotas.email.quote / this.email_limit) * 100));
             this.tokens_perc = Math.min(100, Math.floor((this.allQuotas.tokens.quote / this.tokens_limit) * 100));
@@ -2949,7 +2949,7 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
 
 
 
-      this.requests_perc = Math.min(100, Math.floor((resp.quotes.requests.quote / this.requests_limit) * 100));
+      this.requests_perc = this.requests_limit <= 0 ? 0 : Math.min(100, Math.floor((resp.quotes.requests.quote / this.requests_limit) * 100));
       this.messages_perc = Math.min(100, Math.floor((resp.quotes.messages.quote / this.messages_limit) * 100));
       this.email_perc = Math.min(100, Math.floor((resp.quotes.email.quote / this.email_limit) * 100));
       this.tokens_perc = Math.min(100, Math.floor((resp.quotes.tokens.quote / this.tokens_limit) * 100));
@@ -2977,7 +2977,7 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
 
   getRunnedOutQuotes(resp) {
     if (this.project_limits) {
-      if (resp.quotes.requests.quote >= this.project_limits.requests) {
+      if (this.project_limits.requests >= 0 && resp.quotes.requests.quote >= this.project_limits.requests) {
         this.conversationsRunnedOut = true;
         this.logger.log('[HOME] conversationsRunnedOut', this.conversationsRunnedOut)
         // this.quotesService.hasReachedQuotasLimitInHome(true)

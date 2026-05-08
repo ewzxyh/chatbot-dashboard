@@ -1038,7 +1038,7 @@ export class NavbarComponent extends PricingBaseComponent implements OnInit, Aft
       this.logger.log('[NAVBAR] used voice', resp.quotes.voice_duration.quote)
       this.logger.log('[NAVBAR] voice_limit', this.voice_limit)
 
-      if (resp.quotes.requests.quote >= this.requests_limit) {
+      if (this.requests_limit >= 0 && resp.quotes.requests.quote >= this.requests_limit) {
         this.conversationsRunnedOut = true;
         this.logger.log('[NAVBAR] conversationsRunnedOut', this.conversationsRunnedOut)
       } else {
@@ -1074,7 +1074,7 @@ export class NavbarComponent extends PricingBaseComponent implements OnInit, Aft
       }
 
 
-      this.requests_perc = Math.min(100, Math.floor((resp.quotes.requests.quote / this.requests_limit) * 100));
+      this.requests_perc = this.requests_limit <= 0 ? 0 : Math.min(100, Math.floor((resp.quotes.requests.quote / this.requests_limit) * 100));
       this.messages_perc = Math.min(100, Math.floor((resp.quotes.messages.quote / this.messages_limit) * 100));
       this.email_perc = Math.min(100, Math.floor((resp.quotes.email.quote / this.email_limit) * 100));
       this.tokens_perc = Math.min(100, Math.floor((resp.quotes.tokens.quote / this.tokens_limit) * 100));
@@ -2883,5 +2883,4 @@ export class NavbarComponent extends PricingBaseComponent implements OnInit, Aft
   //   this.document.body.classList.add('dark');
   // }
 }
-
 

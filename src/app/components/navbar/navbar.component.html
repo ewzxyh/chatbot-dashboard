@@ -217,39 +217,8 @@
                                 {{'TotalConversationsUsage' | translate}}
                               </p>
                               <div class="quota-limit-wpr">
-                                <p class="quota-limit">{{requests_count | number:'1.0-0'}} /&nbsp;</p>
-                                <!-- <p  class="quota-limit">{{openedConversations + closedConversations}} /&nbsp;</p> -->
-                                <p class="quota-limit">{{requests_limit | number:'1.0-0'}}</p>
-                              </div>
-                            </div>
-                            <div class="quota-pie" style="width: 50px; height: 50px;">
-                              <!-- <svg class="svg-pi"
-                                style="width: 32px; height: 32px;">
-                                <circle cx="16" cy="16" fill="transparent" r="13" stroke="#eff2f6" stroke-width="3">
-                                </circle>
-                                <circle cx="16" cy="16" fill="transparent" r="13" stroke="#eff2f6" stroke-width="3"
-                                  stroke-dasharray="81.68140899333463" stroke-dashoffset="81.68140899333463"
-                                  stroke-linecap="round">
-                                </circle>
-                              </svg> -->
-                              <!-- [ngClass]="{'mat-progress-spinner-conversations-runned-out': conversationsRunnedOut}" -->
-                              <!-- <svg width="0" height="0">
-                                <defs>
-                                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                        <stop offset="0%" style="stop-color: green; stop-opacity: 1;" />
-                                        <stop offset="50%" style="stop-color: yellow; stop-opacity: 1;" />
-                                        <stop offset="75%" style="stop-color: orange; stop-opacity: 1;" />
-                                        <stop offset="100%" style="stop-color: red; stop-opacity: 1;" />
-                                    </linearGradient>
-                                </defs>
-                            </svg> -->
-                              <!-- [ngClass]="{'pie-green-stroke': requestsPieGreenStroke, 'pie-yellow-stroke': requestsPieYellowStroke, 'pie-orange-stroke': requestsPieOrangeStroke, 'pie-red-stroke': requestsPieRedStroke}" -->
-                              <mat-progress-spinner class="requests-circular-spinner" [strokeWidth]="5" [diameter]="50"
-                                [color]="'primary'" [mode]="'determinate'" [value]="requests_perc"
-                                [ngClass]="{'mat-progress-spinner-conversations-runned-out': conversationsRunnedOut}">
-                              </mat-progress-spinner>
-                              <div class="quota-pie-label">
-                                {{ requests_perc }}%
+                                <p class="quota-limit">{{requests_count | number:'1.0-0'}}</p>
+                                <p class="quota-limit" *ngIf="requests_limit >= 0">&nbsp;/ {{requests_limit | number:'1.0-0'}}</p>
                               </div>
                             </div>
                           </div>
