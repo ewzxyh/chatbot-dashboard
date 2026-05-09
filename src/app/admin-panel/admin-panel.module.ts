@@ -7,6 +7,7 @@ import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard.compo
 import { AdminProjectsComponent } from './admin-projects/admin-projects.component';
 import { AdminUsersComponent } from './admin-users/admin-users.component';
 import { AdminPaymentsComponent } from './admin-payments/admin-payments.component';
+import { AdminOperationComponent } from './admin-operation/admin-operation.component';
 
 const routes: Routes = [
   {
@@ -18,6 +19,7 @@ const routes: Routes = [
       { path: 'projects', component: AdminProjectsComponent },
       { path: 'users', component: AdminUsersComponent },
       { path: 'payments', component: AdminPaymentsComponent },
+      { path: 'operation', component: AdminOperationComponent },
     ]
   }
 ];
@@ -29,6 +31,7 @@ const routes: Routes = [
     AdminProjectsComponent,
     AdminUsersComponent,
     AdminPaymentsComponent,
+    AdminOperationComponent,
   ],
   imports: [
     CommonModule,

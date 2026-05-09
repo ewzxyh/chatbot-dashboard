@@ -160,4 +160,37 @@ export class AdminService {
     return this._httpclient
       .put<any>(url, body, httpOptions);
   }
+
+  public getHealthSummary(): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': this.TOKEN
+      })
+    };
+    const url = this.SERVER_BASE_PATH + 'sadmin/health/summary';
+    this.logger.log('[ADMIN-SERV] - GET HEALTH SUMMARY - URL', url);
+
+    return this._httpclient
+      .get<any>(url, httpOptions);
+  }
+
+  public getOperationalEvents(filters: any): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': this.TOKEN
+      })
+    };
+    let url = this.SERVER_BASE_PATH + 'sadmin/operational-events?limit=100';
+    if (filters && filters.channel) { url += '&channel=' + encodeURIComponent(filters.channel); }
+    if (filters && filters.level) { url += '&level=' + encodeURIComponent(filters.level); }
+    if (filters && filters.project_id) { url += '&project_id=' + encodeURIComponent(filters.project_id); }
+    this.logger.log('[ADMIN-SERV] - GET OPERATIONAL EVENTS - URL', url);
+
+    return this._httpclient
+      .get<any>(url, httpOptions);
+  }
 }

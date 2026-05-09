@@ -1,0 +1,148 @@
+<div class="operation-page">
+  <div class="operation-toolbar">
+    <div>
+      <h2>Operacao</h2>
+      <p *ngIf="summary">Atualizado em {{ formatDate(summary.generatedAt) }}</p>
+    </div>
+    <button type="button" class="btn-primary" (click)="refresh()">Atualizar</button>
+  </div>
+
+  <div *ngIf="isLoading" class="loading-state">Carregando...</div>
+  <div *ngIf="errorMessage" class="error-state">{{ errorMessage }}</div>
+
+  <div *ngIf="summary && !isLoading">
+    <div class="status-strip" [ngClass]="getStatusClass(summary.overallStatus)">
+      <span>Status geral</span>
+      <strong>{{ getStatusLabel(summary.overallStatus) }}</strong>
+    </div>
+
+    <div class="operation-grid">
+      <div class="operation-section">
+        <div class="section-header">
+          <h3>Servicos</h3>
+        </div>
+        <div class="service-grid">
+          <div *ngFor="let service of summary.services" class="service-card">
+            <div class="service-title">
+              <span>{{ service.label }}</span>
+              <span class="status-pill" [ngClass]="getStatusClass(service.status)">{{ getStatusLabel(service.status) }}</span>
+            </div>
+            <div class="service-detail">{{ serviceDetail(service) }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="operation-section">
+        <div class="section-header">
+          <h3>Alertas abertos</h3>
+          <span>{{ summary.alerts.length }}</span>
+        </div>
+        <div *ngIf="summary.alerts.length === 0" class="empty-state">Nenhum alerta aberto.</div>
+        <table *ngIf="summary.alerts.length > 0">
+          <thead>
+            <tr>
+              <th>Severidade</th>
+              <th>Alerta</th>
+              <th>Canal</th>
+              <th>Ultima ocorrencia</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let alert of summary.alerts">
+              <td><span class="status-pill" [ngClass]="alert.severity === 'critical' ? 'status-error' : 'status-warn'">{{ alert.severity }}</span></td>
+              <td>
+                <strong>{{ alert.title }}</strong>
+                <div class="muted">{{ alert.message }}</div>
+              </td>
+              <td>{{ alert.channel || alert.service || alert.queue || 'system' }}</td>
+              <td>{{ formatDate(alert.lastAt) }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="operation-section">
+      <div class="section-header">
+        <h3>Canais</h3>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Status</th>
+            <th>Canal</th>
+            <th>Nome</th>
+            <th>Projeto</th>
+            <th>Ultimo webhook</th>
+            <th>Ultimo erro</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let channel of summary.channels">
+            <td><span class="status-pill" [ngClass]="getStatusClass(channel.status)">{{ getStatusLabel(channel.status) }}</span></td>
+            <td>{{ channel.channel }}</td>
+            <td>
+              <strong>{{ channel.name }}</strong>
+              <div class="muted">{{ channel.integrationId }}</div>
+            </td>
+            <td>{{ channel.id_project }}</td>
+            <td>{{ formatDate(channel.lastWebhookAt) }}</td>
+            <td>
+              <span *ngIf="channel.lastError">{{ channel.lastError }}</span>
+              <span *ngIf="!channel.lastError" class="muted">Sem erro recente</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="operation-section">
+      <div class="section-header">
+        <h3>Eventos recentes</h3>
+      </div>
+      <div class="admin-filters">
+        <select [(ngModel)]="eventFilters.channel" (change)="loadEvents()">
+          <option value="">Todos canais</option>
+          <option value="waba">WABA</option>
+          <option value="casezap">CaseZap</option>
+          <option value="system">Sistema</option>
+        </select>
+        <select [(ngModel)]="eventFilters.level" (change)="loadEvents()">
+          <option value="">Todos niveis</option>
+          <option value="info">Info</option>
+          <option value="warn">Warn</option>
+          <option value="error">Error</option>
+        </select>
+        <input type="text" placeholder="Projeto" [(ngModel)]="eventFilters.project_id" (keyup.enter)="loadEvents()">
+        <button type="button" class="btn-secondary" (click)="loadEvents()">Filtrar</button>
+      </div>
+      <div *ngIf="isLoadingEvents" class="loading-state small">Carregando eventos...</div>
+      <table *ngIf="!isLoadingEvents">
+        <thead>
+          <tr>
+            <th>Hora</th>
+            <th>Nivel</th>
+            <th>Canal</th>
+            <th>Evento</th>
+            <th>Projeto</th>
+            <th>Erro</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let event of events">
+            <td>{{ formatDate(event.timestamp) }}</td>
+            <td><span class="status-pill" [ngClass]="getStatusClass(event.level)">{{ event.level }}</span></td>
+            <td>{{ event.channel }}</td>
+            <td>
+              <strong>{{ event.event }}</strong>
+              <div class="muted">{{ event.integrationId }}</div>
+            </td>
+            <td>{{ event.id_project || 'N/A' }}</td>
+            <td>{{ event.errorMessage || '-' }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div *ngIf="!isLoadingEvents && events.length === 0" class="empty-state">Nenhum evento encontrado.</div>
+    </div>
+  </div>
+</div>
