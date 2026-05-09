@@ -713,6 +713,8 @@ export class AuthService {
 
           if (jsonRes['role']) {
             localStorage.setItem('superadmin_role', jsonRes['role']);
+          } else {
+            localStorage.removeItem('superadmin_role');
           }
 
         // const userRole =
