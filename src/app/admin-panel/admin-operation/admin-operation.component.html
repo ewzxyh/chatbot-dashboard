@@ -43,6 +43,7 @@
             <tr>
               <th>Severidade</th>
               <th>Alerta</th>
+              <th>Ocorrencias</th>
               <th>Canal</th>
               <th>Ultima ocorrencia</th>
             </tr>
@@ -53,7 +54,9 @@
               <td>
                 <strong>{{ alert.title }}</strong>
                 <div class="muted">{{ alert.message }}</div>
+                <div *ngIf="alert.firstAt" class="muted">Desde {{ formatDate(alert.firstAt) }}</div>
               </td>
+              <td>{{ alert.occurrences || 1 }}</td>
               <td>{{ alert.channel || alert.service || alert.queue || 'system' }}</td>
               <td>{{ formatDate(alert.lastAt) }}</td>
             </tr>
