@@ -10,6 +10,9 @@ export class AdminOperationComponent implements OnInit {
   summary: any = null;
   metrics: any = null;
   metricRows: any[] = [];
+  statusCards: any[] = [];
+  affectedItems: any[] = [];
+  queueRows: any[] = [];
   events: any[] = [];
   isLoading = true;
   isLoadingMetrics = false;
@@ -47,7 +50,7 @@ export class AdminOperationComponent implements OnInit {
     this.errorMessage = '';
     this.adminService.getHealthSummary().subscribe(
       (data) => {
-        this.summary = data;
+        this.applySummary(data);
         this.isLoading = false;
       },
       () => {
@@ -55,6 +58,11 @@ export class AdminOperationComponent implements OnInit {
         this.isLoading = false;
       }
     );
+  }
+
+  applySummary(data: any) {
+    this.summary = data;
+    this.rebuildStatusPage();
   }
 
   loadEvents() {
@@ -200,9 +208,11 @@ export class AdminOperationComponent implements OnInit {
     const index = this.summary.services.findIndex((service) => service.name === 'storage');
     if (index === -1) {
       this.summary.services.push(result);
+      this.rebuildStatusPage();
       return;
     }
     this.summary.services[index] = Object.assign({}, this.summary.services[index], result);
+    this.rebuildStatusPage();
   }
 
   mergeChannelDiagnostic(channel: any, result: any) {
@@ -218,6 +228,117 @@ export class AdminOperationComponent implements OnInit {
     channel.qualityRating = result.qualityRating;
     channel.nameStatus = result.nameStatus;
     channel.canSendNewMessages = result.canSendNewMessages;
+    this.rebuildStatusPage();
+  }
+
+  rebuildStatusPage() {
+    if (!this.summary) {
+      this.statusCards = [];
+      this.affectedItems = [];
+      this.queueRows = [];
+      return;
+    }
+
+    const services = Array.isArray(this.summary.services) ? this.summary.services : [];
+    const channels = Array.isArray(this.summary.channels) ? this.summary.channels : [];
+    const alerts = Array.isArray(this.summary.alerts) ? this.summary.alerts : [];
+    const queues = this.extractQueueRows();
+    const serviceIssues = services.filter((service) => this.isIssueStatus(service.status));
+    const channelIssues = channels.filter((channel) => {
+      return this.isIssueStatus(channel.status) ||
+        this.isIssueStatus(channel.providerHealth) ||
+        this.isIssueStatus(channel.providerStatus);
+    });
+    const queueIssues = queues.filter((queue) => this.isQueueIssue(queue));
+    const criticalAlerts = alerts.filter((alert) => String(alert.severity || '').toLowerCase() === 'critical');
+
+    this.queueRows = queues;
+    this.statusCards = [
+      {
+        label: 'Status geral',
+        value: this.getStatusLabel(this.summary.overallStatus),
+        status: this.summary.overallStatus,
+        detail: this.formatDate(this.summary.generatedAt)
+      },
+      {
+        label: 'Alertas criticos',
+        value: criticalAlerts.length,
+        status: criticalAlerts.length > 0 ? 'down' : 'ok',
+        detail: alerts.length + ' alertas abertos'
+      },
+      {
+        label: 'Servicos afetados',
+        value: serviceIssues.length,
+        status: this.getCollectionStatus(serviceIssues),
+        detail: services.length + ' monitorados'
+      },
+      {
+        label: 'Canais afetados',
+        value: channelIssues.length,
+        status: this.getCollectionStatus(channelIssues),
+        detail: channels.length + ' conectores'
+      },
+      {
+        label: 'Filas com risco',
+        value: queueIssues.length,
+        status: this.getCollectionStatus(queueIssues),
+        detail: queues.length + ' monitoradas'
+      }
+    ];
+
+    this.affectedItems = this.buildAffectedItems(alerts, serviceIssues, channelIssues, queueIssues);
+  }
+
+  extractQueueRows(): any[] {
+    if (!this.summary || !this.summary.queues || !this.summary.queues.details) return [];
+    const queues = this.summary.queues.details.queues;
+    return Array.isArray(queues) ? queues : [];
+  }
+
+  buildAffectedItems(alerts: any[], services: any[], channels: any[], queues: any[]): any[] {
+    const items = [];
+
+    alerts.forEach((alert) => {
+      items.push({
+        type: 'Alerta',
+        name: alert.title || alert.key || alert.type,
+        status: alert.severity || 'warning',
+        detail: alert.message || alert.type || '',
+        lastAt: alert.lastAt
+      });
+    });
+
+    services.forEach((service) => {
+      items.push({
+        type: 'Servico',
+        name: service.label || service.name,
+        status: service.status,
+        detail: this.serviceDetail(service),
+        lastAt: this.summary.generatedAt
+      });
+    });
+
+    channels.forEach((channel) => {
+      items.push({
+        type: 'Canal',
+        name: (channel.name || channel.integrationId || channel.channel) + ' (' + channel.channel + ')',
+        status: channel.providerHealth || channel.status || channel.providerStatus,
+        detail: channel.providerReason || channel.lastError || this.providerDetail(channel),
+        lastAt: channel.providerCheckedAt || channel.lastErrorAt || channel.lastWebhookAt
+      });
+    });
+
+    queues.forEach((queue) => {
+      items.push({
+        type: 'Fila',
+        name: queue.name,
+        status: queue.status,
+        detail: this.queueDetail(queue),
+        lastAt: this.summary.generatedAt
+      });
+    });
+
+    return items.slice(0, 12);
   }
 
   getStatusLabel(status: string): string {
@@ -228,6 +349,8 @@ export class AdminOperationComponent implements OnInit {
       unknown: 'Sem config',
       skipped: 'Ignorado',
       failed: 'Falhou',
+      warning: 'Aviso',
+      critical: 'Critico',
       success: 'Sucesso',
       active: 'Ativo',
       connected: 'Conectado',
@@ -245,9 +368,59 @@ export class AdminOperationComponent implements OnInit {
   getStatusClass(status: string): string {
     const normalized = status ? String(status).toLowerCase() : '';
     if (normalized === 'ok' || normalized === 'success' || normalized === 'active' || normalized === 'connected' || normalized === 'green') return 'status-ok';
-    if (normalized === 'degraded' || normalized === 'warn' || normalized === 'skipped' || normalized === 'restricted' || normalized === 'flagged' || normalized === 'rate_limited' || normalized === 'capped' || normalized === 'yellow') return 'status-warn';
-    if (normalized === 'down' || normalized === 'error' || normalized === 'failed' || normalized === 'disconnected' || normalized === 'banned' || normalized === 'bannedm' || normalized === 'disabled' || normalized === 'red') return 'status-error';
+    if (normalized === 'degraded' || normalized === 'warn' || normalized === 'warning' || normalized === 'skipped' || normalized === 'restricted' || normalized === 'flagged' || normalized === 'rate_limited' || normalized === 'capped' || normalized === 'yellow') return 'status-warn';
+    if (normalized === 'down' || normalized === 'error' || normalized === 'failed' || normalized === 'critical' || normalized === 'disconnected' || normalized === 'banned' || normalized === 'bannedm' || normalized === 'disabled' || normalized === 'red') return 'status-error';
     return 'status-unknown';
+  }
+
+  isIssueStatus(status: string): boolean {
+    const normalized = status ? String(status).toLowerCase() : '';
+    return [
+      'degraded',
+      'warn',
+      'warning',
+      'restricted',
+      'flagged',
+      'rate_limited',
+      'capped',
+      'yellow',
+      'down',
+      'error',
+      'failed',
+      'disconnected',
+      'banned',
+      'bannedm',
+      'disabled',
+      'red'
+    ].indexOf(normalized) !== -1;
+  }
+
+  isErrorStatus(status: string): boolean {
+    const normalized = status ? String(status).toLowerCase() : '';
+    return [
+      'down',
+      'error',
+      'failed',
+      'disconnected',
+      'banned',
+      'bannedm',
+      'disabled',
+      'red'
+    ].indexOf(normalized) !== -1;
+  }
+
+  getCollectionStatus(items: any[]): string {
+    if (!items || items.length === 0) return 'ok';
+    const hasError = items.some((item) => this.isErrorStatus(item.status || item.providerHealth || item.providerStatus));
+    return hasError ? 'down' : 'degraded';
+  }
+
+  isQueueIssue(queue: any): boolean {
+    if (!queue) return false;
+    return this.isIssueStatus(queue.status) ||
+      Number(queue.messagesReady || 0) > 0 ||
+      Number(queue.messagesUnacknowledged || 0) > 0 ||
+      Number(queue.consumers || 0) === 0;
   }
 
   formatDate(value: string): string {
@@ -284,6 +457,13 @@ export class AdminOperationComponent implements OnInit {
     if (service.name === 'server') return 'uptime ' + service.details.uptimeSeconds + 's';
     if (service.latencyMs !== null && service.latencyMs !== undefined) return service.latencyMs + ' ms';
     return '';
+  }
+
+  queueDetail(queue: any): string {
+    if (!queue) return '';
+    return 'ready ' + Number(queue.messagesReady || 0) +
+      ' | unacked ' + Number(queue.messagesUnacknowledged || 0) +
+      ' | consumers ' + Number(queue.consumers || 0);
   }
 
   providerDetail(channel: any): string {

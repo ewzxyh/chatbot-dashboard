@@ -42,6 +42,80 @@
   }
 }
 
+.status-board {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.status-card {
+  background: #fff;
+  border: 1px solid #e0e6eb;
+  border-radius: 8px;
+  min-height: 96px;
+  padding: 12px;
+
+  strong {
+    display: block;
+    margin-top: 10px;
+    font-size: 24px;
+    line-height: 1.1;
+  }
+
+  small {
+    display: block;
+    margin-top: 8px;
+    color: #78909c;
+    font-size: 12px;
+    overflow-wrap: anywhere;
+  }
+}
+
+.status-card-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+
+  span:first-child {
+    color: #607d8b;
+    font-size: 12px;
+    font-weight: 700;
+  }
+}
+
+.status-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  min-width: 10px;
+  border-radius: 50%;
+  padding: 0;
+}
+
+.status-dot.status-ok {
+  background: #1b7f35;
+}
+
+.status-dot.status-warn {
+  background: #9a6a00;
+}
+
+.status-dot.status-error {
+  background: #b71c1c;
+}
+
+.status-dot.status-unknown {
+  background: #78909c;
+}
+
+.status-page-section {
+  table {
+    margin-top: 4px;
+  }
+}
+
 .operation-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -277,6 +351,7 @@ th {
 
 @media (max-width: 900px) {
   .operation-grid,
+  .status-board,
   .service-grid,
   .metric-grid,
   .metric-columns {

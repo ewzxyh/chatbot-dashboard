@@ -16,6 +16,45 @@
       <strong>{{ getStatusLabel(summary.overallStatus) }}</strong>
     </div>
 
+    <div class="status-board">
+      <div *ngFor="let card of statusCards" class="status-card">
+        <div class="status-card-title">
+          <span>{{ card.label }}</span>
+          <span class="status-dot" [ngClass]="getStatusClass(card.status)"></span>
+        </div>
+        <strong>{{ card.value }}</strong>
+        <small>{{ card.detail }}</small>
+      </div>
+    </div>
+
+    <div class="operation-section status-page-section">
+      <div class="section-header">
+        <h3>Impacto atual</h3>
+        <span>{{ affectedItems.length }}</span>
+      </div>
+      <div *ngIf="affectedItems.length === 0" class="empty-state">Nenhum componente afetado.</div>
+      <table *ngIf="affectedItems.length > 0">
+        <thead>
+          <tr>
+            <th>Tipo</th>
+            <th>Componente</th>
+            <th>Status</th>
+            <th>Detalhe</th>
+            <th>Ultima ocorrencia</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of affectedItems">
+            <td>{{ item.type }}</td>
+            <td><strong>{{ item.name }}</strong></td>
+            <td><span class="status-pill" [ngClass]="getStatusClass(item.status)">{{ getStatusLabel(item.status) }}</span></td>
+            <td>{{ item.detail || '-' }}</td>
+            <td>{{ formatDate(item.lastAt) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
     <div class="operation-grid">
       <div class="operation-section">
         <div class="section-header">
@@ -66,6 +105,38 @@
           </tbody>
         </table>
       </div>
+    </div>
+
+    <div class="operation-section">
+      <div class="section-header">
+        <h3>Filas RabbitMQ</h3>
+        <span>{{ queueRows.length }}</span>
+      </div>
+      <div *ngIf="queueRows.length === 0" class="empty-state">Nenhuma fila monitorada.</div>
+      <table *ngIf="queueRows.length > 0">
+        <thead>
+          <tr>
+            <th>Fila</th>
+            <th>Status</th>
+            <th>Ready</th>
+            <th>Unacked</th>
+            <th>Total</th>
+            <th>Consumers</th>
+            <th>Origem</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let queue of queueRows">
+            <td><strong>{{ queue.name }}</strong></td>
+            <td><span class="status-pill" [ngClass]="getStatusClass(queue.status)">{{ getStatusLabel(queue.status) }}</span></td>
+            <td>{{ queue.messagesReady || 0 }}</td>
+            <td>{{ queue.messagesUnacknowledged || 0 }}</td>
+            <td>{{ queue.messagesTotal || 0 }}</td>
+            <td>{{ queue.consumers || 0 }}</td>
+            <td>{{ queue.source || 'N/A' }}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
     <div class="operation-section">
