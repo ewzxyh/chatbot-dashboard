@@ -104,6 +104,67 @@
   overflow-wrap: anywhere;
 }
 
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.metric-card {
+  border: 1px solid #edf1f5;
+  border-radius: 8px;
+  padding: 12px;
+  min-height: 70px;
+
+  span {
+    display: block;
+    color: #607d8b;
+    font-size: 12px;
+  }
+
+  strong {
+    display: block;
+    margin-top: 8px;
+    font-size: 22px;
+  }
+}
+
+.metric-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 14px;
+
+  h4 {
+    margin: 0 0 8px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+}
+
+.metric-list-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  border-bottom: 1px solid #edf1f5;
+  padding: 7px 0;
+  font-size: 12px;
+
+  span {
+    color: #455a64;
+    overflow-wrap: anywhere;
+  }
+
+  strong {
+    color: #263238;
+  }
+}
+
+.metrics-filters {
+  margin-bottom: 14px;
+}
+
 .status-pill {
   display: inline-flex;
   align-items: center;
@@ -158,6 +219,10 @@
   padding: 8px 0;
 }
 
+.compact {
+  padding: 8px 0;
+}
+
 button.btn-primary,
 button.btn-secondary {
   border-radius: 6px;
@@ -208,7 +273,9 @@ th {
 
 @media (max-width: 900px) {
   .operation-grid,
-  .service-grid {
+  .service-grid,
+  .metric-grid,
+  .metric-columns {
     grid-template-columns: 1fr;
   }
 

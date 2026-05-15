@@ -67,6 +67,100 @@
 
     <div class="operation-section">
       <div class="section-header">
+        <h3>Historico operacional</h3>
+        <span *ngIf="metrics">{{ formatDate(metrics.generatedAt) }}</span>
+      </div>
+      <div class="admin-filters metrics-filters">
+        <select [(ngModel)]="metricFilters.range" (change)="onMetricRangeChange()">
+          <option value="24h">Ultimas 24h</option>
+          <option value="7d">Ultimos 7 dias</option>
+          <option value="14d">Ultimos 14 dias</option>
+          <option value="30d">Ultimos 30 dias</option>
+        </select>
+        <select [(ngModel)]="metricFilters.bucket" (change)="loadMetrics()">
+          <option value="hour">Por hora</option>
+          <option value="day">Por dia</option>
+        </select>
+        <select [(ngModel)]="metricFilters.channel" (change)="loadMetrics()">
+          <option value="">Todos canais</option>
+          <option value="waba">WABA</option>
+          <option value="casezap">CaseZap</option>
+          <option value="system">Sistema</option>
+        </select>
+        <input type="text" placeholder="Projeto" [(ngModel)]="metricFilters.project_id" (keyup.enter)="loadMetrics()">
+        <button type="button" class="btn-secondary" (click)="loadMetrics()">Filtrar</button>
+      </div>
+
+      <div *ngIf="isLoadingMetrics" class="loading-state small">Carregando historico...</div>
+      <div *ngIf="metrics && !isLoadingMetrics">
+        <div class="metric-grid">
+          <div class="metric-card">
+            <span>Eventos</span>
+            <strong>{{ metrics.events.total }}</strong>
+          </div>
+          <div class="metric-card">
+            <span>Erros</span>
+            <strong>{{ metricCount('events', 'byLevel', 'error') }}</strong>
+          </div>
+          <div class="metric-card">
+            <span>Alertas</span>
+            <strong>{{ metrics.alerts.total }}</strong>
+          </div>
+          <div class="metric-card">
+            <span>Criticos abertos</span>
+            <strong>{{ metrics.alerts.criticalOpenCount }}</strong>
+          </div>
+        </div>
+
+        <div class="metric-columns">
+          <div>
+            <h4>Eventos mais frequentes</h4>
+            <div *ngIf="topMetricItems('events', 'byEvent').length === 0" class="empty-state compact">Sem eventos.</div>
+            <div *ngFor="let item of topMetricItems('events', 'byEvent')" class="metric-list-row">
+              <span>{{ item.key }}</span>
+              <strong>{{ item.count }}</strong>
+            </div>
+          </div>
+          <div>
+            <h4>Alertas por tipo</h4>
+            <div *ngIf="topMetricItems('alerts', 'byType').length === 0" class="empty-state compact">Sem alertas.</div>
+            <div *ngFor="let item of topMetricItems('alerts', 'byType')" class="metric-list-row">
+              <span>{{ item.key }}</span>
+              <strong>{{ item.count }}</strong>
+            </div>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Periodo</th>
+              <th>Eventos</th>
+              <th>Erros</th>
+              <th>Falhas</th>
+              <th>Alertas</th>
+              <th>Criticos</th>
+              <th>Abertos</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of metricRows">
+              <td>{{ formatBucket(row.bucketStart) }}</td>
+              <td>{{ row.events }}</td>
+              <td>{{ row.errors }}</td>
+              <td>{{ row.failed }}</td>
+              <td>{{ row.alerts }}</td>
+              <td>{{ row.criticalAlerts }}</td>
+              <td>{{ row.openAlerts }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <div *ngIf="metricRows.length === 0" class="empty-state">Nenhum historico encontrado.</div>
+      </div>
+    </div>
+
+    <div class="operation-section">
+      <div class="section-header">
         <h3>Canais</h3>
       </div>
       <table>

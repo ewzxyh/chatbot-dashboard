@@ -208,4 +208,22 @@ export class AdminService {
     return this._httpclient
       .get<any>(url, httpOptions);
   }
+
+  public getOperationalMetrics(filters: any): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': this.TOKEN
+      })
+    };
+    let url = this.SERVER_BASE_PATH + 'sadmin/operational-metrics?range=' + encodeURIComponent(filters && filters.range ? filters.range : '24h');
+    if (filters && filters.bucket) { url += '&bucket=' + encodeURIComponent(filters.bucket); }
+    if (filters && filters.channel) { url += '&channel=' + encodeURIComponent(filters.channel); }
+    if (filters && filters.project_id) { url += '&project_id=' + encodeURIComponent(filters.project_id); }
+    this.logger.log('[ADMIN-SERV] - GET OPERATIONAL METRICS - URL', url);
+
+    return this._httpclient
+      .get<any>(url, httpOptions);
+  }
 }

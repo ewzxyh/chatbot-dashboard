@@ -8,12 +8,21 @@ import { AdminService } from '../../services/admin.service';
 })
 export class AdminOperationComponent implements OnInit {
   summary: any = null;
+  metrics: any = null;
+  metricRows: any[] = [];
   events: any[] = [];
   isLoading = true;
+  isLoadingMetrics = false;
   isLoadingEvents = false;
   testingChannelKey = '';
   channelTestResults: any = {};
   errorMessage = '';
+  metricFilters: any = {
+    range: '24h',
+    bucket: 'hour',
+    channel: '',
+    project_id: ''
+  };
   eventFilters: any = {
     channel: '',
     level: '',
@@ -28,6 +37,7 @@ export class AdminOperationComponent implements OnInit {
 
   refresh() {
     this.loadSummary();
+    this.loadMetrics();
     this.loadEvents();
   }
 
@@ -58,6 +68,76 @@ export class AdminOperationComponent implements OnInit {
         this.isLoadingEvents = false;
       }
     );
+  }
+
+  loadMetrics() {
+    this.isLoadingMetrics = true;
+    this.adminService.getOperationalMetrics(this.metricFilters).subscribe(
+      (result) => {
+        this.metrics = result;
+        this.metricRows = this.mergeMetricRows(result);
+        this.isLoadingMetrics = false;
+      },
+      () => {
+        this.metrics = null;
+        this.metricRows = [];
+        this.isLoadingMetrics = false;
+      }
+    );
+  }
+
+  onMetricRangeChange() {
+    if (this.metricFilters.range === '24h') {
+      this.metricFilters.bucket = 'hour';
+    } else if (!this.metricFilters.bucket) {
+      this.metricFilters.bucket = 'day';
+    }
+    this.loadMetrics();
+  }
+
+  mergeMetricRows(metrics: any): any[] {
+    if (!metrics) return [];
+    const alertByBucket = {};
+    const eventRows = metrics.events && metrics.events.byBucket ? metrics.events.byBucket : [];
+    const alertRows = metrics.alerts && metrics.alerts.byBucket ? metrics.alerts.byBucket : [];
+
+    alertRows.forEach((row) => {
+      alertByBucket[row.bucketStart] = row;
+    });
+
+    const rows = eventRows.map((row) => {
+      const alertRow = alertByBucket[row.bucketStart] || {};
+      return {
+        bucketStart: row.bucketStart,
+        events: row.count || 0,
+        errors: row.errors || 0,
+        warnings: row.warnings || 0,
+        failed: row.failed || 0,
+        alerts: alertRow.count || 0,
+        criticalAlerts: alertRow.critical || 0,
+        openAlerts: alertRow.open || 0
+      };
+    });
+
+    alertRows.forEach((row) => {
+      const exists = rows.some((eventRow) => eventRow.bucketStart === row.bucketStart);
+      if (!exists) {
+        rows.push({
+          bucketStart: row.bucketStart,
+          events: 0,
+          errors: 0,
+          warnings: 0,
+          failed: 0,
+          alerts: row.count || 0,
+          criticalAlerts: row.critical || 0,
+          openAlerts: row.open || 0
+        });
+      }
+    });
+
+    return rows.sort((a, b) => {
+      return new Date(b.bucketStart).getTime() - new Date(a.bucketStart).getTime();
+    });
   }
 
   channelKey(channel: any): string {
@@ -138,6 +218,28 @@ export class AdminOperationComponent implements OnInit {
   formatDate(value: string): string {
     if (!value) return 'N/A';
     return new Date(value).toLocaleString();
+  }
+
+  formatBucket(value: string): string {
+    if (!value) return 'N/A';
+    const date = new Date(value);
+    if (this.metricFilters.bucket === 'day') {
+      return date.toLocaleDateString();
+    }
+    return date.toLocaleString();
+  }
+
+  metricCount(group: string, collection: string, key: string): number {
+    if (!this.metrics || !this.metrics[group] || !this.metrics[group][collection]) return 0;
+    return this.metrics[group][collection][key] || 0;
+  }
+
+  topMetricItems(group: string, collection: string): any[] {
+    if (!this.metrics || !this.metrics[group] || !this.metrics[group][collection]) return [];
+    return Object.keys(this.metrics[group][collection])
+      .map((key) => ({ key, count: this.metrics[group][collection][key] }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 6);
   }
 
   serviceDetail(service: any): string {
