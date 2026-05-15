@@ -28,6 +28,9 @@
               <span class="status-pill" [ngClass]="getStatusClass(service.status)">{{ getStatusLabel(service.status) }}</span>
             </div>
             <div class="service-detail">{{ serviceDetail(service) }}</div>
+            <button *ngIf="service.name === 'storage'" type="button" class="btn-secondary btn-test service-action" [disabled]="isTestingStorage" (click)="testStorage()">
+              {{ isTestingStorage ? 'Testando...' : 'Testar' }}
+            </button>
           </div>
         </div>
       </div>

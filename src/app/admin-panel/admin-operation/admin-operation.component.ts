@@ -14,6 +14,7 @@ export class AdminOperationComponent implements OnInit {
   isLoading = true;
   isLoadingMetrics = false;
   isLoadingEvents = false;
+  isTestingStorage = false;
   testingChannelKey = '';
   channelTestResults: any = {};
   errorMessage = '';
@@ -168,6 +169,40 @@ export class AdminOperationComponent implements OnInit {
         this.testingChannelKey = '';
       }
     );
+  }
+
+  testStorage() {
+    if (this.isTestingStorage) return;
+    this.isTestingStorage = true;
+    this.adminService.testStorageConnection().subscribe(
+      (response) => {
+        const result = response && response.result ? response.result : response;
+        this.mergeStorageResult(result);
+        this.isTestingStorage = false;
+        this.loadSummary();
+        this.loadEvents();
+        this.loadMetrics();
+      },
+      () => {
+        this.mergeStorageResult({
+          name: 'storage',
+          label: 'Storage',
+          status: 'down',
+          details: { reason: 'test_failed' }
+        });
+        this.isTestingStorage = false;
+      }
+    );
+  }
+
+  mergeStorageResult(result: any) {
+    if (!this.summary || !this.summary.services || !result) return;
+    const index = this.summary.services.findIndex((service) => service.name === 'storage');
+    if (index === -1) {
+      this.summary.services.push(result);
+      return;
+    }
+    this.summary.services[index] = Object.assign({}, this.summary.services[index], result);
   }
 
   mergeChannelDiagnostic(channel: any, result: any) {

@@ -104,6 +104,10 @@
   overflow-wrap: anywhere;
 }
 
+.service-action {
+  margin-top: 10px;
+}
+
 .metric-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));

@@ -191,6 +191,21 @@ export class AdminService {
       .post<any>(url, { channel, integrationId }, httpOptions);
   }
 
+  public testStorageConnection(): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': this.TOKEN
+      })
+    };
+    const url = this.SERVER_BASE_PATH + 'sadmin/health/storage/test';
+    this.logger.log('[ADMIN-SERV] - TEST STORAGE CONNECTION - URL', url);
+
+    return this._httpclient
+      .post<any>(url, {}, httpOptions);
+  }
+
   public getOperationalEvents(filters: any): Observable<any> {
     const httpOptions = {
       headers: new HttpHeaders({
