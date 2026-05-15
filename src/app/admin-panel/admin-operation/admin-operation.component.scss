@@ -149,6 +149,30 @@
   }
 }
 
+.section-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.notification-test-result {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  font-size: 12px;
+
+  strong {
+    text-transform: uppercase;
+  }
+
+  span {
+    overflow-wrap: anywhere;
+  }
+}
+
 .service-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

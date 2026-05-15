@@ -18,8 +18,10 @@ export class AdminOperationComponent implements OnInit {
   isLoadingMetrics = false;
   isLoadingEvents = false;
   isTestingStorage = false;
+  isTestingNotification = false;
   testingChannelKey = '';
   channelTestResults: any = {};
+  notificationTestResult: any = null;
   errorMessage = '';
   metricFilters: any = {
     range: '24h',
@@ -199,6 +201,29 @@ export class AdminOperationComponent implements OnInit {
           details: { reason: 'test_failed' }
         });
         this.isTestingStorage = false;
+      }
+    );
+  }
+
+  testAlertNotification() {
+    if (this.isTestingNotification) return;
+    this.isTestingNotification = true;
+    this.notificationTestResult = null;
+
+    this.adminService.testOperationalAlertNotification().subscribe(
+      (response) => {
+        this.notificationTestResult = response && response.result ? response.result : response;
+        this.isTestingNotification = false;
+        this.loadEvents();
+        this.loadMetrics();
+      },
+      () => {
+        this.notificationTestResult = {
+          status: 'failed',
+          ok: false,
+          error: 'test_failed'
+        };
+        this.isTestingNotification = false;
       }
     );
   }
@@ -474,6 +499,15 @@ export class AdminOperationComponent implements OnInit {
     if (channel.nameStatus) parts.push('nome: ' + channel.nameStatus);
     if (channel.canSendNewMessages === false) parts.push('envio limitado');
     if (channel.providerLatencyMs !== null && channel.providerLatencyMs !== undefined) parts.push(channel.providerLatencyMs + ' ms');
+    return parts.join(' | ');
+  }
+
+  notificationResultDetail(result: any): string {
+    if (!result) return '';
+    const parts = [];
+    if (result.webhook && result.webhook.status) parts.push('webhook: ' + result.webhook.status);
+    if (result.email && result.email.status) parts.push('email: ' + result.email.status);
+    if (result.error) parts.push(result.error);
     return parts.join(' | ');
   }
 }

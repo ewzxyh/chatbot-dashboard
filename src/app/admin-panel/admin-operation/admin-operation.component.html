@@ -77,7 +77,16 @@
       <div class="operation-section">
         <div class="section-header">
           <h3>Alertas abertos</h3>
-          <span>{{ summary.alerts.length }}</span>
+          <div class="section-actions">
+            <span>{{ summary.alerts.length }}</span>
+            <button type="button" class="btn-secondary btn-test" [disabled]="isTestingNotification" (click)="testAlertNotification()">
+              {{ isTestingNotification ? 'Testando...' : 'Testar notificacao' }}
+            </button>
+          </div>
+        </div>
+        <div *ngIf="notificationTestResult" class="notification-test-result" [ngClass]="getStatusClass(notificationTestResult.status)">
+          <strong>{{ getStatusLabel(notificationTestResult.status) }}</strong>
+          <span>{{ notificationResultDetail(notificationTestResult) }}</span>
         </div>
         <div *ngIf="summary.alerts.length === 0" class="empty-state">Nenhum alerta aberto.</div>
         <table *ngIf="summary.alerts.length > 0">

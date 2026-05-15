@@ -206,6 +206,21 @@ export class AdminService {
       .post<any>(url, {}, httpOptions);
   }
 
+  public testOperationalAlertNotification(): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': this.TOKEN
+      })
+    };
+    const url = this.SERVER_BASE_PATH + 'sadmin/operational-alerts/test-notification';
+    this.logger.log('[ADMIN-SERV] - TEST OPERATIONAL ALERT NOTIFICATION - URL', url);
+
+    return this._httpclient
+      .post<any>(url, {}, httpOptions);
+  }
+
   public getOperationalEvents(filters: any): Observable<any> {
     const httpOptions = {
       headers: new HttpHeaders({
