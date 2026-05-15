@@ -176,6 +176,21 @@ export class AdminService {
       .get<any>(url, httpOptions);
   }
 
+  public testChannelConnection(channel: string, integrationId: string): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': this.TOKEN
+      })
+    };
+    const url = this.SERVER_BASE_PATH + 'sadmin/health/channels/test';
+    this.logger.log('[ADMIN-SERV] - TEST CHANNEL CONNECTION - URL', url);
+
+    return this._httpclient
+      .post<any>(url, { channel, integrationId }, httpOptions);
+  }
+
   public getOperationalEvents(filters: any): Observable<any> {
     const httpOptions = {
       headers: new HttpHeaders({

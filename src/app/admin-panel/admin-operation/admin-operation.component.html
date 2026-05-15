@@ -75,9 +75,11 @@
             <th>Status</th>
             <th>Canal</th>
             <th>Nome</th>
+            <th>Provider</th>
             <th>Projeto</th>
             <th>Ultimo webhook</th>
             <th>Ultimo erro</th>
+            <th>Acoes</th>
           </tr>
         </thead>
         <tbody>
@@ -88,11 +90,27 @@
               <strong>{{ channel.name }}</strong>
               <div class="muted">{{ channel.integrationId }}</div>
             </td>
+            <td>
+              <span class="status-pill" [ngClass]="getStatusClass(channel.providerHealth || channel.providerStatus)">
+                {{ getStatusLabel(channel.providerHealth || channel.providerStatus) }}
+              </span>
+              <div class="muted">{{ providerDetail(channel) || 'Sem diagnostico' }}</div>
+              <div *ngIf="channel.providerReason" class="muted">{{ channel.providerReason }}</div>
+              <div *ngIf="channel.providerCheckedAt" class="muted">Check {{ formatDate(channel.providerCheckedAt) }}</div>
+            </td>
             <td>{{ channel.id_project }}</td>
             <td>{{ formatDate(channel.lastWebhookAt) }}</td>
             <td>
               <span *ngIf="channel.lastError">{{ channel.lastError }}</span>
               <span *ngIf="!channel.lastError" class="muted">Sem erro recente</span>
+            </td>
+            <td>
+              <button type="button" class="btn-secondary btn-test" [disabled]="testingChannelKey === channelKey(channel)" (click)="testChannel(channel)">
+                {{ testingChannelKey === channelKey(channel) ? 'Testando...' : 'Testar' }}
+              </button>
+              <div *ngIf="channelTestResults[channelKey(channel)]" class="test-result" [ngClass]="getStatusClass(channelTestResults[channelKey(channel)].providerHealth)">
+                {{ getStatusLabel(channelTestResults[channelKey(channel)].providerHealth) }}
+              </div>
             </td>
           </tr>
         </tbody>

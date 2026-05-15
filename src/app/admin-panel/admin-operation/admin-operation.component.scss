@@ -178,6 +178,24 @@ button.btn-secondary {
   border: 1px solid #cfd8dc;
 }
 
+button.btn-test {
+  min-width: 82px;
+}
+
+button:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.test-result {
+  display: inline-block;
+  border-radius: 6px;
+  margin-top: 6px;
+  padding: 3px 6px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
 table {
   table-layout: fixed;
 }

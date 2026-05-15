@@ -11,6 +11,8 @@ export class AdminOperationComponent implements OnInit {
   events: any[] = [];
   isLoading = true;
   isLoadingEvents = false;
+  testingChannelKey = '';
+  channelTestResults: any = {};
   errorMessage = '';
   eventFilters: any = {
     channel: '',
@@ -58,6 +60,51 @@ export class AdminOperationComponent implements OnInit {
     );
   }
 
+  channelKey(channel: any): string {
+    if (!channel) return '';
+    return channel.channel + ':' + (channel.integrationDocId || channel.integrationId || '');
+  }
+
+  testChannel(channel: any) {
+    if (!channel) return;
+    const integrationId = channel.integrationDocId || channel.integrationId;
+    const key = this.channelKey(channel);
+    this.testingChannelKey = key;
+    this.channelTestResults[key] = null;
+
+    this.adminService.testChannelConnection(channel.channel, integrationId).subscribe(
+      (response) => {
+        const result = response && response.result ? response.result : response;
+        this.channelTestResults[key] = result;
+        this.testingChannelKey = '';
+        this.mergeChannelDiagnostic(channel, result);
+        this.loadEvents();
+      },
+      () => {
+        this.channelTestResults[key] = {
+          providerHealth: 'down',
+          providerReason: 'test_failed'
+        };
+        this.testingChannelKey = '';
+      }
+    );
+  }
+
+  mergeChannelDiagnostic(channel: any, result: any) {
+    if (!channel || !result) return;
+    channel.status = result.providerHealth || result.status || channel.status;
+    channel.providerHealth = result.providerHealth || result.status;
+    channel.providerStatus = result.providerStatus;
+    channel.providerReason = result.providerReason;
+    channel.providerCode = result.providerCode;
+    channel.providerCheckedAt = result.providerCheckedAt;
+    channel.providerLatencyMs = result.providerLatencyMs;
+    channel.providerError = result.providerError;
+    channel.qualityRating = result.qualityRating;
+    channel.nameStatus = result.nameStatus;
+    channel.canSendNewMessages = result.canSendNewMessages;
+  }
+
   getStatusLabel(status: string): string {
     const labels: any = {
       ok: 'OK',
@@ -66,15 +113,25 @@ export class AdminOperationComponent implements OnInit {
       unknown: 'Sem config',
       skipped: 'Ignorado',
       failed: 'Falhou',
-      success: 'Sucesso'
+      success: 'Sucesso',
+      active: 'Ativo',
+      connected: 'Conectado',
+      disconnected: 'Desconectado',
+      restricted: 'Restrito',
+      flagged: 'Sinalizado',
+      banned: 'Banido',
+      bannedm: 'Banido',
+      disabled: 'Desabilitado'
     };
-    return labels[status] || status || 'N/A';
+    const key = status ? String(status).toLowerCase() : status;
+    return labels[key] || status || 'N/A';
   }
 
   getStatusClass(status: string): string {
-    if (status === 'ok' || status === 'success') return 'status-ok';
-    if (status === 'degraded' || status === 'warn' || status === 'skipped') return 'status-warn';
-    if (status === 'down' || status === 'error' || status === 'failed') return 'status-error';
+    const normalized = status ? String(status).toLowerCase() : '';
+    if (normalized === 'ok' || normalized === 'success' || normalized === 'active' || normalized === 'connected' || normalized === 'green') return 'status-ok';
+    if (normalized === 'degraded' || normalized === 'warn' || normalized === 'skipped' || normalized === 'restricted' || normalized === 'flagged' || normalized === 'rate_limited' || normalized === 'capped' || normalized === 'yellow') return 'status-warn';
+    if (normalized === 'down' || normalized === 'error' || normalized === 'failed' || normalized === 'disconnected' || normalized === 'banned' || normalized === 'bannedm' || normalized === 'disabled' || normalized === 'red') return 'status-error';
     return 'status-unknown';
   }
 
@@ -90,5 +147,16 @@ export class AdminOperationComponent implements OnInit {
     if (service.name === 'server') return 'uptime ' + service.details.uptimeSeconds + 's';
     if (service.latencyMs !== null && service.latencyMs !== undefined) return service.latencyMs + ' ms';
     return '';
+  }
+
+  providerDetail(channel: any): string {
+    if (!channel) return '';
+    const parts = [];
+    if (channel.providerStatus) parts.push('provider: ' + channel.providerStatus);
+    if (channel.qualityRating) parts.push('qualidade: ' + channel.qualityRating);
+    if (channel.nameStatus) parts.push('nome: ' + channel.nameStatus);
+    if (channel.canSendNewMessages === false) parts.push('envio limitado');
+    if (channel.providerLatencyMs !== null && channel.providerLatencyMs !== undefined) parts.push(channel.providerLatencyMs + ' ms');
+    return parts.join(' | ');
   }
 }
