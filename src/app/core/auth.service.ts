@@ -447,6 +447,7 @@ export class AuthService {
               url_segments[1] !== 'signup-on-invitation' &&
               url_segments[1] !== 'resetpassword' &&
               url_segments[1] !== 'autologin' &&
+              url_segments[1] !== 'admin' &&
               url_segments[1] !== 'get-chatbot' &&
               url_segments[1] !== 'activate-product' &&
               url_segments[1] !== 'install-template' &&

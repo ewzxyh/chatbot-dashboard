@@ -198,16 +198,16 @@
         <div class="metric-columns">
           <div>
             <h4>Eventos mais frequentes</h4>
-            <div *ngIf="topMetricItems('events', 'byEvent').length === 0" class="empty-state compact">Sem eventos.</div>
-            <div *ngFor="let item of topMetricItems('events', 'byEvent')" class="metric-list-row">
+            <div *ngIf="eventMetricItems.length === 0" class="empty-state compact">Sem eventos.</div>
+            <div *ngFor="let item of eventMetricItems" class="metric-list-row">
               <span>{{ item.key }}</span>
               <strong>{{ item.count }}</strong>
             </div>
           </div>
           <div>
             <h4>Alertas por tipo</h4>
-            <div *ngIf="topMetricItems('alerts', 'byType').length === 0" class="empty-state compact">Sem alertas.</div>
-            <div *ngFor="let item of topMetricItems('alerts', 'byType')" class="metric-list-row">
+            <div *ngIf="alertMetricItems.length === 0" class="empty-state compact">Sem alertas.</div>
+            <div *ngFor="let item of alertMetricItems" class="metric-list-row">
               <span>{{ item.key }}</span>
               <strong>{{ item.count }}</strong>
             </div>

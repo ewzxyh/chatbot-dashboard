@@ -10,6 +10,8 @@ export class AdminOperationComponent implements OnInit {
   summary: any = null;
   metrics: any = null;
   metricRows: any[] = [];
+  eventMetricItems: any[] = [];
+  alertMetricItems: any[] = [];
   statusCards: any[] = [];
   affectedItems: any[] = [];
   queueRows: any[] = [];
@@ -87,11 +89,15 @@ export class AdminOperationComponent implements OnInit {
       (result) => {
         this.metrics = result;
         this.metricRows = this.mergeMetricRows(result);
+        this.eventMetricItems = this.buildTopMetricItems(result, 'events', 'byEvent');
+        this.alertMetricItems = this.buildTopMetricItems(result, 'alerts', 'byType');
         this.isLoadingMetrics = false;
       },
       () => {
         this.metrics = null;
         this.metricRows = [];
+        this.eventMetricItems = [];
+        this.alertMetricItems = [];
         this.isLoadingMetrics = false;
       }
     );
@@ -468,9 +474,13 @@ export class AdminOperationComponent implements OnInit {
   }
 
   topMetricItems(group: string, collection: string): any[] {
-    if (!this.metrics || !this.metrics[group] || !this.metrics[group][collection]) return [];
-    return Object.keys(this.metrics[group][collection])
-      .map((key) => ({ key, count: this.metrics[group][collection][key] }))
+    return this.buildTopMetricItems(this.metrics, group, collection);
+  }
+
+  buildTopMetricItems(metrics: any, group: string, collection: string): any[] {
+    if (!metrics || !metrics[group] || !metrics[group][collection]) return [];
+    return Object.keys(metrics[group][collection])
+      .map((key) => ({ key, count: metrics[group][collection][key] }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 6);
   }

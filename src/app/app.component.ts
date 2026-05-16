@@ -133,7 +133,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
                 gtag('config', 'G-3DMYV3HG61', { 'page_path': event.urlAfterRedirects });
 
-                if (event.urlAfterRedirects !== '/projects' && event.urlAfterRedirects !== '/login' && event.urlAfterRedirects !== '/signup' && event.urlAfterRedirects !== '/create-new-project') {
+                if (event.urlAfterRedirects !== '/projects' && event.urlAfterRedirects !== '/login' && event.urlAfterRedirects !== '/signup' && event.urlAfterRedirects !== '/create-new-project' && event.urlAfterRedirects.indexOf('/admin') !== 0) {
                     this.logger.log('[APP-COMPONENT] ------>  calling GET CURRENT PROJECT ')
                     this.getCurrentProject(event.urlAfterRedirects)
                 }
