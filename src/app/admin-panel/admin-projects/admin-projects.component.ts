@@ -16,11 +16,15 @@ export class AdminProjectsComponent implements OnInit {
   showPlanModal = false;
   showTrialModal = false;
   showQuotasModal = false;
+  showUsageModal = false;
   selectedProject: any = null;
   modalPlanKey = '';
   modalTrialDays = 14;
   modalQuotas: any = { contacts: 0, platforms: 0, agents: 0, chatbots: 0, kbs: 0 };
   modalMessage = '';
+  usageSnapshot: any = null;
+  usageLoading = false;
+  usageError = '';
   planDisplayNames: any = { Free: 'Iniciante', Starter: 'Standard', Pro: 'Pro', Business: 'Enterprise', Custom: 'Custom' };
 
   constructor(private adminService: AdminService) { }
@@ -73,5 +77,45 @@ export class AdminProjectsComponent implements OnInit {
     );
   }
 
-  closeModals() { this.showPlanModal = false; this.showTrialModal = false; this.showQuotasModal = false; this.selectedProject = null; this.modalMessage = ''; }
+  openUsageModal(p: any) {
+    this.selectedProject = p;
+    this.usageSnapshot = null;
+    this.usageError = '';
+    this.usageLoading = true;
+    this.showUsageModal = true;
+
+    this.adminService.getProjectUsage(p._id, true).subscribe(
+      (res) => { this.usageSnapshot = res; this.usageLoading = false; },
+      (err) => {
+        this.usageError = 'Erro: ' + (err.error?.error || 'Falha ao carregar uso');
+        this.usageLoading = false;
+      }
+    );
+  }
+
+  formatBytes(bytes: number): string {
+    if (bytes === null || bytes === undefined) return 'N/D';
+    const value = Number(bytes || 0);
+    if (value < 1024) return value + ' B';
+    if (value < 1024 * 1024) return (value / 1024).toFixed(1) + ' KB';
+    if (value < 1024 * 1024 * 1024) return (value / (1024 * 1024)).toFixed(1) + ' MB';
+    return (value / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
+  }
+
+  usageValue(metric: any): string {
+    if (!metric) return '0';
+    const current = metric.current || 0;
+    return metric.limit ? current + ' / ' + metric.limit : String(current);
+  }
+
+  closeModals() {
+    this.showPlanModal = false;
+    this.showTrialModal = false;
+    this.showQuotasModal = false;
+    this.showUsageModal = false;
+    this.selectedProject = null;
+    this.modalMessage = '';
+    this.usageSnapshot = null;
+    this.usageError = '';
+  }
 }

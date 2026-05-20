@@ -161,6 +161,22 @@ export class AdminService {
       .put<any>(url, body, httpOptions);
   }
 
+  public getProjectUsage(projectId: string, includeStorage: boolean = true): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': this.TOKEN
+      })
+    };
+    const url = this.SERVER_BASE_PATH + 'sadmin/usage-metering/projects/' + projectId
+      + '?includeStorage=' + (includeStorage ? 'true' : 'false');
+    this.logger.log('[ADMIN-SERV] - GET PROJECT USAGE - URL', url);
+
+    return this._httpclient
+      .get<any>(url, httpOptions);
+  }
+
   public getHealthSummary(): Observable<any> {
     const httpOptions = {
       headers: new HttpHeaders({

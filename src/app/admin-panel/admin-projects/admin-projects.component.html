@@ -35,6 +35,7 @@
         <button type="button" class="btn-action" (click)="openPlanModal(p)">Plano</button>
         <button type="button" class="btn-action" (click)="openTrialModal(p)">Trial</button>
         <button type="button" class="btn-action" (click)="openQuotasModal(p)">Quotas</button>
+        <button type="button" class="btn-action" (click)="openUsageModal(p)">Uso</button>
       </td>
     </tr>
   </tbody>
@@ -75,6 +76,43 @@
     <div class="modal-actions">
       <button type="button" class="btn-secondary" (click)="closeModals()">Cancelar</button>
       <button type="button" class="btn-primary" (click)="saveTrial()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="showUsageModal" class="modal-overlay" (click)="closeModals()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <h3>Uso real: {{ selectedProject?.name }}</h3>
+    <div *ngIf="usageLoading" style="padding: 24px 0;">Carregando...</div>
+    <div *ngIf="usageError" class="modal-message">{{ usageError }}</div>
+
+    <div *ngIf="usageSnapshot && !usageLoading">
+      <p style="margin: 0 0 12px 0; color: #60708f;">
+        Periodo: {{ usageSnapshot.period?.start | date:'dd/MM/yyyy' }} - {{ usageSnapshot.period?.end | date:'dd/MM/yyyy' }}
+      </p>
+      <table>
+        <tbody>
+          <tr><td>Contatos</td><td>{{ usageValue(usageSnapshot.contacts) }}</td></tr>
+          <tr><td>Novos contatos no periodo</td><td>{{ usageSnapshot.contacts?.newInPeriod || 0 }}</td></tr>
+          <tr><td>Membros</td><td>{{ usageValue(usageSnapshot.members) }}</td></tr>
+          <tr><td>Plataformas</td><td>{{ usageValue(usageSnapshot.platforms) }}</td></tr>
+          <tr><td>Conversas no periodo</td><td>{{ usageSnapshot.conversations?.current || 0 }}</td></tr>
+          <tr><td>Mensagens no periodo</td><td>{{ usageSnapshot.messages?.total || 0 }}</td></tr>
+          <tr><td>Tokens IA</td><td>{{ usageValue(usageSnapshot.tokens) }}</td></tr>
+          <tr><td>E-mail</td><td>{{ usageValue(usageSnapshot.email) }}</td></tr>
+          <tr><td>Anexos referenciados</td><td>{{ usageSnapshot.attachments?.count || 0 }}</td></tr>
+          <tr><td>Storage medido</td><td>{{ formatBytes(usageSnapshot.attachments?.bytes) }}</td></tr>
+        </tbody>
+      </table>
+
+      <h4 style="margin-top: 16px;">Mensagens por canal</h4>
+      <div *ngFor="let channel of usageSnapshot.messages?.byChannel | keyvalue">
+        {{ channel.key }}: {{ channel.value }}
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button type="button" class="btn-secondary" (click)="closeModals()">Fechar</button>
     </div>
   </div>
 </div>
