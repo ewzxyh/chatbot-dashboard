@@ -22,7 +22,9 @@ export class AdminOperationComponent implements OnInit {
   isTestingStorage = false;
   isTestingNotification = false;
   testingChannelKey = '';
+  registeringWebhookKey = '';
   channelTestResults: any = {};
+  webhookRegisterResults: any = {};
   notificationTestResult: any = null;
   errorMessage = '';
   metricFilters: any = {
@@ -34,7 +36,8 @@ export class AdminOperationComponent implements OnInit {
   eventFilters: any = {
     channel: '',
     level: '',
-    project_id: ''
+    project_id: '',
+    integrationId: ''
   };
 
   constructor(private adminService: AdminService) { }
@@ -185,6 +188,52 @@ export class AdminOperationComponent implements OnInit {
         this.testingChannelKey = '';
       }
     );
+  }
+
+  registerWebhook(channel: any) {
+    if (!channel) return;
+    const integrationId = channel.integrationDocId || channel.integrationId;
+    const key = this.channelKey(channel);
+    this.registeringWebhookKey = key;
+    this.webhookRegisterResults[key] = null;
+
+    this.adminService.registerChannelWebhook(channel.channel, integrationId).subscribe(
+      (response) => {
+        const result = response && response.result ? response.result : response;
+        this.webhookRegisterResults[key] = result;
+        this.registeringWebhookKey = '';
+        channel.lastWebhookRegistrationAt = result.providerCheckedAt || new Date().toISOString();
+        channel.lastWebhookRegistrationStatus = result.status;
+        this.loadEvents();
+        this.loadMetrics();
+      },
+      () => {
+        this.webhookRegisterResults[key] = {
+          status: 'failed',
+          providerReason: 'webhook_register_failed'
+        };
+        this.registeringWebhookKey = '';
+      }
+    );
+  }
+
+  showChannelErrors(channel: any) {
+    if (!channel) return;
+    this.eventFilters.channel = channel.channel || '';
+    this.eventFilters.level = 'error';
+    this.eventFilters.project_id = channel.id_project || '';
+    this.eventFilters.integrationId = channel.integrationDocId || channel.integrationId || '';
+    this.loadEvents();
+  }
+
+  clearEventFilters() {
+    this.eventFilters = {
+      channel: '',
+      level: '',
+      project_id: '',
+      integrationId: ''
+    };
+    this.loadEvents();
   }
 
   testStorage() {
@@ -383,6 +432,7 @@ export class AdminOperationComponent implements OnInit {
       warning: 'Aviso',
       critical: 'Critico',
       success: 'Sucesso',
+      registered: 'Registrado',
       active: 'Ativo',
       connected: 'Conectado',
       disconnected: 'Desconectado',

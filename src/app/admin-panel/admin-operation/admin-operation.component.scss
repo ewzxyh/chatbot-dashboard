@@ -349,6 +349,12 @@ button.btn-test {
   min-width: 82px;
 }
 
+.channel-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
 button:disabled {
   cursor: default;
   opacity: 0.6;

@@ -274,6 +274,9 @@
               <div class="muted">{{ providerDetail(channel) || 'Sem diagnostico' }}</div>
               <div *ngIf="channel.providerReason" class="muted">{{ channel.providerReason }}</div>
               <div *ngIf="channel.providerCheckedAt" class="muted">Check {{ formatDate(channel.providerCheckedAt) }}</div>
+              <div *ngIf="channel.lastWebhookRegistrationAt" class="muted">
+                Webhook {{ getStatusLabel(channel.lastWebhookRegistrationStatus) }} em {{ formatDate(channel.lastWebhookRegistrationAt) }}
+              </div>
             </td>
             <td>{{ channel.id_project }}</td>
             <td>{{ formatDate(channel.lastWebhookAt) }}</td>
@@ -282,11 +285,22 @@
               <span *ngIf="!channel.lastError" class="muted">Sem erro recente</span>
             </td>
             <td>
-              <button type="button" class="btn-secondary btn-test" [disabled]="testingChannelKey === channelKey(channel)" (click)="testChannel(channel)">
-                {{ testingChannelKey === channelKey(channel) ? 'Testando...' : 'Testar' }}
-              </button>
+              <div class="channel-actions">
+                <button type="button" class="btn-secondary btn-test" [disabled]="testingChannelKey === channelKey(channel)" (click)="testChannel(channel)">
+                  {{ testingChannelKey === channelKey(channel) ? 'Testando...' : 'Testar' }}
+                </button>
+                <button type="button" class="btn-secondary btn-test" [disabled]="registeringWebhookKey === channelKey(channel)" (click)="registerWebhook(channel)">
+                  {{ registeringWebhookKey === channelKey(channel) ? 'Registrando...' : 'Webhook' }}
+                </button>
+                <button type="button" class="btn-secondary btn-test" (click)="showChannelErrors(channel)">
+                  Erros
+                </button>
+              </div>
               <div *ngIf="channelTestResults[channelKey(channel)]" class="test-result" [ngClass]="getStatusClass(channelTestResults[channelKey(channel)].providerHealth)">
                 {{ getStatusLabel(channelTestResults[channelKey(channel)].providerHealth) }}
+              </div>
+              <div *ngIf="webhookRegisterResults[channelKey(channel)]" class="test-result" [ngClass]="getStatusClass(webhookRegisterResults[channelKey(channel)].status)">
+                Webhook {{ getStatusLabel(webhookRegisterResults[channelKey(channel)].status) }}
               </div>
             </td>
           </tr>
@@ -312,7 +326,9 @@
           <option value="error">Error</option>
         </select>
         <input type="text" placeholder="Projeto" [(ngModel)]="eventFilters.project_id" (keyup.enter)="loadEvents()">
+        <input type="text" placeholder="Integracao" [(ngModel)]="eventFilters.integrationId" (keyup.enter)="loadEvents()">
         <button type="button" class="btn-secondary" (click)="loadEvents()">Filtrar</button>
+        <button type="button" class="btn-secondary" (click)="clearEventFilters()">Limpar</button>
       </div>
       <div *ngIf="isLoadingEvents" class="loading-state small">Carregando eventos...</div>
       <table *ngIf="!isLoadingEvents">

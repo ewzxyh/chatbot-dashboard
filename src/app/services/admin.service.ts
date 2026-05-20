@@ -191,6 +191,21 @@ export class AdminService {
       .post<any>(url, { channel, integrationId }, httpOptions);
   }
 
+  public registerChannelWebhook(channel: string, integrationId: string): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': this.TOKEN
+      })
+    };
+    const url = this.SERVER_BASE_PATH + 'sadmin/health/channels/webhook/register';
+    this.logger.log('[ADMIN-SERV] - REGISTER CHANNEL WEBHOOK - URL', url);
+
+    return this._httpclient
+      .post<any>(url, { channel, integrationId }, httpOptions);
+  }
+
   public testStorageConnection(): Observable<any> {
     const httpOptions = {
       headers: new HttpHeaders({
@@ -233,6 +248,7 @@ export class AdminService {
     if (filters && filters.channel) { url += '&channel=' + encodeURIComponent(filters.channel); }
     if (filters && filters.level) { url += '&level=' + encodeURIComponent(filters.level); }
     if (filters && filters.project_id) { url += '&project_id=' + encodeURIComponent(filters.project_id); }
+    if (filters && filters.integrationId) { url += '&integrationId=' + encodeURIComponent(filters.integrationId); }
     this.logger.log('[ADMIN-SERV] - GET OPERATIONAL EVENTS - URL', url);
 
     return this._httpclient
