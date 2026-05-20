@@ -102,6 +102,9 @@
           <tr><td>E-mail</td><td>{{ usageValue(usageSnapshot.email) }}</td></tr>
           <tr><td>Anexos referenciados</td><td>{{ usageSnapshot.attachments?.count || 0 }}</td></tr>
           <tr><td>Storage medido</td><td>{{ formatBytes(usageSnapshot.attachments?.bytes) }}</td></tr>
+          <tr><td>Downloads/previews de midia</td><td>{{ usageSnapshot.mediaTraffic?.requests || 0 }}</td></tr>
+          <tr><td>Trafego de midia</td><td>{{ formatBytes(usageSnapshot.mediaTraffic?.bytes) }}</td></tr>
+          <tr><td>Custo estimado mensal</td><td>{{ usageSnapshot.costEstimate?.currency || 'USD' }} {{ usageSnapshot.costEstimate?.estimatedCostMonthly || 0 }}</td></tr>
         </tbody>
       </table>
 
@@ -109,9 +112,28 @@
       <div *ngFor="let channel of usageSnapshot.messages?.byChannel | keyvalue">
         {{ channel.key }}: {{ channel.value }}
       </div>
+
+      <h4 style="margin-top: 16px;">Historico mensal</h4>
+      <div *ngIf="usageSnapshotMessage" class="modal-message">{{ usageSnapshotMessage }}</div>
+      <div *ngIf="usageSnapshotLoading" style="padding: 8px 0;">Carregando historico...</div>
+      <table *ngIf="usageSnapshots.length">
+        <thead>
+          <tr><th>Periodo</th><th>Mensagens</th><th>Midia</th><th>Custo</th></tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let snapshot of usageSnapshots">
+            <td>{{ snapshot.periodKey }}</td>
+            <td>{{ snapshot.metrics?.messages?.total || 0 }}</td>
+            <td>{{ formatBytes(snapshot.metrics?.mediaTraffic?.bytes) }}</td>
+            <td>{{ snapshot.metrics?.costEstimate?.currency || 'USD' }} {{ snapshot.metrics?.costEstimate?.estimatedCostMonthly || 0 }}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
     <div class="modal-actions">
+      <button type="button" class="btn-primary" (click)="saveUsageSnapshot()" [disabled]="usageLoading">Salvar snapshot</button>
+      <button type="button" class="btn-secondary" (click)="exportUsageCsv()">Exportar CSV</button>
       <button type="button" class="btn-secondary" (click)="closeModals()">Fechar</button>
     </div>
   </div>

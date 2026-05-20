@@ -177,6 +177,52 @@ export class AdminService {
       .get<any>(url, httpOptions);
   }
 
+  public saveProjectUsageSnapshot(projectId: string, includeStorage: boolean = true): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': this.TOKEN
+      })
+    };
+    const url = this.SERVER_BASE_PATH + 'sadmin/usage-metering/projects/' + projectId
+      + '/snapshots?includeStorage=' + (includeStorage ? 'true' : 'false');
+    this.logger.log('[ADMIN-SERV] - SAVE PROJECT USAGE SNAPSHOT - URL', url);
+
+    return this._httpclient
+      .post<any>(url, { source: 'manual' }, httpOptions);
+  }
+
+  public getProjectUsageSnapshots(projectId: string): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': this.TOKEN
+      })
+    };
+    const url = this.SERVER_BASE_PATH + 'sadmin/usage-metering/projects/' + projectId + '/snapshots?limit=12';
+    this.logger.log('[ADMIN-SERV] - GET PROJECT USAGE SNAPSHOTS - URL', url);
+
+    return this._httpclient
+      .get<any>(url, httpOptions);
+  }
+
+  public exportProjectUsageCsv(projectId: string): Observable<string> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Accept': 'text/csv',
+        'Authorization': this.TOKEN
+      }),
+      responseType: 'text' as 'text'
+    };
+    const url = this.SERVER_BASE_PATH + 'sadmin/usage-metering/projects/' + projectId + '/report.csv?limit=60';
+    this.logger.log('[ADMIN-SERV] - EXPORT PROJECT USAGE CSV - URL', url);
+
+    return this._httpclient
+      .get(url, httpOptions);
+  }
+
   public getHealthSummary(): Observable<any> {
     const httpOptions = {
       headers: new HttpHeaders({

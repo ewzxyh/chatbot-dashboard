@@ -23,8 +23,11 @@ export class AdminProjectsComponent implements OnInit {
   modalQuotas: any = { contacts: 0, platforms: 0, agents: 0, chatbots: 0, kbs: 0 };
   modalMessage = '';
   usageSnapshot: any = null;
+  usageSnapshots: any[] = [];
   usageLoading = false;
+  usageSnapshotLoading = false;
   usageError = '';
+  usageSnapshotMessage = '';
   planDisplayNames: any = { Free: 'Iniciante', Starter: 'Standard', Pro: 'Pro', Business: 'Enterprise', Custom: 'Custom' };
 
   constructor(private adminService: AdminService) { }
@@ -80,7 +83,9 @@ export class AdminProjectsComponent implements OnInit {
   openUsageModal(p: any) {
     this.selectedProject = p;
     this.usageSnapshot = null;
+    this.usageSnapshots = [];
     this.usageError = '';
+    this.usageSnapshotMessage = '';
     this.usageLoading = true;
     this.showUsageModal = true;
 
@@ -90,6 +95,46 @@ export class AdminProjectsComponent implements OnInit {
         this.usageError = 'Erro: ' + (err.error?.error || 'Falha ao carregar uso');
         this.usageLoading = false;
       }
+    );
+    this.loadUsageSnapshots(p._id);
+  }
+
+  loadUsageSnapshots(projectId: string) {
+    this.usageSnapshotLoading = true;
+    this.adminService.getProjectUsageSnapshots(projectId).subscribe(
+      (res) => {
+        this.usageSnapshots = res.data || [];
+        this.usageSnapshotLoading = false;
+      },
+      () => { this.usageSnapshotLoading = false; }
+    );
+  }
+
+  saveUsageSnapshot() {
+    if (!this.selectedProject) return;
+    this.usageSnapshotMessage = 'Salvando...';
+    this.adminService.saveProjectUsageSnapshot(this.selectedProject._id, true).subscribe(
+      (res) => {
+        this.usageSnapshotMessage = 'Snapshot salvo: ' + res.periodKey;
+        this.loadUsageSnapshots(this.selectedProject._id);
+      },
+      (err) => { this.usageSnapshotMessage = 'Erro: ' + (err.error?.error || 'Falha ao salvar snapshot'); }
+    );
+  }
+
+  exportUsageCsv() {
+    if (!this.selectedProject) return;
+    this.adminService.exportProjectUsageCsv(this.selectedProject._id).subscribe(
+      (csv) => {
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'usage-metering-' + this.selectedProject._id + '.csv';
+        link.click();
+        window.URL.revokeObjectURL(url);
+      },
+      (err) => { this.usageSnapshotMessage = 'Erro: ' + (err.error?.error || 'Falha ao exportar CSV'); }
     );
   }
 
@@ -116,6 +161,8 @@ export class AdminProjectsComponent implements OnInit {
     this.selectedProject = null;
     this.modalMessage = '';
     this.usageSnapshot = null;
+    this.usageSnapshots = [];
     this.usageError = '';
+    this.usageSnapshotMessage = '';
   }
 }
