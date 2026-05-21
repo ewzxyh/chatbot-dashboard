@@ -1733,7 +1733,7 @@ export class NavbarComponent extends PricingBaseComponent implements OnInit, Aft
             // Sleekplan is already loaded
             return;
           }
-          if (this.user && this.isVisiblePay && !this.browserRefresh)
+          if (this.user && this.isVisiblePay && !this.browserRefresh && this.sleekplanService.isEnabled())
             this.sleekplanSso(this.user)
         }
         this.logger.log('[NAVBAR] this.user', this.user)
@@ -2819,6 +2819,11 @@ export class NavbarComponent extends PricingBaseComponent implements OnInit, Aft
   }
 
   fetchNewChangelogCount(user) {
+    if (!this.sleekplanApi.isEnabled()) {
+      this.newChangelogCount = false;
+      return;
+    }
+
     let storedLastSeen = localStorage.getItem(`lastSeenTimestamp-${user._id}`)
 
     this.logger.log('[NAVBAR] changelog lastSeen form storedLastSeen', storedLastSeen);
@@ -2836,6 +2841,10 @@ export class NavbarComponent extends PricingBaseComponent implements OnInit, Aft
         const data = resp['data']['items']
 
         const firstKey = Object.keys(data)[0]; // Get the first key in the object
+        if (!firstKey) {
+          this.newChangelogCount = false;
+          return;
+        }
         const createdValue = data[firstKey].created; // Access the created property
 
         this.logger.log('[NAVBAR] last changelog createdValue ', createdValue);
@@ -2883,4 +2892,3 @@ export class NavbarComponent extends PricingBaseComponent implements OnInit, Aft
   //   this.document.body.classList.add('dark');
   // }
 }
-

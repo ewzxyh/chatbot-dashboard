@@ -195,8 +195,11 @@ function customAuth(callback) {
     }
     const td_userId = user._id;
     // console.log('tiledeskSettings 2 (customAuth) - td_userId', td_userId)
-    // const URL = 'https://tiledesk-custom-jwt-authentication.gabrielepanico.repl.co/tiledeskauth';
-    const URL = 'https://tiledesk-custom-jwt-authentication.replit.app/tiledeskauth';
+    const URL = window.tiledeskSettings && window.tiledeskSettings.customAuthEndpoint;
+    if (!URL) {
+        callback(null);
+        return;
+    }
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.open("POST", URL, true);
     xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");

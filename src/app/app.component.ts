@@ -131,7 +131,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.stopObservingSleekPlan(); // Disconnect observer when navigating away
                 }
 
-                gtag('config', 'G-3DMYV3HG61', { 'page_path': event.urlAfterRedirects });
+                if (typeof gtag === 'function') {
+                    gtag('config', 'G-3DMYV3HG61', { 'page_path': event.urlAfterRedirects });
+                }
 
                 if (event.urlAfterRedirects !== '/projects' && event.urlAfterRedirects !== '/login' && event.urlAfterRedirects !== '/signup' && event.urlAfterRedirects !== '/create-new-project' && event.urlAfterRedirects.indexOf('/admin') !== 0) {
                     this.logger.log('[APP-COMPONENT] ------>  calling GET CURRENT PROJECT ')
@@ -1024,7 +1026,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
             this.logger.log('% »»» WebSocketJs WF - APP-COMPONENT - LoggedUser ', user);
 
             this.logger.log('% »»» WebSocketJs WF - APP-COMPONENT - isActivePAY ', isActivePAY);
-            if (user && isActivePAY) {
+            if (user && isActivePAY && this.sleekplanService.isEnabled()) {
 
                 this.logger.log('[APP-COMPONENT] before to call sleekplanSso router.url ', this.router.url);
 

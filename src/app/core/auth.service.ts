@@ -805,7 +805,7 @@ export class AuthService {
     this.logger.log('[AUTH-SERV] isActivePAY in sleekplanSso ', isActivePAY)
     
   
-    if (isActivePAY) {
+    if (isActivePAY && this.sleekplanService.isEnabled()) {
       //  this.logger.log('[Auth-SERV] calling sleekplanSso ')
       this.sleekplanSsoService.getSsoToken(user).subscribe(
         (response) => {
@@ -1079,9 +1079,10 @@ export class AuthService {
   }
 
   removeSleekScript() {
+    const sleekplanScriptUrl = window['CHATCASE_SLEEKPLAN_SCRIPT_URL'];
     const scripts = document.querySelectorAll('script');
     scripts.forEach((script) => {
-      if (script.src === 'https://client.sleekplan.com/sdk/e.js') {
+      if (sleekplanScriptUrl && script.src === sleekplanScriptUrl) {
         script.remove(); // Remove the script element
         this.logger.log('Sleekplan script removed successfully.');
       }

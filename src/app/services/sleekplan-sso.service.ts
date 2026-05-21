@@ -6,9 +6,6 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class SleekplanSsoService {
-  // SLEEKPLAN_SSO_BASE_URL = "https://5f2eecc3-87fe-4e17-ab99-6d24e063dd70-00-357btkikl6pcl.spock.replit.dev"
-  SLEEKPLAN_SSO_BASE_URL = "https://formez-app-v-3-tiledesk.replit.app"
-
   constructor(
     private httpClient: HttpClient
   ) { }
@@ -26,8 +23,8 @@ export class SleekplanSsoService {
     // }
     let body = { user }
   
-    // const url = 'https://formez-app-v-3-tiledesk.replit.app/api/sleekplan/sso'
-    const url = this.SLEEKPLAN_SSO_BASE_URL +'/api/sleekplan/sso'
+    const baseUrl = window['CHATCASE_SLEEKPLAN_SSO_BASE_URL'] || '';
+    const url = baseUrl + '/api/sleekplan/sso'
     // console.log("sleekplan sso]  ", url);
     return this.httpClient.post(url, body );
   }
