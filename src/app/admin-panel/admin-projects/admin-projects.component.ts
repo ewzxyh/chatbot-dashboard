@@ -17,6 +17,7 @@ export class AdminProjectsComponent implements OnInit {
   showTrialModal = false;
   showQuotasModal = false;
   showUsageModal = false;
+  showBillingModal = false;
   selectedProject: any = null;
   modalPlanKey = '';
   modalTrialDays = 14;
@@ -28,6 +29,12 @@ export class AdminProjectsComponent implements OnInit {
   usageSnapshotLoading = false;
   usageError = '';
   usageSnapshotMessage = '';
+  billingLifecycle: any = null;
+  billingEvents: any[] = [];
+  billingLoading = false;
+  billingActionLoading = false;
+  billingReason = '';
+  billingMessage = '';
   planDisplayNames: any = { Free: 'Iniciante', Starter: 'Standard', Pro: 'Pro', Business: 'Enterprise', Custom: 'Custom' };
 
   constructor(private adminService: AdminService) { }
@@ -138,6 +145,65 @@ export class AdminProjectsComponent implements OnInit {
     );
   }
 
+  openBillingModal(p: any) {
+    this.selectedProject = p;
+    this.billingLifecycle = null;
+    this.billingEvents = [];
+    this.billingReason = '';
+    this.billingMessage = '';
+    this.billingLoading = true;
+    this.showBillingModal = true;
+    this.loadBillingLifecycle(p._id);
+  }
+
+  loadBillingLifecycle(projectId: string) {
+    this.billingLoading = true;
+    this.adminService.getProjectBillingLifecycle(projectId).subscribe(
+      (res) => {
+        this.billingLifecycle = res.summary;
+        this.billingEvents = res.events || [];
+        this.billingLoading = false;
+      },
+      (err) => {
+        this.billingMessage = 'Erro: ' + (err.error?.error || 'Falha ao carregar billing');
+        this.billingLoading = false;
+      }
+    );
+  }
+
+  applyBillingAction(action: string) {
+    if (!this.selectedProject || this.billingActionLoading) return;
+    this.billingActionLoading = true;
+    this.billingMessage = 'Aplicando...';
+    this.adminService.applyProjectBillingAction(this.selectedProject._id, action, this.billingReason).subscribe(
+      (res) => {
+        this.billingLifecycle = res.summary;
+        this.billingMessage = 'Ação aplicada.';
+        this.billingActionLoading = false;
+        this.loadProjects();
+        this.loadBillingLifecycle(this.selectedProject._id);
+      },
+      (err) => {
+        this.billingMessage = 'Erro: ' + (err.error?.error || 'Falha');
+        this.billingActionLoading = false;
+      }
+    );
+  }
+
+  billingStatusLabel(status: string): string {
+    const labels: any = {
+      free: 'Free',
+      trialing: 'Trial',
+      pending_authorization: 'Pendente',
+      active: 'Ativo',
+      grace_period: 'Grace',
+      past_due: 'Atrasado',
+      suspended: 'Suspenso',
+      canceled: 'Cancelado'
+    };
+    return labels[status] || status || 'N/D';
+  }
+
   formatBytes(bytes: number): string {
     if (bytes === null || bytes === undefined) return 'N/D';
     const value = Number(bytes || 0);
@@ -158,11 +224,17 @@ export class AdminProjectsComponent implements OnInit {
     this.showTrialModal = false;
     this.showQuotasModal = false;
     this.showUsageModal = false;
+    this.showBillingModal = false;
     this.selectedProject = null;
     this.modalMessage = '';
     this.usageSnapshot = null;
     this.usageSnapshots = [];
     this.usageError = '';
     this.usageSnapshotMessage = '';
+    this.billingLifecycle = null;
+    this.billingEvents = [];
+    this.billingReason = '';
+    this.billingMessage = '';
+    this.billingActionLoading = false;
   }
 }

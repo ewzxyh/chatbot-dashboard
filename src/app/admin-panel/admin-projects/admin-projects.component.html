@@ -19,7 +19,7 @@
 <table *ngIf="!isLoading">
   <thead>
     <tr>
-      <th>Nome</th><th>Owner</th><th>Plano</th><th>Tipo</th><th>Contatos</th><th>Membros</th><th>Criado em</th><th>Acoes</th>
+      <th>Nome</th><th>Owner</th><th>Plano</th><th>Tipo</th><th>Billing</th><th>Contatos</th><th>Membros</th><th>Criado em</th><th>Acoes</th>
     </tr>
   </thead>
   <tbody>
@@ -28,6 +28,7 @@
       <td>{{ p.ownerEmail }}</td>
       <td>{{ planDisplayNames[p.profile?.name] || p.profile?.name }}</td>
       <td><span [style.color]="p.profile?.type === 'payment' ? '#4caf50' : '#999'">{{ p.profile?.type }}</span></td>
+      <td>{{ billingStatusLabel(p.profile?.billingStatus || (p.profile?.type === 'payment' ? 'active' : 'free')) }}</td>
       <td>{{ p.profile?.quotes?.contacts || '—' }}</td>
       <td>{{ p.profile?.agents || '—' }}</td>
       <td>{{ p.createdAt | date:'dd/MM/yyyy' }}</td>
@@ -36,6 +37,7 @@
         <button type="button" class="btn-action" (click)="openTrialModal(p)">Trial</button>
         <button type="button" class="btn-action" (click)="openQuotasModal(p)">Quotas</button>
         <button type="button" class="btn-action" (click)="openUsageModal(p)">Uso</button>
+        <button type="button" class="btn-action" (click)="openBillingModal(p)">Billing</button>
       </td>
     </tr>
   </tbody>
@@ -134,6 +136,60 @@
     <div class="modal-actions">
       <button type="button" class="btn-primary" (click)="saveUsageSnapshot()" [disabled]="usageLoading">Salvar snapshot</button>
       <button type="button" class="btn-secondary" (click)="exportUsageCsv()">Exportar CSV</button>
+      <button type="button" class="btn-secondary" (click)="closeModals()">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="showBillingModal" class="modal-overlay" (click)="closeModals()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <h3>Billing: {{ selectedProject?.name }}</h3>
+    <div *ngIf="billingLoading" style="padding: 24px 0;">Carregando...</div>
+    <div *ngIf="billingMessage" class="modal-message">{{ billingMessage }}</div>
+
+    <div *ngIf="billingLifecycle && !billingLoading">
+      <table>
+        <tbody>
+          <tr><td>Status</td><td>{{ billingStatusLabel(billingLifecycle.status) }}</td></tr>
+          <tr><td>Plano</td><td>{{ billingLifecycle.planDisplayName || billingLifecycle.plan }}</td></tr>
+          <tr><td>Tipo</td><td>{{ billingLifecycle.type }}</td></tr>
+          <tr><td>Periodo</td><td>{{ billingLifecycle.billingPeriod || 'N/D' }}</td></tr>
+          <tr><td>Fim do periodo</td><td>{{ billingLifecycle.subEnd ? (billingLifecycle.subEnd | date:'dd/MM/yyyy HH:mm') : 'N/D' }}</td></tr>
+          <tr><td>Acesso ate</td><td>{{ billingLifecycle.accessEndsAt ? (billingLifecycle.accessEndsAt | date:'dd/MM/yyyy HH:mm') : 'N/D' }}</td></tr>
+          <tr><td>Falhas de pagamento</td><td>{{ billingLifecycle.paymentFailureCount || 0 }}</td></tr>
+          <tr><td>Motivo</td><td>{{ billingLifecycle.billingStatusReason || 'N/D' }}</td></tr>
+          <tr><td>Pode usar recursos pagos</td><td>{{ billingLifecycle.canUsePaidFeatures ? 'Sim' : 'Nao' }}</td></tr>
+        </tbody>
+      </table>
+
+      <label style="margin-top: 16px;">Motivo da acao</label>
+      <input type="text" [(ngModel)]="billingReason" placeholder="Ex.: atraso, chargeback, ajuste manual" />
+
+      <div class="modal-actions">
+        <button type="button" class="btn-primary" (click)="applyBillingAction('reactivate')" [disabled]="billingActionLoading">Reativar</button>
+        <button type="button" class="btn-secondary" (click)="applyBillingAction('mark_past_due')" [disabled]="billingActionLoading">Marcar atraso</button>
+        <button type="button" class="btn-secondary" (click)="applyBillingAction('suspend')" [disabled]="billingActionLoading">Suspender</button>
+        <button type="button" class="btn-secondary" (click)="applyBillingAction('downgrade_to_free')" [disabled]="billingActionLoading">Downgrade Free</button>
+      </div>
+
+      <h4 style="margin-top: 16px;">Historico</h4>
+      <table *ngIf="billingEvents.length">
+        <thead>
+          <tr><th>Data</th><th>Evento</th><th>Status</th><th>Plano</th></tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let event of billingEvents">
+            <td>{{ event.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
+            <td>{{ event.event_type }}</td>
+            <td>{{ event.status }}</td>
+            <td>{{ event.plan_name || 'N/D' }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div *ngIf="!billingEvents.length" style="color: #60708f;">Sem eventos registrados.</div>
+    </div>
+
+    <div class="modal-actions">
       <button type="button" class="btn-secondary" (click)="closeModals()">Fechar</button>
     </div>
   </div>

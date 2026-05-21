@@ -223,6 +223,36 @@ export class AdminService {
       .get(url, httpOptions);
   }
 
+  public getProjectBillingLifecycle(projectId: string): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': this.TOKEN
+      })
+    };
+    const url = this.SERVER_BASE_PATH + 'sadmin/projects/' + projectId + '/billing-lifecycle';
+    this.logger.log('[ADMIN-SERV] - GET PROJECT BILLING LIFECYCLE - URL', url);
+
+    return this._httpclient
+      .get<any>(url, httpOptions);
+  }
+
+  public applyProjectBillingAction(projectId: string, action: string, reason: string): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': this.TOKEN
+      })
+    };
+    const url = this.SERVER_BASE_PATH + 'sadmin/projects/' + projectId + '/billing-lifecycle/actions';
+    this.logger.log('[ADMIN-SERV] - APPLY PROJECT BILLING ACTION - URL', url);
+
+    return this._httpclient
+      .post<any>(url, { action, reason }, httpOptions);
+  }
+
   public getHealthSummary(): Observable<any> {
     const httpOptions = {
       headers: new HttpHeaders({
