@@ -283,6 +283,8 @@
     right: 0px;
     transition: all 0.25s cubic-bezier(0.25, 1, 0.5, 1) 0s;
     opacity: 1;
+    pointer-events: none;
+    z-index: 2;
 }
 
 // new card
