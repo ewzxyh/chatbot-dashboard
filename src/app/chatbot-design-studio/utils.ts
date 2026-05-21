@@ -3,7 +3,7 @@ import { ActionAssignVariable, Intent } from "app/models/intent-model";
 import { v4 as uuidv4 } from 'uuid';
 
 export enum EXTERNAL_URL {
-    getchatbotinfo = "https://tiledesk.com/community/getchatbotinfo/chatbotId/"
+    getchatbotinfo = "/community/?template="
 }
 
 

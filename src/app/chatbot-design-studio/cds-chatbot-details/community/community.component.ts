@@ -395,7 +395,7 @@ export class CDSDetailCommunityComponent implements OnInit {
 
 
   goToCommunityChatbotDetail(bot_id: string) {
-    let urlCommunity = 'https://tiledesk.com/community/search/getchatbotinfo/chatbotId/' + bot_id + '-' + this.selectedChatbot.title.replace(/[^a-zA-Z0-9]/g, '-')
+    let urlCommunity = '/community/?template=' + encodeURIComponent(bot_id)
     window.open(urlCommunity, '_blank')
 
   }
