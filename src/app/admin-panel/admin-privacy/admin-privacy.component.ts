@@ -9,13 +9,18 @@ import { AdminService } from '../../services/admin.service';
 export class AdminPrivacyComponent implements OnInit {
   config: any = null;
   projectId = '';
+  retentionProjectId = '';
   identifier = '';
   reason = '';
   exportResult: any = null;
   anonymizeResult: any = null;
+  retentionStatus: any = null;
+  retentionResult: any = null;
   errorMessage = '';
   successMessage = '';
   isLoadingConfig = false;
+  isLoadingRetention = false;
+  isRunningRetention = false;
   isExporting = false;
   isAnonymizing = false;
 
@@ -23,6 +28,7 @@ export class AdminPrivacyComponent implements OnInit {
 
   ngOnInit() {
     this.loadConfig();
+    this.loadRetentionStatus();
   }
 
   loadConfig() {
@@ -36,6 +42,45 @@ export class AdminPrivacyComponent implements OnInit {
         this.config = null;
         this.errorMessage = 'Erro ao carregar configuracao de privacidade';
         this.isLoadingConfig = false;
+      }
+    );
+  }
+
+  loadRetentionStatus() {
+    this.isLoadingRetention = true;
+    this.adminService.getPrivacyRetentionStatus(this.retentionProjectId).subscribe(
+      (res) => {
+        this.retentionStatus = res;
+        this.isLoadingRetention = false;
+      },
+      (err) => {
+        this.errorMessage = this.errorFrom(err, 'Erro ao carregar status de retencao');
+        this.retentionStatus = null;
+        this.isLoadingRetention = false;
+      }
+    );
+  }
+
+  runRetention(dryRun: boolean) {
+    if (!dryRun) {
+      var confirmed = window.confirm('Executar limpeza de retencao? Esta acao remove dados antigos conforme a politica configurada.');
+      if (!confirmed) return;
+    }
+
+    this.errorMessage = '';
+    this.successMessage = '';
+    this.retentionResult = null;
+    this.isRunningRetention = true;
+    this.adminService.runPrivacyRetention(this.retentionProjectId, dryRun).subscribe(
+      (res) => {
+        this.retentionResult = res;
+        this.retentionStatus = res;
+        this.successMessage = dryRun ? 'Simulacao de retencao concluida' : 'Retencao executada com sucesso';
+        this.isRunningRetention = false;
+      },
+      (err) => {
+        this.errorMessage = this.errorFrom(err, 'Erro ao executar retencao');
+        this.isRunningRetention = false;
       }
     );
   }

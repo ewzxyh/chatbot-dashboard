@@ -427,6 +427,41 @@ export class AdminService {
       .get<any>(url, httpOptions);
   }
 
+  public getPrivacyRetentionStatus(projectId?: string): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': this.TOKEN
+      })
+    };
+    let url = this.SERVER_BASE_PATH + 'sadmin/privacy/retention/status';
+    if (projectId) { url += '?project_id=' + encodeURIComponent(projectId); }
+    this.logger.log('[ADMIN-SERV] - GET PRIVACY RETENTION STATUS - URL', url);
+
+    return this._httpclient
+      .get<any>(url, httpOptions);
+  }
+
+  public runPrivacyRetention(projectId: string, dryRun: boolean): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': this.TOKEN
+      })
+    };
+    const url = this.SERVER_BASE_PATH + 'sadmin/privacy/retention/run';
+    this.logger.log('[ADMIN-SERV] - RUN PRIVACY RETENTION - URL', url);
+
+    return this._httpclient
+      .post<any>(url, {
+        project_id: projectId || undefined,
+        dryRun: dryRun,
+        confirm: dryRun ? undefined : true
+      }, httpOptions);
+  }
+
   public exportPrivacyContact(projectId: string, identifier: string): Observable<any> {
     const httpOptions = {
       headers: new HttpHeaders({

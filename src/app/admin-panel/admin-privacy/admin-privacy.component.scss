@@ -145,6 +145,33 @@ button {
   }
 }
 
+.privacy-retention-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(120px, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+
+  div {
+    border: 1px solid #dde3ec;
+    border-radius: 8px;
+    padding: 12px;
+    background: #f8fbff;
+  }
+
+  span {
+    display: block;
+    color: #607089;
+    font-size: 12px;
+  }
+
+  strong {
+    display: block;
+    margin-top: 4px;
+    color: #1f2d3d;
+    font-size: 18px;
+  }
+}
+
 .privacy-error,
 .privacy-success {
   border-radius: 6px;

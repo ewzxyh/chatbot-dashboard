@@ -61,6 +61,46 @@
       </div>
     </section>
 
+    <section class="privacy-section">
+      <h3>Retencao operacional</h3>
+      <div class="privacy-form">
+        <label>
+          Projeto opcional
+          <input type="text" [(ngModel)]="retentionProjectId" placeholder="Vazio executa globalmente">
+        </label>
+      </div>
+      <div class="privacy-retention-grid" *ngIf="retentionStatus">
+        <div>
+          <span>Conversas antigas</span>
+          <strong>{{ retentionStatus.counts?.requestsMatched || 0 }}</strong>
+        </div>
+        <div>
+          <span>Anexos antigos</span>
+          <strong>{{ retentionStatus.counts?.messagesMatched || 0 }}</strong>
+        </div>
+        <div>
+          <span>Leads antigos</span>
+          <strong>{{ retentionStatus.counts?.leadsMatched || 0 }}</strong>
+        </div>
+        <div>
+          <span>Job automatico</span>
+          <strong>{{ retentionStatus.job?.started ? 'ativo' : 'inativo' }}</strong>
+        </div>
+      </div>
+      <div class="privacy-actions">
+        <button type="button" (click)="loadRetentionStatus()" [disabled]="isLoadingRetention">
+          {{ isLoadingRetention ? 'Atualizando...' : 'Atualizar status' }}
+        </button>
+        <button type="button" (click)="runRetention(true)" [disabled]="isRunningRetention">
+          {{ isRunningRetention ? 'Executando...' : 'Simular retencao' }}
+        </button>
+        <button type="button" class="danger" (click)="runRetention(false)" [disabled]="isRunningRetention">
+          Executar limpeza
+        </button>
+      </div>
+      <pre *ngIf="retentionResult">{{ asJson(retentionResult) }}</pre>
+    </section>
+
     <section class="privacy-section" *ngIf="anonymizeResult">
       <h3>Resultado da anonimizacao</h3>
       <div class="privacy-counts">
