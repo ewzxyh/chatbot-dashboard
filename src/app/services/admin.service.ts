@@ -364,4 +364,51 @@ export class AdminService {
     return this._httpclient
       .get<any>(url, httpOptions);
   }
+
+  public getAuditEvents(filters: any): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': this.TOKEN
+      })
+    };
+    let url = this.SERVER_BASE_PATH + 'sadmin/audit-events'
+      + '?page=' + encodeURIComponent(filters && filters.page !== undefined ? filters.page : 0)
+      + '&limit=' + encodeURIComponent(filters && filters.limit ? filters.limit : 50);
+    if (filters && filters.action) { url += '&action=' + encodeURIComponent(filters.action); }
+    if (filters && filters.method) { url += '&method=' + encodeURIComponent(filters.method); }
+    if (filters && filters.project_id) { url += '&project_id=' + encodeURIComponent(filters.project_id); }
+    if (filters && filters.actor) { url += '&actor=' + encodeURIComponent(filters.actor); }
+    if (filters && filters.entityType) { url += '&entityType=' + encodeURIComponent(filters.entityType); }
+    if (filters && filters.entityId) { url += '&entityId=' + encodeURIComponent(filters.entityId); }
+    if (filters && filters.resource) { url += '&resource=' + encodeURIComponent(filters.resource); }
+    if (filters && filters.success) { url += '&success=' + encodeURIComponent(filters.success); }
+    if (filters && filters.search) { url += '&search=' + encodeURIComponent(filters.search); }
+    if (filters && filters.from) { url += '&from=' + encodeURIComponent(filters.from); }
+    if (filters && filters.to) { url += '&to=' + encodeURIComponent(filters.to); }
+    this.logger.log('[ADMIN-SERV] - GET AUDIT EVENTS - URL', url);
+
+    return this._httpclient
+      .get<any>(url, httpOptions);
+  }
+
+  public getAuditSummary(filters: any): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': this.TOKEN
+      })
+    };
+    let url = this.SERVER_BASE_PATH + 'sadmin/audit-events/summary?range='
+      + encodeURIComponent(filters && filters.range ? filters.range : '24h');
+    if (filters && filters.project_id) { url += '&project_id=' + encodeURIComponent(filters.project_id); }
+    if (filters && filters.from) { url += '&from=' + encodeURIComponent(filters.from); }
+    if (filters && filters.to) { url += '&to=' + encodeURIComponent(filters.to); }
+    this.logger.log('[ADMIN-SERV] - GET AUDIT SUMMARY - URL', url);
+
+    return this._httpclient
+      .get<any>(url, httpOptions);
+  }
 }

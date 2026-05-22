@@ -1,0 +1,145 @@
+import { Component, OnInit } from '@angular/core';
+import { AdminService } from '../../services/admin.service';
+
+@Component({
+  selector: 'app-admin-audit',
+  templateUrl: './admin-audit.component.html',
+  styleUrls: ['./admin-audit.component.scss']
+})
+export class AdminAuditComponent implements OnInit {
+  events: any[] = [];
+  summary: any = null;
+  selectedEvent: any = null;
+  isLoading = false;
+  isLoadingSummary = false;
+  errorMessage = '';
+  page = 0;
+  limit = 50;
+  totalCount = 0;
+  filters: any = {
+    range: '24h',
+    action: '',
+    method: '',
+    project_id: '',
+    actor: '',
+    entityType: '',
+    success: '',
+    search: ''
+  };
+
+  constructor(private adminService: AdminService) { }
+
+  ngOnInit() {
+    this.refresh();
+  }
+
+  refresh() {
+    this.loadSummary();
+    this.loadEvents();
+  }
+
+  applyFilters() {
+    this.page = 0;
+    this.refresh();
+  }
+
+  loadSummary() {
+    this.isLoadingSummary = true;
+    this.adminService.getAuditSummary({
+      range: this.filters.range,
+      project_id: this.filters.project_id
+    }).subscribe(
+      (res) => {
+        this.summary = res;
+        this.isLoadingSummary = false;
+      },
+      () => {
+        this.summary = null;
+        this.isLoadingSummary = false;
+      }
+    );
+  }
+
+  loadEvents() {
+    this.isLoading = true;
+    this.errorMessage = '';
+    const requestFilters = Object.assign({}, this.filters, {
+      page: this.page,
+      limit: this.limit
+    });
+    this.adminService.getAuditEvents(requestFilters).subscribe(
+      (res) => {
+        this.events = res && res.data ? res.data : [];
+        this.totalCount = res && res.count ? res.count : 0;
+        if (this.selectedEvent) {
+          const currentId = this.selectedEvent._id;
+          this.selectedEvent = this.events.find((event) => event._id === currentId) || null;
+        }
+        this.isLoading = false;
+      },
+      () => {
+        this.events = [];
+        this.totalCount = 0;
+        this.errorMessage = 'Erro ao carregar auditoria';
+        this.isLoading = false;
+      }
+    );
+  }
+
+  nextPage() {
+    if ((this.page + 1) * this.limit < this.totalCount) {
+      this.page++;
+      this.loadEvents();
+    }
+  }
+
+  prevPage() {
+    if (this.page > 0) {
+      this.page--;
+      this.loadEvents();
+    }
+  }
+
+  selectEvent(event: any) {
+    this.selectedEvent = event;
+  }
+
+  clearSelection() {
+    this.selectedEvent = null;
+  }
+
+  formatAction(action: string): string {
+    const labels: any = {
+      'api.create': 'Criacao',
+      'api.update': 'Atualizacao',
+      'api.delete': 'Exclusao',
+      'api.read': 'Leitura',
+      'admin.read': 'Leitura admin',
+      'admin.project_plan_update': 'Plano',
+      'admin.project_trial_update': 'Trial',
+      'admin.project_quotas_update': 'Quotas',
+      'admin.billing_lifecycle_action': 'Billing',
+      'auth.write': 'Autenticacao'
+    };
+    return labels[action] || action || '-';
+  }
+
+  statusLabel(event: any): string {
+    if (!event) return '-';
+    return (event.statusCode || '-') + (event.success === false ? ' falhou' : ' ok');
+  }
+
+  getTop(items: any[], limit: number): any[] {
+    if (!items) return [];
+    return items.slice(0, limit);
+  }
+
+  asJson(value: any): string {
+    if (value === undefined || value === null) return '{}';
+    try {
+      return JSON.stringify(value, null, 2);
+    } catch (err) {
+      return String(value);
+    }
+  }
+}
