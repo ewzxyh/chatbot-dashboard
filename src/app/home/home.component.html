@@ -634,6 +634,13 @@
           <ng-container *ngIf="!showskeleton ">
 
             <span *ngIf="USER_ROLE !== 'agent'">
+              <appdashboard-home-value-onboarding
+                [projectId]="projectId"
+                [chatbots]="chatbots"
+                [canManageChannels]="PERMISSION_TO_VIEW_WA_BRODCAST"
+                [canManageFlows]="PERMISSION_TO_VIEW_FLOWS">
+              </appdashboard-home-value-onboarding>
+
               <ng-container *ngIf="areVisibleChatbot">
                 <home-cds (goToCreateChatbot)="goToCreateChatbot()" 
                   [chatbots]="chatbots" 

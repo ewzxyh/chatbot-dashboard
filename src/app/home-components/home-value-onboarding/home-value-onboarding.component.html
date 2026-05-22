@@ -1,0 +1,38 @@
+<section class="value-onboarding" aria-label="Primeiros passos">
+  <div class="value-onboarding__header">
+    <div>
+      <div class="value-onboarding__eyebrow">Primeiros passos</div>
+      <h2>Leve este projeto ao primeiro atendimento</h2>
+    </div>
+    <div class="value-onboarding__score">
+      <strong>{{ completedSteps }}/{{ steps.length }}</strong>
+      <span>concluidos</span>
+    </div>
+  </div>
+
+  <div class="value-onboarding__progress" aria-hidden="true">
+    <div [style.width.%]="progressPercent"></div>
+  </div>
+
+  <div class="value-onboarding__steps">
+    <div
+      class="value-onboarding__step"
+      *ngFor="let step of steps"
+      [ngClass]="{ 'is-done': step.done, 'is-disabled': !step.enabled }">
+      <div class="value-onboarding__icon">
+        <mat-icon>{{ step.done ? 'check' : step.icon }}</mat-icon>
+      </div>
+      <div class="value-onboarding__copy">
+        <strong>{{ step.title }}</strong>
+        <span>{{ step.detail }}</span>
+      </div>
+      <button
+        type="button"
+        class="value-onboarding__action"
+        (click)="runStep(step)"
+        [disabled]="!step.enabled">
+        {{ step.action }}
+      </button>
+    </div>
+  </div>
+</section>

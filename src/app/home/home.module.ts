@@ -22,6 +22,7 @@ import { HomeCreateTeammateComponent } from 'app/home-components/home-create-tea
 import { HomeKbComponent } from 'app/home-components/home-kb/home-kb.component';
 import { HomeCdsComponent } from 'app/home-components/home-cds/home-cds.component';
 import { HomeGoToChatComponent } from 'app/home-components/home-go-to-chat/home-go-to-chat.component';
+import { HomeValueOnboardingComponent } from 'app/home-components/home-value-onboarding/home-value-onboarding.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MomentModule } from 'ngx-moment';
 const routes: Routes = [
@@ -42,7 +43,8 @@ const routes: Routes = [
     HomeCreateTeammateComponent,
     HomeKbComponent,
     HomeCdsComponent,
-    HomeGoToChatComponent
+    HomeGoToChatComponent,
+    HomeValueOnboardingComponent
   ],
   imports: [
     RouterModule.forChild(routes),
