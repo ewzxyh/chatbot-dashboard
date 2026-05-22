@@ -1,0 +1,170 @@
+.privacy-page {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.privacy-toolbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+
+  h2 {
+    margin: 0 0 6px;
+    font-size: 22px;
+    color: #1f2d3d;
+  }
+
+  p {
+    margin: 0;
+    color: #607089;
+    font-size: 14px;
+  }
+}
+
+button {
+  border: 0;
+  border-radius: 6px;
+  background: #1f8efa;
+  color: #fff;
+  font-weight: 600;
+  padding: 10px 16px;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+  }
+
+  &.danger {
+    background: #d93025;
+  }
+}
+
+.privacy-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.privacy-card,
+.privacy-section {
+  background: #fff;
+  border: 1px solid #dde3ec;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(31, 45, 61, .04);
+}
+
+.privacy-card {
+  padding: 16px;
+
+  span,
+  small {
+    display: block;
+    color: #607089;
+  }
+
+  strong {
+    display: block;
+    margin: 6px 0 2px;
+    font-size: 26px;
+    color: #1f2d3d;
+  }
+}
+
+.privacy-layout {
+  display: grid;
+  grid-template-columns: minmax(320px, 420px) 1fr;
+  gap: 18px;
+}
+
+.privacy-section {
+  padding: 18px;
+
+  h3 {
+    margin: 0 0 14px;
+    font-size: 18px;
+    color: #1f2d3d;
+  }
+
+  pre {
+    max-height: 460px;
+    overflow: auto;
+    padding: 14px;
+    border-radius: 6px;
+    background: #f5f7fb;
+    color: #26384f;
+    font-size: 12px;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+}
+
+.privacy-form {
+  display: grid;
+  gap: 12px;
+
+  label {
+    display: grid;
+    gap: 6px;
+    color: #40516a;
+    font-weight: 600;
+    font-size: 13px;
+  }
+
+  input {
+    border: 1px solid #d5dce8;
+    border-radius: 6px;
+    padding: 10px 12px;
+    color: #1f2d3d;
+    font-size: 14px;
+  }
+}
+
+.privacy-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.privacy-counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+
+  span {
+    border-radius: 999px;
+    background: #eef4ff;
+    color: #285ea8;
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+}
+
+.privacy-error,
+.privacy-success {
+  border-radius: 6px;
+  padding: 12px 14px;
+  font-weight: 600;
+}
+
+.privacy-error {
+  background: #fdecea;
+  color: #b3261e;
+}
+
+.privacy-success {
+  background: #e8f5e9;
+  color: #1b7f3a;
+}
+
+@media (max-width: 1000px) {
+  .privacy-summary,
+  .privacy-layout {
+    grid-template-columns: 1fr;
+  }
+}

@@ -9,6 +9,7 @@ import { AdminUsersComponent } from './admin-users/admin-users.component';
 import { AdminPaymentsComponent } from './admin-payments/admin-payments.component';
 import { AdminOperationComponent } from './admin-operation/admin-operation.component';
 import { AdminAuditComponent } from './admin-audit/admin-audit.component';
+import { AdminPrivacyComponent } from './admin-privacy/admin-privacy.component';
 
 const routes: Routes = [
   {
@@ -22,6 +23,7 @@ const routes: Routes = [
       { path: 'payments', component: AdminPaymentsComponent },
       { path: 'operation', component: AdminOperationComponent },
       { path: 'audit', component: AdminAuditComponent },
+      { path: 'privacy', component: AdminPrivacyComponent },
     ]
   }
 ];
@@ -35,6 +37,7 @@ const routes: Routes = [
     AdminPaymentsComponent,
     AdminOperationComponent,
     AdminAuditComponent,
+    AdminPrivacyComponent,
   ],
   imports: [
     CommonModule,

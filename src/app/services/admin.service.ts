@@ -411,4 +411,54 @@ export class AdminService {
     return this._httpclient
       .get<any>(url, httpOptions);
   }
+
+  public getPrivacyConfig(): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': this.TOKEN
+      })
+    };
+    const url = this.SERVER_BASE_PATH + 'sadmin/privacy/config';
+    this.logger.log('[ADMIN-SERV] - GET PRIVACY CONFIG - URL', url);
+
+    return this._httpclient
+      .get<any>(url, httpOptions);
+  }
+
+  public exportPrivacyContact(projectId: string, identifier: string): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': this.TOKEN
+      })
+    };
+    const url = this.SERVER_BASE_PATH + 'sadmin/privacy/contact-export';
+    this.logger.log('[ADMIN-SERV] - EXPORT PRIVACY CONTACT - URL', url);
+
+    return this._httpclient
+      .post<any>(url, { project_id: projectId, identifier: identifier }, httpOptions);
+  }
+
+  public anonymizePrivacyContact(projectId: string, identifier: string, reason: string): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': this.TOKEN
+      })
+    };
+    const url = this.SERVER_BASE_PATH + 'sadmin/privacy/contact-anonymize';
+    this.logger.log('[ADMIN-SERV] - ANONYMIZE PRIVACY CONTACT - URL', url);
+
+    return this._httpclient
+      .post<any>(url, {
+        project_id: projectId,
+        identifier: identifier,
+        reason: reason,
+        confirm: true
+      }, httpOptions);
+  }
 }

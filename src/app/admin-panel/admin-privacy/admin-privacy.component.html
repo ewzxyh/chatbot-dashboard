@@ -1,0 +1,85 @@
+<div class="privacy-page">
+  <div class="privacy-toolbar">
+    <div>
+      <h2>Privacidade e LGPD</h2>
+      <p>Exportacao e anonimizacao manual de dados pessoais por projeto.</p>
+    </div>
+    <button type="button" (click)="loadConfig()" [disabled]="isLoadingConfig">Atualizar</button>
+  </div>
+
+  <div *ngIf="errorMessage" class="privacy-error">{{ errorMessage }}</div>
+  <div *ngIf="successMessage" class="privacy-success">{{ successMessage }}</div>
+
+  <div class="privacy-summary" *ngIf="config">
+    <div class="privacy-card">
+      <span>Conversas</span>
+      <strong>{{ config.conversationRetentionDays }}</strong>
+      <small>dias de retencao</small>
+    </div>
+    <div class="privacy-card">
+      <span>Anexos</span>
+      <strong>{{ config.attachmentRetentionDays }}</strong>
+      <small>dias de retencao</small>
+    </div>
+    <div class="privacy-card">
+      <span>Leads</span>
+      <strong>{{ config.leadRetentionDays }}</strong>
+      <small>dias de retencao</small>
+    </div>
+    <div class="privacy-card">
+      <span>Auditoria</span>
+      <strong>{{ config.auditEventRetentionDays }}</strong>
+      <small>dias de retencao</small>
+    </div>
+  </div>
+
+  <div class="privacy-layout">
+    <section class="privacy-section">
+      <h3>Contato</h3>
+      <div class="privacy-form">
+        <label>
+          Projeto
+          <input type="text" [(ngModel)]="projectId" placeholder="ID do projeto">
+        </label>
+        <label>
+          Identificador
+          <input type="text" [(ngModel)]="identifier" placeholder="Email, telefone, lead_id ou _id">
+        </label>
+        <label>
+          Motivo da anonimizacao
+          <input type="text" [(ngModel)]="reason" placeholder="Ex.: solicitacao LGPD do titular">
+        </label>
+      </div>
+
+      <div class="privacy-actions">
+        <button type="button" (click)="exportContact()" [disabled]="!canSubmit() || isExporting">
+          {{ isExporting ? 'Exportando...' : 'Exportar dados' }}
+        </button>
+        <button type="button" class="danger" (click)="anonymizeContact()" [disabled]="!canSubmit() || isAnonymizing">
+          {{ isAnonymizing ? 'Anonimizando...' : 'Anonimizar contato' }}
+        </button>
+      </div>
+    </section>
+
+    <section class="privacy-section" *ngIf="anonymizeResult">
+      <h3>Resultado da anonimizacao</h3>
+      <div class="privacy-counts">
+        <span>Leads: {{ anonymizeResult.counts?.leadsModified || 0 }}</span>
+        <span>Conversas: {{ anonymizeResult.counts?.requestsModified || 0 }}</span>
+        <span>Mensagens: {{ anonymizeResult.counts?.messagesModified || 0 }}</span>
+      </div>
+      <pre>{{ asJson(anonymizeResult) }}</pre>
+    </section>
+  </div>
+
+  <section class="privacy-section" *ngIf="exportResult">
+    <h3>Exportacao LGPD</h3>
+    <div class="privacy-counts">
+      <span>Lead: {{ exportResult.matched?.leadFound ? 'encontrado' : 'nao encontrado' }}</span>
+      <span>Conversas: {{ exportResult.matched?.requestCount || 0 }}</span>
+      <span>Mensagens: {{ exportResult.matched?.messageCount || 0 }}</span>
+      <span *ngIf="exportResult.matched?.requestsTruncated || exportResult.matched?.messagesTruncated">Resultado truncado</span>
+    </div>
+    <pre>{{ asJson(exportResult) }}</pre>
+  </section>
+</div>
