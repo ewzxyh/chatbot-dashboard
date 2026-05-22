@@ -14,6 +14,33 @@
   </select>
 </div>
 
+<div style="margin: 12px 0 18px; padding: 12px 14px; border: 1px solid #e1e8f5; border-radius: 6px; background: #f8fbff;">
+  <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+    <div>
+      <strong>Billing automatico</strong>
+      <span style="margin-left: 8px; color: #60708f;">
+        Job: {{ billingJobStatus?.started ? 'ativo' : 'inativo' }}
+        <span *ngIf="billingJobStatus?.lastStatus">| ultimo status: {{ billingJobStatus?.lastStatus }}</span>
+      </span>
+    </div>
+    <div>
+      <button type="button" class="btn-action" (click)="loadBillingJobStatus()" [disabled]="billingJobLoading">Atualizar</button>
+      <button type="button" class="btn-action" (click)="runBillingJob(true)" [disabled]="billingJobLoading">Simular</button>
+      <button type="button" class="btn-action" (click)="runBillingJob(false)" [disabled]="billingJobLoading">Executar</button>
+    </div>
+  </div>
+  <div *ngIf="billingJobMessage" class="modal-message" style="margin-top: 8px;">{{ billingJobMessage }}</div>
+  <div *ngIf="billingJobResult" style="margin-top: 8px; color: #32445f;">
+    Projetos analisados: {{ billingJobResult.scanned || 0 }} |
+    Acoes planejadas: {{ billingJobResult.plannedActions || 0 }} |
+    Avisos planejados: {{ billingJobResult.plannedNotices || 0 }} |
+    Acoes aplicadas: {{ billingJobResult.actions || 0 }} |
+    Avisos enviados: {{ billingJobResult.notices || 0 }} |
+    Ignorados: {{ billingJobResult.skipped || 0 }} |
+    Erros: {{ billingJobResult.errors || 0 }}
+  </div>
+</div>
+
 <div *ngIf="isLoading" style="text-align: center; padding: 40px;">Carregando...</div>
 
 <table *ngIf="!isLoading">

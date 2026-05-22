@@ -35,10 +35,17 @@ export class AdminProjectsComponent implements OnInit {
   billingActionLoading = false;
   billingReason = '';
   billingMessage = '';
+  billingJobStatus: any = null;
+  billingJobResult: any = null;
+  billingJobLoading = false;
+  billingJobMessage = '';
   planDisplayNames: any = { Free: 'Iniciante', Starter: 'Standard', Pro: 'Pro', Business: 'Enterprise', Custom: 'Custom' };
 
   constructor(private adminService: AdminService) { }
-  ngOnInit() { this.loadProjects(); }
+  ngOnInit() {
+    this.loadProjects();
+    this.loadBillingJobStatus();
+  }
 
   loadProjects() {
     this.isLoading = true;
@@ -186,6 +193,39 @@ export class AdminProjectsComponent implements OnInit {
       (err) => {
         this.billingMessage = 'Erro: ' + (err.error?.error || 'Falha');
         this.billingActionLoading = false;
+      }
+    );
+  }
+
+  loadBillingJobStatus() {
+    this.adminService.getBillingLifecycleJobStatus().subscribe(
+      (res) => { this.billingJobStatus = res.job || null; },
+      (err) => { this.billingJobMessage = 'Erro ao carregar job: ' + (err.error?.error || 'Falha'); }
+    );
+  }
+
+  runBillingJob(dryRun: boolean) {
+    if (this.billingJobLoading) return;
+    if (!dryRun && !window.confirm('Executar o billing automatico agora? Isso pode suspender projetos, enviar avisos e aplicar downgrade para Free.')) {
+      return;
+    }
+    this.billingJobLoading = true;
+    this.billingJobMessage = dryRun ? 'Simulando billing automatico...' : 'Executando billing automatico...';
+    this.billingJobResult = null;
+    const payload: any = { dryRun: dryRun };
+    if (!dryRun) payload.confirm = true;
+
+    this.adminService.runBillingLifecycleJob(payload).subscribe(
+      (res) => {
+        this.billingJobResult = res.result || null;
+        this.billingJobStatus = res.job || this.billingJobStatus;
+        this.billingJobMessage = dryRun ? 'Simulacao concluida.' : 'Execucao concluida.';
+        this.billingJobLoading = false;
+        this.loadProjects();
+      },
+      (err) => {
+        this.billingJobMessage = 'Erro: ' + (err.error?.error || 'Falha ao executar billing automatico');
+        this.billingJobLoading = false;
       }
     );
   }
