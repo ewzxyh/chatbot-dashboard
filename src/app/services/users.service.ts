@@ -200,6 +200,23 @@ export class UsersService {
   }
 
   verifyImageURL(image_url, callBack) {
+    try {
+      const targetUrl = new URL(image_url, window.location.origin);
+      if (window.fetch && targetUrl.origin === window.location.origin) {
+        targetUrl.searchParams.set('silent', 'true');
+        fetch(targetUrl.toString(), { method: 'HEAD', cache: 'no-store' })
+          .then((response) => {
+            callBack(response.ok && response.status !== 204);
+          })
+          .catch(() => {
+            callBack(false);
+          });
+        return;
+      }
+    } catch (error) {
+      this.logger.log('[USER-SERV] - verifyImageURL fallback to image probe', error);
+    }
+
     const img = new Image();
     img.src = image_url;
     img.onload = function () {
