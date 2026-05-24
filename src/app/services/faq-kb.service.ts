@@ -184,6 +184,22 @@ export class FaqKbService {
       .post(url, null, httpOptions)
 
   }
+
+  prepareWabaTemplatePublication(templateid: string, projectid: string, suggestionName?: string, publish: boolean = false) {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Authorization': this.TOKEN
+      })
+    };
+    const url = this.SERVER_BASE_PATH + projectid + '/faq_kb/templates/' + templateid + '/publication/waba';
+    const body = {
+      suggestionName: suggestionName,
+      publish: publish === true
+    };
+
+    return this._httpClient.post(url, body, httpOptions);
+  }
   
   duplicateChatbot(botid: string, projectid: string, ispublic: boolean, landingprojectid) {
     this.logger.log('[DUPLICATE-BOT] projectid',  projectid, 'landingprojectid', landingprojectid)

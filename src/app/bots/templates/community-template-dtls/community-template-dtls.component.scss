@@ -489,6 +489,128 @@
     font-weight: 600;
 }
 
+.waba-template-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.waba-template-actions button,
+.waba-publication-result-header button {
+    min-height: 30px;
+    padding: 0 10px;
+    border: 1px solid #c9d7e5;
+    border-radius: 6px;
+    background: #fff;
+    color: #2a557c;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.waba-template-actions button:disabled {
+    cursor: wait;
+    opacity: 0.65;
+}
+
+.waba-template-actions .waba-template-action-primary {
+    border-color: #2b95e9;
+    background: #2b95e9;
+    color: #fff;
+}
+
+.waba-publication-result,
+.waba-publication-error {
+    margin-top: 12px;
+    padding: 12px;
+    border-radius: 8px;
+}
+
+.waba-publication-result {
+    border: 1px solid #d8e1ea;
+    background: #f8fbff;
+}
+
+.waba-publication-error {
+    border: 1px solid #ffd2d2;
+    background: #fff6f6;
+    color: #9a2d2d;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.waba-publication-result-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.waba-publication-result-header strong {
+    display: block;
+    color: #20324a;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.waba-publication-result-header span {
+    display: block;
+    margin-top: 3px;
+    color: #60748a;
+    font-size: 12px;
+    line-height: 1.35;
+}
+
+.waba-publication-status-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.waba-publication-status-row span {
+    flex: 0 0 auto;
+    padding: 4px 7px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.waba-publication-status-row span.is-ready {
+    background: #e7f8ee;
+    color: #197a3d;
+}
+
+.waba-publication-status-row span.requires-approval {
+    background: #fff4df;
+    color: #986000;
+}
+
+.waba-publication-status-row small {
+    min-width: 0;
+    color: #60748a;
+    font-size: 11px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.waba-publication-result pre {
+    max-height: 260px;
+    margin: 10px 0 0;
+    padding: 10px;
+    overflow: auto;
+    border: 1px solid #dbe5ef;
+    border-radius: 6px;
+    background: #17202a;
+    color: #dceafe;
+    font-size: 11px;
+    line-height: 1.45;
+    white-space: pre-wrap;
+}
+
 .publication-checklist {
     margin: 0;
     padding-left: 18px;
@@ -541,6 +663,8 @@
 
     .template-flow-preview-header,
     .waba-template-card-header,
+    .waba-publication-result-header,
+    .waba-publication-status-row,
     .template-flow-block {
         flex-direction: column;
     }

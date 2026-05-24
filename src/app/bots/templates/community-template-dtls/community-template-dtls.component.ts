@@ -74,6 +74,11 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
     buttons: string[];
   }> = [];
   public publicationChecklist: string[] = [];
+  public wabaPublicationResult: any;
+  public wabaPublicationError: string;
+  public activeWabaPublicationName: string;
+  public isPreparingWabaPublication = false;
+  public isPublishingWabaTemplate = false;
   private chatBotsLoaded = false;
   private roleLoaded = false;
   private planLoaded = false;
@@ -407,6 +412,65 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
 
   getPublicationStatusClass(status: string): string {
     return status === 'ready' ? 'is-ready' : 'requires-approval';
+  }
+
+  prepareWabaPublication(suggestionName: string, publish: boolean = false) {
+    if (!this.templateId || !this.projectId || !suggestionName) {
+      return;
+    }
+
+    if (publish === true && !window.confirm('Enviar este template para aprovacao na Meta?')) {
+      return;
+    }
+
+    this.activeWabaPublicationName = suggestionName;
+    this.wabaPublicationError = undefined;
+    this.wabaPublicationResult = undefined;
+    this.isPreparingWabaPublication = publish !== true;
+    this.isPublishingWabaTemplate = publish === true;
+
+    this.faqKbService.prepareWabaTemplatePublication(this.templateId, this.projectId, suggestionName, publish)
+      .subscribe((result: any) => {
+        this.wabaPublicationResult = result;
+      }, (error) => {
+        this.logger.error('[COMMUNITY-TEMPLATE-DTLS] WABA template publication error', error);
+        this.wabaPublicationError = this.getWabaPublicationError(error);
+        this.isPreparingWabaPublication = false;
+        this.isPublishingWabaTemplate = false;
+      }, () => {
+        this.isPreparingWabaPublication = false;
+        this.isPublishingWabaTemplate = false;
+      });
+  }
+
+  getWabaPublicationError(error: any): string {
+    const body = error && error.error;
+    if (body && body.error) {
+      return body.error;
+    }
+    if (body && body.providerError && body.providerError.error && body.providerError.error.message) {
+      return body.providerError.error.message;
+    }
+    if (error && error.message) {
+      return error.message;
+    }
+    return 'Nao foi possivel preparar o template WABA.';
+  }
+
+  getWabaPayloadJson(): string {
+    if (!this.wabaPublicationResult || !this.wabaPublicationResult.metaPayload) {
+      return '';
+    }
+
+    return JSON.stringify(this.wabaPublicationResult.metaPayload, null, 2);
+  }
+
+  copyWabaPayload() {
+    if (!navigator || !navigator.clipboard || !this.getWabaPayloadJson()) {
+      return;
+    }
+
+    navigator.clipboard.writeText(this.getWabaPayloadJson());
   }
 
 
