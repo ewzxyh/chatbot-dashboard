@@ -76,9 +76,12 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
   public publicationChecklist: string[] = [];
   public wabaPublicationResult: any;
   public wabaPublicationError: string;
+  public wabaStatusSyncResult: any;
+  public wabaStatusSyncError: string;
   public activeWabaPublicationName: string;
   public isPreparingWabaPublication = false;
   public isPublishingWabaTemplate = false;
+  public isSyncingWabaStatus = false;
   private chatBotsLoaded = false;
   private roleLoaded = false;
   private planLoaded = false;
@@ -282,6 +285,8 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
     this.publicationReadiness = Array.isArray(publication.readiness) ? publication.readiness : [];
     this.wabaTemplateSuggestions = Array.isArray(publication.wabaTemplates) ? publication.wabaTemplates : [];
     this.publicationChecklist = Array.isArray(publication.checklist) ? publication.checklist : [];
+    this.wabaStatusSyncResult = undefined;
+    this.wabaStatusSyncError = undefined;
   }
 
   getIntentPreviewWeight(intent: any): number {
@@ -441,6 +446,57 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
         this.isPreparingWabaPublication = false;
         this.isPublishingWabaTemplate = false;
       });
+  }
+
+  syncWabaPublicationStatus() {
+    if (!this.templateId || !this.projectId || !this.wabaTemplateSuggestions || !this.wabaTemplateSuggestions.length) {
+      return;
+    }
+
+    this.isSyncingWabaStatus = true;
+    this.wabaStatusSyncError = undefined;
+
+    this.faqKbService.syncWabaTemplatePublicationStatus(this.templateId, this.projectId)
+      .subscribe((result: any) => {
+        this.wabaStatusSyncResult = result;
+      }, (error) => {
+        this.logger.error('[COMMUNITY-TEMPLATE-DTLS] WABA template status sync error', error);
+        this.wabaStatusSyncError = this.getWabaPublicationError(error);
+        this.isSyncingWabaStatus = false;
+      }, () => {
+        this.isSyncingWabaStatus = false;
+      });
+  }
+
+  getWabaTemplateStatus(name: string): any {
+    const items = this.wabaStatusSyncResult && Array.isArray(this.wabaStatusSyncResult.templates) ?
+      this.wabaStatusSyncResult.templates : [];
+    return items.find((item) => item.name === name);
+  }
+
+  getWabaTemplateStateLabel(state: string): string {
+    const labels = {
+      approved: 'Aprovado',
+      pending: 'Pendente',
+      rejected: 'Rejeitado',
+      not_found: 'Nao encontrado',
+      unknown: 'Desconhecido'
+    };
+
+    return labels[state] || state || 'Desconhecido';
+  }
+
+  getWabaTemplateStateClass(state: string): string {
+    if (state === 'approved') {
+      return 'is-ready';
+    }
+    if (state === 'pending') {
+      return 'is-pending';
+    }
+    if (state === 'rejected') {
+      return 'is-rejected';
+    }
+    return 'requires-approval';
   }
 
   getWabaPublicationError(error: any): string {

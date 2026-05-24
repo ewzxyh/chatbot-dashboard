@@ -200,6 +200,21 @@ export class FaqKbService {
 
     return this._httpClient.post(url, body, httpOptions);
   }
+
+  syncWabaTemplatePublicationStatus(templateid: string, projectid: string, integrationId?: string) {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Authorization': this.TOKEN
+      })
+    };
+    const url = this.SERVER_BASE_PATH + projectid + '/faq_kb/templates/' + templateid + '/publication/waba/sync';
+    const body = {
+      integrationId: integrationId
+    };
+
+    return this._httpClient.post(url, body, httpOptions);
+  }
   
   duplicateChatbot(botid: string, projectid: string, ispublic: boolean, landingprojectid) {
     this.logger.log('[DUPLICATE-BOT] projectid',  projectid, 'landingprojectid', landingprojectid)

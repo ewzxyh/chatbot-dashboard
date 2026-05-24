@@ -357,7 +357,28 @@
 }
 
 .template-publication-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
     margin-bottom: 14px;
+}
+
+.template-publication-sync-btn {
+    flex: 0 0 auto;
+    min-height: 32px;
+    padding: 0 12px;
+    border: 1px solid #b9d8f6;
+    border-radius: 6px;
+    background: #f7fbff;
+    color: #1d78c1;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.template-publication-sync-btn:disabled {
+    cursor: wait;
+    opacity: 0.65;
 }
 
 .template-publication-title {
@@ -487,6 +508,49 @@
     color: #1d78c1;
     font-size: 12px;
     font-weight: 600;
+}
+
+.waba-template-status {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 7px;
+    margin-top: 10px;
+}
+
+.waba-template-status span {
+    padding: 4px 7px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.waba-template-status span.is-ready {
+    background: #e7f8ee;
+    color: #197a3d;
+}
+
+.waba-template-status span.is-pending {
+    background: #edf5ff;
+    color: #236da8;
+}
+
+.waba-template-status span.is-rejected {
+    background: #fff0f0;
+    color: #a93434;
+}
+
+.waba-template-status span.requires-approval {
+    background: #fff4df;
+    color: #986000;
+}
+
+.waba-template-status small {
+    min-width: 0;
+    color: #60748a;
+    font-size: 11px;
+    line-height: 1.35;
 }
 
 .waba-template-actions {
@@ -662,6 +726,7 @@
     }
 
     .template-flow-preview-header,
+    .template-publication-header,
     .waba-template-card-header,
     .waba-publication-result-header,
     .waba-publication-status-row,

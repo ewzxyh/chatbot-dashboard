@@ -172,6 +172,12 @@
                             Use esta checagem para decidir se o fluxo pode ser publicado direto ou se precisa de template WABA aprovado pela Meta.
                         </div>
                     </div>
+                    <button type="button" class="template-publication-sync-btn"
+                        *ngIf="wabaTemplateSuggestions?.length"
+                        (click)="syncWabaPublicationStatus()"
+                        [disabled]="isSyncingWabaStatus">
+                        {{ isSyncingWabaStatus ? 'Sincronizando...' : 'Sincronizar status Meta' }}
+                    </button>
                 </div>
 
                 <div class="template-publication-grid">
@@ -199,6 +205,17 @@
                             <div class="waba-template-buttons" *ngIf="wabaTemplate.buttons?.length">
                                 <span *ngFor="let button of wabaTemplate.buttons">{{ button }}</span>
                             </div>
+                            <div class="waba-template-status" *ngIf="getWabaTemplateStatus(wabaTemplate.name)">
+                                <span [ngClass]="getWabaTemplateStateClass(getWabaTemplateStatus(wabaTemplate.name).state)">
+                                    {{ getWabaTemplateStateLabel(getWabaTemplateStatus(wabaTemplate.name).state) }}
+                                </span>
+                                <small *ngIf="getWabaTemplateStatus(wabaTemplate.name).meta?.status">
+                                    Meta: {{ getWabaTemplateStatus(wabaTemplate.name).meta.status }}
+                                </small>
+                                <small *ngIf="getWabaTemplateStatus(wabaTemplate.name).meta?.rejectedReason">
+                                    {{ getWabaTemplateStatus(wabaTemplate.name).meta.rejectedReason }}
+                                </small>
+                            </div>
                             <div class="waba-template-actions">
                                 <button type="button"
                                     (click)="prepareWabaPublication(wabaTemplate.name, false)"
@@ -212,29 +229,34 @@
                                     {{ isPublishingWabaTemplate && activeWabaPublicationName === wabaTemplate.name ? 'Enviando...' : 'Enviar para Meta' }}
                                 </button>
                             </div>
-                        </div>
 
-                        <div class="waba-publication-result"
-                            *ngIf="wabaPublicationResult && activeWabaPublicationName === wabaTemplate.name">
-                            <div class="waba-publication-result-header">
-                                <div>
-                                    <strong>{{ wabaPublicationResult.dryRun ? 'Payload validado' : 'Template enviado' }}</strong>
-                                    <span>{{ wabaPublicationResult.message || wabaPublicationResult.status }}</span>
+                            <div class="waba-publication-result"
+                                *ngIf="wabaPublicationResult && activeWabaPublicationName === wabaTemplate.name">
+                                <div class="waba-publication-result-header">
+                                    <div>
+                                        <strong>{{ wabaPublicationResult.dryRun ? 'Payload validado' : 'Template enviado' }}</strong>
+                                        <span>{{ wabaPublicationResult.message || wabaPublicationResult.status }}</span>
+                                    </div>
+                                    <button type="button" (click)="copyWabaPayload()">Copiar JSON</button>
                                 </div>
-                                <button type="button" (click)="copyWabaPayload()">Copiar JSON</button>
+                                <div class="waba-publication-status-row">
+                                    <span [ngClass]="wabaPublicationResult.canPublish ? 'is-ready' : 'requires-approval'">
+                                        {{ wabaPublicationResult.canPublish ? 'WABA configurada' : 'Falta credencial WABA' }}
+                                    </span>
+                                    <small>{{ wabaPublicationResult.metaEndpoint }}</small>
+                                </div>
+                                <pre>{{ getWabaPayloadJson() }}</pre>
                             </div>
-                            <div class="waba-publication-status-row">
-                                <span [ngClass]="wabaPublicationResult.canPublish ? 'is-ready' : 'requires-approval'">
-                                    {{ wabaPublicationResult.canPublish ? 'WABA configurada' : 'Falta credencial WABA' }}
-                                </span>
-                                <small>{{ wabaPublicationResult.metaEndpoint }}</small>
+
+                            <div class="waba-publication-error"
+                                *ngIf="wabaPublicationError && activeWabaPublicationName === wabaTemplate.name">
+                                {{ wabaPublicationError }}
                             </div>
-                            <pre>{{ getWabaPayloadJson() }}</pre>
                         </div>
 
                         <div class="waba-publication-error"
-                            *ngIf="wabaPublicationError && activeWabaPublicationName === wabaTemplate.name">
-                            {{ wabaPublicationError }}
+                            *ngIf="wabaStatusSyncError">
+                            {{ wabaStatusSyncError }}
                         </div>
                     </div>
 
