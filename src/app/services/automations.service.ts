@@ -146,6 +146,20 @@ export class AutomationsService {
     return this.httpClient.post(url, JSON.stringify(broadcastData), httpOptions);
   }
 
+  public sendBoundWabaTemplate(botId: string, dispatchData: any) {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Authorization': this.TOKEN
+      })
+    };
+
+    const url = this.SERVER_BASE_PATH + this.project_id + "/faq_kb/" + botId + "/publication/waba/send-template";
+    this.logger.log('[AUTOMATIONS.SERVICE] - SEND BOUND WABA TEMPLATE - URL ', url);
+
+    return this.httpClient.post(url, JSON.stringify(dispatchData), httpOptions);
+  }
+
   getWAMessagesByPhoneNum(phoneNum) {
     const httpOptions = {
       headers: new HttpHeaders({

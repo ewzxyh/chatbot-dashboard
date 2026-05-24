@@ -14,6 +14,7 @@ import { Subject, Subscription } from 'rxjs';
 import { BrandService } from 'app/services/brand.service';
 import { URL_WA_BroadcastsDocs } from 'app/utils/util';
 import { NavigationService } from 'app/services/navigation.service';
+import { FaqKbService } from 'app/services/faq-kb.service';
 const Swal = require('sweetalert2')
 
 @Component({
@@ -62,6 +63,14 @@ export class AutomationCreateComponent implements OnInit {
   public hideHelpLink: boolean;
 
   fakeTmplt = ['insert fake template here']
+
+  sendMode: 'meta' | 'flow' = 'meta';
+  boundTemplateBots: any[] = [];
+  selectedBoundBotId: string;
+  selectedBoundBot: any;
+  flowRecipientPhone: string;
+  flowRecipientName: string;
+  flowDispatching = false;
   
   private backSub?: Subscription;
   
@@ -76,6 +85,7 @@ export class AutomationCreateComponent implements OnInit {
     public sanitizer: DomSanitizer,
     private translate: TranslateService,
     public brandService: BrandService,
+    private faqKbService: FaqKbService,
     private navSvc: NavigationService
     
   ) { 
@@ -115,6 +125,7 @@ export class AutomationCreateComponent implements OnInit {
           if (project) {
             this.projectId = project._id;
             this.logger.log('[AUTOMATION-CREATE] - projectId ', this.projectId)
+            this.getBoundTemplateBots();
           }
         });
   }
@@ -184,6 +195,70 @@ export class AutomationCreateComponent implements OnInit {
       this.logger.log('[AUTOMATION-CREATE] - GET WA TEMPLATES * COMPLETE *');
 
     });
+  }
+
+  setSendMode(mode: 'meta' | 'flow') {
+    this.sendMode = mode;
+    if (mode === 'flow') {
+      this.getBoundTemplateBots();
+    }
+  }
+
+  getApprovedWabaBinding(bot: any) {
+    const publication = bot && bot.attributes && bot.attributes.publication ? bot.attributes.publication : {};
+    const bindings = []
+      .concat(publication.wabaTemplateBinding ? [publication.wabaTemplateBinding] : [])
+      .concat(Array.isArray(publication.wabaTemplateBindings) ? publication.wabaTemplateBindings : []);
+
+    return bindings.find((binding) => {
+      const state = String(binding && (binding.state || binding.status || '')).toLowerCase();
+      return binding && binding.channel === 'waba' && (state === 'approved' || state === 'aprovado');
+    });
+  }
+
+  getBoundTemplateBots() {
+    if (!this.projectId || !this.faqKbService) {
+      return;
+    }
+
+    this.faqKbService.getFaqKbByProjectId().subscribe((bots: any[]) => {
+      const list = Array.isArray(bots) ? bots : [];
+      this.boundTemplateBots = list
+        .map((bot) => {
+          const binding = this.getApprovedWabaBinding(bot);
+          return binding ? Object.assign({}, bot, { __wabaTemplateBinding: binding }) : null;
+        })
+        .filter((bot) => !!bot);
+
+      if (this.selectedBoundBotId) {
+        this.selectedBoundBot = this.boundTemplateBots.find((bot) => bot._id === this.selectedBoundBotId);
+      }
+    }, (error) => {
+      this.logger.error('[AUTOMATION-CREATE] - GET BOUND TEMPLATE BOTS - ERROR: ', error);
+    });
+  }
+
+  onSelectBoundBot() {
+    this.selectedBoundBot = this.boundTemplateBots.find((bot) => bot._id === this.selectedBoundBotId);
+  }
+
+  getSelectedBinding() {
+    return this.selectedBoundBot && this.selectedBoundBot.__wabaTemplateBinding;
+  }
+
+  getSelectedBindingTemplateName() {
+    const binding = this.getSelectedBinding();
+    return binding && (binding.providerTemplateName || binding.suggestionName || binding.name);
+  }
+
+  getSelectedBindingLanguage() {
+    const binding = this.getSelectedBinding();
+    return binding && binding.language;
+  }
+
+  canSendBoundTemplate() {
+    const phone = String(this.flowRecipientPhone || '').replace(/\D+/g, '');
+    return !!this.selectedBoundBotId && phone.length >= 8 && !this.flowDispatching;
   }
 
   presentDialogWANotInstalledFoTheCurrentProject() {
@@ -507,6 +582,74 @@ export class AutomationCreateComponent implements OnInit {
   goToWABroadcastsDoc() {
     const url = URL_WA_BroadcastsDocs;
     window.open(url, '_blank');
+  }
+
+  presentDialogBeforeToSendBoundTemplate() {
+    if (!this.canSendBoundTemplate()) {
+      return;
+    }
+
+    const templateName = this.getSelectedBindingTemplateName();
+    Swal.fire({
+      title: this.translate.instant('AreYouSure'),
+      text: this.translate.instant('SendChatCaseFlowTemplateConfirmation', {
+        template_name: templateName,
+        phone_number: this.flowRecipientPhone
+      }),
+      icon: "warning",
+      showCloseButton: false,
+      showCancelButton: true,
+      showConfirmButton: true,
+      showDenyButton: false,
+      confirmButtonText: this.translate.instant('Send'),
+      cancelButtonText: this.translate.instant('Cancel'),
+      focusConfirm: false,
+      reverseButtons: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.sendBoundTemplateToServer();
+      }
+    });
+  }
+
+  sendBoundTemplateToServer() {
+    if (!this.canSendBoundTemplate()) {
+      return;
+    }
+
+    this.flowDispatching = true;
+    const body = {
+      phoneNumber: this.flowRecipientPhone,
+      recipientName: this.flowRecipientName || undefined
+    };
+
+    this.automationsService.sendBoundWabaTemplate(this.selectedBoundBotId, body).subscribe((res: any) => {
+      this.logger.log('[AUTOMATION-CREATE] SEND BOUND WABA TEMPLATE res', res);
+      const sent = res && typeof res.sent !== 'undefined' ? res.sent : 0;
+      const failed = res && typeof res.failed !== 'undefined' ? res.failed : 0;
+      Swal.fire({
+        title: this.translate.instant('Done') + "!",
+        text: this.translate.instant('ChatCaseFlowTemplateDispatched', { sent: sent, failed: failed }),
+        icon: failed > 0 ? "warning" : "success",
+        showCloseButton: false,
+        showCancelButton: false,
+        confirmButtonText: this.translate.instant('Ok'),
+      });
+    }, (error) => {
+      this.flowDispatching = false;
+      this.logger.error('[AUTOMATION-CREATE] SEND BOUND WABA TEMPLATE - ERROR ', error);
+      const err = error && error.error ? (error.error.error || error.error.message) : null;
+      Swal.fire({
+        title: this.translate.instant('Oops') + '!',
+        text: err || this.translate.instant('ChatCaseFlowTemplateDispatchFailed'),
+        icon: "error",
+        showCloseButton: false,
+        showCancelButton: false,
+        confirmButtonText: this.translate.instant('Ok'),
+      });
+    }, () => {
+      this.flowDispatching = false;
+    });
   }
 
 

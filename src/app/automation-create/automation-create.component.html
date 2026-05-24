@@ -40,7 +40,20 @@
 
                             <div class="b-left--columns">
 
-                                <div class="choose-wa-tmplt-label-and-select-wpr">
+                                <div class="broadcast-mode-switch">
+                                    <button type="button" class="broadcast-mode-button"
+                                        [ngClass]="{'broadcast-mode-button-active': sendMode === 'meta'}"
+                                        (click)="setSendMode('meta')">
+                                        {{'BroadcastFromMetaTemplate' | translate}}
+                                    </button>
+                                    <button type="button" class="broadcast-mode-button"
+                                        [ngClass]="{'broadcast-mode-button-active': sendMode === 'flow'}"
+                                        (click)="setSendMode('flow')">
+                                        {{'BroadcastFromChatCaseFlow' | translate}}
+                                    </button>
+                                </div>
+
+                                <div class="choose-wa-tmplt-label-and-select-wpr" *ngIf="sendMode === 'meta'">
                                     <div class="template-select-label">  {{ 'ChooseTemplate' | translate}} </div>
 
                                     <div class="select-and-btn-wpr">
@@ -72,7 +85,47 @@
 
                                 </div>
 
-                                <div class="contacts-columns">
+                                <div class="choose-wa-tmplt-label-and-select-wpr" *ngIf="sendMode === 'flow'">
+                                    <div class="template-select-label"> {{ 'ChooseChatCaseFlow' | translate}} </div>
+
+                                    <div class="select-and-btn-wpr">
+                                        <ng-select id="bound-template-bot-select"
+                                            [clearable]="false"
+                                            [searchable]="true"
+                                            [(ngModel)]="selectedBoundBotId"
+                                            [items]="boundTemplateBots"
+                                            bindLabel="name"
+                                            bindValue="_id"
+                                            placeholder="{{ 'ChooseChatCaseFlow' | translate}}"
+                                            style="width: 320px;"
+                                            (change)="onSelectBoundBot()">
+                                        </ng-select>
+                                    </div>
+
+                                    <div *ngIf="boundTemplateBots?.length === 0" class="template-error-message">
+                                        {{ 'NoFlowWithApprovedWabaTemplate' | translate }}
+                                    </div>
+
+                                    <div *ngIf="selectedBoundBot" class="bound-template-summary">
+                                        <div class="bound-template-summary-title">{{ 'BoundWabaTemplate' | translate }}</div>
+                                        <div>{{ getSelectedBindingTemplateName() }}</div>
+                                        <div class="bound-template-summary-meta">{{ getSelectedBindingLanguage() }}</div>
+                                    </div>
+
+                                    <div class="bound-template-form">
+                                        <label>{{ 'RecipientPhoneNumber' | translate }}</label>
+                                        <input type="text" class="bound-template-input" [(ngModel)]="flowRecipientPhone" placeholder="+55 62 99999-9999">
+
+                                        <label>{{ 'CustomerName' | translate }}</label>
+                                        <input type="text" class="bound-template-input" [(ngModel)]="flowRecipientName" placeholder="{{ 'CustomerName' | translate }}">
+
+                                        <button class="btn send-wa-btn" (click)="presentDialogBeforeToSendBoundTemplate()" [disabled]="!canSendBoundTemplate()">
+                                            {{ flowDispatching ? ('Sending' | translate) : ('SendTemplate' | translate) }}
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="contacts-columns" *ngIf="sendMode === 'meta'">
                                     <div class="contacts-columns-header-wpr">
                                         <div class="contacts-columns-header">
                                             {{'ContactsList' | translate}} <span *ngIf="parsedCsvData?.length > 0"> ( {{parsedCsvData?.length }} ) </span> 
@@ -132,14 +185,14 @@
                                 {{'TemplatePreview' | translate}}
                             </div>
 
-                            <div class="no-template-selected-container" *ngIf="!selected_template">
+                            <div class="no-template-selected-container" *ngIf="sendMode === 'meta' && !selected_template">
                                <div class="no-template-selected">
                                     {{'NoTemplateSelected' | translate}}
                                </div>
                                
                             </div>
 
-                            <div id="preview-container" class="preview-container" *ngIf="selected_template">
+                            <div id="preview-container" class="preview-container" *ngIf="sendMode === 'meta' && selected_template">
                                 <div class="inner-preview-container">
                                     <div class="message-cloud">
 
@@ -217,6 +270,21 @@
                                 </div>
                             </div>
                             <!-- ./ preview -->
+
+                            <div class="flow-preview-container" *ngIf="sendMode === 'flow'">
+                                <div class="no-template-selected-container" *ngIf="!selectedBoundBot">
+                                    <div class="no-template-selected">
+                                        {{'NoFlowSelected' | translate}}
+                                    </div>
+                                </div>
+
+                                <div class="flow-preview-card" *ngIf="selectedBoundBot">
+                                    <div class="flow-preview-eyebrow">{{ 'ChatCaseFlow' | translate }}</div>
+                                    <div class="flow-preview-title">{{ selectedBoundBot?.name }}</div>
+                                    <div class="flow-preview-template">{{ getSelectedBindingTemplateName() }}</div>
+                                    <div class="flow-preview-meta">{{ getSelectedBindingLanguage() }}</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
