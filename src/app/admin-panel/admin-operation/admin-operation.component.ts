@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AdminService } from '../../services/admin.service';
+import { formatChatcaseDate, formatChatcaseDateTime } from '../../utils/chatcase-locale';
 
 @Component({
   selector: 'app-admin-operation',
@@ -506,16 +507,15 @@ export class AdminOperationComponent implements OnInit {
 
   formatDate(value: string): string {
     if (!value) return 'N/A';
-    return new Date(value).toLocaleString();
+    return formatChatcaseDateTime(value);
   }
 
   formatBucket(value: string): string {
     if (!value) return 'N/A';
-    const date = new Date(value);
     if (this.metricFilters.bucket === 'day') {
-      return date.toLocaleDateString();
+      return formatChatcaseDate(value);
     }
-    return date.toLocaleString();
+    return formatChatcaseDateTime(value);
   }
 
   metricCount(group: string, collection: string, key: string): number {

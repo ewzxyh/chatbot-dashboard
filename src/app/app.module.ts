@@ -11,7 +11,9 @@ import { OnboardingChecklistComponent } from './onboarding-checklist/onboarding-
 // import { MapRequestComponent } from './map-request/map-request.component'; // now lazy
 
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule, APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { NgModule, APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, LOCALE_ID } from '@angular/core';
+import { registerLocaleData } from '@angular/common';
+import localePt from '@angular/common/locales/pt';
 
 
 import { RouterModule } from '@angular/router';
@@ -501,6 +503,8 @@ const appInitializerFn = (appConfig: AppConfigService, brandService: BrandServic
   };
 };
 
+registerLocaleData(localePt, 'pt-BR');
+
 
 
 @NgModule({
@@ -806,7 +810,8 @@ const appInitializerFn = (appConfig: AppConfigService, brandService: BrandServic
     }),
   ],
   providers: [
-    { provide: MAT_DATE_LOCALE, useValue: 'en-GB' },
+    { provide: LOCALE_ID, useValue: 'pt-BR' },
+    { provide: MAT_DATE_LOCALE, useValue: 'pt-BR' },
     { provide: HTTP_INTERCEPTORS, useClass: LogRequestsInterceptor, multi: true },
     {
       provide: DateAdapter,
