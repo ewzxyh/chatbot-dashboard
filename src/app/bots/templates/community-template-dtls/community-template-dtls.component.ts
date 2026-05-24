@@ -59,6 +59,21 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
     aliases: string[];
   }> = [];
   public previewChannels: string[] = [];
+  public publicationReadiness: Array<{
+    channel: string;
+    status: string;
+    title: string;
+    description: string;
+  }> = [];
+  public wabaTemplateSuggestions: Array<{
+    name: string;
+    category: string;
+    language: string;
+    body: string;
+    variables: string[];
+    buttons: string[];
+  }> = [];
+  public publicationChecklist: string[] = [];
   private chatBotsLoaded = false;
   private roleLoaded = false;
   private planLoaded = false;
@@ -254,6 +269,14 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
         question: this.getIntentQuestionLabel(intent),
         aliases: this.getIntentAliases(intent)
       }));
+
+    const publication = template &&
+      template.attributes &&
+      template.attributes.publication ? template.attributes.publication : {};
+
+    this.publicationReadiness = Array.isArray(publication.readiness) ? publication.readiness : [];
+    this.wabaTemplateSuggestions = Array.isArray(publication.wabaTemplates) ? publication.wabaTemplates : [];
+    this.publicationChecklist = Array.isArray(publication.checklist) ? publication.checklist : [];
   }
 
   getIntentPreviewWeight(intent: any): number {
@@ -371,6 +394,19 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
     };
 
     return labels[channel] || channel;
+  }
+
+  getPublicationStatusLabel(status: string): string {
+    const labels = {
+      ready: 'Pronto',
+      requires_approval: 'Requer aprovacao'
+    };
+
+    return labels[status] || status;
+  }
+
+  getPublicationStatusClass(status: string): string {
+    return status === 'ready' ? 'is-ready' : 'requires-approval';
   }
 
 

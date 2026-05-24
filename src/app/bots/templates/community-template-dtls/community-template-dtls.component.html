@@ -163,6 +163,54 @@
                 </div>
             </div>
 
+            <div class="template-publication-panel"
+                *ngIf="publicationReadiness?.length || wabaTemplateSuggestions?.length || publicationChecklist?.length">
+                <div class="template-publication-header">
+                    <div>
+                        <div class="template-publication-title">Publicação em canais</div>
+                        <div class="template-publication-subtitle">
+                            Use esta checagem para decidir se o fluxo pode ser publicado direto ou se precisa de template WABA aprovado pela Meta.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="template-publication-grid">
+                    <div class="template-publication-card" *ngIf="publicationReadiness?.length">
+                        <div class="template-publication-card-title">Prontidão por canal</div>
+                        <div class="publication-readiness-item" *ngFor="let item of publicationReadiness">
+                            <div>
+                                <strong>{{ item.title }}</strong>
+                                <p>{{ item.description }}</p>
+                            </div>
+                            <span [ngClass]="getPublicationStatusClass(item.status)">
+                                {{ getPublicationStatusLabel(item.status) }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="template-publication-card" *ngIf="wabaTemplateSuggestions?.length">
+                        <div class="template-publication-card-title">Template WABA sugerido</div>
+                        <div class="waba-template-card" *ngFor="let wabaTemplate of wabaTemplateSuggestions">
+                            <div class="waba-template-card-header">
+                                <strong>{{ wabaTemplate.name }}</strong>
+                                <span>{{ wabaTemplate.category }} - {{ wabaTemplate.language }}</span>
+                            </div>
+                            <p>{{ wabaTemplate.body }}</p>
+                            <div class="waba-template-buttons" *ngIf="wabaTemplate.buttons?.length">
+                                <span *ngFor="let button of wabaTemplate.buttons">{{ button }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="template-publication-card" *ngIf="publicationChecklist?.length">
+                        <div class="template-publication-card-title">Checklist antes de ativar</div>
+                        <ol class="publication-checklist">
+                            <li *ngFor="let item of publicationChecklist">{{ item }}</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
             <div class="template-dtls-template-features-title"
                 *ngIf="template?.templateFeatures && template?.templateFeatures.length > 0">
                 Recursos do modelo
