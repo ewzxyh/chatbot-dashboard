@@ -47,6 +47,18 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
   learnMoreAboutDefaultRoles: string;
   agentsCannotManageChatbots: string;
   public autoImportStarted = false;
+  public previewMessages: Array<{
+    title: string;
+    question: string;
+    text: string;
+    buttons: string[];
+  }> = [];
+  public previewBlocks: Array<{
+    name: string;
+    question: string;
+    aliases: string[];
+  }> = [];
+  public previewChannels: string[] = [];
   private chatBotsLoaded = false;
   private roleLoaded = false;
   private planLoaded = false;
@@ -209,9 +221,156 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
         if (_template) {
           this.template = _template;
           this.botname = _template.name;
+          this.buildTemplatePreview(_template);
           this.tryAutoImport();
         }
       })
+  }
+
+  buildTemplatePreview(template: any) {
+    const intents = Array.isArray(template && template.intents) ? template.intents : [];
+    const sortedIntents = intents.slice().sort((current, next) => {
+      return this.getIntentPreviewWeight(current) - this.getIntentPreviewWeight(next);
+    });
+
+    this.previewChannels = template &&
+      template.attributes &&
+      Array.isArray(template.attributes.channels) ? template.attributes.channels : [];
+
+    this.previewMessages = sortedIntents
+      .filter((intent) => this.shouldShowIntentInConversationPreview(intent))
+      .slice(0, 4)
+      .map((intent) => ({
+        title: this.getIntentDisplayLabel(intent),
+        question: this.getIntentQuestionLabel(intent),
+        text: this.getIntentMessageText(intent),
+        buttons: this.getIntentButtons(intent)
+      }));
+
+    this.previewBlocks = sortedIntents
+      .filter((intent) => intent && intent.intent_display_name !== 'defaultFallback')
+      .map((intent) => ({
+        name: this.getIntentDisplayLabel(intent),
+        question: this.getIntentQuestionLabel(intent),
+        aliases: this.getIntentAliases(intent)
+      }));
+  }
+
+  getIntentPreviewWeight(intent: any): number {
+    if (!intent) {
+      return 999;
+    }
+
+    if (intent.intent_display_name === 'start') {
+      return 0;
+    }
+
+    if (intent.intent_display_name === 'menu') {
+      return 1;
+    }
+
+    if (/^[0-9]+$/.test(intent.question || '')) {
+      return 10 + Number(intent.question);
+    }
+
+    if (intent.intent_display_name === 'defaultFallback') {
+      return 900;
+    }
+
+    return 100;
+  }
+
+  shouldShowIntentInConversationPreview(intent: any): boolean {
+    if (!intent || intent.intent_display_name === 'defaultFallback') {
+      return false;
+    }
+
+    return intent.intent_display_name === 'start' ||
+      intent.intent_display_name === 'menu' ||
+      /^[0-9]+$/.test(intent.question || '');
+  }
+
+  getIntentDisplayLabel(intent: any): string {
+    if (!intent) {
+      return 'Bloco';
+    }
+
+    const names = {
+      start: 'Saudacao',
+      menu: 'Menu',
+      defaultFallback: 'Fallback',
+      human_handoff: 'Atendimento humano',
+      order_status: 'Status do pedido',
+      exchange_return: 'Trocas e devolucoes',
+      schedule: 'Agendamento',
+      prices: 'Valores',
+      menu_link: 'Cardapio',
+      hours_delivery: 'Horario e entrega',
+      buy_property: 'Compra de imovel',
+      rent_property: 'Aluguel de imovel',
+      schedule_visit: 'Agendar visita',
+      courses: 'Cursos',
+      pricing: 'Valores',
+      enrollment: 'Matricula'
+    };
+
+    return names[intent.intent_display_name] || intent.intent_display_name || 'Bloco';
+  }
+
+  getIntentQuestionLabel(intent: any): string {
+    if (!intent || !intent.question) {
+      return '';
+    }
+
+    return String(intent.question).replace(/\\/g, '/');
+  }
+
+  getIntentMessageText(intent: any): string {
+    if (!intent) {
+      return '';
+    }
+
+    const commands = (intent.actions || [])
+      .reduce((acc, action) => acc.concat(action.attributes && action.attributes.commands || []), []);
+    const messageCommand = commands.find((command) => command.type === 'message' && command.message);
+    const message = messageCommand && messageCommand.message;
+
+    return message && message.text || intent.answer || '';
+  }
+
+  getIntentButtons(intent: any): string[] {
+    const commands = (intent && intent.actions || [])
+      .reduce((acc, action) => acc.concat(action.attributes && action.attributes.commands || []), []);
+    const messageCommand = commands.find((command) => command.type === 'message' && command.message);
+    const buttons = messageCommand &&
+      messageCommand.message &&
+      messageCommand.message.attributes &&
+      messageCommand.message.attributes.attachment &&
+      messageCommand.message.attributes.attachment.buttons || [];
+
+    return buttons
+      .map((button) => button.value || button.label || button.title)
+      .filter((button) => !!button);
+  }
+
+  getIntentAliases(intent: any): string[] {
+    return intent &&
+      intent.attributes &&
+      Array.isArray(intent.attributes.aliases) ? intent.attributes.aliases : [];
+  }
+
+  getChannelLabel(channel: string): string {
+    const labels = {
+      whatsapp: 'WhatsApp',
+      casezap: 'CaseZap',
+      telegram: 'Telegram',
+      messenger: 'Messenger',
+      sms: 'SMS',
+      email: 'E-mail',
+      widget: 'Widget'
+    };
+
+    return labels[channel] || channel;
   }
 
 

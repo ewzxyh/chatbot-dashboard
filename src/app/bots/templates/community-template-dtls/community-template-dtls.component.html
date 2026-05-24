@@ -109,6 +109,60 @@
                 </div>
             </div>
 
+            <div class="template-flow-preview" *ngIf="previewMessages?.length">
+                <div class="template-flow-preview-header">
+                    <div>
+                        <div class="template-flow-preview-title">Preview do fluxo</div>
+                        <div class="template-flow-preview-subtitle">
+                            Confira as mensagens e atalhos que serao importados antes de publicar no atendimento.
+                        </div>
+                    </div>
+                    <div class="template-flow-preview-meta">
+                        <span>{{ template?.intentsCount || template?.intents?.length || previewBlocks?.length }} blocos</span>
+                        <span *ngIf="previewChannels?.length">{{ previewChannels.length }} canais</span>
+                    </div>
+                </div>
+
+                <div class="template-flow-preview-grid">
+                    <div class="template-chat-preview" aria-label="Preview de conversa do template">
+                        <div class="template-chat-preview-topbar">
+                            <span class="template-chat-preview-dot"></span>
+                            <span>{{ template?.title || template?.name }}</span>
+                        </div>
+                        <div class="template-chat-preview-body">
+                            <div class="template-chat-bubble" *ngFor="let message of previewMessages">
+                                <div class="template-chat-bubble-label">{{ message.title }}</div>
+                                <div class="template-chat-bubble-question" *ngIf="message.question">{{ message.question }}</div>
+                                <div class="template-chat-bubble-text">{{ message.text }}</div>
+                                <div class="template-chat-buttons" *ngIf="message.buttons?.length">
+                                    <button type="button" *ngFor="let button of message.buttons">{{ button }}</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="template-flow-map" aria-label="Blocos importados pelo template">
+                        <div class="template-flow-map-section">
+                            <div class="template-flow-map-title">Blocos importados</div>
+                            <div class="template-flow-block" *ngFor="let block of previewBlocks">
+                                <div>
+                                    <strong>{{ block.name }}</strong>
+                                    <span *ngIf="block.question">{{ block.question }}</span>
+                                </div>
+                                <small *ngIf="block.aliases?.length">{{ block.aliases.join(', ') }}</small>
+                            </div>
+                        </div>
+
+                        <div class="template-flow-map-section" *ngIf="previewChannels?.length">
+                            <div class="template-flow-map-title">Canais compatíveis</div>
+                            <div class="template-flow-channel-list">
+                                <span *ngFor="let channel of previewChannels">{{ getChannelLabel(channel) }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="template-dtls-template-features-title"
                 *ngIf="template?.templateFeatures && template?.templateFeatures.length > 0">
                 Recursos do modelo

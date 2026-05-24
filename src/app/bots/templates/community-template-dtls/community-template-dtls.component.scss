@@ -131,6 +131,222 @@
     line-height: 1.2;
 }
 
+.template-flow-preview {
+    max-width: 1040px;
+    margin-top: 26px;
+    padding: 18px;
+    border: 1px solid #dde4eb;
+    border-radius: 8px;
+    background: #fbfcfd;
+}
+
+.template-flow-preview-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.template-flow-preview-title {
+    color: #19283d;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.25;
+}
+
+.template-flow-preview-subtitle {
+    max-width: 620px;
+    margin-top: 4px;
+    color: #63748a;
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.template-flow-preview-meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 6px;
+    min-width: 148px;
+}
+
+.template-flow-preview-meta span {
+    padding: 5px 9px;
+    border: 1px solid #d9e3ed;
+    border-radius: 999px;
+    background: #fff;
+    color: #52657b;
+    font-size: 12px;
+    line-height: 1;
+}
+
+.template-flow-preview-grid {
+    display: grid;
+    grid-template-columns: minmax(320px, 0.92fr) minmax(300px, 1fr);
+    gap: 18px;
+    align-items: start;
+}
+
+.template-chat-preview {
+    overflow: hidden;
+    border: 1px solid #d8e1ea;
+    border-radius: 8px;
+    background: #eef3f7;
+}
+
+.template-chat-preview-topbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 42px;
+    padding: 0 14px;
+    border-bottom: 1px solid #d8e1ea;
+    background: #fff;
+    color: #20324a;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.template-chat-preview-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #20bf6b;
+}
+
+.template-chat-preview-body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 440px;
+    padding: 14px;
+    overflow: auto;
+}
+
+.template-chat-bubble {
+    width: min(100%, 360px);
+    padding: 11px 12px;
+    border-radius: 8px 8px 8px 2px;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(25, 40, 61, 0.08);
+}
+
+.template-chat-bubble-label {
+    color: #2b95e9;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.template-chat-bubble-question {
+    display: inline-block;
+    margin-top: 4px;
+    padding: 2px 6px;
+    border-radius: 5px;
+    background: #eef5ff;
+    color: #49617c;
+    font-size: 11px;
+}
+
+.template-chat-bubble-text {
+    margin-top: 7px;
+    color: #19283d;
+    font-size: 13px;
+    line-height: 1.38;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.template-chat-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.template-chat-buttons button {
+    max-width: 100%;
+    min-height: 30px;
+    padding: 0 10px;
+    border: 1px solid #b9d8f6;
+    border-radius: 6px;
+    background: #f7fbff;
+    color: #1d78c1;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.template-flow-map {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.template-flow-map-section {
+    padding: 14px;
+    border: 1px solid #d8e1ea;
+    border-radius: 8px;
+    background: #fff;
+}
+
+.template-flow-map-title {
+    margin-bottom: 10px;
+    color: #20324a;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.template-flow-block {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 9px 0;
+    border-top: 1px solid #edf1f5;
+}
+
+.template-flow-block:first-of-type {
+    border-top: 0;
+}
+
+.template-flow-block strong {
+    display: block;
+    color: #20324a;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.template-flow-block span {
+    display: inline-block;
+    margin-top: 3px;
+    color: #687c92;
+    font-size: 12px;
+}
+
+.template-flow-block small {
+    max-width: 220px;
+    color: #687c92;
+    font-size: 11px;
+    line-height: 1.35;
+    text-align: right;
+}
+
+.template-flow-channel-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.template-flow-channel-list span {
+    padding: 5px 9px;
+    border-radius: 999px;
+    background: #eaf7ef;
+    color: #1d7c43;
+    font-size: 12px;
+    font-weight: 600;
+}
+
 .template-dtls-template-features-title {
     font-size: 18px;
     font-weight: 400;
@@ -150,4 +366,35 @@
     padding-top: 8px !important;
     padding-bottom: 8px !important;
     color: #fff !important;
+}
+
+@media (max-width: 960px) {
+    .template-flow-preview-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 767px) {
+    .template-dtls-page-content {
+        padding: 0 18px;
+    }
+
+    .auto-import-notice {
+        margin-left: 18px;
+        margin-right: 18px;
+    }
+
+    .template-flow-preview-header,
+    .template-flow-block {
+        flex-direction: column;
+    }
+
+    .template-flow-preview-meta {
+        justify-content: flex-start;
+    }
+
+    .template-flow-block small {
+        max-width: none;
+        text-align: left;
+    }
 }
