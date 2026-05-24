@@ -70,9 +70,19 @@ export class AutomationCreateComponent implements OnInit {
   selectedBoundBot: any;
   flowRecipientPhone: string;
   flowRecipientName: string;
-  flowRecipientMode: 'single' | 'batch' = 'single';
+  flowRecipientMode: 'single' | 'batch' | 'csv' | 'contacts' = 'single';
   flowBatchDispatchMode: 'campaign' | 'direct' = 'campaign';
   flowBatchRecipientsText: string;
+  flowCsvFileName: string;
+  flowCsvRecipients: any[] = [];
+  flowCsvInvalidRows: number[] = [];
+  flowCsvDuplicateRows = 0;
+  flowAudienceSearch: string;
+  flowAudienceTags: string;
+  flowAudienceSegmentId: string;
+  flowAudienceChannel: 'all' | 'waba' | 'casezap' | 'phone' = 'all';
+  flowAudiencePreview: any;
+  flowAudiencePreviewLoading = false;
   flowBatchLimit = 50;
   flowCampaignLimit = 1000;
   flowDispatching = false;
@@ -247,8 +257,11 @@ export class AutomationCreateComponent implements OnInit {
     this.selectedBoundBot = this.boundTemplateBots.find((bot) => bot._id === this.selectedBoundBotId);
   }
 
-  setFlowRecipientMode(mode: 'single' | 'batch') {
+  setFlowRecipientMode(mode: 'single' | 'batch' | 'csv' | 'contacts') {
     this.flowRecipientMode = mode;
+    if (mode === 'contacts') {
+      this.flowBatchDispatchMode = 'campaign';
+    }
   }
 
   setFlowBatchDispatchMode(mode: 'campaign' | 'direct') {
@@ -271,6 +284,65 @@ export class AutomationCreateComponent implements OnInit {
 
   normalizeFlowPhoneNumber(value: string) {
     return String(value || '').replace(/\D+/g, '');
+  }
+
+  splitCsvLine(line: string, delimiter: string) {
+    const cells = [];
+    let current = '';
+    let quoted = false;
+
+    for (let i = 0; i < line.length; i++) {
+      const char = line[i];
+      const next = line[i + 1];
+
+      if (char === '"' && quoted && next === '"') {
+        current += '"';
+        i += 1;
+        continue;
+      }
+
+      if (char === '"') {
+        quoted = !quoted;
+        continue;
+      }
+
+      if (char === delimiter && !quoted) {
+        cells.push(current.trim());
+        current = '';
+        continue;
+      }
+
+      current += char;
+    }
+
+    cells.push(current.trim());
+    return cells;
+  }
+
+  detectCsvDelimiter(lines: string[]) {
+    const sample = lines.find((line) => !!String(line || '').trim()) || '';
+    const delimiters = [';', ',', '\t'];
+    return delimiters.reduce((best, delimiter) => {
+      return this.splitCsvLine(sample, delimiter).length > this.splitCsvLine(sample, best).length ? delimiter : best;
+    }, ';');
+  }
+
+  normalizeCsvHeader(value: string) {
+    return String(value || '')
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, '_')
+      .replace(/[^a-z0-9_]/g, '');
+  }
+
+  pickCsvValue(row: string[], headers: string[], names: string[], fallbackIndex: number) {
+    for (let i = 0; i < names.length; i++) {
+      const index = headers.indexOf(names[i]);
+      if (index > -1 && row[index]) {
+        return row[index];
+      }
+    }
+    return row[fallbackIndex] || '';
   }
 
   parseFlowBatchRecipients() {
@@ -315,6 +387,94 @@ export class AutomationCreateComponent implements OnInit {
     };
   }
 
+  parseFlowCsvRecipients(csvText: string) {
+    const lines = String(csvText || '')
+      .split(/\r?\n/)
+      .map((line) => String(line || '').trim())
+      .filter((line) => !!line);
+
+    if (!lines.length) {
+      return { recipients: [], invalidRows: [], duplicateRows: 0, totalRows: 0 };
+    }
+
+    const delimiter = this.detectCsvDelimiter(lines);
+    const headers = this.splitCsvLine(lines[0], delimiter).map((cell) => this.normalizeCsvHeader(cell));
+    const phoneHeaders = ['phone_number', 'phonenumber', 'phone', 'whatsapp', 'telefone', 'celular', 'to'];
+    const nameHeaders = ['recipientname', 'recipient_name', 'customername', 'customer_name', 'fullname', 'full_name', 'name', 'nome'];
+    const hasPhoneHeader = headers.some((header) => phoneHeaders.indexOf(header) > -1);
+    const dataLines = hasPhoneHeader ? lines.slice(1) : lines;
+    const recipients = [];
+    const invalidRows = [];
+    const seen = {};
+    let duplicateRows = 0;
+
+    dataLines.forEach((line, index) => {
+      const row = this.splitCsvLine(line, delimiter);
+      const phonePart = hasPhoneHeader
+        ? this.pickCsvValue(row, headers, phoneHeaders, 0)
+        : row[0];
+      const namePart = hasPhoneHeader
+        ? this.pickCsvValue(row, headers, nameHeaders, 1)
+        : row[1];
+      const phoneNumber = this.normalizeFlowPhoneNumber(phonePart);
+      const rowNumber = index + (hasPhoneHeader ? 2 : 1);
+
+      if (phoneNumber.length < 8) {
+        invalidRows.push(rowNumber);
+        return;
+      }
+
+      if (seen[phoneNumber]) {
+        duplicateRows += 1;
+        return;
+      }
+      seen[phoneNumber] = true;
+
+      recipients.push({
+        phoneNumber: phoneNumber,
+        recipientName: namePart || undefined
+      });
+    });
+
+    return {
+      recipients: recipients,
+      invalidRows: invalidRows,
+      duplicateRows: duplicateRows,
+      totalRows: dataLines.length
+    };
+  }
+
+  onFlowCsvFileSelected(event: any) {
+    const file = event && event.target && event.target.files ? event.target.files[0] : null;
+    this.flowCsvFileName = file ? file.name : null;
+    this.flowCsvRecipients = [];
+    this.flowCsvInvalidRows = [];
+    this.flowCsvDuplicateRows = 0;
+
+    if (!file) {
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const parsed = this.parseFlowCsvRecipients(String(reader.result || ''));
+      this.flowCsvRecipients = parsed.recipients;
+      this.flowCsvInvalidRows = parsed.invalidRows;
+      this.flowCsvDuplicateRows = parsed.duplicateRows;
+    };
+    reader.readAsText(file);
+  }
+
+  getFlowRecipientsForCurrentMode() {
+    if (this.flowRecipientMode === 'csv') {
+      return this.flowCsvRecipients || [];
+    }
+    if (this.flowRecipientMode === 'batch') {
+      return this.parseFlowBatchRecipients().recipients;
+    }
+    return [];
+  }
+
   getFlowBatchRecipientCount() {
     return this.parseFlowBatchRecipients().recipients.length;
   }
@@ -331,16 +491,104 @@ export class AutomationCreateComponent implements OnInit {
     return this.getFlowBatchRecipientCount() > this.getFlowBatchLimit();
   }
 
+  getFlowAudienceRecipientCount() {
+    return this.flowAudiencePreview && this.flowAudiencePreview.audience ? this.flowAudiencePreview.audience.validRecipients || 0 : 0;
+  }
+
+  getFlowCurrentRecipientCount() {
+    if (this.flowRecipientMode === 'contacts') {
+      return this.getFlowAudienceRecipientCount();
+    }
+    if (this.flowRecipientMode === 'csv') {
+      return (this.flowCsvRecipients || []).length;
+    }
+    return this.getFlowBatchRecipientCount();
+  }
+
+  getFlowCurrentInvalidCount() {
+    if (this.flowRecipientMode === 'csv') {
+      return (this.flowCsvInvalidRows || []).length;
+    }
+    if (this.flowRecipientMode === 'batch') {
+      return this.getFlowBatchInvalidCount();
+    }
+    return 0;
+  }
+
+  getFlowCurrentLimit() {
+    if (this.flowRecipientMode === 'contacts') {
+      return this.flowCampaignLimit;
+    }
+    return this.getFlowBatchLimit();
+  }
+
+  isFlowCurrentLimitExceeded() {
+    return this.getFlowCurrentRecipientCount() > this.getFlowCurrentLimit();
+  }
+
+  isFlowCampaignMode() {
+    return this.flowRecipientMode === 'contacts' ||
+      ((this.flowRecipientMode === 'batch' || this.flowRecipientMode === 'csv') && this.flowBatchDispatchMode === 'campaign');
+  }
+
+  buildFlowAudience() {
+    return {
+      type: 'contacts',
+      search: this.flowAudienceSearch || undefined,
+      tags: this.flowAudienceTags || undefined,
+      segmentId: this.flowAudienceSegmentId || undefined,
+      channel: this.flowAudienceChannel || 'all',
+      limit: this.flowCampaignLimit
+    };
+  }
+
+  clearFlowAudiencePreview() {
+    this.flowAudiencePreview = null;
+  }
+
+  previewFlowContactsAudience() {
+    if (!this.selectedBoundBotId || this.flowAudiencePreviewLoading) {
+      return;
+    }
+
+    this.flowAudiencePreviewLoading = true;
+    this.automationsService.previewBoundWabaCampaignAudience(this.selectedBoundBotId, {
+      audience: this.buildFlowAudience()
+    }).subscribe((res: any) => {
+      this.flowAudiencePreview = res;
+    }, (error) => {
+      this.flowAudiencePreviewLoading = false;
+      this.flowAudiencePreview = null;
+      this.logger.error('[AUTOMATION-CREATE] PREVIEW BOUND WABA CAMPAIGN AUDIENCE - ERROR ', error);
+      const err = error && error.error ? (error.error.error || error.error.message) : null;
+      Swal.fire({
+        title: this.translate.instant('Oops') + '!',
+        text: err || this.translate.instant('AudiencePreviewFailed'),
+        icon: "error",
+        showCloseButton: false,
+        showCancelButton: false,
+        confirmButtonText: this.translate.instant('Ok'),
+      });
+    }, () => {
+      this.flowAudiencePreviewLoading = false;
+    });
+  }
+
   canSendBoundTemplate() {
     if (!this.selectedBoundBotId || this.flowDispatching) {
       return false;
     }
 
-    if (this.flowRecipientMode === 'batch') {
-      const parsed = this.parseFlowBatchRecipients();
-      return parsed.recipients.length > 0 &&
-        parsed.recipients.length <= this.getFlowBatchLimit() &&
-        parsed.invalidLines.length === 0;
+    if (this.flowRecipientMode === 'contacts') {
+      return this.getFlowAudienceRecipientCount() > 0 &&
+        this.getFlowAudienceRecipientCount() <= this.flowCampaignLimit &&
+        !this.flowAudiencePreviewLoading;
+    }
+
+    if (this.flowRecipientMode === 'batch' || this.flowRecipientMode === 'csv') {
+      return this.getFlowCurrentRecipientCount() > 0 &&
+        this.getFlowCurrentRecipientCount() <= this.getFlowCurrentLimit() &&
+        this.getFlowCurrentInvalidCount() === 0;
     }
 
     const phone = this.normalizeFlowPhoneNumber(this.flowRecipientPhone);
@@ -676,13 +924,18 @@ export class AutomationCreateComponent implements OnInit {
     }
 
     const templateName = this.getSelectedBindingTemplateName();
-    const parsedBatch = this.parseFlowBatchRecipients();
-    const isBatch = this.flowRecipientMode === 'batch';
-    const isCampaign = isBatch && this.flowBatchDispatchMode === 'campaign';
-    const confirmationText = isBatch
+    const recipientsCount = this.flowRecipientMode === 'single' ? 1 : this.getFlowCurrentRecipientCount();
+    const isAudience = this.flowRecipientMode === 'contacts';
+    const isCampaign = this.isFlowCampaignMode();
+    const confirmationText = isAudience
+      ? this.translate.instant('CreateAudienceCampaignConfirmation', {
+        template_name: templateName,
+        contacts_num: recipientsCount
+      })
+      : this.flowRecipientMode === 'batch' || this.flowRecipientMode === 'csv'
       ? this.translate.instant(isCampaign ? 'CreateChatCaseFlowTemplateCampaignConfirmation' : 'SendChatCaseFlowTemplateBatchConfirmation', {
         template_name: templateName,
-        contacts_num: parsedBatch.recipients.length
+        contacts_num: recipientsCount
       })
       : this.translate.instant('SendChatCaseFlowTemplateConfirmation', {
         template_name: templateName,
@@ -714,17 +967,18 @@ export class AutomationCreateComponent implements OnInit {
     }
 
     this.flowDispatching = true;
-    if (this.flowRecipientMode === 'batch' && this.flowBatchDispatchMode === 'campaign') {
-      const body = {
-        recipients: this.parseFlowBatchRecipients().recipients
-      };
+    if (this.isFlowCampaignMode()) {
+      const body = this.flowRecipientMode === 'contacts'
+        ? { audience: this.buildFlowAudience() }
+        : { recipients: this.getFlowRecipientsForCurrentMode() };
 
       this.automationsService.createBoundWabaCampaign(this.selectedBoundBotId, body).subscribe((res: any) => {
         this.logger.log('[AUTOMATION-CREATE] CREATE BOUND WABA CAMPAIGN res', res);
+        const createdRecipientsCount = res && res.recipients_total ? res.recipients_total : this.getFlowCurrentRecipientCount();
         Swal.fire({
           title: this.translate.instant('Done') + "!",
           text: this.translate.instant('ChatCaseFlowTemplateCampaignCreated', {
-            contacts_num: res && res.recipients_total ? res.recipients_total : body.recipients.length
+            contacts_num: createdRecipientsCount
           }),
           icon: "success",
           showCloseButton: false,
@@ -753,9 +1007,9 @@ export class AutomationCreateComponent implements OnInit {
       return;
     }
 
-    const body = this.flowRecipientMode === 'batch'
+    const body = (this.flowRecipientMode === 'batch' || this.flowRecipientMode === 'csv')
       ? {
-        recipients: this.parseFlowBatchRecipients().recipients
+        recipients: this.getFlowRecipientsForCurrentMode()
       }
       : {
         phoneNumber: this.flowRecipientPhone,

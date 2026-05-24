@@ -151,6 +151,34 @@
     color: #d93025;
 }
 
+.flow-csv-input {
+    height: auto;
+    padding: 8px 10px;
+}
+
+.flow-audience-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 10px;
+}
+
+.flow-audience-grid > div {
+    display: grid;
+    gap: 4px;
+}
+
+.flow-preview-audience-btn {
+    width: fit-content;
+    margin-top: 2px;
+}
+
+.flow-audience-preview {
+    border: 1px solid #d9e1ee;
+    background: #f7faff;
+    border-radius: 8px;
+    padding: 10px;
+}
+
 .flow-preview-container {
     padding: 16px;
 }

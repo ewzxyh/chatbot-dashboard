@@ -124,6 +124,16 @@
                                                 (click)="setFlowRecipientMode('batch')">
                                                 {{ 'ManualBatch' | translate }}
                                             </button>
+                                            <button type="button" class="flow-recipient-mode-button"
+                                                [ngClass]="{'flow-recipient-mode-button-active': flowRecipientMode === 'csv'}"
+                                                (click)="setFlowRecipientMode('csv')">
+                                                {{ 'CsvAudience' | translate }}
+                                            </button>
+                                            <button type="button" class="flow-recipient-mode-button"
+                                                [ngClass]="{'flow-recipient-mode-button-active': flowRecipientMode === 'contacts'}"
+                                                (click)="setFlowRecipientMode('contacts')">
+                                                {{ 'ContactsAudience' | translate }}
+                                            </button>
                                         </div>
 
                                         <ng-container *ngIf="flowRecipientMode === 'single'">
@@ -169,8 +179,101 @@
                                             </div>
                                         </ng-container>
 
+                                        <ng-container *ngIf="flowRecipientMode === 'csv'">
+                                            <label>{{ 'UploadAudienceCsv' | translate }}</label>
+                                            <input type="file" class="bound-template-input flow-csv-input"
+                                                accept=".csv,text/csv"
+                                                (change)="onFlowCsvFileSelected($event)">
+
+                                            <div class="flow-recipient-mode-switch flow-dispatch-mode-switch">
+                                                <button type="button" class="flow-recipient-mode-button"
+                                                    [ngClass]="{'flow-recipient-mode-button-active': flowBatchDispatchMode === 'campaign'}"
+                                                    (click)="setFlowBatchDispatchMode('campaign')">
+                                                    {{ 'TrackedCampaign' | translate }}
+                                                </button>
+                                                <button type="button" class="flow-recipient-mode-button"
+                                                    [ngClass]="{'flow-recipient-mode-button-active': flowBatchDispatchMode === 'direct'}"
+                                                    (click)="setFlowBatchDispatchMode('direct')">
+                                                    {{ 'ImmediateSend' | translate }}
+                                                </button>
+                                            </div>
+
+                                            <div class="flow-batch-summary">
+                                                <span *ngIf="flowCsvFileName">{{ flowCsvFileName }}</span>
+                                                <span>
+                                                    {{ 'ManualBatchParsedCount' | translate: { count: getFlowCurrentRecipientCount(), limit: getFlowCurrentLimit() } }}
+                                                </span>
+                                                <span *ngIf="getFlowCurrentInvalidCount() > 0" class="flow-batch-summary-error">
+                                                    {{ 'CsvInvalidRows' | translate: { count: getFlowCurrentInvalidCount() } }}
+                                                </span>
+                                                <span *ngIf="flowCsvDuplicateRows > 0">
+                                                    {{ 'CsvDuplicateRows' | translate: { count: flowCsvDuplicateRows } }}
+                                                </span>
+                                                <span *ngIf="isFlowCurrentLimitExceeded()" class="flow-batch-summary-error">
+                                                    {{ 'ManualBatchLimitExceeded' | translate: { limit: getFlowCurrentLimit() } }}
+                                                </span>
+                                                <span>{{ 'CsvAudienceHint' | translate }}</span>
+                                            </div>
+                                        </ng-container>
+
+                                        <ng-container *ngIf="flowRecipientMode === 'contacts'">
+                                            <div class="flow-audience-grid">
+                                                <div>
+                                                    <label>{{ 'AudienceSearch' | translate }}</label>
+                                                    <input type="text" class="bound-template-input"
+                                                        [(ngModel)]="flowAudienceSearch"
+                                                        (ngModelChange)="clearFlowAudiencePreview()"
+                                                        placeholder="{{ 'AudienceSearchPlaceholder' | translate }}">
+                                                </div>
+                                                <div>
+                                                    <label>{{ 'AudienceTags' | translate }}</label>
+                                                    <input type="text" class="bound-template-input"
+                                                        [(ngModel)]="flowAudienceTags"
+                                                        (ngModelChange)="clearFlowAudiencePreview()"
+                                                        placeholder="{{ 'AudienceTagsPlaceholder' | translate }}">
+                                                </div>
+                                                <div>
+                                                    <label>{{ 'AudienceChannel' | translate }}</label>
+                                                    <select class="bound-template-input"
+                                                        [(ngModel)]="flowAudienceChannel"
+                                                        (ngModelChange)="clearFlowAudiencePreview()">
+                                                        <option value="all">{{ 'AudienceChannelAll' | translate }}</option>
+                                                        <option value="waba">{{ 'AudienceChannelWaba' | translate }}</option>
+                                                        <option value="casezap">{{ 'AudienceChannelCaseZap' | translate }}</option>
+                                                        <option value="phone">{{ 'AudienceChannelPhone' | translate }}</option>
+                                                    </select>
+                                                </div>
+                                                <div>
+                                                    <label>{{ 'AudienceSegmentId' | translate }}</label>
+                                                    <input type="text" class="bound-template-input"
+                                                        [(ngModel)]="flowAudienceSegmentId"
+                                                        (ngModelChange)="clearFlowAudiencePreview()"
+                                                        placeholder="{{ 'AudienceSegmentIdPlaceholder' | translate }}">
+                                                </div>
+                                            </div>
+
+                                            <button type="button" class="button--only--text flow-preview-audience-btn"
+                                                (click)="previewFlowContactsAudience()"
+                                                [disabled]="flowAudiencePreviewLoading || !selectedBoundBotId"
+                                                [ngClass]="{'button--only--text-disabled': flowAudiencePreviewLoading || !selectedBoundBotId}">
+                                                {{ flowAudiencePreviewLoading ? ('Loading' | translate) : ('PreviewAudience' | translate) }}
+                                            </button>
+
+                                            <div class="flow-batch-summary flow-audience-preview" *ngIf="flowAudiencePreview?.audience">
+                                                <span>
+                                                    {{ 'AudiencePreviewSummary' | translate: {
+                                                        valid: flowAudiencePreview.audience.validRecipients,
+                                                        matched: flowAudiencePreview.audience.totalMatched,
+                                                        invalid: flowAudiencePreview.audience.invalidRecipients,
+                                                        duplicates: flowAudiencePreview.audience.duplicatesSkipped
+                                                    } }}
+                                                </span>
+                                                <span>{{ 'ContactsCampaignOnlyHint' | translate }}</span>
+                                            </div>
+                                        </ng-container>
+
                                         <button class="btn send-wa-btn" (click)="presentDialogBeforeToSendBoundTemplate()" [disabled]="!canSendBoundTemplate()">
-                                            {{ flowDispatching ? ('Sending' | translate) : ((flowRecipientMode === 'batch' && flowBatchDispatchMode === 'campaign' ? 'CreateCampaign' : 'SendTemplate') | translate) }}
+                                            {{ flowDispatching ? ('Sending' | translate) : ((isFlowCampaignMode() ? 'CreateCampaign' : 'SendTemplate') | translate) }}
                                         </button>
                                     </div>
                                 </div>
