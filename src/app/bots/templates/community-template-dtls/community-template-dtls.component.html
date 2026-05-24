@@ -228,6 +228,13 @@
                                     [disabled]="isPreparingWabaPublication || isPublishingWabaTemplate">
                                     {{ isPublishingWabaTemplate && activeWabaPublicationName === wabaTemplate.name ? 'Enviando...' : 'Enviar para Meta' }}
                                 </button>
+                                <button type="button"
+                                    class="waba-template-action-primary"
+                                    *ngIf="isWabaTemplateApproved(wabaTemplate.name)"
+                                    (click)="bindWabaTemplateToBot(wabaTemplate.name, false)"
+                                    [disabled]="!botid || isBindingWabaTemplate">
+                                    {{ isBindingWabaTemplate && activeWabaBindingName === wabaTemplate.name ? 'Vinculando...' : 'Vincular ao fluxo' }}
+                                </button>
                             </div>
 
                             <div class="waba-publication-result"
@@ -251,6 +258,17 @@
                             <div class="waba-publication-error"
                                 *ngIf="wabaPublicationError && activeWabaPublicationName === wabaTemplate.name">
                                 {{ wabaPublicationError }}
+                            </div>
+
+                            <div class="waba-binding-result"
+                                *ngIf="wabaBindingResult && activeWabaBindingName === wabaTemplate.name">
+                                <strong>Template vinculado ao fluxo</strong>
+                                <span>{{ wabaBindingResult.binding?.providerTemplateName || wabaBindingResult.binding?.suggestionName }}</span>
+                            </div>
+
+                            <div class="waba-publication-error"
+                                *ngIf="wabaBindingError && activeWabaBindingName === wabaTemplate.name">
+                                {{ wabaBindingError }}
                             </div>
                         </div>
 

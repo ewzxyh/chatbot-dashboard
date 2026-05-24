@@ -584,6 +584,7 @@
 }
 
 .waba-publication-result,
+.waba-binding-result,
 .waba-publication-error {
     margin-top: 12px;
     padding: 12px;
@@ -593,6 +594,27 @@
 .waba-publication-result {
     border: 1px solid #d8e1ea;
     background: #f8fbff;
+}
+
+.waba-binding-result {
+    border: 1px solid #bfe7ce;
+    background: #f2fbf5;
+}
+
+.waba-binding-result strong {
+    display: block;
+    color: #1d7c43;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.waba-binding-result span {
+    display: block;
+    margin-top: 3px;
+    color: #42614f;
+    font-size: 12px;
+    line-height: 1.35;
+    word-break: break-word;
 }
 
 .waba-publication-error {

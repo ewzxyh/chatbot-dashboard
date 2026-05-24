@@ -78,10 +78,14 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
   public wabaPublicationError: string;
   public wabaStatusSyncResult: any;
   public wabaStatusSyncError: string;
+  public wabaBindingResult: any;
+  public wabaBindingError: string;
   public activeWabaPublicationName: string;
+  public activeWabaBindingName: string;
   public isPreparingWabaPublication = false;
   public isPublishingWabaTemplate = false;
   public isSyncingWabaStatus = false;
+  public isBindingWabaTemplate = false;
   private chatBotsLoaded = false;
   private roleLoaded = false;
   private planLoaded = false;
@@ -287,6 +291,8 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
     this.publicationChecklist = Array.isArray(publication.checklist) ? publication.checklist : [];
     this.wabaStatusSyncResult = undefined;
     this.wabaStatusSyncError = undefined;
+    this.wabaBindingResult = undefined;
+    this.wabaBindingError = undefined;
   }
 
   getIntentPreviewWeight(intent: any): number {
@@ -499,6 +505,63 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
     return 'requires-approval';
   }
 
+  getFirstWabaSuggestionName(): string {
+    return this.wabaTemplateSuggestions && this.wabaTemplateSuggestions.length ?
+      this.wabaTemplateSuggestions[0].name : undefined;
+  }
+
+  isWabaTemplateApproved(name: string): boolean {
+    const status = this.getWabaTemplateStatus(name);
+    return status && status.state === 'approved';
+  }
+
+  canBindWabaTemplate(name: string): boolean {
+    return !!(this.botid && name && this.isWabaTemplateApproved(name) && !this.isBindingWabaTemplate);
+  }
+
+  bindWabaTemplateToBot(suggestionName: string, navigateAfterBind: boolean = false) {
+    if (!this.templateId || !this.projectId || !this.botid || !suggestionName) {
+      if (navigateAfterBind) {
+        this.finishTemplateImport();
+      }
+      return;
+    }
+
+    this.activeWabaBindingName = suggestionName;
+    this.wabaBindingError = undefined;
+    this.wabaBindingResult = undefined;
+    this.isBindingWabaTemplate = true;
+
+    this.faqKbService.bindApprovedWabaTemplateToBot(this.templateId, this.projectId, this.botid, suggestionName)
+      .subscribe((result: any) => {
+        this.wabaBindingResult = result;
+        if (result && result.sync) {
+          this.wabaStatusSyncResult = result.sync;
+        }
+        if (!navigateAfterBind) {
+          this.notify.showNotification('Template WABA vinculado ao fluxo.', 2, 'done');
+        }
+      }, (error) => {
+        this.logger.error('[COMMUNITY-TEMPLATE-DTLS] WABA template bind error', error);
+        this.wabaBindingError = this.getWabaPublicationError(error);
+        this.isBindingWabaTemplate = false;
+        if (navigateAfterBind) {
+          this.notify.showNotification('Fluxo importado. Template WABA ainda nao foi vinculado: ' + this.wabaBindingError, 3, 'warning');
+          this.finishTemplateImport();
+        }
+      }, () => {
+        this.isBindingWabaTemplate = false;
+        if (navigateAfterBind) {
+          this.finishTemplateImport();
+        }
+      });
+  }
+
+  finishTemplateImport() {
+    this.goToBotDetails();
+    this.trackImportTemplate();
+  }
+
   getWabaPublicationError(error: any): string {
     const body = error && error.error;
     if (body && body.error) {
@@ -577,9 +640,12 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
 
     }, () => {
       this.logger.log('[COMMUNITY-TEMPLATE-DTLS] FORK TEMPLATE COMPLETE');
-     
-      this.goToBotDetails()
-      this.trackImportTemplate();
+      const wabaSuggestionName = this.getFirstWabaSuggestionName();
+      if (wabaSuggestionName) {
+        this.bindWabaTemplateToBot(wabaSuggestionName, true);
+      } else {
+        this.finishTemplateImport();
+      }
 
     });
   }
