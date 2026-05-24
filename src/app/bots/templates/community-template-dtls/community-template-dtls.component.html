@@ -3,7 +3,7 @@
     <i class="material-icons" style="vertical-align: middle !important; cursor: pointer;" (click)="goBack()">
         keyboard_arrow_left
     </i>
-    Template details
+    Detalhes do modelo
 </div>
 
 
@@ -15,11 +15,14 @@
             <div></div>
             <button type="button" class="btn btn-new btn-size-l btn--primary" (click)="openTestSiteInPopupWindow()"
                 style="margin-right: 6px;">
-                <span>Test it out</span>
+                <span>Testar</span>
             </button>
-            <button type="button" class="btn btn-new btn-size-l btn--primary" (click)="importTemplate()">
-                <span>Import Template</span>
+            <button type="button" class="btn btn-new btn-size-l btn--primary" (click)="importTemplate()" [disabled]="isAutoImporting">
+                <span>{{ isAutoImporting ? 'Importando...' : 'Importar modelo' }}</span>
             </button>
+        </div>
+        <div *ngIf="autoInstallRequested && !autoImportStarted" class="auto-import-notice">
+            A importacao deste modelo sera iniciada automaticamente.
         </div>
         <div class="template-dtls-page-content">
             <div class="template-dtls-icon-and-title">
@@ -45,7 +48,7 @@
                 </div>
                 <!--  -->
                 <div *ngIf="template?.certified === true" style="height: 24px;margin-left: 6px;z-index: 2;"
-                    matTooltipClass="custom-mat-tooltip" matTooltip="Tiledesk verified" #tooltip="matTooltip"
+                    matTooltipClass="custom-mat-tooltip" matTooltip="ChatCase verificado" #tooltip="matTooltip"
                     matTooltipPosition='below' matTooltipHideDelay="100">
                     <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
                         xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 24 24"
@@ -90,8 +93,8 @@
                 </div>
 
                 <div class="cmnty-chatbot-publication-date">
-                    Published {{ template?.createdAt | date: 'd/M/y'}} • Updated
-                    {{ template?.updatedAt | date: 'd/M/y'}}
+                    Publicado em {{ template?.createdAt | date: 'dd/MM/yyyy'}} - Atualizado em
+                    {{ template?.updatedAt | date: 'dd/MM/yyyy'}}
                 </div>
 
             </div>
@@ -108,7 +111,7 @@
 
             <div class="template-dtls-template-features-title"
                 *ngIf="template?.templateFeatures && template?.templateFeatures.length > 0">
-                Template Features
+                Recursos do modelo
             </div>
 
             <div class="template-dtls-template-features-list"

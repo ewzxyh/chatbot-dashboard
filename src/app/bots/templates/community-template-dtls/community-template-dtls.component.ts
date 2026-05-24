@@ -37,6 +37,8 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
   public TESTSITE_BASE_URL: string;
   public defaultDepartmentId: string;
   public chatBotCount: number;
+  public autoInstallRequested = false;
+  public isAutoImporting = false;
   project: Project;
   USER_ROLE: string;
   user: User;
@@ -44,6 +46,10 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
   projectName: string;
   learnMoreAboutDefaultRoles: string;
   agentsCannotManageChatbots: string;
+  public autoImportStarted = false;
+  private chatBotsLoaded = false;
+  private roleLoaded = false;
+  private planLoaded = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -64,6 +70,7 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
   }
 
   ngOnInit(): void {
+    this.watchAutoInstallParams();
     this.getParamsAndTemplateDetails();
     this.getBrowserVersion();
     this.getProfileImageStorage();
@@ -74,7 +81,52 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
     this.getLoggedUser();
     this.getProjectBots();
     this.getProjectPlan();
+    this.watchProjectPlanForAutoImport();
     this.traslateString();
+  }
+
+  watchAutoInstallParams() {
+    this.route.queryParamMap.subscribe((params) => {
+      this.autoInstallRequested = this.isEnabledQueryParam(params.get('install')) || this.isEnabledQueryParam(params.get('autoinstall'));
+      this.tryAutoImport();
+    });
+  }
+
+  watchProjectPlanForAutoImport() {
+    this.prjctPlanService.projectPlan$.subscribe((projectProfileData: any) => {
+      if (projectProfileData) {
+        if (projectProfileData.user_role) {
+          this.USER_ROLE = projectProfileData.user_role;
+          this.roleLoaded = true;
+        }
+        this.planLoaded = true;
+        this.tryAutoImport();
+      }
+    });
+  }
+
+  isEnabledQueryParam(value: any): boolean {
+    return ['1', 'true', 'yes', 'y'].includes(String(value || '').toLowerCase());
+  }
+
+  tryAutoImport() {
+    if (!this.autoInstallRequested || this.autoImportStarted) {
+      return;
+    }
+
+    if (!this.templateId || !this.projectId || !this.template || !this.project || !this.project._id || !this.chatBotsLoaded || !this.roleLoaded || !this.planLoaded) {
+      return;
+    }
+
+    this.autoImportStarted = true;
+    this.isAutoImporting = true;
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { install: null, autoinstall: null },
+      queryParamsHandling: 'merge',
+      replaceUrl: true
+    });
+    this.importTemplate();
   }
 
 
@@ -86,8 +138,12 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
         this.chatBotCount = faqKb.length;
         this.logger.log('[COMMUNITY-TEMPLATE-DTLS] - COUNT OF CHATBOTS', this.chatBotCount);
       }
+      this.chatBotsLoaded = true;
+      this.tryAutoImport();
     }, (error) => {
       this.logger.error('[COMMUNITY-TEMPLATE-DTLS] - GET CHATBOTS - ERROR ', error);
+      this.chatBotsLoaded = true;
+      this.tryAutoImport();
 
     }, () => {
       this.logger.log('[COMMUNITY-TEMPLATE-DTLS] - GET CHATBOTS * COMPLETE *');
@@ -108,6 +164,10 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
       .subscribe((userRole) => {
         this.logger.log('[COMMUNITY-TEMPLATE-DTLS] - SUBSCRIPTION TO USER ROLE »»» ', userRole)
         this.USER_ROLE = userRole;
+        if (userRole) {
+          this.roleLoaded = true;
+          this.tryAutoImport();
+        }
       })
   }
 
@@ -149,6 +209,7 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
         if (_template) {
           this.template = _template;
           this.botname = _template.name;
+          this.tryAutoImport();
         }
       })
   }
@@ -185,6 +246,7 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
         this.forkTemplate()
       }
     } if (this.USER_ROLE === 'agent') {
+      this.isAutoImporting = false;
       this.presentModalOnlyOwnerCanManageChatbot()
     }
   }
@@ -196,6 +258,7 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
 
     }, (error) => {
       this.logger.error('[COMMUNITY-TEMPLATE-DTLS] FORK TEMPLATE - ERROR ', error);
+      this.isAutoImporting = false;
 
     }, () => {
       this.logger.log('[COMMUNITY-TEMPLATE-DTLS] FORK TEMPLATE COMPLETE');
@@ -207,6 +270,7 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
   }
 
   presentDialogReachedChatbotLimit() {
+    this.isAutoImporting = false;
     this.logger.log('[COMMUNITY-TEMPLATE-DTLS] openDialog presentDialogReachedChatbotLimit prjct_profile_name ', this.prjct_profile_name)
     const dialogRef = this.dialog.open(ChatbotModalComponent, {
       backdropClass: 'cdk-overlay-transparent-backdrop',
@@ -242,8 +306,15 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
   getCurrentProject() {
     this.auth.project_bs.subscribe((project) => {
       this.project = project;
-      this.projectName = project.name
-      this.logger.log('[COMMUNITY-TEMPLATE-DTLS] project from AUTH service subscription  ', this.project)
+      if (project) {
+        this.projectName = project.name
+        if (project['role'] && !this.USER_ROLE) {
+          this.USER_ROLE = project['role'];
+          this.roleLoaded = true;
+        }
+        this.logger.log('[COMMUNITY-TEMPLATE-DTLS] project from AUTH service subscription  ', this.project)
+        this.tryAutoImport();
+      }
     });
   }
 

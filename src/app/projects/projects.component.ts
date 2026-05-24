@@ -41,6 +41,10 @@ export class ProjectsComponent implements OnInit, AfterContentInit, OnDestroy {
   companyLogo_left: string;
   company_brand_color: string;
   projects: Project[];
+  communityTemplateId: string;
+  communityTemplateAutoInstall = false;
+  communityTemplateSource: string;
+  private communityTemplateRedirectHandled = false;
 
   id_project: string;
   project_name: string;
@@ -338,6 +342,12 @@ export class ProjectsComponent implements OnInit, AfterContentInit, OnDestroy {
   getRouteParams() {
     this.route.queryParams.subscribe((params) => {
       this.logger.log('[PROJECTS] - GET ROUTE-PARAMS & APPID - params: ', params)
+      this.communityTemplateId = this.normalizeCommunityTemplateId(params.template || params.templateid || params.botid);
+      this.communityTemplateAutoInstall = this.isEnabledQueryParam(params.install) || this.isEnabledQueryParam(params.installTemplate) || this.isEnabledQueryParam(params.autoinstall);
+      this.communityTemplateSource = params.source || '';
+      this.communityTemplateRedirectHandled = false;
+      this.maybeOpenSingleProjectCommunityTemplate();
+
       if (params.showid) {
         this.logger.log('[PROJECTS] -  GET ROUTE-PARAMS & APPID - params.nk: ', params.showid)
         if (params.showid === 'y') {
@@ -352,6 +362,51 @@ export class ProjectsComponent implements OnInit, AfterContentInit, OnDestroy {
         this.logoutBtnVisible = true
       }
     });
+  }
+
+  normalizeCommunityTemplateId(value: any): string {
+    if (!value) {
+      return null;
+    }
+
+    const templateId = String(value).trim();
+    if (!/^[a-zA-Z0-9._:-]+$/.test(templateId)) {
+      this.logger.warn('[PROJECTS] Ignoring invalid community template id', templateId);
+      return null;
+    }
+
+    return templateId;
+  }
+
+  isEnabledQueryParam(value: any): boolean {
+    return ['1', 'true', 'yes', 'y'].includes(String(value || '').toLowerCase());
+  }
+
+  maybeOpenSingleProjectCommunityTemplate() {
+    if (!this.communityTemplateId || this.communityTemplateRedirectHandled || !this.projects) {
+      return;
+    }
+
+    const activeProjects = this.projects.filter((project: any) => project && project.id_project && project.id_project.status !== 0);
+    if (activeProjects.length !== 1) {
+      return;
+    }
+
+    const projectUser = activeProjects[0];
+    this.communityTemplateRedirectHandled = true;
+    this.goToHome(projectUser, projectUser.id_project, projectUser.role, projectUser.id_project._id, projectUser.id_project.status);
+  }
+
+  navigateToCommunityTemplate(projectId: string) {
+    const queryParams: any = {
+      source: this.communityTemplateSource || 'community'
+    };
+
+    if (this.communityTemplateAutoInstall) {
+      queryParams.install = '1';
+    }
+
+    this.router.navigate(['/project', projectId, 'template-details', this.communityTemplateId], { queryParams });
   }
 
 
@@ -737,7 +792,11 @@ export class ProjectsComponent implements OnInit, AfterContentInit, OnDestroy {
 
       this.logger.log('[PROJECTS] - GO TO HOME - PROJECT ', project.id_project)
       setTimeout(() => {
-        this.router.navigate([`/project/${project_id}/home`]);
+        if (this.communityTemplateId) {
+          this.navigateToCommunityTemplate(project_id);
+        } else {
+          this.router.navigate([`/project/${project_id}/home`]);
+        }
       }, 0);
     }
     /* !!! NO MORE USED - NOW THE ALL PROJECTS ARE SETTED IN THE STORAGE IN getProjectsAndSaveInStorage()
@@ -957,6 +1016,7 @@ export class ProjectsComponent implements OnInit, AfterContentInit, OnDestroy {
         this.myAvailabilityCount = countOfcurrentUserAvailabilityInProjects;
         this.projectService.countOfMyAvailability(this.myAvailabilityCount);
         this.logger.log('[PROJECTS] - GET PROJECTS - I AM AVAILABLE IN # ', this.myAvailabilityCount, 'PROJECTS');
+        this.maybeOpenSingleProjectCommunityTemplate();
       }
     }, error => {
       this.showSpinner = false;

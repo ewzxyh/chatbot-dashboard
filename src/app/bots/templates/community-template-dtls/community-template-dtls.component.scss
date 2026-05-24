@@ -44,6 +44,23 @@
     padding: 0px 10px;
 }
 
+.auto-import-notice {
+    max-width: 820px;
+    margin: 0 50px 16px;
+    padding: 12px 14px;
+    border: 1px solid rgba(43, 149, 233, 0.28);
+    border-radius: 6px;
+    background: rgba(43, 149, 233, 0.08);
+    color: #3d5368;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.btn-new:disabled {
+    cursor: wait;
+    opacity: 0.72;
+}
+
 .btn-new span {
     display: inline-block;
 }

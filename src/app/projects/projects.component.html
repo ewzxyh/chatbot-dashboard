@@ -361,6 +361,10 @@
     <loading-spinner *ngIf="showSpinner"></loading-spinner>
 
     <div *ngIf="!showSpinner" class="projects-cards">
+      <div *ngIf="communityTemplateId" class="community-template-import-notice">
+        <strong>Instalar modelo selecionado</strong>
+        <span>Escolha o projeto onde o modelo sera importado.</span>
+      </div>
       <div class="row">
         <div *ngIf="MT === true" class="col-lg-4 col-md-4 col-sm-6 col-12" style="cursor:pointer"
         (click)='goToCreateProject()'>

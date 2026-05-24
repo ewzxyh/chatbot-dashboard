@@ -4,6 +4,38 @@
   --brandColor: #{var(--brand-color)};
 }
 
+.community-template-import-notice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 960px;
+  margin: 0 auto 18px;
+  padding: 14px 18px;
+  border: 1px solid rgba(3, 169, 244, 0.24);
+  border-radius: 6px;
+  background: rgba(3, 169, 244, 0.08);
+  color: #2d405a;
+}
+
+.community-template-import-notice strong {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.community-template-import-notice span {
+  color: #5f7189;
+  font-size: 13px;
+  font-weight: 400;
+}
+
+@media (max-width: 767px) {
+  .community-template-import-notice {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
 // Ensure the row and col containing navbar don't clip content
 .row {
   overflow: visible !important;
