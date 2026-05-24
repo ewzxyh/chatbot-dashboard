@@ -81,6 +81,33 @@
     max-width: 420px;
 }
 
+.flow-recipient-mode-switch {
+    display: inline-flex;
+    width: fit-content;
+    gap: 4px;
+    padding: 4px;
+    border: 1px solid #d6dde8;
+    border-radius: 8px;
+    background: #f7f9fc;
+    margin-bottom: 4px;
+}
+
+.flow-recipient-mode-button {
+    border: 0;
+    background: transparent;
+    color: #55647a;
+    border-radius: 6px;
+    min-height: 30px;
+    padding: 0 10px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.flow-recipient-mode-button-active {
+    background: var(--blue-20);
+    color: #fff;
+}
+
 .bound-template-form label {
     color: #4f5f74;
     font-size: 13px;
@@ -99,6 +126,25 @@
 .bound-template-input:focus {
     border-color: var(--blue-20);
     outline: none;
+}
+
+.flow-batch-textarea {
+    min-height: 128px;
+    height: auto;
+    padding: 10px;
+    resize: vertical;
+    line-height: 1.35;
+}
+
+.flow-batch-summary {
+    display: grid;
+    gap: 4px;
+    color: #6f7e92;
+    font-size: 12px;
+}
+
+.flow-batch-summary-error {
+    color: #d93025;
 }
 
 .flow-preview-container {

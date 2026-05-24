@@ -113,11 +113,45 @@
                                     </div>
 
                                     <div class="bound-template-form">
-                                        <label>{{ 'RecipientPhoneNumber' | translate }}</label>
-                                        <input type="text" class="bound-template-input" [(ngModel)]="flowRecipientPhone" placeholder="+55 62 99999-9999">
+                                        <div class="flow-recipient-mode-switch">
+                                            <button type="button" class="flow-recipient-mode-button"
+                                                [ngClass]="{'flow-recipient-mode-button-active': flowRecipientMode === 'single'}"
+                                                (click)="setFlowRecipientMode('single')">
+                                                {{ 'SingleRecipient' | translate }}
+                                            </button>
+                                            <button type="button" class="flow-recipient-mode-button"
+                                                [ngClass]="{'flow-recipient-mode-button-active': flowRecipientMode === 'batch'}"
+                                                (click)="setFlowRecipientMode('batch')">
+                                                {{ 'ManualBatch' | translate }}
+                                            </button>
+                                        </div>
 
-                                        <label>{{ 'CustomerName' | translate }}</label>
-                                        <input type="text" class="bound-template-input" [(ngModel)]="flowRecipientName" placeholder="{{ 'CustomerName' | translate }}">
+                                        <ng-container *ngIf="flowRecipientMode === 'single'">
+                                            <label>{{ 'RecipientPhoneNumber' | translate }}</label>
+                                            <input type="text" class="bound-template-input" [(ngModel)]="flowRecipientPhone" placeholder="+55 62 99999-9999">
+
+                                            <label>{{ 'CustomerName' | translate }}</label>
+                                            <input type="text" class="bound-template-input" [(ngModel)]="flowRecipientName" placeholder="{{ 'CustomerName' | translate }}">
+                                        </ng-container>
+
+                                        <ng-container *ngIf="flowRecipientMode === 'batch'">
+                                            <label>{{ 'ManualBatchRecipients' | translate }}</label>
+                                            <textarea class="bound-template-input flow-batch-textarea"
+                                                [(ngModel)]="flowBatchRecipientsText"
+                                                placeholder="{{ 'ManualBatchRecipientsPlaceholder' | translate }}"></textarea>
+
+                                            <div class="flow-batch-summary">
+                                                <span>
+                                                    {{ 'ManualBatchParsedCount' | translate: { count: getFlowBatchRecipientCount(), limit: flowBatchLimit } }}
+                                                </span>
+                                                <span *ngIf="getFlowBatchInvalidCount() > 0" class="flow-batch-summary-error">
+                                                    {{ 'ManualBatchInvalidLines' | translate: { count: getFlowBatchInvalidCount() } }}
+                                                </span>
+                                                <span *ngIf="isFlowBatchLimitExceeded()" class="flow-batch-summary-error">
+                                                    {{ 'ManualBatchLimitExceeded' | translate: { limit: flowBatchLimit } }}
+                                                </span>
+                                            </div>
+                                        </ng-container>
 
                                         <button class="btn send-wa-btn" (click)="presentDialogBeforeToSendBoundTemplate()" [disabled]="!canSendBoundTemplate()">
                                             {{ flowDispatching ? ('Sending' | translate) : ('SendTemplate' | translate) }}

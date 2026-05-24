@@ -70,6 +70,9 @@ export class AutomationCreateComponent implements OnInit {
   selectedBoundBot: any;
   flowRecipientPhone: string;
   flowRecipientName: string;
+  flowRecipientMode: 'single' | 'batch' = 'single';
+  flowBatchRecipientsText: string;
+  flowBatchLimit = 50;
   flowDispatching = false;
   
   private backSub?: Subscription;
@@ -242,6 +245,10 @@ export class AutomationCreateComponent implements OnInit {
     this.selectedBoundBot = this.boundTemplateBots.find((bot) => bot._id === this.selectedBoundBotId);
   }
 
+  setFlowRecipientMode(mode: 'single' | 'batch') {
+    this.flowRecipientMode = mode;
+  }
+
   getSelectedBinding() {
     return this.selectedBoundBot && this.selectedBoundBot.__wabaTemplateBinding;
   }
@@ -256,9 +263,78 @@ export class AutomationCreateComponent implements OnInit {
     return binding && binding.language;
   }
 
+  normalizeFlowPhoneNumber(value: string) {
+    return String(value || '').replace(/\D+/g, '');
+  }
+
+  parseFlowBatchRecipients() {
+    const lines = String(this.flowBatchRecipientsText || '')
+      .split(/\r?\n/)
+      .map((line) => String(line || '').trim())
+      .filter((line) => !!line);
+    const recipients = [];
+    const invalidLines = [];
+    const seen = {};
+
+    lines.forEach((line, index) => {
+      const semicolonIndex = line.indexOf(';');
+      const commaIndex = line.indexOf(',');
+      const tabIndex = line.indexOf('\t');
+      const splitIndexes = [semicolonIndex, commaIndex, tabIndex].filter((position) => position > -1);
+      const splitIndex = splitIndexes.length ? Math.min.apply(null, splitIndexes) : -1;
+      const phonePart = splitIndex > -1 ? line.slice(0, splitIndex).trim() : line;
+      const namePart = splitIndex > -1 ? line.slice(splitIndex + 1).trim() : '';
+      const phoneNumber = this.normalizeFlowPhoneNumber(phonePart);
+
+      if (phoneNumber.length < 8) {
+        invalidLines.push(index + 1);
+        return;
+      }
+
+      if (seen[phoneNumber]) {
+        return;
+      }
+      seen[phoneNumber] = true;
+
+      recipients.push({
+        phoneNumber: phoneNumber,
+        recipientName: namePart || undefined
+      });
+    });
+
+    return {
+      recipients: recipients,
+      invalidLines: invalidLines,
+      totalLines: lines.length
+    };
+  }
+
+  getFlowBatchRecipientCount() {
+    return this.parseFlowBatchRecipients().recipients.length;
+  }
+
+  getFlowBatchInvalidCount() {
+    return this.parseFlowBatchRecipients().invalidLines.length;
+  }
+
+  isFlowBatchLimitExceeded() {
+    return this.getFlowBatchRecipientCount() > this.flowBatchLimit;
+  }
+
   canSendBoundTemplate() {
-    const phone = String(this.flowRecipientPhone || '').replace(/\D+/g, '');
-    return !!this.selectedBoundBotId && phone.length >= 8 && !this.flowDispatching;
+    if (!this.selectedBoundBotId || this.flowDispatching) {
+      return false;
+    }
+
+    if (this.flowRecipientMode === 'batch') {
+      const parsed = this.parseFlowBatchRecipients();
+      return parsed.recipients.length > 0 &&
+        parsed.recipients.length <= this.flowBatchLimit &&
+        parsed.invalidLines.length === 0;
+    }
+
+    const phone = this.normalizeFlowPhoneNumber(this.flowRecipientPhone);
+    return phone.length >= 8;
   }
 
   presentDialogWANotInstalledFoTheCurrentProject() {
@@ -590,12 +666,21 @@ export class AutomationCreateComponent implements OnInit {
     }
 
     const templateName = this.getSelectedBindingTemplateName();
-    Swal.fire({
-      title: this.translate.instant('AreYouSure'),
-      text: this.translate.instant('SendChatCaseFlowTemplateConfirmation', {
+    const parsedBatch = this.parseFlowBatchRecipients();
+    const isBatch = this.flowRecipientMode === 'batch';
+    const confirmationText = isBatch
+      ? this.translate.instant('SendChatCaseFlowTemplateBatchConfirmation', {
+        template_name: templateName,
+        contacts_num: parsedBatch.recipients.length
+      })
+      : this.translate.instant('SendChatCaseFlowTemplateConfirmation', {
         template_name: templateName,
         phone_number: this.flowRecipientPhone
-      }),
+      });
+
+    Swal.fire({
+      title: this.translate.instant('AreYouSure'),
+      text: confirmationText,
       icon: "warning",
       showCloseButton: false,
       showCancelButton: true,
@@ -618,10 +703,14 @@ export class AutomationCreateComponent implements OnInit {
     }
 
     this.flowDispatching = true;
-    const body = {
-      phoneNumber: this.flowRecipientPhone,
-      recipientName: this.flowRecipientName || undefined
-    };
+    const body = this.flowRecipientMode === 'batch'
+      ? {
+        recipients: this.parseFlowBatchRecipients().recipients
+      }
+      : {
+        phoneNumber: this.flowRecipientPhone,
+        recipientName: this.flowRecipientName || undefined
+      };
 
     this.automationsService.sendBoundWabaTemplate(this.selectedBoundBotId, body).subscribe((res: any) => {
       this.logger.log('[AUTOMATION-CREATE] SEND BOUND WABA TEMPLATE res', res);
