@@ -17,10 +17,10 @@
 <div style="margin: 12px 0 18px; padding: 12px 14px; border: 1px solid #e1e8f5; border-radius: 6px; background: #f8fbff;">
   <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
     <div>
-      <strong>Billing automatico</strong>
+      <strong>Billing automático</strong>
       <span style="margin-left: 8px; color: #60708f;">
         Job: {{ billingJobStatus?.started ? 'ativo' : 'inativo' }}
-        <span *ngIf="billingJobStatus?.lastStatus">| ultimo status: {{ billingJobStatus?.lastStatus }}</span>
+        <span *ngIf="billingJobStatus?.lastStatus">| último status: {{ billingJobStatus?.lastStatus }}</span>
       </span>
     </div>
     <div>
@@ -32,9 +32,9 @@
   <div *ngIf="billingJobMessage" class="modal-message" style="margin-top: 8px;">{{ billingJobMessage }}</div>
   <div *ngIf="billingJobResult" style="margin-top: 8px; color: #32445f;">
     Projetos analisados: {{ billingJobResult.scanned || 0 }} |
-    Acoes planejadas: {{ billingJobResult.plannedActions || 0 }} |
+    Ações planejadas: {{ billingJobResult.plannedActions || 0 }} |
     Avisos planejados: {{ billingJobResult.plannedNotices || 0 }} |
-    Acoes aplicadas: {{ billingJobResult.actions || 0 }} |
+    Ações aplicadas: {{ billingJobResult.actions || 0 }} |
     Avisos enviados: {{ billingJobResult.notices || 0 }} |
     Ignorados: {{ billingJobResult.skipped || 0 }} |
     Erros: {{ billingJobResult.errors || 0 }}
@@ -46,7 +46,7 @@
 <table *ngIf="!isLoading">
   <thead>
     <tr>
-      <th>Nome</th><th>Owner</th><th>Plano</th><th>Tipo</th><th>Billing</th><th>Contatos</th><th>Membros</th><th>Criado em</th><th>Acoes</th>
+      <th>Nome</th><th>Proprietário</th><th>Plano</th><th>Tipo</th><th>Billing</th><th>Contatos</th><th>Membros</th><th>Criado em</th><th>Ações</th>
     </tr>
   </thead>
   <tbody>
@@ -71,10 +71,10 @@
 </table>
 
 <div class="admin-pagination">
-  <span>{{ totalCount }} projetos | Pagina {{ page + 1 }}</span>
+  <span>{{ totalCount }} projetos | Página {{ page + 1 }}</span>
   <div>
     <button type="button" [disabled]="page === 0" (click)="prevPage()">Anterior</button>
-    <button type="button" [disabled]="(page + 1) * limit >= totalCount" (click)="nextPage()">Proxima</button>
+    <button type="button" [disabled]="(page + 1) * limit >= totalCount" (click)="nextPage()">Próxima</button>
   </div>
 </div>
 
@@ -117,22 +117,22 @@
 
     <div *ngIf="usageSnapshot && !usageLoading">
       <p style="margin: 0 0 12px 0; color: #60708f;">
-        Periodo: {{ usageSnapshot.period?.start | date:'dd/MM/yyyy' }} - {{ usageSnapshot.period?.end | date:'dd/MM/yyyy' }}
+        Período: {{ usageSnapshot.period?.start | date:'dd/MM/yyyy' }} - {{ usageSnapshot.period?.end | date:'dd/MM/yyyy' }}
       </p>
       <table>
         <tbody>
           <tr><td>Contatos</td><td>{{ usageValue(usageSnapshot.contacts) }}</td></tr>
-          <tr><td>Novos contatos no periodo</td><td>{{ usageSnapshot.contacts?.newInPeriod || 0 }}</td></tr>
+          <tr><td>Novos contatos no período</td><td>{{ usageSnapshot.contacts?.newInPeriod || 0 }}</td></tr>
           <tr><td>Membros</td><td>{{ usageValue(usageSnapshot.members) }}</td></tr>
           <tr><td>Plataformas</td><td>{{ usageValue(usageSnapshot.platforms) }}</td></tr>
-          <tr><td>Conversas no periodo</td><td>{{ usageSnapshot.conversations?.current || 0 }}</td></tr>
-          <tr><td>Mensagens no periodo</td><td>{{ usageSnapshot.messages?.total || 0 }}</td></tr>
+          <tr><td>Conversas no período</td><td>{{ usageSnapshot.conversations?.current || 0 }}</td></tr>
+          <tr><td>Mensagens no período</td><td>{{ usageSnapshot.messages?.total || 0 }}</td></tr>
           <tr><td>Tokens IA</td><td>{{ usageValue(usageSnapshot.tokens) }}</td></tr>
           <tr><td>E-mail</td><td>{{ usageValue(usageSnapshot.email) }}</td></tr>
           <tr><td>Anexos referenciados</td><td>{{ usageSnapshot.attachments?.count || 0 }}</td></tr>
           <tr><td>Storage medido</td><td>{{ formatBytes(usageSnapshot.attachments?.bytes) }}</td></tr>
-          <tr><td>Downloads/previews de midia</td><td>{{ usageSnapshot.mediaTraffic?.requests || 0 }}</td></tr>
-          <tr><td>Trafego de midia</td><td>{{ formatBytes(usageSnapshot.mediaTraffic?.bytes) }}</td></tr>
+          <tr><td>Downloads/previews de mídia</td><td>{{ usageSnapshot.mediaTraffic?.requests || 0 }}</td></tr>
+          <tr><td>Tráfego de mídia</td><td>{{ formatBytes(usageSnapshot.mediaTraffic?.bytes) }}</td></tr>
           <tr><td>Custo estimado mensal</td><td>{{ usageSnapshot.costEstimate?.currency || 'USD' }} {{ usageSnapshot.costEstimate?.estimatedCostMonthly || 0 }}</td></tr>
         </tbody>
       </table>
@@ -142,12 +142,12 @@
         {{ channel.key }}: {{ channel.value }}
       </div>
 
-      <h4 style="margin-top: 16px;">Historico mensal</h4>
+      <h4 style="margin-top: 16px;">Histórico mensal</h4>
       <div *ngIf="usageSnapshotMessage" class="modal-message">{{ usageSnapshotMessage }}</div>
-      <div *ngIf="usageSnapshotLoading" style="padding: 8px 0;">Carregando historico...</div>
+      <div *ngIf="usageSnapshotLoading" style="padding: 8px 0;">Carregando histórico...</div>
       <table *ngIf="usageSnapshots.length">
         <thead>
-          <tr><th>Periodo</th><th>Mensagens</th><th>Midia</th><th>Custo</th></tr>
+          <tr><th>Período</th><th>Mensagens</th><th>Mídia</th><th>Custo</th></tr>
         </thead>
         <tbody>
           <tr *ngFor="let snapshot of usageSnapshots">
@@ -180,16 +180,16 @@
           <tr><td>Status</td><td>{{ billingStatusLabel(billingLifecycle.status) }}</td></tr>
           <tr><td>Plano</td><td>{{ billingLifecycle.planDisplayName || billingLifecycle.plan }}</td></tr>
           <tr><td>Tipo</td><td>{{ billingLifecycle.type }}</td></tr>
-          <tr><td>Periodo</td><td>{{ billingLifecycle.billingPeriod || 'N/D' }}</td></tr>
-          <tr><td>Fim do periodo</td><td>{{ billingLifecycle.subEnd ? (billingLifecycle.subEnd | date:'dd/MM/yyyy HH:mm') : 'N/D' }}</td></tr>
-          <tr><td>Acesso ate</td><td>{{ billingLifecycle.accessEndsAt ? (billingLifecycle.accessEndsAt | date:'dd/MM/yyyy HH:mm') : 'N/D' }}</td></tr>
+          <tr><td>Período</td><td>{{ billingLifecycle.billingPeriod || 'N/D' }}</td></tr>
+          <tr><td>Fim do período</td><td>{{ billingLifecycle.subEnd ? (billingLifecycle.subEnd | date:'dd/MM/yyyy HH:mm') : 'N/D' }}</td></tr>
+          <tr><td>Acesso até</td><td>{{ billingLifecycle.accessEndsAt ? (billingLifecycle.accessEndsAt | date:'dd/MM/yyyy HH:mm') : 'N/D' }}</td></tr>
           <tr><td>Falhas de pagamento</td><td>{{ billingLifecycle.paymentFailureCount || 0 }}</td></tr>
           <tr><td>Motivo</td><td>{{ billingLifecycle.billingStatusReason || 'N/D' }}</td></tr>
-          <tr><td>Pode usar recursos pagos</td><td>{{ billingLifecycle.canUsePaidFeatures ? 'Sim' : 'Nao' }}</td></tr>
+          <tr><td>Pode usar recursos pagos</td><td>{{ billingLifecycle.canUsePaidFeatures ? 'Sim' : 'Não' }}</td></tr>
         </tbody>
       </table>
 
-      <label style="margin-top: 16px;">Motivo da acao</label>
+      <label style="margin-top: 16px;">Motivo da ação</label>
       <input type="text" [(ngModel)]="billingReason" placeholder="Ex.: atraso, chargeback, ajuste manual" />
 
       <div class="modal-actions">
@@ -199,7 +199,7 @@
         <button type="button" class="btn-secondary" (click)="applyBillingAction('downgrade_to_free')" [disabled]="billingActionLoading">Downgrade Free</button>
       </div>
 
-      <h4 style="margin-top: 16px;">Historico</h4>
+      <h4 style="margin-top: 16px;">Histórico</h4>
       <table *ngIf="billingEvents.length">
         <thead>
           <tr><th>Data</th><th>Evento</th><th>Status</th><th>Plano</th></tr>
@@ -224,7 +224,7 @@
 
 <div *ngIf="showQuotasModal" class="modal-overlay" (click)="closeModals()">
   <div class="modal-card" (click)="$event.stopPropagation()">
-    <h3>Override quotas: {{ selectedProject?.name }}</h3>
+    <h3>Substituir cotas: {{ selectedProject?.name }}</h3>
     <div *ngFor="let field of ['contacts', 'platforms', 'agents', 'chatbots', 'kbs']">
       <label>{{ field }}</label>
       <input type="number" [(ngModel)]="modalQuotas[field]" min="0" />

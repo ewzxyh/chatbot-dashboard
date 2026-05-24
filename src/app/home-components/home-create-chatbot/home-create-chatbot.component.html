@@ -85,8 +85,8 @@
           </svg>
         </div>
         <div style="display: none;" class="home-block-title">
-          <span *ngIf="countOfChatbots === 0"> Get Started with Conversation Automation </span>
-          <span *ngIf="countOfChatbots > 0"> Your Chatbots and Conversational Apps </span>
+          <span *ngIf="countOfChatbots === 0"> Comece com automação de conversas </span>
+          <span *ngIf="countOfChatbots > 0"> Seus chatbots e apps conversacionais </span>
         </div>
       </div>
     </div>
@@ -98,14 +98,14 @@
     <!-- <div id="left-container"> -->
     <div id="left">
       <div class="left-title">
-        Your Flows
+        Seus fluxos
       </div>
       <div class="hc-chatbot-count-btn-wpr">
         <!-- btn-p-outline btn-p-ripple -->
         <button id="hc-chatbot-count-btn" class="btn btn-outlined-blu" (click)="goToMyChatbots()">
           <div class="btn-content">
             <div class="btn--text">
-              Your Flows
+              Seus fluxos
             </div>
             <div class="btn--bot-count">
               {{countOfChatbots}}
@@ -159,7 +159,7 @@
 
         </div>
         <div class="right-title-text">
-          New Flow idea?
+          Nova ideia de fluxo?
         </div>
       </div>
       <div id="right-container-sk" *ngIf="showSpinner" style="height: 179px"></div>
@@ -197,7 +197,7 @@
               </div>
 
               <div class="explore-templates">
-                Increase sales templates
+                Modelos para aumentar vendas
               </div>
             </div>
 
@@ -220,7 +220,7 @@
               </div>
 
               <div class="explore-templates">
-                Customer Satisfaction templates
+                Modelos de satisfação do cliente
               </div>
             </div>
           </div>
@@ -239,7 +239,7 @@
               </div>
 
               <div class="explore-templates">
-                All templates
+                Todos os modelos
               </div>
             </div>
           </div>
@@ -259,7 +259,7 @@
 
               <div class="explore-templates">
                 <!-- Customer Satisfaction templates -->
-                More templates
+                Mais modelos
               </div>
             </div>
 
@@ -280,7 +280,7 @@
               </div>
 
               <div class="explore-templates">
-                More templates
+                Mais modelos
               </div>
             </div>
 
@@ -294,17 +294,17 @@
 
   <div class="chatbots-created" *ngIf="(chatBotLimit || chatBotLimit === 0) && areActivePay">
     <span class="chatbots-created-num" matTooltipClass="h-custom-mat-tooltip" 
-      matTooltip="View detail"
+      matTooltip="Ver detalhes"
       #tooltip="matTooltip" matTooltipPosition='below' matTooltipHideDelay="100" (click)="goToMyChatbots()"
       [ngStyle]="{'color': countOfChatbots > chatBotLimit ? '#f44336' : 'var(--blue-20)'}">
-      {{ countOfChatbots }} Flows
+      {{ countOfChatbots }} {{ countOfChatbots === 1 ? 'fluxo' : 'fluxos' }}
     </span>
     <span>
       {{ 'NumberOfChatbotCreated' | translate: tParamsPlanAndChatBot }}
     </span>
 
     <div *ngIf="(!subscription_is_active && prjct_profile_type === 'payment') && (countOfChatbots > chatBotLimit)"
-      matTooltipClass="h-custom-mat-tooltip" matTooltip="Subscription payment problem" #tooltip="matTooltip"
+      matTooltipClass="h-custom-mat-tooltip" matTooltip="Problema no pagamento da assinatura" #tooltip="matTooltip"
       matTooltipPosition='below' matTooltipHideDelay="100" (click)="openModalSubsExpired()">
 
       <i class="material-icons" style="vertical-align: middle; cursor: pointer; color: #f44336; font-size: 20px;     position: relative;
@@ -315,7 +315,7 @@
 
     <div style="cursor: pointer;"
       *ngIf="(trial_expired && prjct_profile_type === 'free') && (countOfChatbots > chatBotLimit)"
-      matTooltipClass="h-custom-mat-tooltip" matTooltip="Your 14-day free trial has expired" #tooltip="matTooltip"
+      matTooltipClass="h-custom-mat-tooltip" matTooltip="Seu teste grátis de 14 dias expirou" #tooltip="matTooltip"
       matTooltipPosition='below' matTooltipHideDelay="100" (click)="openModalTrialExpired()">
       <i class="material-icons" style="vertical-align: middle; cursor: pointer; color: #f44336; font-size: 20px;  position: relative;
         top: -1px;">

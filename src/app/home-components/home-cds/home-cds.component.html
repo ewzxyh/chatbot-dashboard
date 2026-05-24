@@ -24,10 +24,10 @@
 
             <div *ngIf="!showSpinner" class="title-container">
                 <div *ngIf="chatbots?.length > 0" class="home-cds-section-title">
-                    Your current Flow
+                    Seu fluxo atual
                 </div>
                 <div *ngIf="chatbots?.length === 0" class="home-cds-section-title">
-                    You don't have any Flows yet
+                    Você ainda não tem fluxos
                 </div>
             </div>
 
@@ -38,10 +38,10 @@
             <button id="home--cds-btn" class="btn btn-tdblu-no-boxshadow" (click)="goToBotProfile()">
                 <div class="home-cds-btn-content">
                     <div class="home-cds-btn-text" *ngIf="chatbots?.length > 0">
-                        Edit <b> {{ chatbotName }} </b>
+                        Editar <b> {{ chatbotName }} </b>
                     </div>
                     <div class="home-cds-btn-text" *ngIf="chatbots?.length === 0">
-                        Create your first Flow
+                        Criar primeiro fluxo
                     </div>
                 </div>
             </button>
@@ -69,11 +69,11 @@
 
                 <div class="title-container">
                     <div class="home-cds-section-title">
-                        Your current Knowledge Base
+                        Sua base de conhecimento atual
                     </div>
                 
                     <div class="home-cds-section-subtitle">
-                        Open <b> {{ kbNameSpaceName }}</b> in the Knowledge Base page to manage its contents
+                        Abra <b> {{ kbNameSpaceName }}</b> na página de bases de conhecimento para gerenciar o conteúdo.
                     </div>
                 </div>
 
@@ -82,12 +82,12 @@
             <div class="button-container">
                 <button *ngIf="displayKbManageContent" id="home--cds-btn" class="btn  btn-tdblu-no-boxshadow"
                     (click)="goToKBPage()">
-                    Manage contents
+                    Gerenciar conteúdo
                 </button>
         
                 <button *ngIf="!displayKbManageContent" id="home--cds-btn" class="btn btn-tdblu-no-boxshadow"
                     (click)="createChatbotfromKbOfficialResponderTemplate()">
-                    Create your Assistant
+                    Criar assistente
                 </button>
             </div>
 

@@ -2,7 +2,7 @@
   <div class="privacy-toolbar">
     <div>
       <h2>Privacidade e LGPD</h2>
-      <p>Exportacao e anonimizacao manual de dados pessoais por projeto.</p>
+      <p>Exportação e anonimização manual de dados pessoais por projeto.</p>
     </div>
     <button type="button" (click)="loadConfig()" [disabled]="isLoadingConfig">Atualizar</button>
   </div>
@@ -14,22 +14,22 @@
     <div class="privacy-card">
       <span>Conversas</span>
       <strong>{{ config.conversationRetentionDays }}</strong>
-      <small>dias de retencao</small>
+      <small>dias de retenção</small>
     </div>
     <div class="privacy-card">
       <span>Anexos</span>
       <strong>{{ config.attachmentRetentionDays }}</strong>
-      <small>dias de retencao</small>
+      <small>dias de retenção</small>
     </div>
     <div class="privacy-card">
       <span>Leads</span>
       <strong>{{ config.leadRetentionDays }}</strong>
-      <small>dias de retencao</small>
+      <small>dias de retenção</small>
     </div>
     <div class="privacy-card">
       <span>Auditoria</span>
       <strong>{{ config.auditEventRetentionDays }}</strong>
-      <small>dias de retencao</small>
+      <small>dias de retenção</small>
     </div>
   </div>
 
@@ -46,8 +46,8 @@
           <input type="text" [(ngModel)]="identifier" placeholder="Email, telefone, lead_id ou _id">
         </label>
         <label>
-          Motivo da anonimizacao
-          <input type="text" [(ngModel)]="reason" placeholder="Ex.: solicitacao LGPD do titular">
+          Motivo da anonimização
+          <input type="text" [(ngModel)]="reason" placeholder="Ex.: solicitação LGPD do titular">
         </label>
       </div>
 
@@ -62,7 +62,7 @@
     </section>
 
     <section class="privacy-section">
-      <h3>Retencao operacional</h3>
+      <h3>Retenção operacional</h3>
       <div class="privacy-form">
         <label>
           Projeto opcional
@@ -83,7 +83,7 @@
           <strong>{{ retentionStatus.counts?.leadsMatched || 0 }}</strong>
         </div>
         <div>
-          <span>Job automatico</span>
+          <span>Job automático</span>
           <strong>{{ retentionStatus.job?.started ? 'ativo' : 'inativo' }}</strong>
         </div>
       </div>
@@ -92,7 +92,7 @@
           {{ isLoadingRetention ? 'Atualizando...' : 'Atualizar status' }}
         </button>
         <button type="button" (click)="runRetention(true)" [disabled]="isRunningRetention">
-          {{ isRunningRetention ? 'Executando...' : 'Simular retencao' }}
+          {{ isRunningRetention ? 'Executando...' : 'Simular retenção' }}
         </button>
         <button type="button" class="danger" (click)="runRetention(false)" [disabled]="isRunningRetention">
           Executar limpeza
@@ -102,7 +102,7 @@
     </section>
 
     <section class="privacy-section" *ngIf="anonymizeResult">
-      <h3>Resultado da anonimizacao</h3>
+      <h3>Resultado da anonimização</h3>
       <div class="privacy-counts">
         <span>Leads: {{ anonymizeResult.counts?.leadsModified || 0 }}</span>
         <span>Conversas: {{ anonymizeResult.counts?.requestsModified || 0 }}</span>
@@ -113,9 +113,9 @@
   </div>
 
   <section class="privacy-section" *ngIf="exportResult">
-    <h3>Exportacao LGPD</h3>
+    <h3>Exportação LGPD</h3>
     <div class="privacy-counts">
-      <span>Lead: {{ exportResult.matched?.leadFound ? 'encontrado' : 'nao encontrado' }}</span>
+      <span>Lead: {{ exportResult.matched?.leadFound ? 'encontrado' : 'não encontrado' }}</span>
       <span>Conversas: {{ exportResult.matched?.requestCount || 0 }}</span>
       <span>Mensagens: {{ exportResult.matched?.messageCount || 0 }}</span>
       <span *ngIf="exportResult.matched?.requestsTruncated || exportResult.matched?.messagesTruncated">Resultado truncado</span>

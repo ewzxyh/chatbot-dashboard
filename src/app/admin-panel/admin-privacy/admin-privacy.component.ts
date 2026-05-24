@@ -40,7 +40,7 @@ export class AdminPrivacyComponent implements OnInit {
       },
       () => {
         this.config = null;
-        this.errorMessage = 'Erro ao carregar configuracao de privacidade';
+        this.errorMessage = 'Erro ao carregar configuração de privacidade';
         this.isLoadingConfig = false;
       }
     );
@@ -54,7 +54,7 @@ export class AdminPrivacyComponent implements OnInit {
         this.isLoadingRetention = false;
       },
       (err) => {
-        this.errorMessage = this.errorFrom(err, 'Erro ao carregar status de retencao');
+        this.errorMessage = this.errorFrom(err, 'Erro ao carregar status de retenção');
         this.retentionStatus = null;
         this.isLoadingRetention = false;
       }
@@ -63,7 +63,7 @@ export class AdminPrivacyComponent implements OnInit {
 
   runRetention(dryRun: boolean) {
     if (!dryRun) {
-      var confirmed = window.confirm('Executar limpeza de retencao? Esta acao remove dados antigos conforme a politica configurada.');
+      var confirmed = window.confirm('Executar limpeza de retenção? Esta ação remove dados antigos conforme a política configurada.');
       if (!confirmed) return;
     }
 
@@ -75,11 +75,11 @@ export class AdminPrivacyComponent implements OnInit {
       (res) => {
         this.retentionResult = res;
         this.retentionStatus = res;
-        this.successMessage = dryRun ? 'Simulacao de retencao concluida' : 'Retencao executada com sucesso';
+        this.successMessage = dryRun ? 'Simulação de retenção concluída' : 'Retenção executada com sucesso';
         this.isRunningRetention = false;
       },
       (err) => {
-        this.errorMessage = this.errorFrom(err, 'Erro ao executar retencao');
+        this.errorMessage = this.errorFrom(err, 'Erro ao executar retenção');
         this.isRunningRetention = false;
       }
     );
@@ -101,7 +101,7 @@ export class AdminPrivacyComponent implements OnInit {
     this.adminService.exportPrivacyContact(this.projectId, this.identifier).subscribe(
       (res) => {
         this.exportResult = res;
-        this.successMessage = 'Exportacao LGPD concluida';
+        this.successMessage = 'Exportação LGPD concluída';
         this.isExporting = false;
       },
       (err) => {
@@ -117,10 +117,10 @@ export class AdminPrivacyComponent implements OnInit {
       return;
     }
     if (!this.reason) {
-      this.errorMessage = 'Informe o motivo da anonimizacao';
+      this.errorMessage = 'Informe o motivo da anonimização';
       return;
     }
-    var confirmed = window.confirm('Anonimizar dados pessoais deste contato? Esta acao altera conversas e mensagens relacionadas.');
+    var confirmed = window.confirm('Anonimizar dados pessoais deste contato? Esta ação altera conversas e mensagens relacionadas.');
     if (!confirmed) return;
 
     this.errorMessage = '';

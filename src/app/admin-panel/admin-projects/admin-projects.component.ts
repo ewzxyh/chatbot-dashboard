@@ -206,11 +206,11 @@ export class AdminProjectsComponent implements OnInit {
 
   runBillingJob(dryRun: boolean) {
     if (this.billingJobLoading) return;
-    if (!dryRun && !window.confirm('Executar o billing automatico agora? Isso pode suspender projetos, enviar avisos e aplicar downgrade para Free.')) {
+    if (!dryRun && !window.confirm('Executar o billing automático agora? Isso pode suspender projetos, enviar avisos e aplicar downgrade para Free.')) {
       return;
     }
     this.billingJobLoading = true;
-    this.billingJobMessage = dryRun ? 'Simulando billing automatico...' : 'Executando billing automatico...';
+    this.billingJobMessage = dryRun ? 'Simulando billing automático...' : 'Executando billing automático...';
     this.billingJobResult = null;
     const payload: any = { dryRun: dryRun };
     if (!dryRun) payload.confirm = true;
@@ -219,12 +219,12 @@ export class AdminProjectsComponent implements OnInit {
       (res) => {
         this.billingJobResult = res.result || null;
         this.billingJobStatus = res.job || this.billingJobStatus;
-        this.billingJobMessage = dryRun ? 'Simulacao concluida.' : 'Execucao concluida.';
+        this.billingJobMessage = dryRun ? 'Simulação concluída.' : 'Execução concluída.';
         this.billingJobLoading = false;
         this.loadProjects();
       },
       (err) => {
-        this.billingJobMessage = 'Erro: ' + (err.error?.error || 'Falha ao executar billing automatico');
+        this.billingJobMessage = 'Erro: ' + (err.error?.error || 'Falha ao executar billing automático');
         this.billingJobLoading = false;
       }
     );

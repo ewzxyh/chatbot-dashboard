@@ -1,7 +1,7 @@
 <div class="operation-page">
   <div class="operation-toolbar">
     <div>
-      <h2>Operacao</h2>
+      <h2>Operação</h2>
       <p *ngIf="summary">Atualizado em {{ formatDate(summary.generatedAt) }}</p>
     </div>
     <button type="button" class="btn-primary" (click)="refresh()">Atualizar</button>
@@ -40,7 +40,7 @@
             <th>Componente</th>
             <th>Status</th>
             <th>Detalhe</th>
-            <th>Ultima ocorrencia</th>
+            <th>Última ocorrência</th>
           </tr>
         </thead>
         <tbody>
@@ -58,7 +58,7 @@
     <div class="operation-grid">
       <div class="operation-section">
         <div class="section-header">
-          <h3>Servicos</h3>
+          <h3>Serviços</h3>
         </div>
         <div class="service-grid">
           <div *ngFor="let service of summary.services" class="service-card">
@@ -80,7 +80,7 @@
           <div class="section-actions">
             <span>{{ summary.alerts.length }}</span>
             <button type="button" class="btn-secondary btn-test" [disabled]="isTestingNotification" (click)="testAlertNotification()">
-              {{ isTestingNotification ? 'Testando...' : 'Testar notificacao' }}
+              {{ isTestingNotification ? 'Testando...' : 'Testar notificação' }}
             </button>
           </div>
         </div>
@@ -94,9 +94,9 @@
             <tr>
               <th>Severidade</th>
               <th>Alerta</th>
-              <th>Ocorrencias</th>
+              <th>Ocorrências</th>
               <th>Canal</th>
-              <th>Ultima ocorrencia</th>
+              <th>Última ocorrência</th>
             </tr>
           </thead>
           <tbody>
@@ -127,10 +127,10 @@
           <tr>
             <th>Fila</th>
             <th>Status</th>
-            <th>Ready</th>
-            <th>Unacked</th>
+            <th>Prontas</th>
+            <th>Não confirmadas</th>
             <th>Total</th>
-            <th>Consumers</th>
+            <th>Consumidores</th>
             <th>Origem</th>
           </tr>
         </thead>
@@ -150,15 +150,15 @@
 
     <div class="operation-section">
       <div class="section-header">
-        <h3>Historico operacional</h3>
+        <h3>Histórico operacional</h3>
         <span *ngIf="metrics">{{ formatDate(metrics.generatedAt) }}</span>
       </div>
       <div class="admin-filters metrics-filters">
         <select [(ngModel)]="metricFilters.range" (change)="onMetricRangeChange()">
-          <option value="24h">Ultimas 24h</option>
-          <option value="7d">Ultimos 7 dias</option>
-          <option value="14d">Ultimos 14 dias</option>
-          <option value="30d">Ultimos 30 dias</option>
+          <option value="24h">Últimas 24h</option>
+          <option value="7d">Últimos 7 dias</option>
+          <option value="14d">Últimos 14 dias</option>
+          <option value="30d">Últimos 30 dias</option>
         </select>
         <select [(ngModel)]="metricFilters.bucket" (change)="loadMetrics()">
           <option value="hour">Por hora</option>
@@ -190,7 +190,7 @@
             <strong>{{ metrics.alerts.total }}</strong>
           </div>
           <div class="metric-card">
-            <span>Criticos abertos</span>
+            <span>Críticos abertos</span>
             <strong>{{ metrics.alerts.criticalOpenCount }}</strong>
           </div>
         </div>
@@ -217,12 +217,12 @@
         <table>
           <thead>
             <tr>
-              <th>Periodo</th>
+              <th>Período</th>
               <th>Eventos</th>
               <th>Erros</th>
               <th>Falhas</th>
               <th>Alertas</th>
-              <th>Criticos</th>
+              <th>Críticos</th>
               <th>Abertos</th>
             </tr>
           </thead>
@@ -238,7 +238,7 @@
             </tr>
           </tbody>
         </table>
-        <div *ngIf="metricRows.length === 0" class="empty-state">Nenhum historico encontrado.</div>
+        <div *ngIf="metricRows.length === 0" class="empty-state">Nenhum histórico encontrado.</div>
       </div>
     </div>
 
@@ -252,11 +252,11 @@
             <th>Status</th>
             <th>Canal</th>
             <th>Nome</th>
-            <th>Provider</th>
+            <th>Provedor</th>
             <th>Projeto</th>
-            <th>Ultimo webhook</th>
-            <th>Ultimo erro</th>
-            <th>Acoes</th>
+            <th>Último webhook</th>
+            <th>Último erro</th>
+            <th>Ações</th>
           </tr>
         </thead>
         <tbody>
@@ -271,7 +271,7 @@
               <span class="status-pill" [ngClass]="getStatusClass(channel.providerHealth || channel.providerStatus)">
                 {{ getStatusLabel(channel.providerHealth || channel.providerStatus) }}
               </span>
-              <div class="muted">{{ providerDetail(channel) || 'Sem diagnostico' }}</div>
+              <div class="muted">{{ providerDetail(channel) || 'Sem diagnóstico' }}</div>
               <div *ngIf="channel.providerReason" class="muted">{{ channel.providerReason }}</div>
               <div *ngIf="channel.providerCheckedAt" class="muted">Check {{ formatDate(channel.providerCheckedAt) }}</div>
               <div *ngIf="channel.lastWebhookRegistrationAt" class="muted">
@@ -320,13 +320,13 @@
           <option value="system">Sistema</option>
         </select>
         <select [(ngModel)]="eventFilters.level" (change)="loadEvents()">
-          <option value="">Todos niveis</option>
-          <option value="info">Info</option>
-          <option value="warn">Warn</option>
-          <option value="error">Error</option>
+          <option value="">Todos os níveis</option>
+          <option value="info">Informação</option>
+          <option value="warn">Aviso</option>
+          <option value="error">Erro</option>
         </select>
         <input type="text" placeholder="Projeto" [(ngModel)]="eventFilters.project_id" (keyup.enter)="loadEvents()">
-        <input type="text" placeholder="Integracao" [(ngModel)]="eventFilters.integrationId" (keyup.enter)="loadEvents()">
+        <input type="text" placeholder="Integração" [(ngModel)]="eventFilters.integrationId" (keyup.enter)="loadEvents()">
         <button type="button" class="btn-secondary" (click)="loadEvents()">Filtrar</button>
         <button type="button" class="btn-secondary" (click)="clearEventFilters()">Limpar</button>
       </div>
@@ -335,7 +335,7 @@
         <thead>
           <tr>
             <th>Hora</th>
-            <th>Nivel</th>
+            <th>Nível</th>
             <th>Canal</th>
             <th>Evento</th>
             <th>Projeto</th>

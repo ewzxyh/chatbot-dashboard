@@ -342,13 +342,13 @@ export class AdminOperationComponent implements OnInit {
         detail: this.formatDate(this.summary.generatedAt)
       },
       {
-        label: 'Alertas criticos',
+        label: 'Alertas críticos',
         value: criticalAlerts.length,
         status: criticalAlerts.length > 0 ? 'down' : 'ok',
         detail: alerts.length + ' alertas abertos'
       },
       {
-        label: 'Servicos afetados',
+        label: 'Serviços afetados',
         value: serviceIssues.length,
         status: this.getCollectionStatus(serviceIssues),
         detail: services.length + ' monitorados'
@@ -391,7 +391,7 @@ export class AdminOperationComponent implements OnInit {
 
     services.forEach((service) => {
       items.push({
-        type: 'Servico',
+        type: 'Serviço',
         name: service.label || service.name,
         status: service.status,
         detail: this.serviceDetail(service),
@@ -426,12 +426,12 @@ export class AdminOperationComponent implements OnInit {
     const labels: any = {
       ok: 'OK',
       degraded: 'Degradado',
-      down: 'Indisponivel',
-      unknown: 'Sem config',
+      down: 'Indisponível',
+      unknown: 'Sem configuração',
       skipped: 'Ignorado',
       failed: 'Falhou',
       warning: 'Aviso',
-      critical: 'Critico',
+      critical: 'Crítico',
       success: 'Sucesso',
       registered: 'Registrado',
       active: 'Ativo',
@@ -539,22 +539,22 @@ export class AdminOperationComponent implements OnInit {
     if (!service || !service.details) return '';
     if (service.details.reason) return service.details.reason;
     if (service.details.error) return service.details.error;
-    if (service.name === 'server') return 'uptime ' + service.details.uptimeSeconds + 's';
+    if (service.name === 'server') return 'ativo há ' + service.details.uptimeSeconds + 's';
     if (service.latencyMs !== null && service.latencyMs !== undefined) return service.latencyMs + ' ms';
     return '';
   }
 
   queueDetail(queue: any): string {
     if (!queue) return '';
-    return 'ready ' + Number(queue.messagesReady || 0) +
-      ' | unacked ' + Number(queue.messagesUnacknowledged || 0) +
-      ' | consumers ' + Number(queue.consumers || 0);
+    return 'prontas ' + Number(queue.messagesReady || 0) +
+      ' | não confirmadas ' + Number(queue.messagesUnacknowledged || 0) +
+      ' | consumidores ' + Number(queue.consumers || 0);
   }
 
   providerDetail(channel: any): string {
     if (!channel) return '';
     const parts = [];
-    if (channel.providerStatus) parts.push('provider: ' + channel.providerStatus);
+    if (channel.providerStatus) parts.push('provedor: ' + channel.providerStatus);
     if (channel.qualityRating) parts.push('qualidade: ' + channel.qualityRating);
     if (channel.nameStatus) parts.push('nome: ' + channel.nameStatus);
     if (channel.canSendNewMessages === false) parts.push('envio limitado');

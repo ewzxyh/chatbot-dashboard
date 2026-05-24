@@ -902,7 +902,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         // this.logger.log('snd test foreground notification');
         const link = "https://console.tiledesk.com/v2/chat/#/conversation-detail/support-group-6228d9d792d1ed0019240d2b-7f4cc830069f48458b8fd7070f4a7f48/Bot/active"
         // this.logger.log('snd test foreground notification link ', link);
-        this.notify.showForegroungPushNotification("Milani Salame", "A new support request has been assigned to you: yuppt tutti", link, requester_avatar_initial, requester_avatar_bckgrnd);
+        this.notify.showForegroungPushNotification("Milani Salame", "Uma nova solicitação de suporte foi atribuída a você: yuppt tutti", link, requester_avatar_initial, requester_avatar_bckgrnd);
         const elemNotification = document.getElementById('foreground-not');
         // this.logger.log('[APP-COMPONENT] !! elemNotification  ', elemNotification)
         const self = this
