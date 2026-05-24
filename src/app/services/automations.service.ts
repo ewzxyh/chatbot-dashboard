@@ -160,6 +160,46 @@ export class AutomationsService {
     return this.httpClient.post(url, JSON.stringify(dispatchData), httpOptions);
   }
 
+  public createBoundWabaCampaign(botId: string, campaignData: any) {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Authorization': this.TOKEN
+      })
+    };
+
+    const url = this.SERVER_BASE_PATH + this.project_id + "/faq_kb/" + botId + "/publication/waba/campaign";
+    this.logger.log('[AUTOMATIONS.SERVICE] - CREATE BOUND WABA CAMPAIGN - URL ', url);
+
+    return this.httpClient.post(url, JSON.stringify(campaignData), httpOptions);
+  }
+
+  public pauseBoundWabaCampaign(botId: string, transactionId: string) {
+    return this.updateBoundWabaCampaign(botId, transactionId, 'pause');
+  }
+
+  public resumeBoundWabaCampaign(botId: string, transactionId: string) {
+    return this.updateBoundWabaCampaign(botId, transactionId, 'resume');
+  }
+
+  public cancelBoundWabaCampaign(botId: string, transactionId: string) {
+    return this.updateBoundWabaCampaign(botId, transactionId, 'cancel');
+  }
+
+  private updateBoundWabaCampaign(botId: string, transactionId: string, action: string) {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Authorization': this.TOKEN
+      })
+    };
+
+    const url = this.SERVER_BASE_PATH + this.project_id + "/faq_kb/" + botId + "/publication/waba/campaign/" + transactionId + "/" + action;
+    this.logger.log('[AUTOMATIONS.SERVICE] - UPDATE BOUND WABA CAMPAIGN - URL ', url);
+
+    return this.httpClient.post(url, {}, httpOptions);
+  }
+
   getWAMessagesByPhoneNum(phoneNum) {
     const httpOptions = {
       headers: new HttpHeaders({

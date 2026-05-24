@@ -140,21 +140,37 @@
                                                 [(ngModel)]="flowBatchRecipientsText"
                                                 placeholder="{{ 'ManualBatchRecipientsPlaceholder' | translate }}"></textarea>
 
+                                            <div class="flow-recipient-mode-switch flow-dispatch-mode-switch">
+                                                <button type="button" class="flow-recipient-mode-button"
+                                                    [ngClass]="{'flow-recipient-mode-button-active': flowBatchDispatchMode === 'campaign'}"
+                                                    (click)="setFlowBatchDispatchMode('campaign')">
+                                                    {{ 'TrackedCampaign' | translate }}
+                                                </button>
+                                                <button type="button" class="flow-recipient-mode-button"
+                                                    [ngClass]="{'flow-recipient-mode-button-active': flowBatchDispatchMode === 'direct'}"
+                                                    (click)="setFlowBatchDispatchMode('direct')">
+                                                    {{ 'ImmediateSend' | translate }}
+                                                </button>
+                                            </div>
+
                                             <div class="flow-batch-summary">
                                                 <span>
-                                                    {{ 'ManualBatchParsedCount' | translate: { count: getFlowBatchRecipientCount(), limit: flowBatchLimit } }}
+                                                    {{ 'ManualBatchParsedCount' | translate: { count: getFlowBatchRecipientCount(), limit: getFlowBatchLimit() } }}
                                                 </span>
                                                 <span *ngIf="getFlowBatchInvalidCount() > 0" class="flow-batch-summary-error">
                                                     {{ 'ManualBatchInvalidLines' | translate: { count: getFlowBatchInvalidCount() } }}
                                                 </span>
                                                 <span *ngIf="isFlowBatchLimitExceeded()" class="flow-batch-summary-error">
-                                                    {{ 'ManualBatchLimitExceeded' | translate: { limit: flowBatchLimit } }}
+                                                    {{ 'ManualBatchLimitExceeded' | translate: { limit: getFlowBatchLimit() } }}
+                                                </span>
+                                                <span>
+                                                    {{ (flowBatchDispatchMode === 'campaign' ? 'TrackedCampaignHint' : 'ImmediateSendHint') | translate }}
                                                 </span>
                                             </div>
                                         </ng-container>
 
                                         <button class="btn send-wa-btn" (click)="presentDialogBeforeToSendBoundTemplate()" [disabled]="!canSendBoundTemplate()">
-                                            {{ flowDispatching ? ('Sending' | translate) : ('SendTemplate' | translate) }}
+                                            {{ flowDispatching ? ('Sending' | translate) : ((flowRecipientMode === 'batch' && flowBatchDispatchMode === 'campaign' ? 'CreateCampaign' : 'SendTemplate') | translate) }}
                                         </button>
                                     </div>
                                 </div>

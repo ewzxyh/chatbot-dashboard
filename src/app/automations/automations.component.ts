@@ -38,6 +38,7 @@ export class AutomationsComponent implements OnInit {
   selected_automation_id: any;
   selected_template_name: string;
   selected_automation_created_at: string;
+  selected_transaction: any;
   transactions = [];
   logs = [];
 
@@ -1165,6 +1166,7 @@ export class AutomationsComponent implements OnInit {
     this.setMomentLocale();
     this.listenToProjectUser()
     this.listenToGoBack()
+    this.getQueryParams()
   }
 
   ngOnDestroy(): void {
@@ -1313,15 +1315,24 @@ export class AutomationsComponent implements OnInit {
         return 0
       });
       this.showSpinner = false;
+      const selectedId = this.route.snapshot.queryParamMap.get('id');
+      if (selectedId) {
+        const selected = this.transactions.find((transaction) => transaction.transaction_id === selectedId);
+        if (selected) {
+          this.onAutomationSelect(selected);
+        }
+      }
 
     }, (error) => {
       this.logger.error("get transactions error: ", error)
     })
   }
 
-  onAutomationSelect(automation_id: string, createdAt: string, template_name:any) {
-    this.selected_template_name = template_name;
-    this.selected_automation_created_at = createdAt;
+  onAutomationSelect(transaction: any) {
+    const automation_id = transaction && transaction.transaction_id ? transaction.transaction_id : transaction;
+    this.selected_transaction = transaction;
+    this.selected_template_name = transaction && transaction.template_name;
+    this.selected_automation_created_at = transaction && transaction.createdAt;
     this.logger.log("[AUTOMATION COMP.] onAutomationSelect createdAt: ", this.selected_automation_created_at, 'template_name ',  this.selected_template_name);
     this.selected_automation_id = automation_id;
     this.showSpinner = true;
@@ -1373,6 +1384,89 @@ export class AutomationsComponent implements OnInit {
     this.failed_count = this.logs.filter(l => l.status_code === -2).length
   }
 
+  isCampaign(transaction?: any) {
+    const tx = transaction || this.selected_transaction;
+    return tx && tx.dispatch_type === 'waba_template_campaign';
+  }
+
+  getStatusLabel(transaction: any) {
+    const status = transaction && transaction.status;
+    const labels = {
+      pending: 'Pending',
+      queued: 'Queued',
+      running: 'Running',
+      paused: 'Paused',
+      completed: 'Completed',
+      completed_with_errors: 'CompletedWithErrors',
+      failed: 'Failed',
+      aborted: 'Aborted',
+      canceled: 'Canceled'
+    };
+    return labels[status] || status || 'Unknown';
+  }
+
+  getStatusClass(transaction: any) {
+    const status = transaction && transaction.status;
+    if (status === 'completed') return 'completed-circle';
+    if (status === 'queued' || status === 'running' || status === 'pending' || status === 'paused') return 'pending-circle';
+    return 'aborted-circle';
+  }
+
+  getCampaignProcessed(transaction?: any) {
+    const tx = transaction || this.selected_transaction || {};
+    return tx.processed_count || 0;
+  }
+
+  getCampaignTotal(transaction?: any) {
+    const tx = transaction || this.selected_transaction || {};
+    return tx.recipients_total || 0;
+  }
+
+  getCampaignProgressPercentage(transaction?: any) {
+    const total = this.getCampaignTotal(transaction);
+    if (!total) return 0;
+    return Math.min(100, Math.round((this.getCampaignProcessed(transaction) / total) * 100));
+  }
+
+  canPauseCampaign() {
+    const status = this.selected_transaction && this.selected_transaction.status;
+    return this.isCampaign() && ['queued', 'running', 'pending'].includes(status);
+  }
+
+  canResumeCampaign() {
+    return this.isCampaign() && this.selected_transaction && this.selected_transaction.status === 'paused';
+  }
+
+  canCancelCampaign() {
+    const status = this.selected_transaction && this.selected_transaction.status;
+    return this.isCampaign() && ['queued', 'running', 'pending', 'paused'].includes(status);
+  }
+
+  updateCampaign(action: 'pause' | 'resume' | 'cancel') {
+    if (!this.selected_transaction || !this.selected_transaction.faq_kb_id || !this.selected_transaction.transaction_id) {
+      return;
+    }
+
+    this.showSpinner = true;
+    let request;
+    if (action === 'pause') {
+      request = this.automationsService.pauseBoundWabaCampaign(this.selected_transaction.faq_kb_id, this.selected_transaction.transaction_id);
+    } else if (action === 'resume') {
+      request = this.automationsService.resumeBoundWabaCampaign(this.selected_transaction.faq_kb_id, this.selected_transaction.transaction_id);
+    } else {
+      request = this.automationsService.cancelBoundWabaCampaign(this.selected_transaction.faq_kb_id, this.selected_transaction.transaction_id);
+    }
+
+    request.subscribe((transaction: any) => {
+      this.selected_transaction = transaction;
+      this.getLogs(transaction.transaction_id);
+      this.getTransactions();
+    }, (error) => {
+      this.showSpinner = false;
+      this.logger.error('[AUTOMATION COMP.] Update campaign error: ', error);
+    });
+  }
+
   changeRoute(key?) {
     if (key) {
       this.router.navigate(['project/' + this.project._id + '/automations/'], { queryParams: { id: key } });
@@ -1385,6 +1479,7 @@ export class AutomationsComponent implements OnInit {
     this.changeRoute();
     this.showAutomationsList = true;
     this.showAutomationDetail = false;
+    this.selected_transaction = null;
   }
 
   _reload(target) {

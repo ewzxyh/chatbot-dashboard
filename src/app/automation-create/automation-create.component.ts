@@ -71,8 +71,10 @@ export class AutomationCreateComponent implements OnInit {
   flowRecipientPhone: string;
   flowRecipientName: string;
   flowRecipientMode: 'single' | 'batch' = 'single';
+  flowBatchDispatchMode: 'campaign' | 'direct' = 'campaign';
   flowBatchRecipientsText: string;
   flowBatchLimit = 50;
+  flowCampaignLimit = 1000;
   flowDispatching = false;
   
   private backSub?: Subscription;
@@ -249,6 +251,10 @@ export class AutomationCreateComponent implements OnInit {
     this.flowRecipientMode = mode;
   }
 
+  setFlowBatchDispatchMode(mode: 'campaign' | 'direct') {
+    this.flowBatchDispatchMode = mode;
+  }
+
   getSelectedBinding() {
     return this.selectedBoundBot && this.selectedBoundBot.__wabaTemplateBinding;
   }
@@ -313,12 +319,16 @@ export class AutomationCreateComponent implements OnInit {
     return this.parseFlowBatchRecipients().recipients.length;
   }
 
+  getFlowBatchLimit() {
+    return this.flowBatchDispatchMode === 'campaign' ? this.flowCampaignLimit : this.flowBatchLimit;
+  }
+
   getFlowBatchInvalidCount() {
     return this.parseFlowBatchRecipients().invalidLines.length;
   }
 
   isFlowBatchLimitExceeded() {
-    return this.getFlowBatchRecipientCount() > this.flowBatchLimit;
+    return this.getFlowBatchRecipientCount() > this.getFlowBatchLimit();
   }
 
   canSendBoundTemplate() {
@@ -329,7 +339,7 @@ export class AutomationCreateComponent implements OnInit {
     if (this.flowRecipientMode === 'batch') {
       const parsed = this.parseFlowBatchRecipients();
       return parsed.recipients.length > 0 &&
-        parsed.recipients.length <= this.flowBatchLimit &&
+        parsed.recipients.length <= this.getFlowBatchLimit() &&
         parsed.invalidLines.length === 0;
     }
 
@@ -668,8 +678,9 @@ export class AutomationCreateComponent implements OnInit {
     const templateName = this.getSelectedBindingTemplateName();
     const parsedBatch = this.parseFlowBatchRecipients();
     const isBatch = this.flowRecipientMode === 'batch';
+    const isCampaign = isBatch && this.flowBatchDispatchMode === 'campaign';
     const confirmationText = isBatch
-      ? this.translate.instant('SendChatCaseFlowTemplateBatchConfirmation', {
+      ? this.translate.instant(isCampaign ? 'CreateChatCaseFlowTemplateCampaignConfirmation' : 'SendChatCaseFlowTemplateBatchConfirmation', {
         template_name: templateName,
         contacts_num: parsedBatch.recipients.length
       })
@@ -703,6 +714,45 @@ export class AutomationCreateComponent implements OnInit {
     }
 
     this.flowDispatching = true;
+    if (this.flowRecipientMode === 'batch' && this.flowBatchDispatchMode === 'campaign') {
+      const body = {
+        recipients: this.parseFlowBatchRecipients().recipients
+      };
+
+      this.automationsService.createBoundWabaCampaign(this.selectedBoundBotId, body).subscribe((res: any) => {
+        this.logger.log('[AUTOMATION-CREATE] CREATE BOUND WABA CAMPAIGN res', res);
+        Swal.fire({
+          title: this.translate.instant('Done') + "!",
+          text: this.translate.instant('ChatCaseFlowTemplateCampaignCreated', {
+            contacts_num: res && res.recipients_total ? res.recipients_total : body.recipients.length
+          }),
+          icon: "success",
+          showCloseButton: false,
+          showCancelButton: false,
+          confirmButtonText: this.translate.instant('ViewCampaign'),
+        }).then(() => {
+          this.router.navigate(['project/' + this.projectId + '/automations'], {
+            queryParams: { id: res && res.transaction_id }
+          });
+        });
+      }, (error) => {
+        this.flowDispatching = false;
+        this.logger.error('[AUTOMATION-CREATE] CREATE BOUND WABA CAMPAIGN - ERROR ', error);
+        const err = error && error.error ? (error.error.error || error.error.message) : null;
+        Swal.fire({
+          title: this.translate.instant('Oops') + '!',
+          text: err || this.translate.instant('ChatCaseFlowTemplateCampaignFailed'),
+          icon: "error",
+          showCloseButton: false,
+          showCancelButton: false,
+          confirmButtonText: this.translate.instant('Ok'),
+        });
+      }, () => {
+        this.flowDispatching = false;
+      });
+      return;
+    }
+
     const body = this.flowRecipientMode === 'batch'
       ? {
         recipients: this.parseFlowBatchRecipients().recipients

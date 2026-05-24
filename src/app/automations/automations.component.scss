@@ -423,6 +423,94 @@ p {
     font-size: 12px;
 }
 
+.campaign-progress-summary {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    color: #506077;
+    font-size: 12px;
+    margin-top: 8px;
+}
+
+.campaign-progress-bar {
+    height: 6px;
+    border-radius: 999px;
+    background: #e5edf6;
+    overflow: hidden;
+    margin-top: 6px;
+    min-width: 190px;
+}
+
+.campaign-progress-bar span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--blue-20);
+}
+
+.campaign-detail-card {
+    border: 1px solid #d6e2f2;
+    border-radius: 8px;
+    background: #f8fbff;
+    padding: 14px;
+    margin-bottom: 18px;
+}
+
+.campaign-detail-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.campaign-detail-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #26384f;
+}
+
+.campaign-detail-meta {
+    color: #6f7e92;
+    font-size: 12px;
+    margin-top: 2px;
+}
+
+.campaign-detail-status {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #26384f;
+    font-size: 13px;
+}
+
+.campaign-detail-status .circle {
+    font-size: 12px;
+}
+
+.campaign-detail-counters {
+    display: flex;
+    gap: 18px;
+    color: #506077;
+    font-size: 12px;
+    margin-top: 10px;
+}
+
+.campaign-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.campaign-danger-action {
+    border-color: #bd1515;
+    color: #bd1515;
+}
+
+.campaign-danger-action:hover {
+    background: #bd1515;
+    color: #fff;
+}
+
 // .cl-card-item-stats.automations-stats {
 //     min-width: 175px !important;
 // }
