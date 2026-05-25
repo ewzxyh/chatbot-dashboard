@@ -15,7 +15,7 @@ export class CdsSplashScreenComponent implements OnInit {
   @Input() section:  "cds-sb-intents" | "cds-sb-fulfillment" | "cds-sb-training" | "cds-sb-rules" | "cds-sb-settings"
   @Output() onClickBtn = new EventEmitter();
 
-  canShowVideo: boolean = true
+  canShowVideo: boolean = false
   url: SafeResourceUrl = null
   constructor(
       public usersLocalDbService: LocalDbService,
@@ -26,6 +26,12 @@ export class CdsSplashScreenComponent implements OnInit {
   }
 
   ngOnChanges(){
+    if (!this.videoUrl || /youtube\.com|youtu\.be|vimeo\.com/i.test(this.videoUrl)) {
+      this.url = null
+      this.canShowVideo = false
+      return
+    }
+
     let canShowVideo = this.usersLocalDbService.getFromStorage('HAS_WATCHED_'+ this.section+ '_VIDEO')
     if(!canShowVideo || canShowVideo === 'false'){
       this.url = this.sanitizer.bypassSecurityTrustResourceUrl(this.videoUrl+'?rel=0&autoplay=0&controls=1&showinfo=0')
