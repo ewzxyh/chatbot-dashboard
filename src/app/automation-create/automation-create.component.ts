@@ -85,9 +85,15 @@ export class AutomationCreateComponent implements OnInit {
   flowAudiencePreviewLoading = false;
   flowBatchLimit = 50;
   flowCampaignLimit = 1000;
+  flowCampaignConsentConfirmed = false;
+  flowCampaignScheduleEnabled = false;
+  flowCampaignScheduledAt: string;
+  flowCampaignIntervalMs: number;
   flowDispatching = false;
   
   private backSub?: Subscription;
+  private checkedProjectRoleId: string;
+  private waTemplatesLoadedForProjectId: string;
   
   constructor(
     private auth: AuthService,
@@ -109,10 +115,8 @@ export class AutomationCreateComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.roleService.checkRoleForCurrentProject('new-broadcast')    
     this.getBrowserVersion();
     this.listenSidebarIsOpened();
-    this.getWATemplates();
     this.getCurrentProject();
     this.listenToGoBack()
     // this.templates_list = this.fakeTmplt
@@ -140,6 +144,14 @@ export class AutomationCreateComponent implements OnInit {
           if (project) {
             this.projectId = project._id;
             this.logger.log('[AUTOMATION-CREATE] - projectId ', this.projectId)
+            if (this.checkedProjectRoleId !== this.projectId) {
+              this.checkedProjectRoleId = this.projectId;
+              this.roleService.checkRoleForCurrentProject('new-broadcast');
+            }
+            if (this.waTemplatesLoadedForProjectId !== this.projectId) {
+              this.waTemplatesLoadedForProjectId = this.projectId;
+              this.getWATemplates();
+            }
             this.getBoundTemplateBots();
           }
         });
@@ -199,8 +211,9 @@ export class AutomationCreateComponent implements OnInit {
     }, (error) => {
 
       this.logger.error("[AUTOMATION-CREATE] - GET WA TEMPLATES - ERROR: ", error)
-       this.logger.log(error.error.message)
-      if (error.error.message.includes('WhatsApp not installed for the project_id')  ) {
+      const errorMessage = error && error.error && error.error.message ? error.error.message : '';
+      this.logger.log(errorMessage)
+      if (errorMessage.includes('WhatsApp not installed for the project_id')) {
         this.logger.log('[AUTOMATION-CREATE] - WA not installed');
         this.presentDialogWANotInstalledFoTheCurrentProject()
       }
@@ -266,6 +279,58 @@ export class AutomationCreateComponent implements OnInit {
 
   setFlowBatchDispatchMode(mode: 'campaign' | 'direct') {
     this.flowBatchDispatchMode = mode;
+  }
+
+  isFlowCampaignScheduleValid() {
+    if (!this.flowCampaignScheduleEnabled) {
+      return true;
+    }
+    if (!this.flowCampaignScheduledAt) {
+      return false;
+    }
+    const date = new Date(this.flowCampaignScheduledAt);
+    return !isNaN(date.getTime()) && date.getTime() > Date.now();
+  }
+
+  getSelectedBindingQualityRating() {
+    const binding = this.getSelectedBinding() || {};
+    const quality = binding.qualityRating || binding.quality_rating || binding.qualityScore || binding.quality_score;
+    if (!quality) {
+      return null;
+    }
+    if (typeof quality === 'object') {
+      return quality.score || quality.rating || quality.status || null;
+    }
+    return quality;
+  }
+
+  isSelectedBindingQualityBlocked() {
+    const quality = String(this.getSelectedBindingQualityRating() || '').trim().toLowerCase();
+    return ['red', 'low', 'poor', 'restricted', 'disabled'].includes(quality);
+  }
+
+  buildFlowCampaignPayload() {
+    const body: any = this.flowRecipientMode === 'contacts'
+      ? { audience: this.buildFlowAudience() }
+      : { recipients: this.getFlowRecipientsForCurrentMode() };
+
+    body.consentConfirmed = this.flowCampaignConsentConfirmed;
+
+    if (this.flowCampaignScheduleEnabled && this.flowCampaignScheduledAt) {
+      const scheduledAt = new Date(this.flowCampaignScheduledAt);
+      if (!isNaN(scheduledAt.getTime())) {
+        body.scheduledAt = scheduledAt.toISOString();
+        body.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Sao_Paulo';
+      }
+    }
+
+    const rawIntervalMs: any = this.flowCampaignIntervalMs;
+    const intervalMs = Number(rawIntervalMs);
+    if (rawIntervalMs !== null && rawIntervalMs !== undefined && rawIntervalMs !== '' && !isNaN(intervalMs) && intervalMs >= 0) {
+      body.intervalMs = intervalMs;
+    }
+
+    return body;
   }
 
   getSelectedBinding() {
@@ -582,13 +647,19 @@ export class AutomationCreateComponent implements OnInit {
     if (this.flowRecipientMode === 'contacts') {
       return this.getFlowAudienceRecipientCount() > 0 &&
         this.getFlowAudienceRecipientCount() <= this.flowCampaignLimit &&
-        !this.flowAudiencePreviewLoading;
+        !this.flowAudiencePreviewLoading &&
+        this.flowCampaignConsentConfirmed &&
+        this.isFlowCampaignScheduleValid() &&
+        !this.isSelectedBindingQualityBlocked();
     }
 
     if (this.flowRecipientMode === 'batch' || this.flowRecipientMode === 'csv') {
+      const campaignReady = !this.isFlowCampaignMode() ||
+        (this.flowCampaignConsentConfirmed && this.isFlowCampaignScheduleValid() && !this.isSelectedBindingQualityBlocked());
       return this.getFlowCurrentRecipientCount() > 0 &&
         this.getFlowCurrentRecipientCount() <= this.getFlowCurrentLimit() &&
-        this.getFlowCurrentInvalidCount() === 0;
+        this.getFlowCurrentInvalidCount() === 0 &&
+        campaignReady;
     }
 
     const phone = this.normalizeFlowPhoneNumber(this.flowRecipientPhone);
@@ -968,9 +1039,7 @@ export class AutomationCreateComponent implements OnInit {
 
     this.flowDispatching = true;
     if (this.isFlowCampaignMode()) {
-      const body = this.flowRecipientMode === 'contacts'
-        ? { audience: this.buildFlowAudience() }
-        : { recipients: this.getFlowRecipientsForCurrentMode() };
+      const body = this.buildFlowCampaignPayload();
 
       this.automationsService.createBoundWabaCampaign(this.selectedBoundBotId, body).subscribe((res: any) => {
         this.logger.log('[AUTOMATION-CREATE] CREATE BOUND WABA CAMPAIGN res', res);

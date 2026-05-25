@@ -272,6 +272,44 @@
                                             </div>
                                         </ng-container>
 
+                                        <div class="flow-campaign-policy" *ngIf="isFlowCampaignMode()">
+                                            <div class="flow-campaign-policy-title">{{ 'CampaignSafetyControls' | translate }}</div>
+
+                                            <label class="flow-campaign-policy-check">
+                                                <input type="checkbox" [(ngModel)]="flowCampaignConsentConfirmed">
+                                                <span>{{ 'CampaignConsentConfirmation' | translate }}</span>
+                                            </label>
+
+                                            <label class="flow-campaign-policy-check">
+                                                <input type="checkbox" [(ngModel)]="flowCampaignScheduleEnabled">
+                                                <span>{{ 'ScheduleCampaign' | translate }}</span>
+                                            </label>
+
+                                            <div class="flow-audience-grid" *ngIf="flowCampaignScheduleEnabled">
+                                                <div>
+                                                    <label>{{ 'CampaignScheduledAt' | translate }}</label>
+                                                    <input type="datetime-local" class="bound-template-input"
+                                                        [(ngModel)]="flowCampaignScheduledAt">
+                                                    <div class="flow-batch-summary-error" *ngIf="!isFlowCampaignScheduleValid()">
+                                                        {{ 'CampaignScheduledAtInvalid' | translate }}
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <label>{{ 'CampaignIntervalMs' | translate }}</label>
+                                                    <input type="number" min="0" step="1000" class="bound-template-input"
+                                                        [(ngModel)]="flowCampaignIntervalMs"
+                                                        placeholder="1000">
+                                                </div>
+                                            </div>
+
+                                            <div class="flow-campaign-policy-meta">
+                                                {{ 'CampaignQualityPolicy' | translate: { quality: (getSelectedBindingQualityRating() || ('Unknown' | translate)) } }}
+                                            </div>
+                                            <div class="flow-batch-summary-error" *ngIf="isSelectedBindingQualityBlocked()">
+                                                {{ 'CampaignQualityBlocked' | translate }}
+                                            </div>
+                                        </div>
+
                                         <button class="btn send-wa-btn" (click)="presentDialogBeforeToSendBoundTemplate()" [disabled]="!canSendBoundTemplate()">
                                             {{ flowDispatching ? ('Sending' | translate) : ((isFlowCampaignMode() ? 'CreateCampaign' : 'SendTemplate') | translate) }}
                                         </button>

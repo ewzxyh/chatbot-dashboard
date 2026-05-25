@@ -1393,6 +1393,7 @@ export class AutomationsComponent implements OnInit {
     const status = transaction && transaction.status;
     const labels = {
       pending: 'Pending',
+      scheduled: 'Scheduled',
       queued: 'Queued',
       running: 'Running',
       paused: 'Paused',
@@ -1408,7 +1409,7 @@ export class AutomationsComponent implements OnInit {
   getStatusClass(transaction: any) {
     const status = transaction && transaction.status;
     if (status === 'completed') return 'completed-circle';
-    if (status === 'queued' || status === 'running' || status === 'pending' || status === 'paused') return 'pending-circle';
+    if (status === 'queued' || status === 'running' || status === 'pending' || status === 'paused' || status === 'scheduled') return 'pending-circle';
     return 'aborted-circle';
   }
 
@@ -1430,7 +1431,7 @@ export class AutomationsComponent implements OnInit {
 
   canPauseCampaign() {
     const status = this.selected_transaction && this.selected_transaction.status;
-    return this.isCampaign() && ['queued', 'running', 'pending'].includes(status);
+    return this.isCampaign() && ['queued', 'running', 'pending', 'scheduled'].includes(status);
   }
 
   canResumeCampaign() {
@@ -1439,7 +1440,7 @@ export class AutomationsComponent implements OnInit {
 
   canCancelCampaign() {
     const status = this.selected_transaction && this.selected_transaction.status;
-    return this.isCampaign() && ['queued', 'running', 'pending', 'paused'].includes(status);
+    return this.isCampaign() && ['queued', 'running', 'pending', 'paused', 'scheduled'].includes(status);
   }
 
   updateCampaign(action: 'pause' | 'resume' | 'cancel') {

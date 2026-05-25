@@ -179,6 +179,40 @@
     padding: 10px;
 }
 
+.flow-campaign-policy {
+    display: grid;
+    gap: 10px;
+    border: 1px solid #d9e1ee;
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 4px;
+}
+
+.flow-campaign-policy-title {
+    color: #1f2d3d;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.flow-campaign-policy-check {
+    display: grid;
+    grid-template-columns: 18px minmax(0, 1fr);
+    gap: 8px;
+    align-items: start;
+    line-height: 18px;
+}
+
+.flow-campaign-policy-check input {
+    margin: 2px 0 0 0;
+}
+
+.flow-campaign-policy-meta {
+    color: #6f7e92;
+    font-size: 12px;
+    line-height: 18px;
+}
+
 .flow-preview-container {
     padding: 16px;
 }
