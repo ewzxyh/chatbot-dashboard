@@ -604,8 +604,12 @@ export class TemplatesComponent extends PricingBaseComponent implements OnInit {
   getTemplates() {
     this.showSpinner = true;
     this.route = this.router.url
+    const requestedChannel = this.selectedTemplateChannel;
     this.logger.log('[BOTS-TEMPLATES] - GET ALL TEMPLATES route', this.route);
-    this.faqKbService.getTemplates().subscribe((res: any) => {
+    this.faqKbService.getTemplates(requestedChannel).subscribe((res: any) => {
+      if (requestedChannel !== this.selectedTemplateChannel) {
+        return;
+      }
 
       if (res) {
         this.certifiedTemplatesSource = res;
@@ -623,9 +627,15 @@ export class TemplatesComponent extends PricingBaseComponent implements OnInit {
       }
 
     }, (error) => {
+      if (requestedChannel !== this.selectedTemplateChannel) {
+        return;
+      }
       this.logger.error('[BOTS-TEMPLATES] GET TEMPLATES ERROR ', error);
       this.showSpinner = false;
     }, () => {
+      if (requestedChannel !== this.selectedTemplateChannel) {
+        return;
+      }
       this.logger.log('[BOTS-TEMPLATES] GET TEMPLATES COMPLETE');
       this.showSpinner = false;
       // this.generateTagsBackground(this.templates)
@@ -645,7 +655,7 @@ export class TemplatesComponent extends PricingBaseComponent implements OnInit {
 
   setTemplateChannel(channel: string) {
     this.selectedTemplateChannel = channel || 'all';
-    this.applyTemplateChannelFilter();
+    this.getTemplates();
   }
 
   applyTemplateChannelFilter() {

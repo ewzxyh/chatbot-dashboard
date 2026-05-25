@@ -74,11 +74,23 @@ export class PanelIntentComponent implements OnInit, OnChanges {
     // console.log('patchAllActionsId:: ', this.actions);
   }
 
-  canDisplayAction(action: any): boolean {
+  isActionCompatible(action: any): boolean {
     if (!action) {
       return true;
     }
 
+    return !this.isWabaOnlyAction(action) || this.isWabaActionVisible();
+  }
+
+  getIncompatibleActionLabel(action: any): string {
+    if (!this.isWabaOnlyAction(action)) {
+      return '';
+    }
+
+    return 'Esta acao exige WABA / Meta. Remova a acao ou altere o canal do fluxo para WABA.';
+  }
+
+  private isWabaOnlyAction(action: any): boolean {
     const wabaOnlyActions = [
       TYPE_ACTION.WHATSAPP_STATIC,
       TYPE_ACTION.WHATSAPP_ATTRIBUTE,
@@ -86,7 +98,7 @@ export class PanelIntentComponent implements OnInit, OnChanges {
     ];
 
     const type = action._tdActionType || action.type;
-    return wabaOnlyActions.indexOf(type) === -1 || this.isWabaActionVisible();
+    return wabaOnlyActions.indexOf(type) !== -1;
   }
 
   private isWabaActionVisible(): boolean {

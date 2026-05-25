@@ -17,9 +17,12 @@
                 style="margin-right: 6px;">
                 <span>Testar</span>
             </button>
-            <button type="button" class="btn btn-new btn-size-l btn--primary" (click)="importTemplate()" [disabled]="isAutoImporting">
+            <button type="button" class="btn btn-new btn-size-l btn--primary" (click)="importTemplate()" [disabled]="isAutoImporting || selectedChannelUnsupported || isTemplateLoading">
                 <span>{{ isAutoImporting ? 'Importando...' : 'Importar modelo' }}</span>
             </button>
+        </div>
+        <div *ngIf="selectedChannelUnsupported" class="template-channel-warning">
+            Este modelo nao oferece uma versao compativel com {{ getChannelLabel(selectedChannel) }}. Escolha outro canal antes de importar.
         </div>
         <div *ngIf="autoInstallRequested && !autoImportStarted" class="auto-import-notice">
             A importacao deste modelo sera iniciada automaticamente.

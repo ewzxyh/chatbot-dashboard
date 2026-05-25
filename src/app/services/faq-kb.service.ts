@@ -178,8 +178,10 @@ export class FaqKbService {
     // / (dovrebbe funzionare anche con POST ../PROJECT_ID/bots/fork/ID_FAQ_FB/)
     // const url = this.SERVER_BASE_PATH + "635b97cc7d7275001a2ab3e0/bots/fork/" + botid;
     let url = this.SERVER_BASE_PATH + projectid + "/faq_kb/fork/" + botid + "?public=" + ispublic + "&projectid=" + projectid;
-    const selectedChannel = channel && channel !== 'all' ? channel : 'casezap';
-    url += "&channel=" + encodeURIComponent(selectedChannel);
+    const selectedChannel = channel && channel !== 'all' ? channel : null;
+    if (selectedChannel) {
+      url += "&channel=" + encodeURIComponent(selectedChannel);
+    }
     // console.log('[BOT-CREATE][FAQ-KB.SERV] - FORK - URL ', url);
 
     return this._httpClient

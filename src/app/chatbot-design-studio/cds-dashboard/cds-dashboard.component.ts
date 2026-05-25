@@ -274,8 +274,14 @@ export class CdsDashboardComponent implements OnInit {
 
   private updateSelectedChannelFromBot(chatbot: any) {
     const attributes = chatbot && chatbot.attributes || {};
+    const requestedChannel = this.getRequestedTemplateChannel();
     const explicitChannel = this.normalizeTemplateChannel(attributes.targetChannel || attributes.selectedChannel);
     const availableChannels = this.normalizeTemplateChannels(attributes.availableChannels || attributes.channels);
+
+    if (requestedChannel && (!availableChannels.length || availableChannels.indexOf(requestedChannel) !== -1)) {
+      this.selectedChannel = requestedChannel;
+      return;
+    }
 
     if (explicitChannel) {
       this.selectedChannel = explicitChannel;
@@ -315,6 +321,12 @@ export class CdsDashboardComponent implements OnInit {
 
   private normalizeTemplateChannel(channel: any): string {
     return String(channel || '').trim().toLowerCase();
+  }
+
+  private getRequestedTemplateChannel(): string {
+    const channel = this.normalizeTemplateChannel(this.route.snapshot.queryParamMap.get('channel'));
+    const allowedChannels = ['casezap', 'whatsapp', 'waba', 'telegram', 'messenger', 'sms', 'email', 'widget'];
+    return allowedChannels.indexOf(channel) !== -1 ? channel : null;
   }
 
   public getSelectedChannelLabel(): string {

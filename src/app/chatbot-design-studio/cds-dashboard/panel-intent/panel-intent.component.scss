@@ -181,6 +181,46 @@
   font-weight: 400;
 }
 
+.action--box-incompatible {
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: flex-start;
+  min-height: 86px;
+  height: auto;
+  max-width: 220px;
+  position: relative;
+  border: 1px solid #f0b46b;
+  background: #fff8ec;
+  color: #65420c;
+  border-radius: 12px;
+  padding: 10px 34px 10px 34px;
+
+  .action--handle {
+    position: absolute;
+    left: 6px;
+    top: 10px;
+  }
+
+  .action-wpr {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .delete-action {
+    position: absolute;
+    right: 8px;
+    top: 8px;
+  }
+}
+
+.action-incompatible-note {
+  margin-top: 6px;
+  color: #7c5b20;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
 .action--box-form {
   padding: 0px 12px;
   color: $action-item-color;

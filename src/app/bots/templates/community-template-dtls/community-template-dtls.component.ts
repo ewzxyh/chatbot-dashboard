@@ -86,7 +86,9 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
   public isPublishingWabaTemplate = false;
   public isSyncingWabaStatus = false;
   public isBindingWabaTemplate = false;
+  public isTemplateLoading = false;
   public selectedChannel: string = 'casezap';
+  public selectedChannelUnsupported = false;
   public channelOptions = [
     { id: 'casezap', label: 'CaseZap' },
     { id: 'whatsapp', label: 'WhatsApp' },
@@ -137,6 +139,7 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
       const channel = this.normalizeChannel(params.get('channel'));
       if (channel && channel !== this.selectedChannel) {
         this.selectedChannel = channel;
+        this.selectedChannelUnsupported = false;
         if (this.templateId) {
           this.getCommunityTemplateDetails(this.templateId);
         }
@@ -167,7 +170,7 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
       return;
     }
 
-    if (!this.templateId || !this.projectId || !this.template || !this.project || !this.project._id || !this.chatBotsLoaded || !this.roleLoaded || !this.planLoaded) {
+    if (!this.templateId || !this.projectId || !this.template || !this.project || !this.project._id || !this.chatBotsLoaded || !this.roleLoaded || !this.planLoaded || this.selectedChannelUnsupported || this.isTemplateLoading) {
       return;
     }
 
@@ -256,14 +259,46 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
   }
 
   getCommunityTemplateDetails(templateId) {
+    const requestedChannel = this.selectedChannel;
+    this.isTemplateLoading = true;
     this.faqKbService.getCommunityTemplateDetail(templateId, this.selectedChannel)
       .subscribe((_template: any) => {
+        if (requestedChannel !== this.selectedChannel) {
+          return;
+        }
         this.logger.log('[COMMUNITY-TEMPLATE-DTLS] GET COMMUNITY TEMPLATE - template ', _template);
         if (_template) {
           this.template = _template;
           this.botname = _template.name;
           this.buildTemplatePreview(_template);
           this.tryAutoImport();
+        }
+      }, (error) => {
+        if (requestedChannel !== this.selectedChannel) {
+          return;
+        }
+        this.logger.warn('[COMMUNITY-TEMPLATE-DTLS] GET COMMUNITY TEMPLATE FOR CHANNEL ERROR ', error);
+        this.selectedChannelUnsupported = true;
+        this.faqKbService.getCommunityTemplateDetail(templateId)
+          .subscribe((templateWithoutChannel: any) => {
+            if (requestedChannel !== this.selectedChannel) {
+              return;
+            }
+            this.template = templateWithoutChannel;
+            this.botname = templateWithoutChannel.name;
+            this.buildTemplatePreview(templateWithoutChannel);
+          }, () => {
+            if (requestedChannel === this.selectedChannel) {
+              this.isTemplateLoading = false;
+            }
+          }, () => {
+            if (requestedChannel === this.selectedChannel) {
+              this.isTemplateLoading = false;
+            }
+          });
+      }, () => {
+        if (requestedChannel === this.selectedChannel) {
+          this.isTemplateLoading = false;
         }
       })
   }
@@ -276,7 +311,9 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
 
     this.previewChannels = this.getTemplateChannels(template);
     if (!this.templateSupportsChannel(template, this.selectedChannel)) {
-      this.selectedChannel = this.previewChannels[0] || 'casezap';
+      this.selectedChannelUnsupported = true;
+    } else {
+      this.selectedChannelUnsupported = false;
     }
 
     this.previewMessages = sortedIntents
@@ -444,6 +481,7 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
     }
 
     this.selectedChannel = normalizedChannel;
+    this.selectedChannelUnsupported = false;
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { channel: normalizedChannel },
@@ -673,6 +711,11 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
   }
 
   importTemplate() {
+    if (this.selectedChannelUnsupported || this.isTemplateLoading) {
+      this.isAutoImporting = false;
+      return;
+    }
+
     // this.faqKbService.installTemplate(this.templateId, this.projectId, true, this.projectId).subscribe((res: any) => {
     //   this.logger.log('[COMMUNITY-TEMPLATE-DTLS] - FORK TEMPLATE RES', res);
     //   this.botid = res.bot_id
@@ -705,6 +748,11 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
   }
 
   forkTemplate() {
+    if (this.selectedChannelUnsupported || this.isTemplateLoading) {
+      this.isAutoImporting = false;
+      return;
+    }
+
       this.faqKbService.installTemplate(this.templateId, this.projectId, true, this.projectId, this.selectedChannel).subscribe((res: any) => {
       this.logger.log('[COMMUNITY-TEMPLATE-DTLS] - FORK TEMPLATE RES', res);
       this.botid = res.bot_id

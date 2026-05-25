@@ -44,6 +44,7 @@ export class ProjectsComponent implements OnInit, AfterContentInit, OnDestroy {
   communityTemplateId: string;
   communityTemplateAutoInstall = false;
   communityTemplateSource: string;
+  communityTemplateChannel: string;
   private communityTemplateRedirectHandled = false;
 
   id_project: string;
@@ -345,6 +346,7 @@ export class ProjectsComponent implements OnInit, AfterContentInit, OnDestroy {
       this.communityTemplateId = this.normalizeCommunityTemplateId(params.template || params.templateid || params.botid);
       this.communityTemplateAutoInstall = this.isEnabledQueryParam(params.install) || this.isEnabledQueryParam(params.installTemplate) || this.isEnabledQueryParam(params.autoinstall);
       this.communityTemplateSource = params.source || '';
+      this.communityTemplateChannel = this.normalizeCommunityTemplateChannel(params.channel);
       this.communityTemplateRedirectHandled = false;
       this.maybeOpenSingleProjectCommunityTemplate();
 
@@ -382,6 +384,12 @@ export class ProjectsComponent implements OnInit, AfterContentInit, OnDestroy {
     return ['1', 'true', 'yes', 'y'].includes(String(value || '').toLowerCase());
   }
 
+  normalizeCommunityTemplateChannel(value: any): string {
+    const channel = String(value || '').trim().toLowerCase();
+    const allowedChannels = ['casezap', 'whatsapp', 'waba', 'telegram', 'messenger', 'sms', 'voice', 'email', 'widget'];
+    return allowedChannels.indexOf(channel) !== -1 ? channel : null;
+  }
+
   maybeOpenSingleProjectCommunityTemplate() {
     if (!this.communityTemplateId || this.communityTemplateRedirectHandled || !this.projects) {
       return;
@@ -404,6 +412,10 @@ export class ProjectsComponent implements OnInit, AfterContentInit, OnDestroy {
 
     if (this.communityTemplateAutoInstall) {
       queryParams.install = '1';
+    }
+
+    if (this.communityTemplateChannel) {
+      queryParams.channel = this.communityTemplateChannel;
     }
 
     this.router.navigate(['/project', projectId, 'template-details', this.communityTemplateId], { queryParams });

@@ -92,7 +92,7 @@
     <div class="action-list-wpr" *ngIf="actions && actions?.length > 0">
         <div cdkDropList class="action--list" (cdkDropListDropped)="onDropAction($event)">
             
-                    <div class="action--element"  *ngFor="let action of actions; let i = index;let lastItem = last; let firstItem = first" [style.display]="canDisplayAction(action) ? '' : 'none'">
+                    <div class="action--element"  *ngFor="let action of actions; let i = index;let lastItem = last; let firstItem = first">
 
 
                         <div id="action_{{i}}" 
@@ -103,7 +103,8 @@
                             'action--box-first-with-title': action._tdActionTitle && firstItem,
                             'action--box-no-title': !action._tdActionTitle && !firstItem, 
                             'action--box-with-title': action._tdActionTitle && !firstItem,
-                            'cds-action-active': idSelected === 'action_'+i }"
+                            'cds-action-active': idSelected === 'action_'+i,
+                            'action--box-incompatible': !isActionCompatible(action) }"
                             cdkDrag
                             cdkDragLockAxis="y" 
                             (click)="onActionSelected(action, i, 'action_'+i)">
@@ -484,6 +485,10 @@
                                         keyboard_backspace
                                     </span>
                                 </div>
+                            </div>
+
+                            <div class="action-incompatible-note" *ngIf="!isActionCompatible(action)">
+                                {{ getIncompatibleActionLabel(action) }}
                             </div>
 
                             <div class="control-button delete-action" (click)="onDeleteAction(i)">
