@@ -89,6 +89,9 @@ export class AutomationCreateComponent implements OnInit {
   flowCampaignScheduleEnabled = false;
   flowCampaignScheduledAt: string;
   flowCampaignIntervalMs: number;
+  flowCampaignWindowEnabled = false;
+  flowCampaignWindowStart = '08:00';
+  flowCampaignWindowEnd = '18:00';
   flowDispatching = false;
   
   private backSub?: Subscription;
@@ -292,6 +295,24 @@ export class AutomationCreateComponent implements OnInit {
     return !isNaN(date.getTime()) && date.getTime() > Date.now();
   }
 
+  isFlowCampaignWindowValid() {
+    if (!this.flowCampaignWindowEnabled) {
+      return true;
+    }
+    const timePattern = /^([01]\d|2[0-3]):[0-5]\d$/;
+    return timePattern.test(this.flowCampaignWindowStart || '') &&
+      timePattern.test(this.flowCampaignWindowEnd || '') &&
+      this.flowCampaignWindowStart !== this.flowCampaignWindowEnd;
+  }
+
+  getCampaignTimezone() {
+    try {
+      return Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Sao_Paulo';
+    } catch (err) {
+      return 'America/Sao_Paulo';
+    }
+  }
+
   getSelectedBindingQualityRating() {
     const binding = this.getSelectedBinding() || {};
     const quality = binding.qualityRating || binding.quality_rating || binding.qualityScore || binding.quality_score;
@@ -320,8 +341,18 @@ export class AutomationCreateComponent implements OnInit {
       const scheduledAt = new Date(this.flowCampaignScheduledAt);
       if (!isNaN(scheduledAt.getTime())) {
         body.scheduledAt = scheduledAt.toISOString();
-        body.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Sao_Paulo';
+        body.timezone = this.getCampaignTimezone();
       }
+    }
+
+    if (this.flowCampaignWindowEnabled && this.isFlowCampaignWindowValid()) {
+      body.sendingWindow = {
+        enabled: true,
+        start: this.flowCampaignWindowStart,
+        end: this.flowCampaignWindowEnd,
+        timezone: this.getCampaignTimezone()
+      };
+      body.timezone = body.timezone || body.sendingWindow.timezone;
     }
 
     const rawIntervalMs: any = this.flowCampaignIntervalMs;
@@ -650,12 +681,13 @@ export class AutomationCreateComponent implements OnInit {
         !this.flowAudiencePreviewLoading &&
         this.flowCampaignConsentConfirmed &&
         this.isFlowCampaignScheduleValid() &&
+        this.isFlowCampaignWindowValid() &&
         !this.isSelectedBindingQualityBlocked();
     }
 
     if (this.flowRecipientMode === 'batch' || this.flowRecipientMode === 'csv') {
       const campaignReady = !this.isFlowCampaignMode() ||
-        (this.flowCampaignConsentConfirmed && this.isFlowCampaignScheduleValid() && !this.isSelectedBindingQualityBlocked());
+        (this.flowCampaignConsentConfirmed && this.isFlowCampaignScheduleValid() && this.isFlowCampaignWindowValid() && !this.isSelectedBindingQualityBlocked());
       return this.getFlowCurrentRecipientCount() > 0 &&
         this.getFlowCurrentRecipientCount() <= this.getFlowCurrentLimit() &&
         this.getFlowCurrentInvalidCount() === 0 &&
