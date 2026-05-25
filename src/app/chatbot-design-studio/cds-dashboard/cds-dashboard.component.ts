@@ -66,6 +66,7 @@ export class CdsDashboardComponent implements OnInit {
   startUpdatedIntent: Subject<boolean> = new Subject<boolean>();
   newIntentFromSplashScreen: Subject<boolean> = new Subject<boolean>();
   selectedChatbot: Chatbot
+  selectedChannel: string = 'all';
   activeSidebarSection: string;
   spinnerCreateIntent: boolean = false;
   IS_OPEN: boolean = false;
@@ -246,6 +247,7 @@ export class CdsDashboardComponent implements OnInit {
       this.logger.log('[CDS DSHBRD] - GET BOT BY ID RES - chatbot', chatbot);
       if (chatbot) {
         this.selectedChatbot = chatbot;
+        this.updateSelectedChannelFromBot(chatbot);
         this.translateparamBotName = { bot_name: this.selectedChatbot.name }
         if (this.selectedChatbot && this.selectedChatbot.attributes && this.selectedChatbot.attributes.variables) {
           variableList.userDefined = this.convertJsonToArray(this.selectedChatbot.attributes.variables);
@@ -268,6 +270,67 @@ export class CdsDashboardComponent implements OnInit {
     this.logger.log('convertJsonToArray  jsonData ', jsonData)
     const arrayOfObjs = Object.entries(jsonData).map(([key, value]) => ({ 'name': key, 'value': value }))
     return arrayOfObjs;
+  }
+
+  private updateSelectedChannelFromBot(chatbot: any) {
+    const attributes = chatbot && chatbot.attributes || {};
+    const explicitChannel = this.normalizeTemplateChannel(attributes.targetChannel || attributes.selectedChannel);
+    const availableChannels = this.normalizeTemplateChannels(attributes.availableChannels || attributes.channels);
+
+    if (explicitChannel) {
+      this.selectedChannel = explicitChannel;
+      return;
+    }
+
+    if (availableChannels.length === 1) {
+      this.selectedChannel = availableChannels[0];
+      return;
+    }
+
+    if (availableChannels.indexOf('casezap') !== -1) {
+      this.selectedChannel = 'casezap';
+      return;
+    }
+
+    this.selectedChannel = availableChannels[0] || 'all';
+  }
+
+  private normalizeTemplateChannels(channels: any): string[] {
+    if (!Array.isArray(channels)) {
+      return [];
+    }
+
+    const seen: { [key: string]: boolean } = {};
+    return channels
+      .map((channel) => this.normalizeTemplateChannel(channel))
+      .filter((channel) => {
+        if (!channel || seen[channel]) {
+          return false;
+        }
+
+        seen[channel] = true;
+        return true;
+      });
+  }
+
+  private normalizeTemplateChannel(channel: any): string {
+    return String(channel || '').trim().toLowerCase();
+  }
+
+  public getSelectedChannelLabel(): string {
+    const labels: { [key: string]: string } = {
+      casezap: 'CaseZap',
+      whatsapp: 'WhatsApp aberto',
+      waba: 'WABA / Meta',
+      telegram: 'Telegram',
+      messenger: 'Messenger',
+      sms: 'SMS',
+      email: 'E-mail',
+      widget: 'Widget',
+      all: 'Todos os canais'
+    };
+
+    return labels[this.selectedChannel] || this.selectedChannel;
   }
 
 

@@ -26,6 +26,9 @@
             </div>
             <div class="template-detail-name-wpr">
                 <h2 weight="bold" class="template-detail-name">{{template?.name}}</h2>
+                <div class="template-detail-channel">
+                    Canal selecionado: {{ selectedChannel === 'waba' ? 'WABA' : selectedChannel === 'casezap' ? 'CaseZap' : selectedChannel === 'whatsapp' ? 'WhatsApp' : selectedChannel }}
+                </div>
             </div>
         </div>
         <div class="template-detail-btns-wpr">

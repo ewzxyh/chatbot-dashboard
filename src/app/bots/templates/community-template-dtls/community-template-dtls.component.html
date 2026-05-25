@@ -109,6 +109,23 @@
                 </div>
             </div>
 
+            <div class="template-channel-selector" *ngIf="previewChannels?.length">
+                <div>
+                    <div class="template-channel-selector-title">Canal de uso deste fluxo</div>
+                    <div class="template-channel-selector-subtitle">
+                        A visualizacao e a importacao mostram somente recursos compativeis com o canal escolhido.
+                    </div>
+                </div>
+                <div class="template-channel-selector-actions">
+                    <button type="button"
+                        *ngFor="let channel of previewChannels"
+                        [class.is-active]="selectedChannel === channel"
+                        (click)="selectChannel(channel)">
+                        {{ getChannelLabel(channel) }}
+                    </button>
+                </div>
+            </div>
+
             <div class="template-flow-preview" *ngIf="previewMessages?.length">
                 <div class="template-flow-preview-header">
                     <div>
@@ -169,7 +186,7 @@
                     <div>
                         <div class="template-publication-title">Publicação em canais</div>
                         <div class="template-publication-subtitle">
-                            Use esta checagem para decidir se o fluxo pode ser publicado direto ou se precisa de template WABA aprovado pela Meta.
+                            {{ isSelectedWabaChannel() ? 'Use esta checagem para preparar o template Meta aprovado antes de iniciar conversas WABA.' : 'Este resumo mostra somente o que se aplica ao canal selecionado.' }}
                         </div>
                     </div>
                     <button type="button" class="template-publication-sync-btn"

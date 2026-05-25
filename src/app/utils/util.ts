@@ -651,9 +651,11 @@ export function goToCDSVersion(router: any, chatbot: Chatbot, project_id, redire
 
     let chatBotDate = new Date(chatbot.createdAt)
     let dateLimit = new Date('2023-10-02T00:00:00')
+    let targetChannel = chatbot && chatbot.attributes && (chatbot.attributes['targetChannel'] || chatbot.attributes['selectedChannel'])
+    let channelQuery = targetChannel ? '?channel=' + encodeURIComponent(String(targetChannel)) : ''
     if (chatBotDate > dateLimit) {
         // let urlCDS_v2 = `${redirectBaseUrl}dashboard/#/project/${project_id}/cds/${chatbot._id}/intent/0`
-        let urlCDS_v2 = `${redirectBaseUrl}#/project/${project_id}/chatbot/${chatbot._id}/blocks` //  /intent/0
+        let urlCDS_v2 = `${redirectBaseUrl}#/project/${project_id}/chatbot/${chatbot._id}/blocks${channelQuery}` //  /intent/0
         window.open(urlCDS_v2, '_self')
     } else {
         router.navigate(['project/' + project_id + '/cds/', chatbot._id, 'intent', '0']);

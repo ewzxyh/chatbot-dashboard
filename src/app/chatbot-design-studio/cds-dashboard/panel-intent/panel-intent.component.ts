@@ -24,6 +24,7 @@ export class PanelIntentComponent implements OnInit, OnChanges {
   @Input() intentSelected: Intent;
   @Input() isIntentElementSelected: boolean = false;
   @Input() isOpenActionDrawer: boolean = false;
+  @Input() selectedChannel: string = 'all';
   // @Input() eventUpadatedIntent: Observable<any>;
   // @Input() eventCreateIntent: Observable<any>;
   // @Input() events: Observable<any>;
@@ -71,6 +72,26 @@ export class PanelIntentComponent implements OnInit, OnChanges {
       });
     }
     // console.log('patchAllActionsId:: ', this.actions);
+  }
+
+  canDisplayAction(action: any): boolean {
+    if (!action) {
+      return true;
+    }
+
+    const wabaOnlyActions = [
+      TYPE_ACTION.WHATSAPP_STATIC,
+      TYPE_ACTION.WHATSAPP_ATTRIBUTE,
+      TYPE_ACTION.WHATSAPP_SEGMENT
+    ];
+
+    const type = action._tdActionType || action.type;
+    return wabaOnlyActions.indexOf(type) === -1 || this.isWabaActionVisible();
+  }
+
+  private isWabaActionVisible(): boolean {
+    const channel = String(this.selectedChannel || '').trim().toLowerCase();
+    return channel === 'waba' || channel === 'all';
   }
 
   // listenToIntentUpdates() {

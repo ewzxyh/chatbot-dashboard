@@ -86,6 +86,13 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
   public isPublishingWabaTemplate = false;
   public isSyncingWabaStatus = false;
   public isBindingWabaTemplate = false;
+  public selectedChannel: string = 'casezap';
+  public channelOptions = [
+    { id: 'casezap', label: 'CaseZap' },
+    { id: 'whatsapp', label: 'WhatsApp' },
+    { id: 'waba', label: 'WABA' },
+    { id: 'telegram', label: 'Telegram' }
+  ];
   private chatBotsLoaded = false;
   private roleLoaded = false;
   private planLoaded = false;
@@ -127,6 +134,13 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
   watchAutoInstallParams() {
     this.route.queryParamMap.subscribe((params) => {
       this.autoInstallRequested = this.isEnabledQueryParam(params.get('install')) || this.isEnabledQueryParam(params.get('autoinstall'));
+      const channel = this.normalizeChannel(params.get('channel'));
+      if (channel && channel !== this.selectedChannel) {
+        this.selectedChannel = channel;
+        if (this.templateId) {
+          this.getCommunityTemplateDetails(this.templateId);
+        }
+      }
       this.tryAutoImport();
     });
   }
@@ -242,7 +256,7 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
   }
 
   getCommunityTemplateDetails(templateId) {
-    this.faqKbService.getCommunityTemplateDetail(templateId)
+    this.faqKbService.getCommunityTemplateDetail(templateId, this.selectedChannel)
       .subscribe((_template: any) => {
         this.logger.log('[COMMUNITY-TEMPLATE-DTLS] GET COMMUNITY TEMPLATE - template ', _template);
         if (_template) {
@@ -260,9 +274,10 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
       return this.getIntentPreviewWeight(current) - this.getIntentPreviewWeight(next);
     });
 
-    this.previewChannels = template &&
-      template.attributes &&
-      Array.isArray(template.attributes.channels) ? template.attributes.channels : [];
+    this.previewChannels = this.getTemplateChannels(template);
+    if (!this.templateSupportsChannel(template, this.selectedChannel)) {
+      this.selectedChannel = this.previewChannels[0] || 'casezap';
+    }
 
     this.previewMessages = sortedIntents
       .filter((intent) => this.shouldShowIntentInConversationPreview(intent))
@@ -286,8 +301,9 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
       template.attributes &&
       template.attributes.publication ? template.attributes.publication : {};
 
-    this.publicationReadiness = Array.isArray(publication.readiness) ? publication.readiness : [];
-    this.wabaTemplateSuggestions = Array.isArray(publication.wabaTemplates) ? publication.wabaTemplates : [];
+    const readiness = Array.isArray(publication.readiness) ? publication.readiness : [];
+    this.publicationReadiness = readiness.filter((item) => this.normalizeChannel(item.channel) === this.selectedChannel);
+    this.wabaTemplateSuggestions = this.isSelectedWabaChannel() && Array.isArray(publication.wabaTemplates) ? publication.wabaTemplates : [];
     this.publicationChecklist = Array.isArray(publication.checklist) ? publication.checklist : [];
     this.wabaStatusSyncResult = undefined;
     this.wabaStatusSyncError = undefined;
@@ -401,6 +417,7 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
   getChannelLabel(channel: string): string {
     const labels = {
       whatsapp: 'WhatsApp',
+      waba: 'WABA',
       casezap: 'CaseZap',
       telegram: 'Telegram',
       messenger: 'Messenger',
@@ -410,6 +427,64 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
     };
 
     return labels[channel] || channel;
+  }
+
+  normalizeChannel(channel: string): string {
+    return String(channel || '').trim().toLowerCase();
+  }
+
+  isSelectedWabaChannel(): boolean {
+    return this.selectedChannel === 'waba';
+  }
+
+  selectChannel(channel: string) {
+    const normalizedChannel = this.normalizeChannel(channel);
+    if (!normalizedChannel || normalizedChannel === this.selectedChannel) {
+      return;
+    }
+
+    this.selectedChannel = normalizedChannel;
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { channel: normalizedChannel },
+      queryParamsHandling: 'merge',
+      replaceUrl: true
+    });
+    if (this.templateId) {
+      this.getCommunityTemplateDetails(this.templateId);
+    }
+  }
+
+  getTemplateChannels(template: any): string[] {
+    const attributes = template && template.attributes ? template.attributes : {};
+    const channels = Array.isArray(attributes.availableChannels)
+      ? attributes.availableChannels
+      : Array.isArray(attributes.channels)
+        ? attributes.channels
+        : [];
+
+    return channels
+      .map((channel) => this.normalizeChannel(channel))
+      .filter((channel, index, all) => channel && all.indexOf(channel) === index);
+  }
+
+  templateSupportsChannel(template: any, channel: string): boolean {
+    const normalizedChannel = this.normalizeChannel(channel);
+    const attributes = template && template.attributes ? template.attributes : {};
+    const compatibility = attributes.channelCompatibility || {};
+
+    if (compatibility[normalizedChannel]) {
+      return compatibility[normalizedChannel].status !== 'unsupported';
+    }
+
+    return this.getTemplateChannels(template).indexOf(normalizedChannel) !== -1;
+  }
+
+  getSelectedChannelCompatibility(): any {
+    return this.template &&
+      this.template.attributes &&
+      this.template.attributes.channelCompatibility ?
+      this.template.attributes.channelCompatibility[this.selectedChannel] : null;
   }
 
   getPublicationStatusLabel(status: string): string {
@@ -630,7 +705,7 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
   }
 
   forkTemplate() {
-    this.faqKbService.installTemplate(this.templateId, this.projectId, true, this.projectId).subscribe((res: any) => {
+      this.faqKbService.installTemplate(this.templateId, this.projectId, true, this.projectId, this.selectedChannel).subscribe((res: any) => {
       this.logger.log('[COMMUNITY-TEMPLATE-DTLS] - FORK TEMPLATE RES', res);
       this.botid = res.bot_id
 
@@ -640,7 +715,7 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
 
     }, () => {
       this.logger.log('[COMMUNITY-TEMPLATE-DTLS] FORK TEMPLATE COMPLETE');
-      const wabaSuggestionName = this.getFirstWabaSuggestionName();
+      const wabaSuggestionName = this.isSelectedWabaChannel() ? this.getFirstWabaSuggestionName() : undefined;
       if (wabaSuggestionName) {
         this.bindWabaTemplateToBot(wabaSuggestionName, true);
       } else {
@@ -679,7 +754,10 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
     // this.router.navigate(['project/' + this.projectId + '/cds/', this.botid, 'intent', '0'])
     let faqkb = {
       createdAt: new Date(),
-      _id : this.botid
+      _id : this.botid,
+      attributes: {
+        targetChannel: this.selectedChannel
+      }
     }
     goToCDSVersion(this.router, faqkb, this.project._id, this.appConfigService.getConfig().cdsBaseUrl)
   }

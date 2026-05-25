@@ -47,6 +47,7 @@ export class TemplateDetailComponent extends PricingBaseComponent implements OnI
   public templateid: string;
   public projectid: string;
   public templateProjectId: string;
+  public selectedChannel: string = 'casezap';
   public _newlyCreatedProject: boolean;
   public defaultDeptID: string;
   public user: any;
@@ -102,6 +103,7 @@ export class TemplateDetailComponent extends PricingBaseComponent implements OnI
     this._newlyCreatedProject = data.newlyCreatedProject
     this.callingPage = data.callingPage;
     this.prjct_profile_name = data.projectProfile
+    this.selectedChannel = data.channel || 'casezap';
     this.logger.log('[TEMPLATE DETAIL] prjct_profile_name ', this.prjct_profile_name)
     // this.logger.log('[TEMPLATE DETAIL] template ', this.template)
     // this.logger.log('[TEMPLATE DETAIL] projectid ', this.projectid)
@@ -317,7 +319,7 @@ export class TemplateDetailComponent extends PricingBaseComponent implements OnI
 
 
   forkTemplate() {
-    this.faqKbService.installTemplate(this.templateid, this.projectid, true, this.templateid).subscribe((res: any) => {
+    this.faqKbService.installTemplate(this.templateid, this.projectid, true, this.templateid, this.selectedChannel).subscribe((res: any) => {
       this.logger.log('[TEMPLATE DETAIL] - FORK TEMPLATE RES', res);
       this.botid = res.bot_id
 
@@ -412,7 +414,10 @@ export class TemplateDetailComponent extends PricingBaseComponent implements OnI
     // this.router.navigate(['project/' + this.project._id + '/cds/', this.botid, 'intent', '0']);
     let faqkb = {
       createdAt: new Date(),
-      _id : this.botid
+      _id : this.botid,
+      attributes: {
+        targetChannel: this.selectedChannel
+      }
     }
     goToCDSVersion(this.router, faqkb, this.project._id, this.appConfigService.getConfig().cdsBaseUrl)
 

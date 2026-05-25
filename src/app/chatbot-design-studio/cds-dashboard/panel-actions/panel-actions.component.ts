@@ -22,6 +22,7 @@ export class PanelActionsComponent implements OnInit, OnChanges {
 
   // @Input() isOpenActionDrawer: boolean;
   @Input() intentSelected: Intent
+  @Input() selectedChannel: string = 'all';
   @Output() openActionDrawer = new EventEmitter();
   @Output() addNewAction = new EventEmitter();
 
@@ -88,8 +89,29 @@ export class PanelActionsComponent implements OnInit, OnChanges {
     this.openActionDrawer.emit(false);
   }
 
+  isWabaActionVisible(): boolean {
+    const channel = this.normalizeChannel(this.selectedChannel);
+    return channel === 'waba' || channel === 'all';
+  }
+
+  canUseAction(typeAction: TYPE_ACTION): boolean {
+    const isWabaOnlyAction = typeAction === TYPE_ACTION.WHATSAPP_STATIC ||
+      typeAction === TYPE_ACTION.WHATSAPP_ATTRIBUTE ||
+      typeAction === TYPE_ACTION.WHATSAPP_SEGMENT;
+    return !isWabaOnlyAction || this.isWabaActionVisible();
+  }
+
+  private normalizeChannel(channel: string): string {
+    return String(channel || '').trim().toLowerCase();
+  }
+
   onActionSelected(typeAction: TYPE_ACTION) {
     this.logger.log('[PANEL ACTION] actionSelected ', typeAction);
+    if (!this.canUseAction(typeAction)) {
+      this.logger.warn('[PANEL ACTION] blocked incompatible action for channel ', this.selectedChannel);
+      return;
+    }
+
     let action: any;
     if(typeAction === TYPE_ACTION.REPLY){
       action = new ActionReply();

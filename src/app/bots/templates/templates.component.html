@@ -205,6 +205,21 @@
                             </button>
                         </div> -->
                     </div>
+                    <div *ngIf="CERTIFIED_TEMPLATE" class="template-channel-filter" aria-label="Filtrar modelos por canal">
+                        <div class="template-channel-filter__title">Canal do fluxo</div>
+                        <div class="template-channel-filter__chips">
+                            <button type="button"
+                                *ngFor="let channel of templateChannelFilters"
+                                class="template-channel-chip"
+                                [class.is-active]="selectedTemplateChannel === channel.id"
+                                [matTooltip]="channel.hint"
+                                matTooltipClass="custom-mat-tooltip"
+                                matTooltipPosition="below"
+                                (click)="setTemplateChannel(channel.id)">
+                                {{ channel.label }}
+                            </button>
+                        </div>
+                    </div>
                     <loading-spinner *ngIf="showSpinner"></loading-spinner>
                     <div *ngIf="!showSpinner" class="page-content">
 
@@ -294,6 +309,9 @@
                                             Author: {{template.createdBy}}
                                         </span> -->
                                     </p>
+                                    <div class="template-channel-summary">
+                                        Compatível com {{ getSelectedTemplateChannelLabel() }}
+                                    </div>
                                     <div class="use-template-btn-row use-template-btn-wpr">
                                         <!-- btn-new btn-size-l btn--primary btn-block -->
                                         <button type="button" class="btn btn-tdblu-no-boxshadow"

@@ -131,6 +131,58 @@
     line-height: 1.2;
 }
 
+.template-channel-selector {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    max-width: 1040px;
+    margin-top: 18px;
+    padding: 14px;
+    border: 1px solid #d8e1ea;
+    border-radius: 8px;
+    background: #fbfcfd;
+}
+
+.template-channel-selector-title {
+    color: #19283d;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+.template-channel-selector-subtitle {
+    max-width: 620px;
+    margin-top: 4px;
+    color: #63748a;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.template-channel-selector-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.template-channel-selector-actions button {
+    min-height: 30px;
+    padding: 0 12px;
+    border: 1px solid #cdd9e5;
+    border-radius: 999px;
+    background: #fff;
+    color: #49617c;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.template-channel-selector-actions button.is-active {
+    border-color: #2b95e9;
+    background: #eaf4ff;
+    color: #1268ad;
+}
+
 .template-flow-preview {
     max-width: 1040px;
     margin-top: 26px;

@@ -47,6 +47,7 @@ export class TemplatesComponent extends PricingBaseComponent implements OnInit {
   private unsubscribe$: Subject<any> = new Subject<any>();
   isChromeVerGreaterThan100: boolean;
   templates: Array<any>
+  private certifiedTemplatesSource: Array<any> = [];
   communityTemplates: Array<any>;
   certfifiedTemplates: Array<any>;
   allTemplatesCount: number;
@@ -84,6 +85,14 @@ export class TemplatesComponent extends PricingBaseComponent implements OnInit {
   public_Key: string;
   IS_OPEN_SETTINGS_SIDEBAR: boolean = true;
   pageTitle: string;
+  public selectedTemplateChannel: string = 'casezap';
+  public templateChannelFilters = [
+    { id: 'casezap', label: 'CaseZap', hint: 'Fluxos com menu numerico e conversa aberta via UAZAPI.' },
+    { id: 'whatsapp', label: 'WhatsApp', hint: 'Fluxos para conversa aberta no WhatsApp.' },
+    { id: 'waba', label: 'WABA', hint: 'Templates Meta aprovados para iniciar conversa.' },
+    { id: 'telegram', label: 'Telegram', hint: 'Modelos compativeis com Telegram quando existirem.' },
+    { id: 'all', label: 'Todos', hint: 'Mostra todos os modelos, sem filtrar por canal.' }
+  ];
 
   public displayChatbotsCommunity: boolean;
   public displayTemplatesCategory: boolean;
@@ -420,7 +429,8 @@ export class TemplatesComponent extends PricingBaseComponent implements OnInit {
         template: template,
         projectId: this.projectId,
         callingPage: "Templates",
-        projectProfile: this.prjct_profile_name
+        projectProfile: this.prjct_profile_name,
+        channel: this.selectedTemplateChannel
       },
     });
 
@@ -598,63 +608,13 @@ export class TemplatesComponent extends PricingBaseComponent implements OnInit {
     this.faqKbService.getTemplates().subscribe((res: any) => {
 
       if (res) {
+        this.certifiedTemplatesSource = res;
         this.certfifiedTemplates = res;
         // this.certfifiedTemplates = this.fake_tmplt
         this.logger.log('[BOTS-TEMPLATES] - GET ALL TEMPLATES ', this.certfifiedTemplates);
 
         this.doShortDescription(this.certfifiedTemplates)
-        // this.templates = res
-        // this.logger.log('[BOTS-TEMPLATES] - GET ALL TEMPLATES', this.templates);
-        // this.allTemplatesCount = this.templates.length;
-        this.allTemplatesCount = this.certfifiedTemplates.length;
-        this.logger.log('[BOTS-TEMPLATES] - GET ALL TEMPLATES COUNT', this.allTemplatesCount);
-        if (this.route.indexOf('bots/templates/all') !== -1) {
-          this.templates = this.certfifiedTemplates
-        }
-
-        // ---------------------------------------------------------------------
-        // Customer Satisfaction templates
-        // ---------------------------------------------------------------------
-        this.customerSatisfactionTemplates = this.certfifiedTemplates.filter((obj) => {
-          return obj.mainCategory === "Customer Satisfaction"
-        });
-        this.logger.log('[BOTS-TEMPLATES] - Customer Satisfaction TEMPLATES', this.customerSatisfactionTemplates);
-        if (this.customerSatisfactionTemplates) {
-          this.customerSatisfactionTemplatesCount = this.customerSatisfactionTemplates.length;
-          this.logger.log('[BOTS-TEMPLATES] - Customer Satisfaction COUNT', this.customerSatisfactionTemplatesCount);
-          // this.doShortDescription(this.customerSatisfactionTemplates)
-        }
-
-
-
-        // ---------------------------------------------------------------------
-        // Customer Increase Sales
-        // ---------------------------------------------------------------------
-        this.increaseSalesTemplates = this.certfifiedTemplates.filter((obj) => {
-          return obj.mainCategory === "Increase Sales"
-        });
-        this.logger.log('[BOTS-TEMPLATES] - Increase Sales TEMPLATES', this.increaseSalesTemplates);
-        if (this.increaseSalesTemplates) {
-          this.increaseSalesTemplatesCount = this.increaseSalesTemplates.length;
-          this.logger.log('[BOTS-TEMPLATES] - Increase Sales COUNT', this.increaseSalesTemplatesCount);
-          // this.doShortDescription(this.increaseSalesTemplates)
-        }
-
-        this.route = this.router.url
-        // if (this.route.indexOf('bots/templates/all') !== -1) {
-        //   this.templates = this.templates 
-        //   this.logger.log('[BOTS-TEMPLATES] ROUTE templates/all');
-        //   this.allTemplatesCount = this.templates.length;
-        //   this.logger.log('[BOTS-TEMPLATES] - GET ALL TEMPLATES COUNT', this.allTemplatesCount);
-        // } else 
-        if (this.route.indexOf('bots/templates/customer-satisfaction') !== -1) {
-          this.templates = this.customerSatisfactionTemplates
-          this.logger.log('[BOTS-TEMPLATES] ROUTE templates/customer-satisfaction templates ', this.templates);
-        } else if (this.route.indexOf('bots/templates/increase-sales') !== -1) {
-
-          this.templates = this.increaseSalesTemplates
-          this.logger.log('[BOTS-TEMPLATES] ROUTE templates/increase-sales templates ', this.templates);
-        }
+        this.applyTemplateChannelFilter();
 
         this.logger.log('[BOTS-TEMPLATES] - GET TEMPLATES - All TEMPLATES COUNT ', this.allTemplatesCount);
         if (this.templates) {
@@ -681,6 +641,86 @@ export class TemplatesComponent extends PricingBaseComponent implements OnInit {
         template['shortDescription'] = template['description'].substring(0, stripHere) + '...';
       }
     });
+  }
+
+  setTemplateChannel(channel: string) {
+    this.selectedTemplateChannel = channel || 'all';
+    this.applyTemplateChannelFilter();
+  }
+
+  applyTemplateChannelFilter() {
+    const filteredTemplates = (this.certifiedTemplatesSource || []).filter((template) => {
+      return this.templateSupportsChannel(template, this.selectedTemplateChannel);
+    });
+
+    this.certfifiedTemplates = filteredTemplates;
+    this.allTemplatesCount = filteredTemplates.length;
+
+    this.customerSatisfactionTemplates = filteredTemplates.filter((obj) => {
+      return obj.mainCategory === "Customer Satisfaction"
+    });
+    this.customerSatisfactionTemplatesCount = this.customerSatisfactionTemplates.length;
+
+    this.increaseSalesTemplates = filteredTemplates.filter((obj) => {
+      return obj.mainCategory === "Increase Sales"
+    });
+    this.increaseSalesTemplatesCount = this.increaseSalesTemplates.length;
+
+    this.route = this.router.url;
+    if (this.route.indexOf('bots/templates/customer-satisfaction') !== -1) {
+      this.templates = this.customerSatisfactionTemplates;
+      this.logger.log('[BOTS-TEMPLATES] ROUTE templates/customer-satisfaction templates ', this.templates);
+    } else if (this.route.indexOf('bots/templates/increase-sales') !== -1) {
+      this.templates = this.increaseSalesTemplates;
+      this.logger.log('[BOTS-TEMPLATES] ROUTE templates/increase-sales templates ', this.templates);
+    } else {
+      this.templates = this.certfifiedTemplates;
+    }
+
+    if (this.templates) {
+      this.generateTagsBackground(this.templates);
+    }
+  }
+
+  templateSupportsChannel(template: any, channel: string): boolean {
+    const normalizedChannel = this.normalizeTemplateChannel(channel);
+    if (!normalizedChannel || normalizedChannel === 'all') {
+      return true;
+    }
+
+    const compatibility = template && template.attributes && template.attributes.channelCompatibility;
+    if (compatibility && compatibility[normalizedChannel]) {
+      return compatibility[normalizedChannel].status !== 'unsupported';
+    }
+
+    const channels = this.getTemplateChannels(template);
+    return channels.indexOf(normalizedChannel) !== -1;
+  }
+
+  getTemplateChannels(template: any): string[] {
+    const attributes = template && template.attributes ? template.attributes : {};
+    const channels = Array.isArray(attributes.availableChannels)
+      ? attributes.availableChannels
+      : Array.isArray(attributes.channels)
+        ? attributes.channels
+        : [];
+
+    return channels
+      .map((channel) => this.normalizeTemplateChannel(channel))
+      .filter((channel) => !!channel);
+  }
+
+  normalizeTemplateChannel(channel: string): string {
+    return String(channel || '').trim().toLowerCase();
+  }
+
+  getTemplateChannelLabel(channel: string): string {
+    const found = this.templateChannelFilters.find((item) => item.id === this.normalizeTemplateChannel(channel));
+    return found ? found.label : channel;
+  }
+
+  getSelectedTemplateChannelLabel(): string {
+    return this.getTemplateChannelLabel(this.selectedTemplateChannel);
   }
 
 
@@ -1086,7 +1126,9 @@ export class TemplatesComponent extends PricingBaseComponent implements OnInit {
 
   goToCommunityTemplateDetail(templateid) {
     this.logger.log('[BOTS-TEMPLATES]  GO TO COMMUNITY TEMPLATE DTLS -  templateid ', templateid);
-    this.router.navigate(['project/' + this.project._id + '/template-details/' + templateid]);
+    this.router.navigate(['project/' + this.project._id + '/template-details/' + templateid], {
+      queryParams: { channel: this.selectedTemplateChannel }
+    });
   }
 
   goToExternalCommunity() {

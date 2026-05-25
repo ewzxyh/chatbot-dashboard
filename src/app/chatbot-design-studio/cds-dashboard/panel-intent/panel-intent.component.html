@@ -92,7 +92,7 @@
     <div class="action-list-wpr" *ngIf="actions && actions?.length > 0">
         <div cdkDropList class="action--list" (cdkDropListDropped)="onDropAction($event)">
             
-                    <div class="action--element"  *ngFor="let action of actions; let i = index;let lastItem = last; let firstItem = first">
+                    <div class="action--element"  *ngFor="let action of actions; let i = index;let lastItem = last; let firstItem = first" [style.display]="canDisplayAction(action) ? '' : 'none'">
 
 
                         <div id="action_{{i}}" 

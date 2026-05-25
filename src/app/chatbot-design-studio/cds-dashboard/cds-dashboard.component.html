@@ -27,7 +27,12 @@
             </span>
         </div>
         <!-- <i class="material-icons cds-btn-back" (click)="goBack()">keyboard_arrow_left</i> -->
-        <div class="header-title">{{ selectedChatbot?.name }}</div>
+        <div class="header-title-wpr">
+            <div class="header-title">{{ selectedChatbot?.name }}</div>
+            <div class="cds-channel-badge" *ngIf="selectedChannel && selectedChannel !== 'all'">
+                Canal: {{ getSelectedChannelLabel() }}
+            </div>
+        </div>
         <div class="right-opts">
             <!-- <div id="opt-train-wrp">
                 <label>AI train</label>
@@ -195,6 +200,7 @@
                     [intentSelected]="intentSelected" 
                     [isIntentElementSelected]="isIntentElementSelected"
                     [isOpenActionDrawer]="isOpenActionDrawer"
+                    [selectedChannel]="selectedChannel"
                     [eventUpadatedIntent]="upadatedIntent.asObservable()"
                     [eventCreateIntent]="createIntent.asObservable()" 
                     (openActionDrawer)=onOpenActionDrawer($event)
@@ -210,6 +216,7 @@
                 <appdashboard-panel-actions *ngIf="isOpenActionDrawer" 
                     style="z-index: 101;" 
                     [intentSelected]="intentSelected"
+                    [selectedChannel]="selectedChannel"
                     (addNewAction)=onAddNewAction($event)
                     (openActionDrawer)=onOpenActionDrawer($event)>
                 </appdashboard-panel-actions>

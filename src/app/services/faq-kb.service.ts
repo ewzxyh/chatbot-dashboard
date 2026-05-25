@@ -90,7 +90,7 @@ export class FaqKbService {
 
 
 
-  getTemplates() {
+  getTemplates(channel?: string) {
     // 'Authorization': this.TOKEN
     const httpOptions = {
       headers: new HttpHeaders({
@@ -98,14 +98,14 @@ export class FaqKbService {
       })
     };
     // const url = "https://chatbot-templates.herokuapp.com/chatbots/public/templates/"
-    const url = this.TEMPLATES_URL
+    const url = this.buildTemplateUrl(this.TEMPLATES_URL, channel)
 
     this.logger.log('[GET-TMPLT][FAQ-KB.SERV] - GET-TMPLT - URL ', url);
     return this._httpClient
       .get(url, httpOptions)
   }
 
-  getChatbotTemplateById(chatbotid) {
+  getChatbotTemplateById(chatbotid, channel?: string) {
     // 'Authorization': this.TOKEN
     const httpOptions = {
       headers: new HttpHeaders({
@@ -113,7 +113,7 @@ export class FaqKbService {
       })
     };
     // const url = "https://chatbot-templates.herokuapp.com/chatbots/public/templates/"
-    const url = this.TEMPLATES_URL + '/windows/' + chatbotid
+    const url = this.buildTemplateUrl(this.TEMPLATES_URL + '/windows/' + chatbotid, channel)
 
     // console.log('[GET-TMPLT][FAQ-KB.SERV] - GET-CHATBOT-TEMPLATE-BY-ID - URL ', url);
     return this._httpClient
@@ -137,7 +137,7 @@ export class FaqKbService {
       .get(url, httpOptions)
   }
 
-  getCommunityTemplateDetail(templateid) {
+  getCommunityTemplateDetail(templateid, channel?: string) {
 
     // const httpOptions = {
     //   headers: new HttpHeaders({
@@ -145,7 +145,7 @@ export class FaqKbService {
     //   })
     // };
 
-    const url = this.TEMPLATES_URL + '/windows/' + templateid
+    const url = this.buildTemplateUrl(this.TEMPLATES_URL + '/windows/' + templateid, channel)
 
     this.logger.log('[GET-TMPLT][FAQ-KB.SERV] - GET-COMMUNITY-TMPLT-DTLS - URL ', url);
     return this._httpClient
@@ -167,7 +167,7 @@ export class FaqKbService {
       .get(url, httpOptions)
   }
 
-  installTemplate(botid: string, projectid: string, ispublic: boolean, landingprojectid) {
+  installTemplate(botid: string, projectid: string, ispublic: boolean, landingprojectid, channel?: string) {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
@@ -177,12 +177,23 @@ export class FaqKbService {
     this.logger.log('[BOT-CREATE][FAQ-KB.SERV] -  FORK - BOT ID ', botid);
     // / (dovrebbe funzionare anche con POST ../PROJECT_ID/bots/fork/ID_FAQ_FB/)
     // const url = this.SERVER_BASE_PATH + "635b97cc7d7275001a2ab3e0/bots/fork/" + botid;
-    const url = this.SERVER_BASE_PATH + projectid + "/faq_kb/fork/" + botid + "?public=" + ispublic + "&projectid=" + projectid;
+    let url = this.SERVER_BASE_PATH + projectid + "/faq_kb/fork/" + botid + "?public=" + ispublic + "&projectid=" + projectid;
+    const selectedChannel = channel && channel !== 'all' ? channel : 'casezap';
+    url += "&channel=" + encodeURIComponent(selectedChannel);
     // console.log('[BOT-CREATE][FAQ-KB.SERV] - FORK - URL ', url);
 
     return this._httpClient
       .post(url, null, httpOptions)
 
+  }
+
+  private buildTemplateUrl(url: string, channel?: string): string {
+    if (!channel || channel === 'all') {
+      return url;
+    }
+
+    const separator = url.indexOf('?') === -1 ? '?' : '&';
+    return url + separator + 'channel=' + encodeURIComponent(channel);
   }
 
   prepareWabaTemplatePublication(templateid: string, projectid: string, suggestionName?: string, publish: boolean = false) {
