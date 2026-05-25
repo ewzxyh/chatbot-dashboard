@@ -557,6 +557,28 @@
     white-space: nowrap;
 }
 
+.waba-template-context {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    margin-top: 8px;
+    padding: 8px 9px;
+    border-radius: 7px;
+    background: #f6f9fc;
+}
+
+.waba-template-context strong {
+    color: #20324a;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.waba-template-context small {
+    color: #63748a;
+    font-size: 11px;
+    line-height: 1.35;
+}
+
 .waba-template-buttons {
     display: flex;
     flex-wrap: wrap;

@@ -72,6 +72,9 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
     body: string;
     variables: string[];
     buttons: string[];
+    purpose?: string;
+    useCase?: string;
+    whenToUse?: string;
   }> = [];
   public publicationChecklist: string[] = [];
   public wabaPublicationResult: any;

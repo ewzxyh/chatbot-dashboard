@@ -215,11 +215,15 @@
                     </div>
 
                     <div class="template-publication-card" *ngIf="wabaTemplateSuggestions?.length">
-                        <div class="template-publication-card-title">Template WABA sugerido</div>
+                        <div class="template-publication-card-title">Templates WABA sugeridos</div>
                         <div class="waba-template-card" *ngFor="let wabaTemplate of wabaTemplateSuggestions">
                             <div class="waba-template-card-header">
                                 <strong>{{ wabaTemplate.name }}</strong>
                                 <span>{{ wabaTemplate.category }} - {{ wabaTemplate.language }}</span>
+                            </div>
+                            <div class="waba-template-context" *ngIf="wabaTemplate.purpose || wabaTemplate.whenToUse">
+                                <strong *ngIf="wabaTemplate.purpose">{{ wabaTemplate.purpose }}</strong>
+                                <small *ngIf="wabaTemplate.whenToUse">{{ wabaTemplate.whenToUse }}</small>
                             </div>
                             <p>{{ wabaTemplate.body }}</p>
                             <div class="waba-template-buttons" *ngIf="wabaTemplate.buttons?.length">
