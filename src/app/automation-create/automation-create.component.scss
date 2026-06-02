@@ -167,6 +167,10 @@
     gap: 4px;
 }
 
+.flow-recurrence-grid > div:last-child {
+    grid-column: 1 / -1;
+}
+
 .flow-preview-audience-btn {
     width: fit-content;
     margin-top: 2px;

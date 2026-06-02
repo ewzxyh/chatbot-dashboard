@@ -307,6 +307,34 @@
               <span *ngIf="selected_transaction.dry_run">{{ 'DryRun' | translate }}: {{ selected_transaction.ready_count || 0 }}</span>
             </div>
 
+            <div class="campaign-metrics-grid" *ngIf="selected_transaction.campaign?.metrics">
+              <div class="campaign-metric">
+                <strong>{{ getCampaignMetrics().delivered || 0 }}</strong>
+                <span>{{ 'CampaignMetricDelivered' | translate }} · {{ getCampaignMetricRate('delivered') }}%</span>
+              </div>
+              <div class="campaign-metric">
+                <strong>{{ getCampaignMetrics().read || 0 }}</strong>
+                <span>{{ 'CampaignMetricRead' | translate }} · {{ getCampaignMetricRate('read') }}%</span>
+              </div>
+              <div class="campaign-metric">
+                <strong>{{ getCampaignMetrics().conversions || 0 }}</strong>
+                <span>{{ 'CampaignMetricConversions' | translate }} · {{ getCampaignMetricRate('conversion') }}%</span>
+              </div>
+            </div>
+
+            <div class="campaign-recurrence-summary" *ngIf="getCampaignRecurrence()?.enabled">
+              <span class="material-icons-round">event_repeat</span>
+              <span>
+                {{ 'CampaignSeriesOccurrence' | translate: {
+                    current: selected_transaction.campaign?.occurrenceIndex || getCampaignRecurrence()?.occurrenceIndex || 1,
+                    total: getCampaignRecurrence()?.totalOccurrences || getCampaignRecurrence()?.maxOccurrences || 1
+                  } }}
+              </span>
+              <span *ngIf="selected_transaction.campaign?.nextOccurrenceAt">
+                {{ 'CampaignNextOccurrenceAt' | translate }}: {{ selected_transaction.campaign.nextOccurrenceAt | date:'short' }}
+              </span>
+            </div>
+
             <div class="campaign-actions">
               <button class="custom-button" *ngIf="canPauseCampaign()" (click)="updateCampaign('pause')">
                 <span class="material-icons-round button-icon">pause</span>

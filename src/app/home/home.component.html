@@ -236,7 +236,7 @@
         <!-- <div class="test">  -->
         <ng-container *ngIf="isVisibleQuoteSection">
           <div *ngIf="!displayQuotaSkeleton" class="home-quota-banner"
-            [ngClass]="{'home-quota-banner-alert': conversationsRunnedOut || emailsRunnedOut || tokensRunnedOut}">
+            [ngClass]="{'home-quota-banner-alert': emailsRunnedOut || tokensRunnedOut}">
 
             <!-- <div class="home-quota-banner-title-wpr">
 
@@ -249,22 +249,28 @@
 
              
               <!-- -------------------------- -->
-              <!-- Conversations  -->
+              <!-- Platforms  -->
               <!-- -------------------------- -->
               <!-- class="quote-title link" --> 
               <!-- (click)="goToHistoryAllConvs()" -->
-              <div class="home-quote-container"
-                [ngClass]="{'home-quote-container-conversations-runned-out': conversationsRunnedOut}">
+              <div class="home-quote-container">
 
                 <div class="home-quote-title-count-wpr">
                   <p class="quote-title" matTooltipClass="custom-mat-tooltip"
                     matTooltip="Current usage" #tooltip="matTooltip" matTooltipPosition='above' matTooltipHideDelay="100">
-                     {{'Conversations' | translate}}
+                     {{'Platforms' | translate}}
                   </p>
-                  <div class="quote-count">{{requests_count | number:'1.0-0'}}<ng-container *ngIf="requests_limit >= 0"> / {{requests_limit | number:'1.0-0'}}</ng-container></div>
-                  <div class="quota-runned-out-msg" *ngIf="conversationsRunnedOut">
-                    <!-- You run out of conversations -->
-                     {{'YouRunOutOfConversations' | translate}}
+                  <div class="quote-count">{{platforms_count | number:'1.0-0'}} / {{platforms_limit | number:'1.0-0'}}</div>
+                </div>
+
+                <div class="quote">
+                  <mat-progress-spinner class="example-margin" [strokeWidth]="5" [diameter]="50" [color]="'primary'"
+                    [mode]="'determinate'" [value]="platforms_perc">
+                  </mat-progress-spinner>
+
+                  <div class="percentage">
+                    {{ platforms_perc }}
+                    <span style="font-size: 10px; margin-top: 2px; margin-left: 1px"> %</span>
                   </div>
                 </div>
               </div>

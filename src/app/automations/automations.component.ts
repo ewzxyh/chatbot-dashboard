@@ -1368,6 +1368,7 @@ export class AutomationsComponent implements OnInit {
       this.showAutomationsList = false;
       this.showAutomationDetail = true;
       this.counter();
+      this.refreshSelectedCampaignDetail();
       this.changeRoute(automation_id)
       this.showSpinner = false;
     }, (error) => {
@@ -1387,6 +1388,18 @@ export class AutomationsComponent implements OnInit {
   isCampaign(transaction?: any) {
     const tx = transaction || this.selected_transaction;
     return tx && tx.dispatch_type === 'waba_template_campaign';
+  }
+
+  refreshSelectedCampaignDetail() {
+    if (!this.isCampaign() || !this.selected_transaction || !this.selected_transaction.faq_kb_id || !this.selected_transaction.transaction_id) {
+      return;
+    }
+
+    this.automationsService.getBoundWabaCampaign(this.selected_transaction.faq_kb_id, this.selected_transaction.transaction_id).subscribe((transaction: any) => {
+      this.selected_transaction = transaction;
+    }, (error) => {
+      this.logger.error('[AUTOMATION COMP.] Get campaign detail error: ', error);
+    });
   }
 
   getStatusLabel(transaction: any) {
@@ -1427,6 +1440,23 @@ export class AutomationsComponent implements OnInit {
     const total = this.getCampaignTotal(transaction);
     if (!total) return 0;
     return Math.min(100, Math.round((this.getCampaignProcessed(transaction) / total) * 100));
+  }
+
+  getCampaignMetrics() {
+    return this.selected_transaction && this.selected_transaction.campaign && this.selected_transaction.campaign.metrics
+      ? this.selected_transaction.campaign.metrics
+      : {};
+  }
+
+  getCampaignMetricRate(name: string) {
+    const metrics: any = this.getCampaignMetrics();
+    return metrics && metrics.rates && metrics.rates[name] !== undefined ? metrics.rates[name] : 0;
+  }
+
+  getCampaignRecurrence() {
+    return this.selected_transaction && this.selected_transaction.campaign && this.selected_transaction.campaign.recurrence
+      ? this.selected_transaction.campaign.recurrence
+      : null;
   }
 
   canPauseCampaign() {

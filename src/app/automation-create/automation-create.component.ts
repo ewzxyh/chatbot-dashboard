@@ -92,6 +92,10 @@ export class AutomationCreateComponent implements OnInit {
   flowCampaignWindowEnabled = false;
   flowCampaignWindowStart = '08:00';
   flowCampaignWindowEnd = '18:00';
+  flowCampaignRecurrenceEnabled = false;
+  flowCampaignRecurrenceFrequency: 'daily' | 'weekly' | 'monthly' = 'weekly';
+  flowCampaignRecurrenceInterval = 1;
+  flowCampaignRecurrenceOccurrences = 2;
   flowDispatching = false;
   
   private backSub?: Subscription;
@@ -305,6 +309,21 @@ export class AutomationCreateComponent implements OnInit {
       this.flowCampaignWindowStart !== this.flowCampaignWindowEnd;
   }
 
+  isFlowCampaignRecurrenceValid() {
+    if (!this.flowCampaignRecurrenceEnabled) {
+      return true;
+    }
+    const interval = Number(this.flowCampaignRecurrenceInterval);
+    const occurrences = Number(this.flowCampaignRecurrenceOccurrences);
+    return ['daily', 'weekly', 'monthly'].includes(this.flowCampaignRecurrenceFrequency) &&
+      Number.isInteger(interval) &&
+      interval >= 1 &&
+      interval <= 365 &&
+      Number.isInteger(occurrences) &&
+      occurrences >= 2 &&
+      occurrences <= 30;
+  }
+
   getCampaignTimezone() {
     try {
       return Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Sao_Paulo';
@@ -353,6 +372,17 @@ export class AutomationCreateComponent implements OnInit {
         timezone: this.getCampaignTimezone()
       };
       body.timezone = body.timezone || body.sendingWindow.timezone;
+    }
+
+    if (this.flowCampaignRecurrenceEnabled && this.isFlowCampaignRecurrenceValid()) {
+      body.recurrence = {
+        enabled: true,
+        frequency: this.flowCampaignRecurrenceFrequency,
+        interval: Number(this.flowCampaignRecurrenceInterval),
+        maxOccurrences: Number(this.flowCampaignRecurrenceOccurrences),
+        timezone: this.getCampaignTimezone()
+      };
+      body.timezone = body.timezone || body.recurrence.timezone;
     }
 
     const rawIntervalMs: any = this.flowCampaignIntervalMs;
@@ -682,12 +712,13 @@ export class AutomationCreateComponent implements OnInit {
         this.flowCampaignConsentConfirmed &&
         this.isFlowCampaignScheduleValid() &&
         this.isFlowCampaignWindowValid() &&
+        this.isFlowCampaignRecurrenceValid() &&
         !this.isSelectedBindingQualityBlocked();
     }
 
     if (this.flowRecipientMode === 'batch' || this.flowRecipientMode === 'csv') {
       const campaignReady = !this.isFlowCampaignMode() ||
-        (this.flowCampaignConsentConfirmed && this.isFlowCampaignScheduleValid() && this.isFlowCampaignWindowValid() && !this.isSelectedBindingQualityBlocked());
+        (this.flowCampaignConsentConfirmed && this.isFlowCampaignScheduleValid() && this.isFlowCampaignWindowValid() && this.isFlowCampaignRecurrenceValid() && !this.isSelectedBindingQualityBlocked());
       return this.getFlowCurrentRecipientCount() > 0 &&
         this.getFlowCurrentRecipientCount() <= this.getFlowCurrentLimit() &&
         this.getFlowCurrentInvalidCount() === 0 &&

@@ -42,6 +42,7 @@ import { ProgressSpinnerMode } from '@angular/material/progress-spinner';
 import { QuotesService } from 'app/services/quotes.service';
 import { RolesService } from 'app/services/roles.service';
 import { PERMISSIONS } from 'app/utils/permissions.constants';
+import { CasepayService } from '../services/casepay.service';
 
 const swal = require('sweetalert');
 const Swal = require('sweetalert2')
@@ -233,6 +234,10 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   requests_perc = 0;
   requests_limit = 0;
 
+  platforms_count = 0;
+  platforms_limit = 0;
+  platforms_perc = 0;
+
   messages_count = 0;
   messages_perc = 0;
   messages_limit = 0;
@@ -314,7 +319,8 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
     private departmentService: DepartmentService,
     public localDbService: LocalDbService,
     private quotesService: QuotesService,
-    public rolesService: RolesService
+    public rolesService: RolesService,
+    private casepayService: CasepayService
   ) {
     const brand = brandService.getBrand();
     this.company_name = brand['BRAND_NAME'];
@@ -628,6 +634,7 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
             // Notify Navbar to fetch quotas
             // ----------------------------------------
             this.quotesService.requestQuotasUpdate();
+            this.getCasepayStatus();
             // this.getProjectQuotes();
           }
 
@@ -650,6 +657,20 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
       }, () => {
         this.logger.log('[HOME] $UBSCIBE TO PUBLISHED PROJECT * COMPLETE *');
       });
+  }
+
+  getCasepayStatus() {
+    if (!this.projectId) {
+      return;
+    }
+
+    this.casepayService.getStatus(this.projectId).subscribe((status: any) => {
+      if (status && status.usage && status.usage.platforms) {
+        this.platforms_count = status.usage.platforms.current || 0;
+        this.platforms_limit = status.usage.platforms.limit || 0;
+        this.platforms_perc = this.platforms_limit > 0 ? Math.min(100, Math.floor((this.platforms_count / this.platforms_limit) * 100)) : 0;
+      }
+    });
   }
 
 

@@ -290,6 +290,11 @@
                                                 <span>{{ 'CampaignSendingWindow' | translate }}</span>
                                             </label>
 
+                                            <label class="flow-campaign-policy-check">
+                                                <input type="checkbox" [(ngModel)]="flowCampaignRecurrenceEnabled">
+                                                <span>{{ 'CampaignRecurrence' | translate }}</span>
+                                            </label>
+
                                             <div class="flow-audience-grid" *ngIf="flowCampaignScheduleEnabled">
                                                 <div>
                                                     <label>{{ 'CampaignScheduledAt' | translate }}</label>
@@ -319,6 +324,30 @@
                                                         [(ngModel)]="flowCampaignWindowEnd">
                                                     <div class="flow-batch-summary-error" *ngIf="!isFlowCampaignWindowValid()">
                                                         {{ 'CampaignSendingWindowInvalid' | translate }}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="flow-audience-grid flow-recurrence-grid" *ngIf="flowCampaignRecurrenceEnabled">
+                                                <div>
+                                                    <label>{{ 'CampaignRecurrenceFrequency' | translate }}</label>
+                                                    <select class="bound-template-input" [(ngModel)]="flowCampaignRecurrenceFrequency">
+                                                        <option value="daily">{{ 'CampaignRecurrenceDaily' | translate }}</option>
+                                                        <option value="weekly">{{ 'CampaignRecurrenceWeekly' | translate }}</option>
+                                                        <option value="monthly">{{ 'CampaignRecurrenceMonthly' | translate }}</option>
+                                                    </select>
+                                                </div>
+                                                <div>
+                                                    <label>{{ 'CampaignRecurrenceInterval' | translate }}</label>
+                                                    <input type="number" min="1" max="365" step="1" class="bound-template-input"
+                                                        [(ngModel)]="flowCampaignRecurrenceInterval">
+                                                </div>
+                                                <div>
+                                                    <label>{{ 'CampaignRecurrenceOccurrences' | translate }}</label>
+                                                    <input type="number" min="2" max="30" step="1" class="bound-template-input"
+                                                        [(ngModel)]="flowCampaignRecurrenceOccurrences">
+                                                    <div class="flow-batch-summary-error" *ngIf="!isFlowCampaignRecurrenceValid()">
+                                                        {{ 'CampaignRecurrenceInvalid' | translate }}
                                                     </div>
                                                 </div>
                                             </div>
