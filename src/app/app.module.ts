@@ -11,7 +11,7 @@ import { OnboardingChecklistComponent } from './onboarding-checklist/onboarding-
 // import { MapRequestComponent } from './map-request/map-request.component'; // now lazy
 
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule, APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, LOCALE_ID } from '@angular/core';
+import { NgModule, APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, ErrorHandler, LOCALE_ID } from '@angular/core';
 import { registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
 
@@ -218,6 +218,8 @@ import { AutologinComponent } from './auth/autologin/autologin.component';
 import { AppStoreService } from './services/app-store.service';
 
 import { BrandService } from './services/brand.service';
+import { SentryErrorHandler } from './services/sentry/sentry-error-handler.service';
+import { SentryService } from './services/sentry/sentry.service';
 import { ScriptService } from './services/script/script.service';
 
 // import { PerfectScrollbarTdDirective } from './_directives/td-perfect-scrollbar/perfect-scrollbar-td.directive';
@@ -439,7 +441,7 @@ export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }
 
-const appInitializerFn = (appConfig: AppConfigService, brandService: BrandService) => {
+const appInitializerFn = (appConfig: AppConfigService, brandService: BrandService, sentryService: SentryService) => {
   return async () => {
     // console.log('APP INITIALIZED')
     
@@ -464,6 +466,7 @@ const appInitializerFn = (appConfig: AppConfigService, brandService: BrandServic
     if (environment.remoteConfig) {
       await appConfig.loadAppConfig();
       await brandService.loadBrand();
+      sentryService.init(appConfig.getConfig());
       // let customLogger = new LoggerService(appConfig);
       let chatEngine = appConfig.getConfig().chatEngine
       let uploadEngine = appConfig.getConfig().uploadEngine
@@ -484,6 +487,7 @@ const appInitializerFn = (appConfig: AppConfigService, brandService: BrandServic
     } else {
       // return brandService.loadBrand();
       await brandService.loadBrand();
+      sentryService.init(appConfig.getConfig());
 
       let chatEngine = appConfig.getConfig().chatEngine
       let uploadEngine = appConfig.getConfig().uploadEngine
@@ -821,13 +825,15 @@ registerLocaleData(localePt, 'pt-BR');
     { provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS },
     AppConfigService, // https://juristr.com/blog/2018/01/ng-app-runtime-config/
     BrandService,
+    SentryService,
+    { provide: ErrorHandler, useClass: SentryErrorHandler },
     LoggerService,
     HomeService,
     {
       provide: APP_INITIALIZER,
       useFactory: appInitializerFn,
       multi: true,
-      deps: [AppConfigService, BrandService]
+      deps: [AppConfigService, BrandService, SentryService]
     },
     // {
     //   provide: APP_INITIALIZER,
