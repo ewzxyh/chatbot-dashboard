@@ -259,6 +259,38 @@ export class AdminProjectsComponent implements OnInit {
     return metric.limit ? current + ' / ' + metric.limit : String(current);
   }
 
+  usageEntries(value: any): any[] {
+    if (!value) return [];
+    return Object.keys(value)
+      .map((key) => ({ key: key || 'unknown', label: this.usageMetricLabel(key), value: value[key] || 0 }))
+      .sort((a, b) => b.value - a.value);
+  }
+
+  usageMetricLabel(key: string): string {
+    const labels: any = {
+      casezap: 'CaseZap',
+      whatsapp: 'WhatsApp',
+      waba: 'WABA',
+      telegram: 'Telegram',
+      messenger: 'Messenger',
+      sms: 'SMS',
+      voice: 'Voz',
+      text: 'Texto',
+      image: 'Imagem',
+      file: 'Arquivo',
+      document: 'Documento',
+      audio: 'Audio',
+      video: 'Video',
+      contact: 'Contato',
+      location: 'Localizacao',
+      sticker: 'Figurinha',
+      poll: 'Enquete',
+      event: 'Evento',
+      unknown: 'Nao identificado'
+    };
+    return labels[key] || key;
+  }
+
   closeModals() {
     this.showPlanModal = false;
     this.showTrialModal = false;
