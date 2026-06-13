@@ -276,12 +276,21 @@ export class CdsDashboardComponent implements OnInit {
     const attributes = chatbot && chatbot.attributes || {};
     const scopedChannel = this.normalizeTemplateChannel(attributes.targetChannel || attributes.selectedChannel);
 
-    if (scopedChannel && scopedChannel !== 'all' && this.isKnownFlowChannel(scopedChannel)) {
+    if (this.isExplicitChannelScope(attributes) && scopedChannel && scopedChannel !== 'all' && this.isKnownFlowChannel(scopedChannel)) {
       this.selectedChannel = scopedChannel;
       return;
     }
 
     this.selectedChannel = 'all';
+  }
+
+  private isExplicitChannelScope(attributes: any): boolean {
+    return !!attributes && (
+      attributes.channelScopeMode === 'exclusive' ||
+      attributes.channelScope === 'exclusive' ||
+      attributes.exclusiveChannel === true ||
+      attributes.isChannelExclusive === true
+    );
   }
 
   private normalizeTemplateChannel(channel: any): string {
