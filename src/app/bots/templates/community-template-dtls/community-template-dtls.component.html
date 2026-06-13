@@ -22,7 +22,7 @@
             </button>
         </div>
         <div *ngIf="selectedChannelUnsupported" class="template-channel-warning">
-            Este modelo nao oferece uma versao compativel com {{ getChannelLabel(selectedChannel) }}. Escolha outro canal antes de importar.
+            Este modelo nao oferece uma visualizacao compativel com {{ getChannelLabel(selectedChannel) }}. Escolha outro canal para revisar o modelo.
         </div>
         <div *ngIf="autoInstallRequested && !autoImportStarted" class="auto-import-notice">
             A importacao deste modelo sera iniciada automaticamente.
@@ -114,9 +114,9 @@
 
             <div class="template-channel-selector" *ngIf="previewChannels?.length">
                 <div>
-                    <div class="template-channel-selector-title">Canal de uso deste fluxo</div>
+                    <div class="template-channel-selector-title">Compatibilidade do modelo</div>
                     <div class="template-channel-selector-subtitle">
-                        A visualizacao e a importacao mostram somente recursos compativeis com o canal escolhido.
+                        O fluxo sera importado como multicanal. Use os filtros abaixo apenas para visualizar recursos especificos de cada canal.
                     </div>
                 </div>
                 <div class="template-channel-selector-actions">
