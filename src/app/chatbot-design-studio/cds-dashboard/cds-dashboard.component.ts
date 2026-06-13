@@ -273,24 +273,16 @@ export class CdsDashboardComponent implements OnInit {
   }
 
   private updateSelectedChannelFromBot(chatbot: any) {
-    const attributes = chatbot && chatbot.attributes || {};
     const requestedChannel = this.getRequestedTemplateChannel();
-    const explicitChannel = this.normalizeTemplateChannel(attributes.targetChannel || attributes.selectedChannel);
-    const availableChannels = this.normalizeTemplateChannels(attributes.availableChannels || attributes.channels);
 
-    if (requestedChannel && (!availableChannels.length || availableChannels.indexOf(requestedChannel) !== -1)) {
-      this.selectedChannel = requestedChannel;
-      return;
-    }
+    if (requestedChannel) {
+      const attributes = chatbot && chatbot.attributes || {};
+      const availableChannels = this.normalizeTemplateChannels(attributes.availableChannels || attributes.channels);
 
-    if (explicitChannel) {
-      this.selectedChannel = explicitChannel;
-      return;
-    }
-
-    if (availableChannels.length === 1) {
-      this.selectedChannel = availableChannels[0];
-      return;
+      if (!availableChannels.length || availableChannels.indexOf(requestedChannel) !== -1) {
+        this.selectedChannel = requestedChannel;
+        return;
+      }
     }
 
     this.selectedChannel = 'all';
