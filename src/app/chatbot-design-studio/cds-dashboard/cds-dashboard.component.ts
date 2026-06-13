@@ -273,47 +273,24 @@ export class CdsDashboardComponent implements OnInit {
   }
 
   private updateSelectedChannelFromBot(chatbot: any) {
-    const requestedChannel = this.getRequestedTemplateChannel();
+    const attributes = chatbot && chatbot.attributes || {};
+    const scopedChannel = this.normalizeTemplateChannel(attributes.targetChannel || attributes.selectedChannel);
 
-    if (requestedChannel) {
-      const attributes = chatbot && chatbot.attributes || {};
-      const availableChannels = this.normalizeTemplateChannels(attributes.availableChannels || attributes.channels);
-
-      if (!availableChannels.length || availableChannels.indexOf(requestedChannel) !== -1) {
-        this.selectedChannel = requestedChannel;
-        return;
-      }
+    if (scopedChannel && scopedChannel !== 'all' && this.isKnownFlowChannel(scopedChannel)) {
+      this.selectedChannel = scopedChannel;
+      return;
     }
 
     this.selectedChannel = 'all';
-  }
-
-  private normalizeTemplateChannels(channels: any): string[] {
-    if (!Array.isArray(channels)) {
-      return [];
-    }
-
-    const seen: { [key: string]: boolean } = {};
-    return channels
-      .map((channel) => this.normalizeTemplateChannel(channel))
-      .filter((channel) => {
-        if (!channel || seen[channel]) {
-          return false;
-        }
-
-        seen[channel] = true;
-        return true;
-      });
   }
 
   private normalizeTemplateChannel(channel: any): string {
     return String(channel || '').trim().toLowerCase();
   }
 
-  private getRequestedTemplateChannel(): string {
-    const channel = this.normalizeTemplateChannel(this.route.snapshot.queryParamMap.get('channel'));
+  private isKnownFlowChannel(channel: string): boolean {
     const allowedChannels = ['all', 'casezap', 'whatsapp', 'waba', 'telegram', 'messenger', 'sms', 'email', 'widget'];
-    return allowedChannels.indexOf(channel) !== -1 ? channel : null;
+    return allowedChannels.indexOf(channel) !== -1;
   }
 
   public getSelectedChannelLabel(): string {

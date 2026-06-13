@@ -766,7 +766,7 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
       return;
     }
 
-      this.faqKbService.installTemplate(this.templateId, this.projectId, true, this.projectId, this.selectedChannel).subscribe((res: any) => {
+      this.faqKbService.installTemplate(this.templateId, this.projectId, true, this.projectId, 'all').subscribe((res: any) => {
       this.logger.log('[COMMUNITY-TEMPLATE-DTLS] - FORK TEMPLATE RES', res);
       this.botid = res.bot_id
 
@@ -817,9 +817,6 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
       createdAt: new Date(),
       _id : this.botid,
       attributes: {}
-    }
-    if (this.selectedChannel && this.selectedChannel !== 'all') {
-      faqkb.attributes.targetChannel = this.selectedChannel;
     }
     goToCDSVersion(this.router, faqkb, this.project._id, this.appConfigService.getConfig().cdsBaseUrl)
   }

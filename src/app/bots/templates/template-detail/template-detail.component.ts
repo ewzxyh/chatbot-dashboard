@@ -319,7 +319,7 @@ export class TemplateDetailComponent extends PricingBaseComponent implements OnI
 
 
   forkTemplate() {
-    this.faqKbService.installTemplate(this.templateid, this.projectid, true, this.templateid, this.selectedChannel).subscribe((res: any) => {
+    this.faqKbService.installTemplate(this.templateid, this.projectid, true, this.templateid, 'all').subscribe((res: any) => {
       this.logger.log('[TEMPLATE DETAIL] - FORK TEMPLATE RES', res);
       this.botid = res.bot_id
 
@@ -416,9 +416,6 @@ export class TemplateDetailComponent extends PricingBaseComponent implements OnI
       createdAt: new Date(),
       _id : this.botid,
       attributes: {}
-    }
-    if (this.selectedChannel && this.selectedChannel !== 'all') {
-      faqkb.attributes['targetChannel'] = this.selectedChannel
     }
     goToCDSVersion(this.router, faqkb, this.project._id, this.appConfigService.getConfig().cdsBaseUrl)
 
