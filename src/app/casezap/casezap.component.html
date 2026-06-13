@@ -9,6 +9,7 @@
     </div>
     <div class="casezap-header-right">
       <span *ngIf="!loading && platformsLimit > 0" class="casezap-quota">{{ platformsUsed }}/{{ platformsLimit }} plataformas usadas</span>
+      <button *ngIf="view === 'list'" class="btn-secondary" (click)="goToDepartments()">Configurar departamentos</button>
       <button *ngIf="view === 'list'" class="btn-primary" (click)="startAdd()">+ Adicionar</button>
       <button *ngIf="view !== 'list'" class="btn-back" (click)="cancelForm()">Voltar</button>
     </div>

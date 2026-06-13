@@ -71,6 +71,12 @@
                                         [integrationModel]="selectedIntegrationModel">
                                     </integration-header>
 
+                                    <div *ngIf="integrationSelectedName === INT_KEYS.WHATSAPP" class="integration-routing-shortcut">
+                                        <button type="button" class="integration-routing-button" (click)="goToDepartments()">
+                                            Configurar departamentos
+                                        </button>
+                                    </div>
+
                                     <div *ngIf="integrationLocked === false" class="integration-outer-container">
 
                                         <brevo-integration *ngIf="integrationSelectedName === INT_KEYS.BREVO"

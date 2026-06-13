@@ -212,21 +212,11 @@ export class DepartmentService {
    * READ DETAIL (GET BOT BY BOT ID)
    * @param id
    */
-  public getDeptById(id: string): Observable<Department[]> {
+  public getDeptById(id: string): Observable<Department> {
+    this.logger.log('[DEPTS-SERV] GET DEPT BY ID - using authenticated allstatus cache');
 
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        'Authorization': this.TOKEN
-      })
-    };
-
-    let url = this.DEPTS_URL + id;
-    // url += `${id}`;
-    this.logger.log('[DEPTS-SERV] GET DEPT BY ID - URL', url);
-
-    return this.httpClient
-      .get<Department[]>(url, httpOptions)
+    return this.getDeptsByProjectId()
+      .pipe(map((departments: Department[]) => departments.find((department: any) => department._id === id)));
   }
 
 
@@ -240,7 +230,7 @@ export class DepartmentService {
    * @param routing 
    * @returns 
    */
-  public addDept(deptName: string, deptDescription: string, id_bot: string, bot_only: boolean, id_group: string, routing: string,groups:any, allowMultipleGroups:any,) {
+  public addDept(deptName: string, deptDescription: string, id_bot: string, bot_only: boolean, id_group: string, routing: string,groups:any, allowMultipleGroups:any, channelBindings?: any) {
     if(allowMultipleGroups) {
       if(groups?.length > 0 && id_group?.length > 0) {
         id_group = null
@@ -276,6 +266,7 @@ export class DepartmentService {
       'id_project': this.project._id,
       'groups': groups
     };
+    body['channel_bindings'] = channelBindings || null;
 
     if (id_bot) {
       body['id_bot'] = id_bot;
@@ -334,7 +325,7 @@ export class DepartmentService {
    * @param id
    * @param deptName
    */
-  public updateDept(id: string, deptName: string, deptDescription: string, id_bot: string, bot_only: boolean, id_group: string, routing: string,  groups:any, allowMultipleGroups:any, tags?:any) {
+  public updateDept(id: string, deptName: string, deptDescription: string, id_bot: string, bot_only: boolean, id_group: string, routing: string,  groups:any, allowMultipleGroups:any, tags?:any, channelBindings?: any) {
     this.logger.log('[DEPTS-SERV] UPDATE DEPT - groups ', groups);
     this.logger.log('[DEPTS-SERV] UPDATE DEPT - id_group ', id_group);
     this.logger.log('[DEPTS-SERV] UPDATE DEPT - allowMultipleGroups ', allowMultipleGroups);
@@ -369,6 +360,7 @@ export class DepartmentService {
     this.logger.log('[DEPTS-SERV] UPDATE DEPT - URL ', url);
 
     const body = { 'name': deptName, 'description': deptDescription, 'id_group': id_group, 'routing': routing, groups: groups };
+    body['channel_bindings'] = channelBindings || null;
     if (id_bot) {
       body['id_bot'] = id_bot;
       body['bot_only'] = bot_only;

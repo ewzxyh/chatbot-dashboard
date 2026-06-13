@@ -5,6 +5,7 @@ import { AuthService } from '../core/auth.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AppConfigService } from '../services/app-config.service';
 import { CasepayService } from '../services/casepay.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-casezap',
@@ -39,7 +40,8 @@ export class CasezapComponent implements OnInit, OnDestroy {
     private auth: AuthService,
     private http: HttpClient,
     private appConfig: AppConfigService,
-    private casepayService: CasepayService
+    private casepayService: CasepayService,
+    private router: Router
   ) {
     this.serverBaseUrl = this.appConfig.getConfig().SERVER_BASE_URL;
   }
@@ -106,6 +108,10 @@ export class CasezapComponent implements OnInit, OnDestroy {
     this.instanceName = '';
     this.error = '';
     this.success = '';
+  }
+
+  goToDepartments() {
+    this.router.navigate(['project/' + this.projectId + '/departments']);
   }
 
   startEdit(instance: any) {

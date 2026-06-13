@@ -434,6 +434,50 @@
                               </div>
                             </div>
 
+                            <div class="row channel-binding-row">
+                              <div class="col-12">
+                                <label class="custom-label">
+                                  Canal do departamento
+                                </label>
+                                <div class="channel-binding-panel">
+                                  <div class="channel-binding-description">
+                                    Vincule este departamento a instancias especificas. Escolha CaseZap ou WhatsApp Business; nao misture plataformas no mesmo departamento.
+                                  </div>
+
+                                  <div class="channel-provider-options">
+                                    <button type="button" class="channel-provider-option" [class.selected]="channelBindingsProvider === ''" (click)="selectChannelProvider('')">
+                                      Sem canal especifico
+                                    </button>
+                                    <button type="button" class="channel-provider-option" *ngFor="let provider of channelProviders" [class.selected]="channelBindingsProvider === provider.key" (click)="selectChannelProvider(provider.key)">
+                                      {{ provider.label }}
+                                    </button>
+                                  </div>
+
+                                  <div *ngIf="channelInstancesLoading" class="channel-binding-state">
+                                    Carregando instancias...
+                                  </div>
+
+                                  <div *ngIf="channelInstancesError" class="channel-binding-error">
+                                    {{ channelInstancesError }}
+                                  </div>
+
+                                  <div *ngIf="channelBindingsProvider && !channelInstancesLoading" class="channel-instances-list">
+                                    <label class="channel-instance-option" *ngFor="let instance of getChannelInstancesByProvider(channelBindingsProvider)">
+                                      <input type="checkbox" [checked]="isChannelInstanceSelected(instance)" (change)="toggleChannelInstance(instance, $event)">
+                                      <span>
+                                        <strong>{{ instance.label }}</strong>
+                                        <small>{{ instance.number || 'Sem numero informado' }}</small>
+                                      </span>
+                                    </label>
+
+                                    <div *ngIf="getChannelInstancesByProvider(channelBindingsProvider).length === 0" class="channel-binding-state">
+                                      Nenhuma instancia conectada para esta plataforma.
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
 
                           <!--  -->
                           <div class="row" *ngIf="displayAssignTo === false && groupsParsedArray?.length > 0">

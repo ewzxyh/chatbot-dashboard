@@ -168,6 +168,26 @@ mat-expansion-panel ::ng-deep {
     min-height: 150px;
 }
 
+.integration-routing-shortcut {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 12px;
+}
+
+.integration-routing-button {
+    padding: 8px 16px;
+    border: 1px solid #1e9cf0;
+    border-radius: 6px;
+    background: #fff;
+    color: #0f6fb5;
+    font-size: 14px;
+    cursor: pointer;
+
+    &:hover {
+        background: #eaf6ff;
+    }
+}
+
 .pro-badge {
     font-weight: 400;
     background: linear-gradient(45deg, #3167e2, #a736ff);

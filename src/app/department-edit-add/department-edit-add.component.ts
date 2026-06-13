@@ -17,8 +17,9 @@ import { APP_SUMO_PLAN_NAME, PLAN_NAME, group_assignment_doc, avatarPlaceholder,
 import { AppConfigService } from '../services/app-config.service';
 import { ComponentCanDeactivate } from '../core/pending-changes.guard';
 import { LoggerService } from '../services/logger/logger.service';
-import { Subject, Observable } from 'rxjs';
-import { takeUntil } from 'rxjs/operators'
+import { Subject, Observable, forkJoin, of } from 'rxjs';
+import { takeUntil, catchError } from 'rxjs/operators'
+import { IntegrationService } from '../services/integration.service';
 import { FaqKb } from 'app/models/faq_kb-model';
 import { ProjectPlanService } from 'app/services/project-plan.service';
 import { PricingBaseComponent } from 'app/pricing/pricing-base/pricing-base.component';
@@ -172,6 +173,16 @@ export class DepartmentEditAddComponent extends PricingBaseComponent implements 
   tags: any;
 
   allowMultipleGroups: boolean;
+  channelBindingsProvider = '';
+  channelBindingsInstances: string[] = [];
+  channelBindingsDetails: any[] = [];
+  channelInstances: any[] = [];
+  channelInstancesLoading = false;
+  channelInstancesError = '';
+  channelProviders = [
+    { key: 'casezap', label: 'CaseZap' },
+    { key: 'whatsapp', label: 'WhatsApp Business' }
+  ];
 
   PERMISSION_TO_READ_TEAMMATE_DETAILS: boolean;
   PERMISSION_TO_EDIT_FLOWS: boolean;
@@ -183,6 +194,7 @@ export class DepartmentEditAddComponent extends PricingBaseComponent implements 
     private router: Router,
     private route: ActivatedRoute,
     private deptService: DepartmentService,
+    private integrationService: IntegrationService,
     private faqKbService: FaqKbService,
     private auth: AuthService,
     private groupService: GroupService,
@@ -289,6 +301,7 @@ export class DepartmentEditAddComponent extends PricingBaseComponent implements 
     // this.roleService.checkRoleForCurrentProject('dept-edit-add')
     this.getProfileImageStorage();
     this.listenSidebarIsOpened();
+    this.loadChannelInstances();
 
 
     this.logger.log('[DEPT-EDIT-ADD] selectedDeptId FROM @INPUT: ', this.ws_requestslist_deptIdSelected)
@@ -1412,6 +1425,9 @@ export class DepartmentEditAddComponent extends PricingBaseComponent implements 
         this.dept_created_at = dept.createdAt;
         this.dept_ID = dept.id;
         this.bot_only = dept.bot_only
+        this.channelBindingsProvider = dept.channel_bindings ? dept.channel_bindings.provider || '' : '';
+        this.channelBindingsDetails = dept.channel_bindings && Array.isArray(dept.channel_bindings.instances) ? dept.channel_bindings.instances : [];
+        this.channelBindingsInstances = this.channelBindingsDetails.map((instance) => instance.id).filter((id) => !!id);
 
       }
 
@@ -1724,7 +1740,8 @@ export class DepartmentEditAddComponent extends PricingBaseComponent implements 
       this.selectedGroupId,
       this.ROUTING_SELECTED,
       this.groupsParsedArray,
-      this.allowMultipleGroups,)
+      this.allowMultipleGroups,
+      this.getChannelBindingsPayload())
       .subscribe((department) => {
         this.logger.log('[DEPT-EDIT-ADD] - createDepartment - POST DATA DEPT', department);
       }, (error) => {
@@ -1794,6 +1811,92 @@ export class DepartmentEditAddComponent extends PricingBaseComponent implements 
     }
   }
 
+  loadChannelInstances() {
+    this.channelInstancesLoading = true;
+    this.channelInstancesError = '';
+
+    forkJoin({
+      casezap: this.integrationService.getIntegrationInstances('casezap').pipe(catchError(() => of([]))),
+      whatsapp: this.integrationService.getIntegrationInstances('whatsapp').pipe(catchError(() => of([])))
+    }).pipe(takeUntil(this.unsubscribe$))
+      .subscribe((instances: any) => {
+        this.channelInstances = []
+          .concat(this.normalizeChannelInstances('casezap', instances.casezap))
+          .concat(this.normalizeChannelInstances('whatsapp', instances.whatsapp));
+        this.channelInstancesLoading = false;
+      }, () => {
+        this.channelInstancesError = 'Nao foi possivel carregar as instancias conectadas.';
+        this.channelInstancesLoading = false;
+      });
+  }
+
+  selectChannelProvider(provider: string) {
+    if (this.channelBindingsProvider !== provider) {
+      this.channelBindingsInstances = [];
+      this.channelBindingsDetails = [];
+    }
+    this.channelBindingsProvider = provider;
+    this.NOT_HAS_EDITED = false;
+  }
+
+  getChannelInstancesByProvider(provider: string) {
+    return this.channelInstances.filter((instance) => instance.provider === provider);
+  }
+
+  toggleChannelInstance(instance: any, event: any) {
+    const checked = event && event.target ? event.target.checked : false;
+
+    if (checked && this.channelBindingsInstances.indexOf(instance.id) === -1) {
+      this.channelBindingsInstances.push(instance.id);
+    } else if (!checked) {
+      this.channelBindingsInstances = this.channelBindingsInstances.filter((id) => id !== instance.id);
+    }
+
+    this.NOT_HAS_EDITED = false;
+  }
+
+  isChannelInstanceSelected(instance: any) {
+    return this.channelBindingsInstances.indexOf(instance.id) > -1;
+  }
+
+  getChannelBindingsPayload() {
+    if (!this.channelBindingsProvider || !this.channelBindingsInstances.length) {
+      return null;
+    }
+
+    const availableInstances = this.getChannelInstancesByProvider(this.channelBindingsProvider);
+    const selectedInstances = this.channelBindingsInstances
+      .map((id) => availableInstances.find((instance) => instance.id === id) || this.channelBindingsDetails.find((instance) => instance.id === id))
+      .filter((instance) => !!instance)
+      .map((instance) => ({
+        id: instance.id,
+        label: instance.label,
+        number: instance.number
+      }));
+
+    if (!selectedInstances.length) {
+      return null;
+    }
+
+    return {
+      provider: this.channelBindingsProvider,
+      instances: selectedInstances
+    };
+  }
+
+  normalizeChannelInstances(provider: string, instances: any) {
+    const source = Array.isArray(instances) ? instances : [];
+
+    return source.map((instance) => {
+      const value = instance && instance.value ? instance.value : {};
+      const number = value.number || value.phone_number || value.display_phone_number || instance.number || '';
+      const id = instance._id || value.phone_number_id || value.waba_id || value.number || number || value.instanceName;
+      const label = value.instanceName || value.verified_name || value.display_phone_number || value.name || instance.name || number || id;
+
+      return { provider, id, label, number };
+    }).filter((instance) => !!instance.id);
+  }
+
   // [{\"id\": \"68480837c19660002ded7b79\", \"percentage\":20},{\"id\": \"68480982c19660002deda58e\", \"percentage\":10}, {\"id\": \"687a6aa364222f002d1c83f9\", \"percentage\":10}, {\"id\": \"687a6ab364222f002d1c8410\", \"percentage\":10}, {\"id\": \"687a6ac064222f002d1c8426\", \"percentage\":10},{\"id\": \"687a6aca64222f002d1c843c\", \"percentage\":10}]
 
 
@@ -1837,7 +1940,8 @@ export class DepartmentEditAddComponent extends PricingBaseComponent implements 
       this.dept_routing,
       this.groupsParsedArray,
       this.allowMultipleGroups,
-      this.tags
+      this.tags,
+      this.getChannelBindingsPayload()
      
     ).subscribe((data) => {
       this.logger.log('[DEPT-EDIT-ADD] - EDIT DEPT - RES ', data);

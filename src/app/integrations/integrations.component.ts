@@ -687,6 +687,10 @@ export class IntegrationsComponent implements OnInit, OnDestroy {
     }
   }
 
+  goToDepartments() {
+    this.router.navigate(['project/' + this.projectID + '/departments']);
+  }
+
   presentModalOnlyOwnerCanManageTheAccountPlan() {
     this.notify.presentModalOnlyOwnerCanManageTheAccountPlan(this.onlyOwnerCanManageTheAccountPlanMsg, this.learnMoreAboutDefaultRoles)
   }

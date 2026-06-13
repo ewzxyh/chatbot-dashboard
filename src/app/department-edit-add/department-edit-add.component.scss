@@ -951,3 +951,89 @@ select[disabled] {
 .custom-anchor-to-docs:hover {
   text-decoration: underline;
 }
+
+.channel-binding-row {
+  margin-top: 18px;
+}
+
+.channel-binding-panel {
+  max-width: 538px;
+  padding: 14px;
+  border: 1px solid #d7e0ec;
+  border-radius: 6px;
+  background: #f8fbff;
+}
+
+.channel-binding-description {
+  margin-bottom: 12px;
+  color: #56637a;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.channel-provider-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.channel-provider-option {
+  padding: 7px 12px;
+  border: 1px solid #b8c7dc;
+  border-radius: 999px;
+  color: #384761;
+  background: #fff;
+  font-size: 13px;
+}
+
+.channel-provider-option.selected {
+  border-color: #1e9cf0;
+  color: #0f6fb5;
+  background: #eaf6ff;
+}
+
+.channel-instances-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.channel-instance-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 9px 10px;
+  border: 1px solid #d7e0ec;
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.channel-instance-option input {
+  margin: 0;
+}
+
+.channel-instance-option strong {
+  display: block;
+  color: #172b4d;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.channel-instance-option small {
+  display: block;
+  color: #6b778c;
+  font-size: 12px;
+}
+
+.channel-binding-state {
+  color: #6b778c;
+  font-size: 13px;
+}
+
+.channel-binding-error {
+  color: #d93025;
+  font-size: 13px;
+}
