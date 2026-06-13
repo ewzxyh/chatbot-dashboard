@@ -286,8 +286,6 @@ export class CdsDashboardComponent implements OnInit {
 
   private isExplicitChannelScope(attributes: any): boolean {
     return !!attributes && (
-      attributes.channelScopeMode === 'exclusive' ||
-      attributes.channelScope === 'exclusive' ||
       attributes.exclusiveChannel === true ||
       attributes.isChannelExclusive === true
     );
