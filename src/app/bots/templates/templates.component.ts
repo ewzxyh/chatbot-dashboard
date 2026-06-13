@@ -85,13 +85,13 @@ export class TemplatesComponent extends PricingBaseComponent implements OnInit {
   public_Key: string;
   IS_OPEN_SETTINGS_SIDEBAR: boolean = true;
   pageTitle: string;
-  public selectedTemplateChannel: string = 'casezap';
+  public selectedTemplateChannel: string = 'all';
   public templateChannelFilters = [
+    { id: 'all', label: 'Todos', hint: 'Mostra todos os modelos, sem filtrar por canal.' },
     { id: 'casezap', label: 'CaseZap', hint: 'Fluxos com menu numerico e conversa aberta via UAZAPI.' },
     { id: 'whatsapp', label: 'WhatsApp', hint: 'Fluxos para conversa aberta no WhatsApp.' },
     { id: 'waba', label: 'WABA', hint: 'Templates Meta aprovados para iniciar conversa.' },
-    { id: 'telegram', label: 'Telegram', hint: 'Modelos compativeis com Telegram quando existirem.' },
-    { id: 'all', label: 'Todos', hint: 'Mostra todos os modelos, sem filtrar por canal.' }
+    { id: 'telegram', label: 'Telegram', hint: 'Modelos compativeis com Telegram quando existirem.' }
   ];
 
   public displayChatbotsCommunity: boolean;

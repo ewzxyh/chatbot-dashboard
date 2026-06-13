@@ -47,7 +47,7 @@ export class TemplateDetailComponent extends PricingBaseComponent implements OnI
   public templateid: string;
   public projectid: string;
   public templateProjectId: string;
-  public selectedChannel: string = 'casezap';
+  public selectedChannel: string = 'all';
   public _newlyCreatedProject: boolean;
   public defaultDeptID: string;
   public user: any;
@@ -103,7 +103,7 @@ export class TemplateDetailComponent extends PricingBaseComponent implements OnI
     this._newlyCreatedProject = data.newlyCreatedProject
     this.callingPage = data.callingPage;
     this.prjct_profile_name = data.projectProfile
-    this.selectedChannel = data.channel || 'casezap';
+    this.selectedChannel = data.channel || 'all';
     this.logger.log('[TEMPLATE DETAIL] prjct_profile_name ', this.prjct_profile_name)
     // this.logger.log('[TEMPLATE DETAIL] template ', this.template)
     // this.logger.log('[TEMPLATE DETAIL] projectid ', this.projectid)
@@ -412,12 +412,13 @@ export class TemplateDetailComponent extends PricingBaseComponent implements OnI
   goToBotDetails() {
     this.logger.log('[TEMPLATE DETAIL] GO TO  BOT DETAILS - isDevMode() ', isDevMode());
     // this.router.navigate(['project/' + this.project._id + '/cds/', this.botid, 'intent', '0']);
-    let faqkb = {
+    let faqkb: any = {
       createdAt: new Date(),
       _id : this.botid,
-      attributes: {
-        targetChannel: this.selectedChannel
-      }
+      attributes: {}
+    }
+    if (this.selectedChannel && this.selectedChannel !== 'all') {
+      faqkb.attributes['targetChannel'] = this.selectedChannel
     }
     goToCDSVersion(this.router, faqkb, this.project._id, this.appConfigService.getConfig().cdsBaseUrl)
 

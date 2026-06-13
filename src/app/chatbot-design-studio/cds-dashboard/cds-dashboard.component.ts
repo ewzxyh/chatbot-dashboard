@@ -293,12 +293,7 @@ export class CdsDashboardComponent implements OnInit {
       return;
     }
 
-    if (availableChannels.indexOf('casezap') !== -1) {
-      this.selectedChannel = 'casezap';
-      return;
-    }
-
-    this.selectedChannel = availableChannels[0] || 'all';
+    this.selectedChannel = 'all';
   }
 
   private normalizeTemplateChannels(channels: any): string[] {
@@ -325,7 +320,7 @@ export class CdsDashboardComponent implements OnInit {
 
   private getRequestedTemplateChannel(): string {
     const channel = this.normalizeTemplateChannel(this.route.snapshot.queryParamMap.get('channel'));
-    const allowedChannels = ['casezap', 'whatsapp', 'waba', 'telegram', 'messenger', 'sms', 'email', 'widget'];
+    const allowedChannels = ['all', 'casezap', 'whatsapp', 'waba', 'telegram', 'messenger', 'sms', 'email', 'widget'];
     return allowedChannels.indexOf(channel) !== -1 ? channel : null;
   }
 
