@@ -338,15 +338,16 @@ export class KnowledgeBaseService {
 
   // DEPRECATED FUNCTIONS - START
 
-  getKbSettingsPrev() {
+  getKbSettingsPrev(projectId?: string) {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
         'Authorization': this.TOKEN
       })
     }
+    const idProject = projectId || this.project_id;
     //const url = this.SERVER_BASE_PATH + this.project_id + "/kb";
-    const url = this.SERVER_BASE_PATH + this.project_id + "/kbsettings";
+    const url = this.SERVER_BASE_PATH + idProject + "/kbsettings";
     this.logger.log("[KNOWLEDGE BASE SERVICE] - get settings URL ", url);
     return this.httpClient.get(url, httpOptions);
   }

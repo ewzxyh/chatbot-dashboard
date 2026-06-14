@@ -132,10 +132,10 @@ export class SettingsSidebarComponent implements OnInit {
       this.logger.log('[SETTINGS-SIDEBAR] Restored USER_HAS_TOGGLE_SIDEBAR from localStorage:', this.USER_HAS_TOGGLE_SIDEBAR);
     }
     
+    this.getCurrentProject();
     this.getUserRole();
     this.getOSCODE();
     this.getChatUrl();
-    this.getCurrentProject();
     this.getCurrentRoute();
     // this.getMainContentHeight();
     this.listenSidebarIsOpened();
@@ -896,7 +896,10 @@ export class SettingsSidebarComponent implements OnInit {
 
 
    getKnowledgeBaseSettings() {
-      this.kbService.getKbSettingsPrev().subscribe((kbSettings: KbSettings) => {
+      if (!this.project || !this.project._id) {
+        return;
+      }
+      this.kbService.getKbSettingsPrev(this.project._id).subscribe((kbSettings: KbSettings) => {
         this.logger.log("[SIDEBAR] get kbSettings RES ", kbSettings);
         if (kbSettings && kbSettings.kbs) {
           if (kbSettings.kbs.length === 0) {
@@ -981,6 +984,9 @@ export class SettingsSidebarComponent implements OnInit {
     )
     this.auth.project_bs.subscribe((project) => {
       this.project = project
+      if (this.project && this.project._id && this.isVisibleKNB && this.ARE_NEW_KB === undefined) {
+        this.getKnowledgeBaseSettings()
+      }
       // this.logger.log('[SIDEBAR] project from AUTH service subscription  ', this.project)
     })
   }
