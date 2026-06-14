@@ -110,6 +110,7 @@ export class IntegrationsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.projectID = this.getProjectId();
     this.getCurrentProject();
     this.getLoggedUser()
     this.getOSCODE();
@@ -333,15 +334,30 @@ export class IntegrationsComponent implements OnInit, OnDestroy {
       this.logger.log("[INTEGRATION-COMP] getIntegrations this.INTEGRATIONS: ", this.INTEGRATIONS);
 
       if (this.intName) {
-        this.onIntegrationSelect(this.INTEGRATIONS.find(i => i.key === this.intName));
-        this.logger.log("[INTEGRATION-COMP] getIntegrations this.INTEGRATIONS find: ", this.INTEGRATIONS.find(i => i.key === this.intName));
+        const integration = this.INTEGRATIONS.find(i => i.key === this.intName);
+        if (integration) {
+          this.onIntegrationSelect(integration);
+        }
+        this.logger.log("[INTEGRATION-COMP] getIntegrations this.INTEGRATIONS find: ", integration);
       }
     })
   }
 
+  getProjectId(): string {
+    return this.projectID || this.route.snapshot.paramMap.get('projectid') || '';
+  }
+
   getAllIntegrations() {
     return new Promise((resolve, reject) => {
-      this.integrationService.getAllIntegrations().subscribe((integrations: Array<any>) => {
+      const projectId = this.getProjectId();
+      if (!projectId) {
+        this.showSpinner = false;
+        this.logger.error("[INTEGRATION-COMP] Missing project id while loading integrations");
+        reject();
+        return;
+      }
+
+      this.integrationService.getAllIntegrations(projectId).subscribe((integrations: Array<any>) => {
         this.logger.log("[INTEGRATION-COMP] Integrations for this project ", integrations)
         this.integrations = integrations;
 
@@ -563,7 +579,7 @@ export class IntegrationsComponent implements OnInit, OnDestroy {
 
   integrationUpdateEvent(data) {
     this.logger.log('[INTEGRATION-COMP] data', data)
-    this.integrationService.saveIntegration(data.integration).subscribe((result) => {
+    this.integrationService.saveIntegration(data.integration, this.getProjectId()).subscribe((result) => {
       this.logger.log("[INTEGRATION-COMP] Save integration result: ", result);
       // this.notify.showNotification("Saved successfully", 2, 'done');
       this.reloadSelectedIntegration(data.integration);
@@ -614,7 +630,7 @@ export class IntegrationsComponent implements OnInit, OnDestroy {
     }).then((result) => {
       if (result.isDenied) {
 
-        this.integrationService.deleteIntegration(integration._id).subscribe((result) => {
+        this.integrationService.deleteIntegration(integration._id, this.getProjectId()).subscribe((result) => {
           this.logger.debug("[INTEGRATION-COMP] Delete integration result: ", result);
           this.logger.log('Integration ', integration.name, 'deleted ')
           this.trackDeletedIntegration(integration.name)

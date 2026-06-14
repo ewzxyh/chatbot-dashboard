@@ -60,7 +60,11 @@ export class IntegrationService {
     }
   }
 
-  getAllIntegrations() {
+  getProjectId(projectId?: string) {
+    return projectId || this.project_id;
+  }
+
+  getAllIntegrations(projectId?: string) {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
@@ -68,13 +72,13 @@ export class IntegrationService {
       })
     }
 
-    const url = this.SERVER_BASE_PATH + this.project_id + "/integration";
+    const url = this.SERVER_BASE_PATH + this.getProjectId(projectId) + "/integration";
     this.logger.debug('[INTEGRATION.SERV] - get integration URL: ', url);
 
     return this.http.get(url, httpOptions);
   }
 
-  getIntegrationDetail(integration_id: string) {
+  getIntegrationDetail(integration_id: string, projectId?: string) {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
@@ -82,13 +86,13 @@ export class IntegrationService {
       })
     }
 
-    const url = this.SERVER_BASE_PATH + this.project_id + "/integration/" + integration_id;
+    const url = this.SERVER_BASE_PATH + this.getProjectId(projectId) + "/integration/" + integration_id;
     this.logger.debug('[INTEGRATION.SERV] - get integration URL: ', url);
 
     return this.http.get(url, httpOptions);
   }
 
-  getIntegrationByName(name: string) {
+  getIntegrationByName(name: string, projectId?: string) {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
@@ -96,13 +100,13 @@ export class IntegrationService {
       })
     }
 
-    const url = this.SERVER_BASE_PATH + this.project_id + "/integration/name/" + name;
+    const url = this.SERVER_BASE_PATH + this.getProjectId(projectId) + "/integration/name/" + name;
     this.logger.debug('[INTEGRATION.SERV] - get integration URL: ', url);
 
     return this.http.get(url, httpOptions);
   }
 
-  saveIntegration(integration: any) {
+  saveIntegration(integration: any, projectId?: string) {
     this.logger.log('integration ', integration) 
     const httpOptions = {
       headers: new HttpHeaders({
@@ -111,13 +115,13 @@ export class IntegrationService {
       })
     }
 
-    const url = this.SERVER_BASE_PATH + this.project_id + "/integration/";
+    const url = this.SERVER_BASE_PATH + this.getProjectId(projectId) + "/integration/";
     this.logger.debug('[INTEGRATION.SERV] - save integration URL: ', url);
 
     return this.http.post(url, integration, httpOptions);
   }
 
-  deleteIntegration(integration_id: string) {
+  deleteIntegration(integration_id: string, projectId?: string) {
 
     const httpOptions = {
       headers: new HttpHeaders({
@@ -126,31 +130,31 @@ export class IntegrationService {
       })
     }
 
-    const url = this.SERVER_BASE_PATH + this.project_id + "/integration/" + integration_id;
+    const url = this.SERVER_BASE_PATH + this.getProjectId(projectId) + "/integration/" + integration_id;
     this.logger.debug('[INTEGRATION.SERV] - save integration URL: ', url);
 
     return this.http.delete(url, httpOptions);
   }
 
-  updateIntegration(integration_id: string, data: any) {
+  updateIntegration(integration_id: string, data: any, projectId?: string) {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
         'Authorization': this.TOKEN
       })
     };
-    const url = this.SERVER_BASE_PATH + this.project_id + '/integration/' + integration_id;
+    const url = this.SERVER_BASE_PATH + this.getProjectId(projectId) + '/integration/' + integration_id;
     return this.http.put(url, data, httpOptions);
   }
 
-  getIntegrationInstances(name: string) {
+  getIntegrationInstances(name: string, projectId?: string) {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
         'Authorization': this.TOKEN
       })
     };
-    const url = this.SERVER_BASE_PATH + this.project_id + '/integration/name/' + name + '/instances';
+    const url = this.SERVER_BASE_PATH + this.getProjectId(projectId) + '/integration/name/' + name + '/instances';
     return this.http.get(url, httpOptions);
   }
 

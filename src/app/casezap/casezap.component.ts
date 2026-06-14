@@ -5,7 +5,7 @@ import { AuthService } from '../core/auth.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AppConfigService } from '../services/app-config.service';
 import { CasepayService } from '../services/casepay.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-casezap',
@@ -41,12 +41,14 @@ export class CasezapComponent implements OnInit, OnDestroy {
     private http: HttpClient,
     private appConfig: AppConfigService,
     private casepayService: CasepayService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     this.serverBaseUrl = this.appConfig.getConfig().SERVER_BASE_URL;
   }
 
   ngOnInit() {
+    this.projectId = this.route.snapshot.paramMap.get('projectid') || this.projectId;
     const user = this.auth.user_bs.value;
     if (user) {
       this.TOKEN = user.token;
@@ -74,7 +76,7 @@ export class CasezapComponent implements OnInit, OnDestroy {
 
   loadInstances() {
     this.loading = true;
-    this.integrationService.getIntegrationInstances('casezap').subscribe(
+    this.integrationService.getIntegrationInstances('casezap', this.projectId).subscribe(
       (instances: any[]) => {
         this.loading = false;
         this.instances = instances || [];
@@ -151,7 +153,7 @@ export class CasezapComponent implements OnInit, OnDestroy {
 
     if (this.view === 'add') {
       const data = { name: 'casezap', value };
-      this.integrationService.saveIntegration(data).subscribe(
+      this.integrationService.saveIntegration(data, this.projectId).subscribe(
         (result: any) => {
           this.registerWebhook(result._id);
         },
@@ -167,7 +169,7 @@ export class CasezapComponent implements OnInit, OnDestroy {
         }
       );
     } else if (this.view === 'edit' && this.editingInstance) {
-      this.integrationService.updateIntegration(this.editingInstance._id, { value }).subscribe(
+      this.integrationService.updateIntegration(this.editingInstance._id, { value }, this.projectId).subscribe(
         () => {
           this.registerWebhook(this.editingInstance._id);
         },
@@ -208,7 +210,7 @@ export class CasezapComponent implements OnInit, OnDestroy {
     this.saving = true;
     this.error = '';
     this.success = '';
-    this.integrationService.deleteIntegration(instance._id).subscribe(
+    this.integrationService.deleteIntegration(instance._id, this.projectId).subscribe(
       () => {
         this.saving = false;
         this.success = 'Instancia removida';
