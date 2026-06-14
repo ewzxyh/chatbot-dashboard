@@ -28,6 +28,10 @@ export class CasezapComponent implements OnInit, OnDestroy {
   success = '';
   platformsUsed = 0;
   platformsLimit = 0;
+  expandedDiagnosticsId = '';
+  diagnosticsById: { [key: string]: any } = {};
+  diagnosticsLoadingById: { [key: string]: boolean } = {};
+  diagnosticsErrorById: { [key: string]: string } = {};
 
   projectId: string;
   serverBaseUrl: string;
@@ -86,6 +90,69 @@ export class CasezapComponent implements OnInit, OnDestroy {
         this.instances = [];
       }
     );
+  }
+
+  getIntegrationId(instance: any): string {
+    return instance && instance._id ? String(instance._id) : '';
+  }
+
+  toggleDiagnostics(instance: any) {
+    const id = this.getIntegrationId(instance);
+    if (!id) return;
+
+    if (this.expandedDiagnosticsId === id) {
+      this.expandedDiagnosticsId = '';
+      return;
+    }
+
+    this.expandedDiagnosticsId = id;
+    if (!this.diagnosticsById[id]) {
+      this.loadDiagnostics(instance, false);
+    }
+  }
+
+  loadDiagnostics(instance: any, force = false) {
+    const id = this.getIntegrationId(instance);
+    if (!id) return;
+
+    this.diagnosticsLoadingById[id] = true;
+    this.diagnosticsErrorById[id] = '';
+    this.integrationService.getIntegrationInstanceDiagnostics('casezap', id, this.projectId, force).subscribe(
+      (diagnostics: any) => {
+        this.diagnosticsLoadingById[id] = false;
+        this.diagnosticsById[id] = diagnostics;
+      },
+      (err: any) => {
+        this.diagnosticsLoadingById[id] = false;
+        this.diagnosticsErrorById[id] = err && err.error && err.error.error ? err.error.error : 'Erro ao carregar diagnostico';
+      }
+    );
+  }
+
+  diagnosticLabel(value: string): string {
+    if (value === 'ok') return 'OK';
+    if (value === 'degraded') return 'Instavel';
+    if (value === 'down') return 'Falha';
+    if (value === 'active') return 'Conectado';
+    if (value === 'disconnected') return 'Desconectado';
+    if (value === 'success') return 'Sucesso';
+    if (value === 'failed') return 'Falha';
+    if (value === 'skipped') return 'Ignorado';
+    return value || 'Desconhecido';
+  }
+
+  diagnosticStatusClass(value: string): string {
+    if (value === 'ok' || value === 'active' || value === 'success') return 'ok';
+    if (value === 'degraded' || value === 'skipped' || value === 'pending') return 'warn';
+    if (value === 'down' || value === 'disconnected' || value === 'failed') return 'down';
+    return 'unknown';
+  }
+
+  formatDiagnosticDate(value: string): string {
+    if (!value) return 'Nunca';
+    const date = new Date(value);
+    if (isNaN(date.getTime())) return 'Nunca';
+    return date.toLocaleString('pt-BR');
   }
 
   loadQuota() {

@@ -26,19 +26,79 @@
     </div>
 
     <div *ngFor="let inst of instances" class="instance-card">
-      <div class="instance-info">
-        <strong class="instance-name">{{ inst.value?.instanceName || 'Sem nome' }}</strong>
-        <span class="instance-number">{{ inst.value?.number }}</span>
-        <span class="instance-domain">{{ truncateDomain(inst.value?.domain) }}</span>
+      <div class="instance-card-main">
+        <div class="instance-info">
+          <strong class="instance-name">{{ inst.value?.instanceName || 'Sem nome' }}</strong>
+          <span class="instance-number">{{ inst.value?.number }}</span>
+          <span class="instance-domain">{{ truncateDomain(inst.value?.domain) }}</span>
+        </div>
+        <div class="instance-status"
+             [class.active]="inst.value?.status === 'active'"
+             [class.disconnected]="inst.value?.status !== 'active'">
+          {{ inst.value?.status === 'active' ? 'Conectado' : 'Desconectado' }}
+        </div>
+        <div class="instance-actions">
+          <button class="btn-edit" (click)="toggleDiagnostics(inst)" [disabled]="saving">
+            {{ expandedDiagnosticsId === getIntegrationId(inst) ? 'Ocultar' : 'Diagnóstico' }}
+          </button>
+          <button class="btn-edit" (click)="startEdit(inst)" [disabled]="saving">Editar</button>
+          <button class="btn-danger-sm" (click)="removeInstance(inst)" [disabled]="saving">Remover</button>
+        </div>
       </div>
-      <div class="instance-status"
-           [class.active]="inst.value?.status === 'active'"
-           [class.disconnected]="inst.value?.status !== 'active'">
-        {{ inst.value?.status === 'active' ? 'Conectado' : 'Desconectado' }}
-      </div>
-      <div class="instance-actions">
-        <button class="btn-edit" (click)="startEdit(inst)" [disabled]="saving">Editar</button>
-        <button class="btn-danger-sm" (click)="removeInstance(inst)" [disabled]="saving">Remover</button>
+
+      <div *ngIf="expandedDiagnosticsId === getIntegrationId(inst)" class="instance-diagnostics">
+        <div class="diagnostics-toolbar">
+          <strong>Diagnóstico da instância</strong>
+          <button class="btn-edit" (click)="loadDiagnostics(inst, true)" [disabled]="diagnosticsLoadingById[getIntegrationId(inst)]">
+            {{ diagnosticsLoadingById[getIntegrationId(inst)] ? 'Atualizando...' : 'Atualizar' }}
+          </button>
+        </div>
+
+        <div *ngIf="diagnosticsLoadingById[getIntegrationId(inst)]" class="diagnostics-muted">Carregando diagnóstico...</div>
+        <div *ngIf="diagnosticsErrorById[getIntegrationId(inst)]" class="casezap-alert error">{{ diagnosticsErrorById[getIntegrationId(inst)] }}</div>
+
+        <div *ngIf="diagnosticsById[getIntegrationId(inst)] as diagnostic" class="diagnostics-content">
+          <div class="diagnostics-grid">
+            <div class="diagnostics-item">
+              <span class="diagnostics-label">Provider</span>
+              <span class="diagnostics-badge" [ngClass]="diagnosticStatusClass(diagnostic.provider?.health)">
+                {{ diagnosticLabel(diagnostic.provider?.health) }}
+              </span>
+              <small>{{ diagnostic.provider?.status || diagnostic.provider?.reason || 'sem detalhe' }}</small>
+            </div>
+            <div class="diagnostics-item">
+              <span class="diagnostics-label">Status salvo</span>
+              <span class="diagnostics-badge" [ngClass]="diagnosticStatusClass(diagnostic.instance?.savedStatus)">
+                {{ diagnosticLabel(diagnostic.instance?.savedStatus) }}
+              </span>
+              <small>Última checagem: {{ formatDiagnosticDate(diagnostic.provider?.checkedAt) }}</small>
+            </div>
+            <div class="diagnostics-item">
+              <span class="diagnostics-label">Último webhook</span>
+              <strong>{{ formatDiagnosticDate(diagnostic.webhook?.lastReceivedAt) }}</strong>
+              <small>{{ diagnostic.webhook?.lastReceivedEvent || 'nenhum evento recebido' }}</small>
+            </div>
+            <div class="diagnostics-item">
+              <span class="diagnostics-label">Último erro</span>
+              <strong>{{ diagnostic.webhook?.lastErrorEvent || 'Sem erro recente' }}</strong>
+              <small>{{ diagnostic.webhook?.lastErrorMessage || 'Nenhum erro registrado' }}</small>
+            </div>
+          </div>
+
+          <div class="diagnostics-meta">
+            <span>Webhook: {{ diagnostic.webhook?.secretConfigured ? 'configurado' : 'sem segredo salvo' }}</span>
+            <span>Registro: {{ diagnosticLabel(diagnostic.webhook?.lastRegistrationStatus) }}</span>
+            <span>Recebido de mim: {{ diagnostic.webhook?.lastReceivedFromMe === true ? 'sim' : (diagnostic.webhook?.lastReceivedFromMe === false ? 'não' : 'desconhecido') }}</span>
+          </div>
+
+          <div *ngIf="diagnostic.recentEvents?.length" class="diagnostics-events">
+            <div *ngFor="let event of diagnostic.recentEvents" class="diagnostics-event">
+              <span>{{ formatDiagnosticDate(event.timestamp) }}</span>
+              <strong>{{ event.event }}</strong>
+              <span class="diagnostics-badge" [ngClass]="diagnosticStatusClass(event.status)">{{ diagnosticLabel(event.status) }}</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

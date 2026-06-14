@@ -158,6 +158,18 @@ export class IntegrationService {
     return this.http.get(url, httpOptions);
   }
 
+  getIntegrationInstanceDiagnostics(name: string, integrationId: string, projectId?: string, force = false) {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Authorization': this.TOKEN
+      })
+    };
+    const suffix = force ? '?force=true' : '';
+    const url = this.SERVER_BASE_PATH + this.getProjectId(projectId) + '/integration/name/' + name + '/instances/' + integrationId + '/diagnostics' + suffix;
+    return this.http.get(url, httpOptions);
+  }
+
   checkIntegrationKeyValidity(url: string, key?: string, api_key?: string) {
     
     let headers = new HttpHeaders({
