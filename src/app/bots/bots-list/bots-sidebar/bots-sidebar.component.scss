@@ -7,6 +7,20 @@ li > a {
     border-radius: 0px;
 }
 
+.settings-sidebar-icons {
+    width: 20px;
+    min-width: 20px;
+    height: 20px;
+    font-size: 20px !important;
+    line-height: 20px;
+    margin-left: 0px !important;
+    color: var(--settings-sidebar-color);
+}
+
+li.active-item a .settings-sidebar-icons {
+    color: var(--settings-sidebar-active-color) !important;
+}
+
 
 // .beta-badge-wpr {
 //     font-weight: 400;

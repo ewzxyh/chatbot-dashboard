@@ -104,6 +104,21 @@
   fill: var(--sidebar-hover-icon-color);
 }
 
+.nav-sidebar-icon {
+  width: 24px;
+  height: 24px;
+  color: var(--sidebar-icon-color);
+}
+
+.nav-custom > div:hover > a .nav-sidebar-icon {
+  color: var(--sidebar-hover-icon-color);
+}
+
+div.item-active > a .nav-sidebar-icon,
+div.is-active > a .nav-sidebar-icon {
+  color: var(--sidebar-active-icon) !important;
+}
+
 
 .item-active svg path,
 .item-active svg ellipse{

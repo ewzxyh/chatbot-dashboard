@@ -69,6 +69,8 @@
     color: rgb(100, 116, 145);
     vertical-align: middle;
     font-size: 18px;
+    width: 18px;
+    height: 18px;
     margin-left: 6px;
 }
 
@@ -91,7 +93,7 @@ li.active a p.custom_paragraph {
     color: $brand-sidebar-active-item-text-color !important;
 }
 
-li.active a i.settings-sidebar-icons {
+li.active a .settings-sidebar-icons {
     color: $brand-sidebar-active-item-text-color !important;
 }
 
@@ -156,6 +158,7 @@ li > a {
     height: 20px;
     cursor: pointer;
     font-size: 18px;
+    line-height: 20px;
 }
 
 .toggle-setting-sidebar-icon:hover {

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { BotsSidebarComponent } from './bots-sidebar.component';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
+import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 
@@ -15,6 +16,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     CommonModule,
     FormsModule,
     TranslateModule,
+    MatIconModule,
     MatTooltipModule,
   ], exports: [
     BotsSidebarComponent,

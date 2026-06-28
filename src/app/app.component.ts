@@ -39,6 +39,7 @@ import { HttpClient } from '@angular/common/http';
 import { SleekplanSsoService } from './services/sleekplan-sso.service';
 import { SleekplanService } from './services/sleekplan.service';
 import { SleekplanApiService } from './services/sleekplan-api.service';
+import { DashboardIconService } from './services/dashboard-icon.service';
 // import { KeycloakService } from './services/keycloak.service';¶
 
 // import { UsersService } from './services/users.service';
@@ -111,6 +112,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         private sleekplanSsoService: SleekplanSsoService,
         private sleekplanService: SleekplanService,
         private sleekplanApiService: SleekplanApiService,
+        private dashboardIconService: DashboardIconService,
         // private keycloakService: KeycloakService,
         private localDbService: LocalDbService
         // public usersService: UsersService,
@@ -118,6 +120,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         
     ) {
 
+        this.dashboardIconService.registerIcons();
         this.enforceChatcaseLocale();
       
 

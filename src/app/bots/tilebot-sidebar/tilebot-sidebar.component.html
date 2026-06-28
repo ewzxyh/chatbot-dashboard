@@ -1,11 +1,7 @@
 <div class="toggle-setting-sidebar-icon-wpr" [ngClass]="{'is_opened': IS_OPEN, 'is_closed':!IS_OPEN }"
   (click)="toggletilebotSidebar(IS_OPEN = !IS_OPEN)">
-  <span *ngIf="IS_OPEN" class="material-icons toggle-setting-sidebar-icon">
-    chevron_left
-  </span>
-  <span *ngIf="!IS_OPEN" class="material-icons toggle-setting-sidebar-icon">
-    chevron_right
-  </span>
+  <mat-icon *ngIf="IS_OPEN" svgIcon="td-chevron-left" class="toggle-setting-sidebar-icon"></mat-icon>
+  <mat-icon *ngIf="!IS_OPEN" svgIcon="td-chevron-right" class="toggle-setting-sidebar-icon"></mat-icon>
 </div>
 
 <div *ngIf="project" class="settings-sidebar-wpr"
@@ -40,9 +36,7 @@
 
           <div class="settings-icon-wpr" style="float: right;height: 30px;
                width: 30px; position: relative;top: 5px;">
-            <i *ngIf="IS_OPEN === true" class="material-icons settings-sidebar-icons"  style="position: relative; left: 12px;">
-              settings
-            </i>
+            <mat-icon *ngIf="IS_OPEN === true" svgIcon="td-settings" class="settings-sidebar-icons" style="position: relative; left: 12px;"></mat-icon>
           </div>
         </a>
       </li>
@@ -57,9 +51,7 @@
         matTooltipClass="custom-mat-tooltip-in-settings-sidebar" matTooltip="Intents" #tooltip="matTooltip"
         matTooltipPosition='right' matTooltipHideDelay="100" [matTooltipDisabled]="IS_OPEN">
         <a>
-          <i *ngIf="IS_OPEN === true || IS_OPEN === false" class="material-icons settings-sidebar-icons">
-            textsms
-          </i>
+          <mat-icon *ngIf="IS_OPEN === true || IS_OPEN === false" svgIcon="td-message" class="settings-sidebar-icons"></mat-icon>
           <p *ngIf="IS_OPEN === true" class="custom_paragraph">
             Intents
           </p>
@@ -75,9 +67,7 @@
         matTooltipClass="custom-mat-tooltip-in-settings-sidebar" matTooltip="Fulfillment" #tooltip="matTooltip"
         matTooltipPosition='right' matTooltipHideDelay="100" [matTooltipDisabled]="IS_OPEN">
         <a>
-          <i *ngIf="IS_OPEN === true || IS_OPEN === false" class="material-icons settings-sidebar-icons">
-            offline_bolt
-          </i>
+          <mat-icon *ngIf="IS_OPEN === true || IS_OPEN === false" svgIcon="td-bolt" class="settings-sidebar-icons"></mat-icon>
           <p *ngIf="IS_OPEN === true" class="custom_paragraph">
             Fulfillment
           </p>
@@ -93,9 +83,7 @@
         matTooltipClass="custom-mat-tooltip-in-settings-sidebar" matTooltip="{{'Training' | translate}}"
         #tooltip="matTooltip" matTooltipPosition='right' matTooltipHideDelay="100" [matTooltipDisabled]="IS_OPEN">
         <a>
-          <i *ngIf="IS_OPEN === true || IS_OPEN === false" class="material-icons settings-sidebar-icons">
-            school
-          </i>
+          <mat-icon *ngIf="IS_OPEN === true || IS_OPEN === false" svgIcon="td-school" class="settings-sidebar-icons"></mat-icon>
           <p *ngIf="IS_OPEN === true" class="custom_paragraph">
             {{'Training' | translate}}
           </p>
