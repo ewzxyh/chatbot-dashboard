@@ -2205,6 +2205,12 @@ button.buttonRounded:hover {
   height: auto;
 }
 
+.widget-section-header-icon {
+  display: block;
+  width: 22px;
+  height: 22px;
+}
+
 .section-offset {
   margin-left: 45px;
 }
@@ -2295,6 +2301,8 @@ button.buttonRounded:hover {
   bottom: 10px;
   font-size: 30px;
   color: #d2d3da;
+  width: 24px;
+  height: 24px;
 }
 
 .widget-settings-control-label {
@@ -3184,8 +3192,11 @@ pre {
   text-decoration: underline;
 }
 
-.widget-set-up-link-to-docs-wpr>span>svg {
-  fill: var(--blue-light);
+.widget-help-link-icon {
+  color: var(--blue-light);
+  width: 24px;
+  height: 24px;
+  vertical-align: middle;
 }
 
 .anchor-to-multilanguage-section {

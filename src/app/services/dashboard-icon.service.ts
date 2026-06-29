@@ -43,16 +43,21 @@ export class DashboardIconService {
     error: 'alert-triangle',
     expand_less: 'chevron-up',
     expand_more: 'chevron-down',
+    file_copy: 'copy',
     file_download: 'download',
+    flag: 'flag',
     file_upload: 'file-upload',
     forum: 'message-circle',
     group: 'users',
     help: 'help-circle',
+    help_outline: 'help-circle',
     history: 'history',
     inbox: 'inbox',
     info: 'info-circle',
+    keyboard_arrow_down: 'chevron-down',
     keyboard_arrow_left: 'chevron-left',
     keyboard_arrow_right: 'chevron-right',
+    keyboard_arrow_up: 'chevron-up',
     lan: 'sitemap',
     language: 'language',
     lightbulb: 'bulb',
@@ -61,8 +66,11 @@ export class DashboardIconService {
     local_offer: 'tag',
     logout: 'logout',
     more_vert: 'dots-vertical',
+    notifications: 'bell',
+    notifications_none: 'bell',
     offline_bolt: 'bolt',
     open_in_browser: 'external-link',
+    open_in_new: 'external-link',
     person: 'user',
     play_arrow: 'player-play',
     published_with_changes: 'refresh-dot',
@@ -79,8 +87,11 @@ export class DashboardIconService {
     trending_up: 'chart-bar',
     unfold_more: 'selector',
     undo: 'arrow-back-up',
+    upgrade: 'arrow-up',
     visibility: 'eye',
     visibility_off: 'eye-off',
+    volume_down: 'volume',
+    volume_up: 'volume',
     view_list: 'list',
     warning: 'alert-triangle',
     watch_later: 'clock'
@@ -95,9 +106,11 @@ export class DashboardIconService {
     this.addTablerIcon('td-activity', 'activity');
     this.addTablerIcon('td-address-book', 'address-book');
     this.addTablerIcon('td-apps', 'apps');
+    this.addTablerIcon('td-book', 'book');
     this.addTablerIcon('td-bolt', 'bolt');
     this.addTablerIcon('td-brain', 'brain');
     this.addTablerIcon('td-brand-whatsapp', 'brand-whatsapp');
+    this.addTablerIcon('td-brush', 'brush');
     this.addTablerIcon('td-building-bank', 'building-bank');
     this.addTablerIcon('td-chart-bar', 'chart-bar');
     this.addTablerIcon('td-chevron-left', 'chevron-left');
@@ -105,9 +118,11 @@ export class DashboardIconService {
     this.addTablerIcon('td-clock', 'clock');
     this.addTablerIcon('td-clipboard-list', 'clipboard-list');
     this.addTablerIcon('td-code', 'code');
+    this.addTablerIcon('td-file-text', 'file-text');
     this.addTablerIcon('td-git-branch', 'git-branch');
     this.addTablerIcon('td-history', 'history');
     this.addTablerIcon('td-home', 'home');
+    this.addTablerIcon('td-mood-smile', 'mood-smile');
     this.addTablerIcon('td-language', 'language');
     this.addTablerIcon('td-layout-grid', 'layout-grid');
     this.addTablerIcon('td-lifebuoy', 'lifebuoy');
@@ -120,11 +135,15 @@ export class DashboardIconService {
     this.addTablerIcon('td-settings', 'settings');
     this.addTablerIcon('td-settings-automation', 'settings-automation');
     this.addTablerIcon('td-shield-cog', 'shield-cog');
+    this.addTablerIcon('td-sparkles', 'sparkles');
+    this.addTablerIcon('td-speakerphone', 'speakerphone');
+    this.addTablerIcon('td-stopwatch', 'stopwatch');
     this.addTablerIcon('td-tag', 'tag');
     this.addTablerIcon('td-template', 'template');
     this.addTablerIcon('td-tools', 'tools');
     this.addTablerIcon('td-users', 'users');
     this.addTablerIcon('td-webhook', 'webhook');
+    this.addTablerIcon('td-world', 'world');
 
     Object.values(this.materialIconAliases).forEach(fileName => {
       this.addTablerIcon(`td-${fileName}`, fileName);
