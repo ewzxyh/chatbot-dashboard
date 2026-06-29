@@ -311,6 +311,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
      ngAfterViewInit() {
         this.runOnRouteChange();
+        this.dashboardIconService.startMaterialIconAdapter();
         // this.hideFooter();
     }
 
@@ -729,6 +730,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     ngOnDestroy() {
+        this.dashboardIconService.stopMaterialIconAdapter();
         this.subscription.unsubscribe();
     }
 
