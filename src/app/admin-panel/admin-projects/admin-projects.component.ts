@@ -282,11 +282,11 @@ export class AdminProjectsComponent implements OnInit {
       audio: 'Audio',
       video: 'Video',
       contact: 'Contato',
-      location: 'Localizacao',
+      location: 'Localização',
       sticker: 'Figurinha',
       poll: 'Enquete',
       event: 'Evento',
-      unknown: 'Nao identificado'
+      unknown: 'Não identificado'
     };
     return labels[key] || key;
   }

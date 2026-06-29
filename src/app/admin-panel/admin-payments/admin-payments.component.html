@@ -28,7 +28,7 @@
 </table>
 
 <div class="admin-pagination">
-  <span>{{ totalCount }} pagamentos | Pagina {{ page + 1 }}</span>
+  <span>{{ totalCount }} pagamentos | Página {{ page + 1 }}</span>
   <div>
     <button type="button" [disabled]="page === 0" (click)="prevPage()">Anterior</button>
     <button type="button" [disabled]="(page + 1) * limit >= totalCount" (click)="nextPage()">Proxima</button>

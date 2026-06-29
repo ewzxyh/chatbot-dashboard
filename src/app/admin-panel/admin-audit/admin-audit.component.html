@@ -2,7 +2,7 @@
   <div class="audit-toolbar">
     <div>
       <h2>Auditoria</h2>
-      <p>Registro de acoes administrativas e mudancas por API com payload sanitizado.</p>
+      <p>Registro de ações administrativas e mudanças por API com payload sanitizado.</p>
     </div>
     <button type="button" class="btn-primary" (click)="refresh()">Atualizar</button>
   </div>
@@ -19,14 +19,14 @@
       <small>status HTTP >= 400</small>
     </div>
     <div class="audit-card">
-      <span>Acoes mais comuns</span>
+      <span>Ações mais comuns</span>
       <strong>{{ getTop(summary.byAction, 1)[0]?._id || '-' }}</strong>
       <small>{{ getTop(summary.byAction, 1)[0]?.count || 0 }} eventos</small>
     </div>
     <div class="audit-card">
       <span>Atores ativos</span>
       <strong>{{ summary.byActor?.length || 0 }}</strong>
-      <small>top 10 no periodo</small>
+      <small>top 10 no período</small>
     </div>
   </div>
 
@@ -37,10 +37,10 @@
       <option value="30d">Ultimos 30 dias</option>
     </select>
     <select [(ngModel)]="filters.action" (change)="applyFilters()">
-      <option value="">Todas as acoes</option>
-      <option value="api.create">Criacao API</option>
-      <option value="api.update">Atualizacao API</option>
-      <option value="api.delete">Exclusao API</option>
+      <option value="">Todas as ações</option>
+      <option value="api.create">Criação API</option>
+      <option value="api.update">Atualização API</option>
+      <option value="api.delete">Exclusão API</option>
       <option value="admin.project_plan_update">Plano</option>
       <option value="admin.project_trial_update">Trial</option>
       <option value="admin.project_quotas_update">Quotas</option>
@@ -75,7 +75,7 @@
         <thead>
           <tr>
             <th>Quando</th>
-            <th>Acao</th>
+            <th>Ação</th>
             <th>Metodo</th>
             <th>Status</th>
             <th>Ator</th>
@@ -104,7 +104,7 @@
       </table>
 
       <div class="admin-pagination">
-        <span>{{ totalCount }} eventos | Pagina {{ page + 1 }}</span>
+        <span>{{ totalCount }} eventos | Página {{ page + 1 }}</span>
         <div>
           <button type="button" [disabled]="page === 0" (click)="prevPage()">Anterior</button>
           <button type="button" [disabled]="(page + 1) * limit >= totalCount" (click)="nextPage()">Proxima</button>
@@ -118,14 +118,14 @@
         <button type="button" class="btn-secondary" (click)="clearSelection()">Fechar</button>
       </div>
       <dl>
-        <dt>Acao</dt><dd>{{ selectedEvent.action }}</dd>
+        <dt>Ação</dt><dd>{{ selectedEvent.action }}</dd>
         <dt>Caminho</dt><dd>{{ selectedEvent.method }} {{ selectedEvent.path }}</dd>
         <dt>Ator</dt><dd>{{ selectedEvent.actor?.email || selectedEvent.actor?.id || '-' }}</dd>
         <dt>IP</dt><dd>{{ selectedEvent.ip || '-' }}</dd>
-        <dt>Duracao</dt><dd>{{ selectedEvent.durationMs || 0 }} ms</dd>
+        <dt>Duração</dt><dd>{{ selectedEvent.durationMs || 0 }} ms</dd>
       </dl>
 
-      <h4>Alteracoes</h4>
+      <h4>Alterações</h4>
       <pre>{{ asJson(selectedEvent.changes) }}</pre>
       <h4>Antes</h4>
       <pre>{{ asJson(selectedEvent.before) }}</pre>

@@ -1825,7 +1825,7 @@ export class DepartmentEditAddComponent extends PricingBaseComponent implements 
           .concat(this.normalizeChannelInstances('whatsapp', instances.whatsapp));
         this.channelInstancesLoading = false;
       }, () => {
-        this.channelInstancesError = 'Nao foi possivel carregar as instancias conectadas.';
+        this.channelInstancesError = 'Não foi possível carregar as instâncias conectadas.';
         this.channelInstancesLoading = false;
       });
   }

@@ -1,12 +1,12 @@
 <!-- Trial Banners -->
 <div class="trial-banner expired" *ngIf="trialExpired && !isLoading">
   <i class="material-icons">warning</i>
-  <span>Seu periodo de teste expirou. Escolha um plano para continuar utilizando o ChatCase.</span>
+  <span>Seu período de teste expirou. Escolha um plano para continuar utilizando o ChatCase.</span>
 </div>
 
 <div class="trial-banner active" *ngIf="isTrialing && !trialExpired && !isLoading">
   <i class="material-icons">info</i>
-  <span>Voce esta no periodo de teste. Restam <strong>{{ trialDaysLeft }}</strong> dias.</span>
+  <span>Você está no período de teste. Restam <strong>{{ trialDaysLeft }}</strong> dias.</span>
 </div>
 
 <div class="pricing-container">
@@ -192,8 +192,8 @@
   <div class="polling-overlay" *ngIf="isPolling">
     <div class="polling-card">
       <div class="spinner"></div>
-      <h3>Aguardando confirmacao do pagamento...</h3>
-      <p>Complete o pagamento na aba aberta e aguarde a confirmacao.</p>
+      <h3>Aguardando confirmação do pagamento...</h3>
+      <p>Complete o pagamento na aba aberta e aguarde a confirmação.</p>
       <button type="button" class="btn-check-payment" (click)="checkPayment()">Verificar pagamento</button>
     </div>
   </div>
@@ -202,7 +202,7 @@
   <div class="modal-overlay" *ngIf="showCancelModal" (click)="showCancelModal = false">
     <div class="modal-card" (click)="$event.stopPropagation()">
       <h3>Cancelar assinatura</h3>
-      <p>Tem certeza que deseja cancelar sua assinatura? Voce perdera acesso aos recursos premium ao final do periodo atual.</p>
+      <p>Tem certeza que deseja cancelar sua assinatura? Você perderá acesso aos recursos premium ao final do período atual.</p>
       <div class="modal-actions">
         <button type="button" class="btn-modal-cancel" (click)="showCancelModal = false" [disabled]="isCanceling">Voltar</button>
         <button type="button" class="btn-modal-confirm" (click)="cancelSubscription()" [disabled]="isCanceling">

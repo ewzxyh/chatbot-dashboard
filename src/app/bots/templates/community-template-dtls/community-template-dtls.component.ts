@@ -611,7 +611,7 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
       approved: 'Aprovado',
       pending: 'Pendente',
       rejected: 'Rejeitado',
-      not_found: 'Nao encontrado',
+      not_found: 'Não encontrado',
       unknown: 'Desconhecido'
     };
 
@@ -672,7 +672,7 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
         this.wabaBindingError = this.getWabaPublicationError(error);
         this.isBindingWabaTemplate = false;
         if (navigateAfterBind) {
-          this.notify.showNotification('Fluxo importado. Template WABA ainda nao foi vinculado: ' + this.wabaBindingError, 3, 'warning');
+          this.notify.showNotification('Fluxo importado. Template WABA ainda não foi vinculado: ' + this.wabaBindingError, 3, 'warning');
           this.finishTemplateImport();
         }
       }, () => {
@@ -699,7 +699,7 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
     if (error && error.message) {
       return error.message;
     }
-    return 'Nao foi possivel preparar o template WABA.';
+    return 'Não foi possível preparar o template WABA.';
   }
 
   getWabaPayloadJson(): string {

@@ -110,16 +110,16 @@ export class AdminAuditComponent implements OnInit {
 
   formatAction(action: string): string {
     const labels: any = {
-      'api.create': 'Criacao',
-      'api.update': 'Atualizacao',
-      'api.delete': 'Exclusao',
+      'api.create': 'Criação',
+      'api.update': 'Atualização',
+      'api.delete': 'Exclusão',
       'api.read': 'Leitura',
       'admin.read': 'Leitura admin',
       'admin.project_plan_update': 'Plano',
       'admin.project_trial_update': 'Trial',
       'admin.project_quotas_update': 'Quotas',
       'admin.billing_lifecycle_action': 'Billing',
-      'auth.write': 'Autenticacao'
+      'auth.write': 'Autenticação'
     };
     return labels[action] || action || '-';
   }

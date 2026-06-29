@@ -22,7 +22,7 @@
 
   <div *ngIf="!loading && view === 'list'" class="casezap-list">
     <div *ngIf="instances.length === 0" class="casezap-empty">
-      Nenhuma instancia conectada. Clique em "+ Adicionar" para conectar sua primeira instancia WhatsApp.
+      Nenhuma instância conectada. Clique em "+ Adicionar" para conectar sua primeira instância WhatsApp.
     </div>
 
     <div *ngFor="let inst of instances" class="instance-card">
@@ -104,28 +104,28 @@
   </div>
 
   <div *ngIf="!loading && (view === 'add' || view === 'edit')" class="casezap-form">
-    <h3>{{ view === 'add' ? 'Adicionar instancia' : 'Editar instancia' }}</h3>
+    <h3>{{ view === 'add' ? 'Adicionar instância' : 'Editar instância' }}</h3>
 
     <div class="casezap-field">
-      <label>Numero do WhatsApp *</label>
+      <label>Número do WhatsApp *</label>
       <input type="text" [(ngModel)]="number" placeholder="e.g. 5511999999999" [disabled]="saving">
-      <span class="casezap-hint">Numero com codigo do pais, sem + ou espacos</span>
+      <span class="casezap-hint">Número com código do país, sem + ou espaços</span>
     </div>
 
     <div class="casezap-field">
       <label>Dominio da API *</label>
       <input type="text" [(ngModel)]="domain" placeholder="e.g. https://chatcase.uazapi.com" [disabled]="saving">
-      <span class="casezap-hint">URL da sua instancia UazApi</span>
+      <span class="casezap-hint">URL da sua instância UazApi</span>
     </div>
 
     <div class="casezap-field">
-      <label>Token de instancia *</label>
-      <input type="text" [(ngModel)]="token" placeholder="Token da instancia UazApi" [disabled]="saving">
+      <label>Token de instância *</label>
+      <input type="text" [(ngModel)]="token" placeholder="Token da instância UazApi" [disabled]="saving">
     </div>
 
     <div class="casezap-field">
-      <label>Nome da instancia *</label>
-      <input type="text" [(ngModel)]="instanceName" placeholder="Nome da sua instancia" [disabled]="saving">
+      <label>Nome da instância *</label>
+      <input type="text" [(ngModel)]="instanceName" placeholder="Nome da sua instância" [disabled]="saving">
     </div>
 
     <div class="casezap-form-actions">

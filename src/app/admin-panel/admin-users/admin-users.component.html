@@ -13,7 +13,7 @@
     <tr *ngFor="let u of users">
       <td>{{ u.firstname }} {{ u.lastname }}</td>
       <td>{{ u.email }}</td>
-      <td><span [style.color]="u.emailverified ? '#4caf50' : '#e53935'">{{ u.emailverified ? 'Sim' : 'Nao' }}</span></td>
+      <td><span [style.color]="u.emailverified ? '#4caf50' : '#e53935'">{{ u.emailverified ? 'Sim' : 'Não' }}</span></td>
       <td>{{ u.projectCount }}</td>
       <td>{{ u.createdAt | date:'dd/MM/yyyy' }}</td>
     </tr>
@@ -21,7 +21,7 @@
 </table>
 
 <div class="admin-pagination">
-  <span>{{ totalCount }} usuarios | Pagina {{ page + 1 }}</span>
+  <span>{{ totalCount }} usuários | Página {{ page + 1 }}</span>
   <div>
     <button type="button" [disabled]="page === 0" (click)="prevPage()">Anterior</button>
     <button type="button" [disabled]="(page + 1) * limit >= totalCount" (click)="nextPage()">Proxima</button>

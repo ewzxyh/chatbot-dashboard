@@ -227,11 +227,11 @@ export class CasezapComponent implements OnInit, OnDestroy {
         (err: any) => {
           this.saving = false;
           if (err.status === 409) {
-            this.error = 'Esta instancia ja esta conectada em outro projeto';
+            this.error = 'Esta instância já está conectada em outro projeto';
           } else if (err.status === 403) {
             this.error = 'Limite de plataformas atingido no seu plano';
           } else {
-            this.error = 'Erro ao salvar integracao';
+            this.error = 'Erro ao salvar integração';
           }
         }
       );
@@ -242,7 +242,7 @@ export class CasezapComponent implements OnInit, OnDestroy {
         },
         () => {
           this.saving = false;
-          this.error = 'Erro ao atualizar integracao';
+          this.error = 'Erro ao atualizar integração';
         }
       );
     }
@@ -258,7 +258,7 @@ export class CasezapComponent implements OnInit, OnDestroy {
     this.http.post(url, {}, { headers }).subscribe(
       () => {
         this.saving = false;
-        this.success = this.view === 'add' ? 'Instancia adicionada com sucesso!' : 'Instancia atualizada com sucesso!';
+        this.success = this.view === 'add' ? 'Instância adicionada com sucesso!' : 'Instância atualizada com sucesso!';
         this.view = 'list';
         this.editingInstance = null;
         this.loadInstances();
@@ -272,7 +272,7 @@ export class CasezapComponent implements OnInit, OnDestroy {
   }
 
   removeInstance(instance: any) {
-    if (!confirm('Deseja remover esta instancia CaseZap?')) return;
+    if (!confirm('Deseja remover esta instância CaseZap?')) return;
 
     this.saving = true;
     this.error = '';
@@ -280,13 +280,13 @@ export class CasezapComponent implements OnInit, OnDestroy {
     this.integrationService.deleteIntegration(instance._id, this.projectId).subscribe(
       () => {
         this.saving = false;
-        this.success = 'Instancia removida';
+        this.success = 'Instância removida';
         this.loadInstances();
         this.loadQuota();
       },
       () => {
         this.saving = false;
-        this.error = 'Erro ao remover instancia';
+        this.error = 'Erro ao remover instância';
       }
     );
   }

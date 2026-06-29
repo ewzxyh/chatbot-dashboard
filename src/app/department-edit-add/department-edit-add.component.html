@@ -441,12 +441,12 @@
                                 </label>
                                 <div class="channel-binding-panel">
                                   <div class="channel-binding-description">
-                                    Vincule este departamento a instancias especificas. Escolha CaseZap ou WhatsApp Business; nao misture plataformas no mesmo departamento.
+                                    Vincule este departamento a instâncias específicas. Escolha CaseZap ou WhatsApp Business; não misture plataformas no mesmo departamento.
                                   </div>
 
                                   <div class="channel-provider-options">
                                     <button type="button" class="channel-provider-option" [class.selected]="channelBindingsProvider === ''" (click)="selectChannelProvider('')">
-                                      Sem canal especifico
+                                      Sem canal específico
                                     </button>
                                     <button type="button" class="channel-provider-option" *ngFor="let provider of channelProviders" [class.selected]="channelBindingsProvider === provider.key" (click)="selectChannelProvider(provider.key)">
                                       {{ provider.label }}
@@ -454,7 +454,7 @@
                                   </div>
 
                                   <div *ngIf="channelInstancesLoading" class="channel-binding-state">
-                                    Carregando instancias...
+                                    Carregando instâncias...
                                   </div>
 
                                   <div *ngIf="channelInstancesError" class="channel-binding-error">
@@ -466,12 +466,12 @@
                                       <input type="checkbox" [checked]="isChannelInstanceSelected(instance)" (change)="toggleChannelInstance(instance, $event)">
                                       <span>
                                         <strong>{{ instance.label }}</strong>
-                                        <small>{{ instance.number || 'Sem numero informado' }}</small>
+                                        <small>{{ instance.number || 'Sem número informado' }}</small>
                                       </span>
                                     </label>
 
                                     <div *ngIf="getChannelInstancesByProvider(channelBindingsProvider).length === 0" class="channel-binding-state">
-                                      Nenhuma instancia conectada para esta plataforma.
+                                      Nenhuma instância conectada para esta plataforma.
                                     </div>
                                   </div>
                                 </div>
