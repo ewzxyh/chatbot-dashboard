@@ -8,6 +8,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 export class DashboardIconService {
   private materialIconObserver: MutationObserver | null = null;
   private pendingMaterialIconFrame: number | null = null;
+  private pendingMaterialIconRoots = new Set<ParentNode>();
   private registeredIcons = new Set<string>();
 
   private readonly materialIconAliases: { [name: string]: string } = {
@@ -229,10 +230,21 @@ export class DashboardIconService {
     }
 
     this.applyMaterialIconAliases(document);
-    this.materialIconObserver = new MutationObserver(() => this.scheduleMaterialIconAliasApply());
+    this.materialIconObserver = new MutationObserver(mutations => {
+      mutations.forEach(mutation => {
+        mutation.addedNodes.forEach(node => {
+          if (node.nodeType === Node.ELEMENT_NODE) {
+            this.pendingMaterialIconRoots.add(node as ParentNode);
+          }
+        });
+      });
+
+      if (this.pendingMaterialIconRoots.size) {
+        this.scheduleMaterialIconAliasApply();
+      }
+    });
     this.materialIconObserver.observe(document.body, {
       childList: true,
-      characterData: true,
       subtree: true
     });
   }
@@ -247,6 +259,8 @@ export class DashboardIconService {
       cancelAnimationFrame(this.pendingMaterialIconFrame);
       this.pendingMaterialIconFrame = null;
     }
+
+    this.pendingMaterialIconRoots.clear();
   }
 
   private addTablerIcon(name: string, fileName: string): void {
@@ -269,21 +283,30 @@ export class DashboardIconService {
     if (typeof requestAnimationFrame === 'function') {
       this.pendingMaterialIconFrame = requestAnimationFrame(() => {
         this.pendingMaterialIconFrame = null;
-        this.applyMaterialIconAliases(document);
+        this.applyPendingMaterialIconAliases();
       });
       return;
     }
 
     this.pendingMaterialIconFrame = window.setTimeout(() => {
       this.pendingMaterialIconFrame = null;
-      this.applyMaterialIconAliases(document);
+      this.applyPendingMaterialIconAliases();
     }, 0);
   }
 
+  private applyPendingMaterialIconAliases(): void {
+    const roots = Array.from(this.pendingMaterialIconRoots);
+    this.pendingMaterialIconRoots.clear();
+    roots.forEach(root => this.applyMaterialIconAliases(root));
+  }
+
   private applyMaterialIconAliases(root: ParentNode): void {
-    const elements = root.querySelectorAll<HTMLElement>(
-      '.material-icons, .material-icons-outlined, .material-icons-round, .material-icons-sharp, .material-icons-two-tone, .material-symbols-outlined, mat-icon:not([svgicon])'
-    );
+    const selector = '.material-icons, .material-icons-outlined, .material-icons-round, .material-icons-sharp, .material-icons-two-tone, .material-symbols-outlined, mat-icon:not([svgicon])';
+    const elements = Array.from(root.querySelectorAll<HTMLElement>(selector));
+
+    if (root instanceof HTMLElement && root.matches(selector)) {
+      elements.unshift(root);
+    }
 
     elements.forEach(element => {
       const ligature = (element.textContent || '').trim().replace(/[^\w]+/g, '_').replace(/^_+|_+$/g, '');
