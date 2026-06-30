@@ -376,6 +376,7 @@ export class SidebarComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.isSuperAdmin = localStorage.getItem('superadmin_role') === 'admin';
+    this.restoreProjectForAdminRoute();
     this.getLoggedUser();
     this.getCurrentProjectProjectUsersProjectBots();
     this.translateChangeAvailabilitySuccessMsg();
@@ -407,6 +408,43 @@ export class SidebarComponent implements OnInit, AfterViewInit {
 
     // document.documentElement.style.setProperty('--sidebar-active-icon', this.company_brand_color);
     this.listenToProjectUser()
+  }
+
+  restoreProjectForAdminRoute() {
+    if (this.location.path().indexOf('/admin') !== 0 || this.auth.project_bs.value) {
+      return;
+    }
+
+    const storedLastProject = localStorage.getItem('last_project');
+    if (!storedLastProject) {
+      return;
+    }
+
+    try {
+      const projectUser = JSON.parse(storedLastProject);
+      const storedProject = projectUser && projectUser.id_project;
+      const projectId = storedProject && (storedProject._id || storedProject.id);
+
+      if (!projectId) {
+        return;
+      }
+
+      this.currentProjectUser = projectUser;
+      this.project = Object.assign({}, storedProject, { _id: projectId });
+      this.projectId = projectId;
+      this.auth.project_bs.next(this.project);
+
+      if (projectUser.role) {
+        this.USER_ROLE = projectUser.role;
+        this.usersService.user_role(projectUser.role);
+      }
+
+      if (projectUser._id) {
+        this.usersService.user_availability(projectUser._id, projectUser.user_available, projectUser.isBusy, projectUser);
+      }
+    } catch (error) {
+      this.logger.error('[SIDEBAR] - RESTORE PROJECT FOR ADMIN ROUTE ERROR ', error);
+    }
   }
 
   ngAfterViewInit() {
