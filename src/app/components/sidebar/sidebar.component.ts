@@ -376,7 +376,6 @@ export class SidebarComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.isSuperAdmin = localStorage.getItem('superadmin_role') === 'admin';
-    this.restoreProjectForAdminRoute();
     this.getLoggedUser();
     this.getCurrentProjectProjectUsersProjectBots();
     this.translateChangeAvailabilitySuccessMsg();
@@ -408,6 +407,7 @@ export class SidebarComponent implements OnInit, AfterViewInit {
 
     // document.documentElement.style.setProperty('--sidebar-active-icon', this.company_brand_color);
     this.listenToProjectUser()
+    this.restoreProjectForAdminRoute();
   }
 
   restoreProjectForAdminRoute() {
@@ -432,19 +432,49 @@ export class SidebarComponent implements OnInit, AfterViewInit {
       this.currentProjectUser = projectUser;
       this.project = Object.assign({}, storedProject, { _id: projectId });
       this.projectId = projectId;
-      this.auth.project_bs.next(this.project);
-
-      if (projectUser.role) {
-        this.USER_ROLE = projectUser.role;
-        this.usersService.user_role(projectUser.role);
-      }
-
-      if (projectUser._id) {
-        this.usersService.user_availability(projectUser._id, projectUser.user_available, projectUser.isBusy, projectUser);
-      }
+      this.USER_ROLE = projectUser.role || 'admin';
+      this.ROLE = this.USER_ROLE;
+      this.enableProjectSidebarForAdminRoute();
     } catch (error) {
       this.logger.error('[SIDEBAR] - RESTORE PROJECT FOR ADMIN ROUTE ERROR ', error);
     }
+  }
+
+  enableProjectSidebarForAdminRoute() {
+    this.PERMISSION_TO_VIEW_HOME = true;
+    this.PERMISSION_TO_VIEW_MONITOR = true;
+    this.PERMISSION_TO_VIEW_HISTORY = true;
+    this.PERMISSION_TO_VIEW_CONTACTS = true;
+    this.PERMISSION_TO_VIEW_FLOWS = true;
+    this.PERMISSION_TO_VIEW_KB = true;
+    this.PERMISSION_TO_VIEW_ANALYTICS = true;
+    this.PERMISSION_TO_VIEW_ACTVITIES = true;
+    this.PERMISSION_TO_VIEW_WA_BRODCAST = true;
+    this.PERMISSION_TO_VIEW_SETTING = true;
+    this.PERMISSION_TO_VIEW_WIDGET_SETUP = true;
+    this.PERMISSION_TO_VIEW_DEPTS = true;
+    this.PERMISSION_TO_VIEW_TEAMMATES_ROLES_GROUPS = true;
+    this.PERMISSION_TO_VIEW_EMAIL_TICKETING = true;
+    this.PERMISSION_TO_VIEW_CANNED_RESPONSES = true;
+    this.PERMISSION_TO_VIEW_TAGS = true;
+    this.PERMISSION_TO_VIEW_OH = true;
+    this.PERMISSION_TO_VIEW_INTEGRATIONS = true;
+    this.PERMISSION_TO_VIEW_APPS = true;
+    this.PERMISSION_TO_VIEW_PROJECT_SETTINGS = true;
+    this.PERMISSION_TO_VIEW_PROJECT_SETTING_GENERAL = true;
+    this.PERMISSION_TO_VIEW_PROJECT_SETTING_DEVELOPER = true;
+    this.PERMISSION_TO_VIEW_PROJECT_SETTING_SMARTASSIGNMENT = true;
+    this.PERMISSION_TO_VIEW_PROJECT_SETTING_NOTIFICATION = true;
+    this.PERMISSION_TO_VIEW_PROJECT_SETTING_SECURITY = true;
+    this.PERMISSION_TO_VIEW_PROJECT_SETTING_BANNED = true;
+    this.PERMISSION_TO_VIEW_PROJECT_SETTING_ADVANCED = true;
+    this.areVisibleChatbot = true;
+    this.isVisibleKNB = true;
+    this.isVisibleMON = true;
+    this.isVisibleCNT = true;
+    this.isVisibleANA = true;
+    this.isVisibleACT = true;
+    this.isVisibleAUT = true;
   }
 
   ngAfterViewInit() {
