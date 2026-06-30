@@ -829,9 +829,9 @@ export class NavbarComponent extends PricingBaseComponent implements OnInit, Aft
     }
 
   listenToHomeRequestQuotes() {
-    this.quotesService.requestQuotes$.subscribe(() => {
+    this.quotesService.requestQuotes$.subscribe((projectId) => {
       this.logger.log('[QUOTA-DEBUG][NAVBAR] Home call getProjectQuotes')
-      this.getProjectQuotes();
+      this.getProjectQuotes(projectId);
     });
   }
 
@@ -861,7 +861,7 @@ export class NavbarComponent extends PricingBaseComponent implements OnInit, Aft
       if (project) {
         this.project = project
         this.logger.log('[NAVBAR] - project from $ubscription ', this.project);
-        if (project.name) {
+        if (project._id) {
 
           this.projectId = project._id;
           this.projectName = project.name;
@@ -963,14 +963,19 @@ export class NavbarComponent extends PricingBaseComponent implements OnInit, Aft
     // this.logger.log('[NAVBAR] - onQuotasMenuClosed - isOpenCurrentUsageMenu ', this.isOpenCurrentUsageMenu )
   }
 
-  getProjectQuotes() {
-    this.logger.log("[NAVBAR][QUOTA-DEBUG] getProjectQuotes this.projectId -------> : ", this.projectId);
+  getProjectQuotes(projectId?: string) {
+    const currentProjectId = projectId || this.projectId || this.auth.project_bs.value?._id;
+    this.logger.log("[NAVBAR][QUOTA-DEBUG] getProjectQuotes this.projectId -------> : ", currentProjectId);
+    if (!currentProjectId) {
+      return;
+    }
+    this.projectId = currentProjectId;
     this.quotaResetEndDateLabel = null;
-    this.quotesService.getProjectQuotes(this.projectId).then((response) => {
+    this.quotesService.getProjectQuotes(currentProjectId).then((response) => {
       this.logger.log("[NAVBAR] getProjectQuotes response: ", response);
       this.project_limits = response;
       if (this.project_limits) {
-        this.getQuotes(this.project_limits , this.projectId)
+        this.getQuotes(this.project_limits , currentProjectId)
       }
     }).catch((err) => {
       this.logger.error("[NAVBAR] getProjectQuotes error: ", err);
@@ -979,7 +984,11 @@ export class NavbarComponent extends PricingBaseComponent implements OnInit, Aft
 
 
   getQuotes(project_limits, projectId) {
-    this.quotesService.getAllQuotes(this.projectId).subscribe((resp: any) => {
+    const currentProjectId = projectId || this.projectId;
+    if (!currentProjectId) {
+      return;
+    }
+    this.quotesService.getAllQuotes(currentProjectId).subscribe((resp: any) => {
       this.logger.log("[NAVBAR] getAllQuotes response: ", resp)
       this.logger.log("[NAVBAR] project_limits: ", project_limits)
       this.logger.log("[NAVBAR] resp.quotes: ", resp.quotes)

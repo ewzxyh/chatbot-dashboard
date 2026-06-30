@@ -49,7 +49,7 @@ export class QuotesService {
   } | null>(null);
   quotesData$ = this.quotasDataSubject.asObservable().pipe(shareReplay(1)); // Expose as Observable
 
-  private requestQuotesSubject = new Subject<void>();
+  private requestQuotesSubject = new Subject<string>();
   requestQuotes$ = this.requestQuotesSubject.asObservable();
 
 
@@ -92,10 +92,14 @@ export class QuotesService {
   }
 
   /** Called by HomeComponent to request Navbar to fetch quotas */
-  requestQuotasUpdate() {
+  requestQuotasUpdate(projectId?: string) {
     // if (!this.hasFetchedData) {
+    const currentProjectId = projectId || this.project_id;
+    if (!currentProjectId) {
+      return;
+    }
     this.logger.log('[QUOTA-DEBUG][QUOTE-SERVICE] -  Home Notify Navbar to fetch quotas data');
-    this.requestQuotesSubject.next(); // Notify Navbar to fetch data
+    this.requestQuotesSubject.next(currentProjectId); // Notify Navbar to fetch data
     // }
   }
 

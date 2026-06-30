@@ -93,8 +93,8 @@ export class HomeValueOnboardingComponent implements OnInit, OnChanges {
   private loadChannels() {
     this.loadingChannels = true;
     forkJoin({
-      casezap: this.integrationService.getIntegrationInstances('casezap').pipe(catchError(() => of([]))),
-      whatsapp: this.integrationService.getIntegrationInstances('whatsapp').pipe(catchError(() => of([])))
+      casezap: this.integrationService.getIntegrationInstances('casezap', this.projectId).pipe(catchError(() => of([]))),
+      whatsapp: this.integrationService.getIntegrationInstances('whatsapp', this.projectId).pipe(catchError(() => of([])))
     }).subscribe((res: any) => {
       const casezap = this.countActiveInstances(res.casezap);
       const whatsapp = this.countActiveInstances(res.whatsapp);
@@ -110,7 +110,7 @@ export class HomeValueOnboardingComponent implements OnInit, OnChanges {
 
   private loadConversationCount() {
     this.loadingConversations = true;
-    this.wsRequestsService.getConversationCount().subscribe((res: any) => {
+    this.wsRequestsService.getConversationCount(this.projectId).subscribe((res: any) => {
       this.conversationCount = this.parseConversationCount(res);
       this.loadingConversations = false;
       this.buildSteps();

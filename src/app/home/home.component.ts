@@ -633,7 +633,7 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
             // ----------------------------------------
             // Notify Navbar to fetch quotas
             // ----------------------------------------
-            this.quotesService.requestQuotasUpdate();
+            this.quotesService.requestQuotasUpdate(this.projectId);
             this.getCasepayStatus();
             // this.getProjectQuotes();
           }

@@ -1,6 +1,6 @@
 
 import { Injectable, OnDestroy } from '@angular/core';
-import { Subject, BehaviorSubject } from "rxjs";
+import { Subject, BehaviorSubject, of } from "rxjs";
 import { AuthService } from '../../core/auth.service';
 import { WebSocketJs } from "./websocket-js";
 import { Request } from '../../models/request-model';
@@ -792,7 +792,12 @@ export class WsRequestsService implements OnDestroy {
   // --------------------------------------------------
   // @ Get request count
   // --------------------------------------------------
-  public getConversationCount() {
+  public getConversationCount(projectId?: string) {
+    const currentProjectId = projectId || this.project_id;
+    if (!currentProjectId) {
+      return of({ count: 0 });
+    }
+
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
@@ -800,7 +805,7 @@ export class WsRequestsService implements OnDestroy {
       })
     };
 
-    const url = this.SERVER_BASE_PATH + this.project_id + '/requests/count'
+    const url = this.SERVER_BASE_PATH + currentProjectId + '/requests/count'
     this.logger.log('[WS-REQUESTS-SERV] - getConversationByIDWithRestRequest - URL ', url)
     return this._httpClient.get(url, httpOptions)
   }
