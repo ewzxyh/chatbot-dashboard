@@ -325,26 +325,6 @@
   padding: 8px 0;
 }
 
-button.btn-primary,
-button.btn-secondary {
-  border-radius: 6px;
-  padding: 7px 14px;
-  cursor: pointer;
-  font-size: 13px;
-}
-
-button.btn-primary {
-  background: #1e88e5;
-  color: #fff;
-  border: 1px solid #1e88e5;
-}
-
-button.btn-secondary {
-  background: #fff;
-  color: #263238;
-  border: 1px solid #cfd8dc;
-}
-
 button.btn-test {
   min-width: 82px;
 }
@@ -353,11 +333,6 @@ button.btn-test {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-}
-
-button:disabled {
-  cursor: default;
-  opacity: 0.6;
 }
 
 .test-result {

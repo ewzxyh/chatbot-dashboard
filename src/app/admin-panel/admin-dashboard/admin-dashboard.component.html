@@ -1,5 +1,5 @@
-<div *ngIf="isLoading" style="text-align: center; padding: 40px;">Carregando...</div>
-<div *ngIf="errorMessage" style="color: red; padding: 20px;">{{ errorMessage }}</div>
+<div *ngIf="isLoading" class="admin-loading-state">Carregando...</div>
+<div *ngIf="errorMessage" class="admin-error-state">{{ errorMessage }}</div>
 
 <div *ngIf="stats && !isLoading">
   <div class="stats-grid">
@@ -17,8 +17,8 @@
     </mat-card>
   </div>
 
-  <div style="margin-top: 24px;">
-    <h3 style="font-size: 16px; font-weight: 600; color: #333; margin-bottom: 12px;">Distribuição por plano</h3>
+  <div class="admin-section">
+    <h3 class="admin-section-title">Distribuição por plano</h3>
     <div class="plan-distribution">
       <mat-card *ngFor="let key of getPlanKeys()" class="plan-dist-item">
         <span class="plan-dist-name">{{ planDisplayNames[key] || key }}</span>

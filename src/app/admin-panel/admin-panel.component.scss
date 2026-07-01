@@ -52,6 +52,31 @@ tbody tr:hover { background: #f8fbff; }
   color: #60708f;
 }
 
+.admin-loading-state {
+  padding: 40px;
+  text-align: center;
+  color: #60708f;
+}
+
+.admin-error-state {
+  border-radius: 6px;
+  padding: 14px 16px;
+  background: #ffebee;
+  color: #b71c1c;
+  font-weight: 600;
+}
+
+.admin-section {
+  margin-top: 24px;
+}
+
+.admin-section-title {
+  margin: 0 0 12px;
+  color: #263238;
+  font-size: 16px;
+  font-weight: 600;
+}
+
 .admin-filters { display: flex; gap: 12px; margin-bottom: 16px; align-items: center; flex-wrap: wrap; }
 .admin-filter-field {
   width: 220px;
@@ -72,6 +97,9 @@ tbody tr:hover { background: #f8fbff; }
 .admin-pagination > div { display: flex; gap: 8px; }
 
 .btn-action { margin: 0 4px 4px 0; }
+.admin-state-success { color: #2e7d32; font-weight: 600; }
+.admin-state-error { color: #c62828; font-weight: 600; }
+.admin-state-muted { color: #78909c; }
 
 .admin-toolbar-card {
   border: 1px solid #e1e8f5;
@@ -82,16 +110,35 @@ tbody tr:hover { background: #f8fbff; }
   box-shadow: none !important;
 }
 
+.admin-toolbar-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.admin-toolbar-meta {
+  margin-left: 8px;
+  color: #60708f;
+}
+
+.admin-result-summary {
+  margin-top: 8px;
+  color: #32445f;
+}
+
 .admin-dialog-content { display: block; }
 .admin-dialog-content-wide { min-width: min(760px, 80vw); }
 .admin-dialog-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
 .admin-definition-table .mat-column-label { width: 55%; color: #60708f; font-weight: 600; }
+.admin-dialog-heading { margin: 0 0 8px; }
+.admin-dialog-subtitle { margin: 0 0 12px; color: #60708f; }
+.admin-dialog-section-title { margin: 16px 0 8px; }
 .modal-field { width: 100%; }
 .quota-fields { display: grid; gap: 4px; }
 .modal-message { font-size: 12px; color: #666; margin-bottom: 8px; }
 .modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
-.btn-primary { background: #1e88e5; color: white; border: none; }
-.btn-secondary { background: white; border: 1px solid #ccc; }
 
 @media (max-width: 768px) {
   .stats-grid { grid-template-columns: 1fr; }

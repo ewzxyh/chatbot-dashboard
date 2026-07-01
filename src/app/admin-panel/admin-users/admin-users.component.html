@@ -6,7 +6,7 @@
   <button mat-flat-button color="primary" type="button" (click)="onSearch()">Buscar</button>
 </div>
 
-<div *ngIf="isLoading" style="text-align: center; padding: 40px;">Carregando...</div>
+<div *ngIf="isLoading" class="admin-loading-state">Carregando...</div>
 
 <table mat-table *ngIf="!isLoading" [dataSource]="users" class="admin-table">
   <ng-container matColumnDef="name">
@@ -22,7 +22,7 @@
   <ng-container matColumnDef="verified">
     <th mat-header-cell *matHeaderCellDef>Verificado</th>
     <td mat-cell *matCellDef="let u">
-      <span [style.color]="u.emailverified ? '#4caf50' : '#e53935'">{{ u.emailverified ? 'Sim' : 'Não' }}</span>
+      <span [ngClass]="u.emailverified ? 'admin-state-success' : 'admin-state-error'">{{ u.emailverified ? 'Sim' : 'Não' }}</span>
     </td>
   </ng-container>
 
