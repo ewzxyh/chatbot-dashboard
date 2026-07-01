@@ -7,6 +7,7 @@ import { AdminService } from '../../services/admin.service';
 })
 export class AdminPaymentsComponent implements OnInit {
   payments: any[] = [];
+  displayedColumns = ['project', 'plan', 'amount', 'type', 'status', 'mandate', 'createdAt'];
   totalCount = 0;
   page = 0;
   limit = 20;
@@ -27,6 +28,7 @@ export class AdminPaymentsComponent implements OnInit {
   }
 
   onFilterChange() { this.page = 0; this.loadPayments(); }
+  onPageChange(event: any) { this.page = event.pageIndex; this.limit = event.pageSize; this.loadPayments(); }
   nextPage() { if ((this.page + 1) * this.limit < this.totalCount) { this.page++; this.loadPayments(); } }
   prevPage() { if (this.page > 0) { this.page--; this.loadPayments(); } }
 }

@@ -7,6 +7,7 @@ import { AdminService } from '../../services/admin.service';
 })
 export class AdminUsersComponent implements OnInit {
   users: any[] = [];
+  displayedColumns = ['name', 'email', 'verified', 'projects', 'createdAt'];
   totalCount = 0;
   page = 0;
   limit = 20;
@@ -25,6 +26,7 @@ export class AdminUsersComponent implements OnInit {
   }
 
   onSearch() { this.page = 0; this.loadUsers(); }
+  onPageChange(event: any) { this.page = event.pageIndex; this.limit = event.pageSize; this.loadUsers(); }
   nextPage() { if ((this.page + 1) * this.limit < this.totalCount) { this.page++; this.loadUsers(); } }
   prevPage() { if (this.page > 0) { this.page--; this.loadUsers(); } }
 }

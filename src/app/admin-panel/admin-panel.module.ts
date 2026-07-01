@@ -6,7 +6,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatPaginatorIntl, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSelectModule } from '@angular/material/select';
+import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { AdminPanelComponent } from './admin-panel.component';
 import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard.component';
@@ -34,6 +36,22 @@ const routes: Routes = [
   }
 ];
 
+function ptBrPaginatorIntl(): MatPaginatorIntl {
+  const intl = new MatPaginatorIntl();
+  intl.itemsPerPageLabel = 'Itens por página';
+  intl.nextPageLabel = 'Próxima página';
+  intl.previousPageLabel = 'Página anterior';
+  intl.firstPageLabel = 'Primeira página';
+  intl.lastPageLabel = 'Última página';
+  intl.getRangeLabel = (page: number, pageSize: number, length: number) => {
+    if (length === 0 || pageSize === 0) return '0 de ' + length;
+    const start = page * pageSize;
+    const end = Math.min(start + pageSize, length);
+    return (start + 1) + ' - ' + end + ' de ' + length;
+  };
+  return intl;
+}
+
 @NgModule({
   declarations: [
     AdminPanelComponent,
@@ -52,9 +70,14 @@ const routes: Routes = [
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
+    MatPaginatorModule,
     MatSelectModule,
+    MatTableModule,
     MatTabsModule,
     RouterModule.forChild(routes)
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useFactory: ptBrPaginatorIntl }
   ]
 })
 export class AdminPanelModule { }

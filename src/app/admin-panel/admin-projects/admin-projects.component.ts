@@ -7,6 +7,7 @@ import { AdminService } from '../../services/admin.service';
 })
 export class AdminProjectsComponent implements OnInit {
   projects: any[] = [];
+  displayedColumns = ['name', 'owner', 'plan', 'type', 'billing', 'contacts', 'members', 'createdAt', 'actions'];
   totalCount = 0;
   page = 0;
   limit = 20;
@@ -60,6 +61,7 @@ export class AdminProjectsComponent implements OnInit {
 
   nextPage() { if ((this.page + 1) * this.limit < this.totalCount) { this.page++; this.loadProjects(); } }
   prevPage() { if (this.page > 0) { this.page--; this.loadProjects(); } }
+  onPageChange(event: any) { this.page = event.pageIndex; this.limit = event.pageSize; this.loadProjects(); }
 
   openPlanModal(p: any) { this.selectedProject = p; this.modalPlanKey = ''; this.modalMessage = ''; this.showPlanModal = true; }
   savePlan() {

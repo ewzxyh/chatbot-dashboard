@@ -49,40 +49,75 @@
 
 <div *ngIf="isLoading" style="text-align: center; padding: 40px;">Carregando...</div>
 
-<table *ngIf="!isLoading">
-  <thead>
-    <tr>
-      <th>Nome</th><th>Proprietário</th><th>Plano</th><th>Tipo</th><th>Billing</th><th>Contatos</th><th>Membros</th><th>Criado em</th><th>Ações</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let p of projects">
-      <td>{{ p.name }}</td>
-      <td>{{ p.ownerEmail }}</td>
-      <td>{{ planDisplayNames[p.profile?.name] || p.profile?.name }}</td>
-      <td><span [style.color]="p.profile?.type === 'payment' ? '#4caf50' : '#999'">{{ p.profile?.type }}</span></td>
-      <td>{{ billingStatusLabel(p.profile?.billingStatus || (p.profile?.type === 'payment' ? 'active' : 'free')) }}</td>
-      <td>{{ p.profile?.quotes?.contacts || '—' }}</td>
-      <td>{{ p.profile?.agents || '—' }}</td>
-      <td>{{ p.createdAt | date:'dd/MM/yyyy' }}</td>
-      <td>
-        <button mat-stroked-button type="button" class="btn-action" (click)="openPlanModal(p)">Plano</button>
-        <button mat-stroked-button type="button" class="btn-action" (click)="openTrialModal(p)">Trial</button>
-        <button mat-stroked-button type="button" class="btn-action" (click)="openQuotasModal(p)">Quotas</button>
-        <button mat-stroked-button type="button" class="btn-action" (click)="openUsageModal(p)">Uso</button>
-        <button mat-stroked-button type="button" class="btn-action" (click)="openBillingModal(p)">Billing</button>
-      </td>
-    </tr>
-  </tbody>
+<table mat-table *ngIf="!isLoading" [dataSource]="projects" class="admin-table admin-table-wide">
+  <ng-container matColumnDef="name">
+    <th mat-header-cell *matHeaderCellDef>Nome</th>
+    <td mat-cell *matCellDef="let p">{{ p.name }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="owner">
+    <th mat-header-cell *matHeaderCellDef>Proprietário</th>
+    <td mat-cell *matCellDef="let p">{{ p.ownerEmail }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="plan">
+    <th mat-header-cell *matHeaderCellDef>Plano</th>
+    <td mat-cell *matCellDef="let p">{{ planDisplayNames[p.profile?.name] || p.profile?.name }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="type">
+    <th mat-header-cell *matHeaderCellDef>Tipo</th>
+    <td mat-cell *matCellDef="let p">
+      <span [style.color]="p.profile?.type === 'payment' ? '#4caf50' : '#999'">{{ p.profile?.type }}</span>
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="billing">
+    <th mat-header-cell *matHeaderCellDef>Billing</th>
+    <td mat-cell *matCellDef="let p">{{ billingStatusLabel(p.profile?.billingStatus || (p.profile?.type === 'payment' ? 'active' : 'free')) }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="contacts">
+    <th mat-header-cell *matHeaderCellDef>Contatos</th>
+    <td mat-cell *matCellDef="let p">{{ p.profile?.quotes?.contacts || '—' }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="members">
+    <th mat-header-cell *matHeaderCellDef>Membros</th>
+    <td mat-cell *matCellDef="let p">{{ p.profile?.agents || '—' }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="createdAt">
+    <th mat-header-cell *matHeaderCellDef>Criado em</th>
+    <td mat-cell *matCellDef="let p">{{ p.createdAt | date:'dd/MM/yyyy' }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="actions">
+    <th mat-header-cell *matHeaderCellDef>Ações</th>
+    <td mat-cell *matCellDef="let p" class="admin-actions-cell">
+      <button mat-stroked-button type="button" class="btn-action" (click)="openPlanModal(p)">Plano</button>
+      <button mat-stroked-button type="button" class="btn-action" (click)="openTrialModal(p)">Trial</button>
+      <button mat-stroked-button type="button" class="btn-action" (click)="openQuotasModal(p)">Quotas</button>
+      <button mat-stroked-button type="button" class="btn-action" (click)="openUsageModal(p)">Uso</button>
+      <button mat-stroked-button type="button" class="btn-action" (click)="openBillingModal(p)">Billing</button>
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 </table>
 
-<div class="admin-pagination">
-  <span>{{ totalCount }} projetos | Página {{ page + 1 }}</span>
-  <div>
-    <button mat-stroked-button type="button" [disabled]="page === 0" (click)="prevPage()">Anterior</button>
-    <button mat-stroked-button type="button" [disabled]="(page + 1) * limit >= totalCount" (click)="nextPage()">Próxima</button>
-  </div>
-</div>
+<div *ngIf="!isLoading && projects.length === 0" class="admin-empty-state">Nenhum projeto encontrado.</div>
+
+<mat-paginator
+  *ngIf="!isLoading"
+  [length]="totalCount"
+  [pageIndex]="page"
+  [pageSize]="limit"
+  [pageSizeOptions]="[10, 20, 50]"
+  showFirstLastButtons
+  (page)="onPageChange($event)">
+</mat-paginator>
 
 <div *ngIf="showPlanModal" class="modal-overlay" (click)="closeModals()">
   <div class="modal-card" (click)="$event.stopPropagation()">

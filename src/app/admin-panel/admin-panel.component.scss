@@ -11,7 +11,7 @@
     opacity: 1;
   }
 }
-.admin-content { min-height: 400px; }
+.admin-content { min-height: 400px; overflow-x: auto; }
 
 .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
 .stat-card { background: white; border: 1px solid #e0e6eb; border-radius: 8px; padding: 24px; text-align: center; box-shadow: none !important; }
@@ -27,6 +27,30 @@ thead tr { border-bottom: 2px solid #e0e0e0; text-align: left; }
 th, td { padding: 8px; }
 tbody tr { border-bottom: 1px solid #f0f0f0; }
 tbody tr:hover { background: #f8fbff; }
+
+.admin-table {
+  width: 100%;
+  margin-top: 8px;
+
+  .mat-header-cell,
+  .mat-cell {
+    padding: 8px;
+  }
+}
+
+.admin-table-wide {
+  min-width: 1120px;
+}
+
+.admin-actions-cell {
+  min-width: 240px;
+}
+
+.admin-empty-state {
+  padding: 24px;
+  text-align: center;
+  color: #60708f;
+}
 
 .admin-filters { display: flex; gap: 12px; margin-bottom: 16px; align-items: center; flex-wrap: wrap; }
 .admin-filter-field {
