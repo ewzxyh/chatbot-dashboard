@@ -5,8 +5,8 @@
 
 
 // Typography elements
-$mdb-font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif !default;
-$mdb-font-family-poppins: "Poppins", "Roboto", Arial, sans-serif !default;
+$mdb-font-family: 'Geist Sans', 'Roboto', 'Helvetica', 'Arial', sans-serif !default;
+$mdb-font-family-poppins: 'Geist Sans', 'Roboto', 'Helvetica', 'Arial', sans-serif !default;
 $mdb-text-color-light:  $white !default;
 $mdb-text-color-light-hex: $white !default; // for contrast function in inverse
 $mdb-text-color-primary: unquote("rgba(#{$rgb-black}, 0.87)") !default;
@@ -134,7 +134,7 @@ $border-radius-label: 12px !default;
 $border-radius-extreme: 30px !default;
 
 // Typography
-$font-family-sans-serif: 'Roboto', 'Helvetica', 'Arial', sans-serif !default;
+$font-family-sans-serif: 'Geist Sans', 'Roboto', 'Helvetica', 'Arial', sans-serif !default;
 $font-family-serif: 'Roboto Slab', 'Times New Roman', serif !default;
 
 $headings-font-weight: 300 !default;
@@ -199,10 +199,10 @@ $link-hover-decoration: underline !default;
 //
 //## Font, line-height, and color for body text, headings, and more.
 
-$font-family-sans-serif:  "Helvetica Neue", Helvetica, Arial, sans-serif !default;
+$font-family-sans-serif:  "Geist Sans", "Helvetica Neue", Helvetica, Arial, sans-serif !default;
 $font-family-serif:       Georgia, "Times New Roman", Times, serif !default;
 // ** Default monospace fonts for `<code>`, `<kbd>`, and `<pre>`.
-$font-family-monospace:   Menlo, Monaco, Consolas, "Courier New", monospace !default;
+$font-family-monospace:   "Geist Mono", Menlo, Monaco, Consolas, "Courier New", monospace !default;
 $font-family-base:        $font-family-sans-serif !default;
 
 $font-size-base:          14px !default;

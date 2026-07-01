@@ -16,6 +16,9 @@
  }
 
  body {
+     font-family: var(--font-geist-sans);
+     font-optical-sizing: auto;
+     font-kerning: normal;
      --sidebar-bckgrnd-bottom-section-drk: #2d323e;
      --sidebar-bckgrnd-item-hover: rgba(248, 248, 248, 0.251);
      --sidebar-bckgrnd-item-border-radius:12px;
@@ -157,8 +160,8 @@
      --red-color: #f44336;
      --green-color: #4caf50;
      --green-400-color: #0d9488;
-     --header-font-family: Poppins, Roboto, Helvetica, Arial, sans-serif;
-     --content-font-family: Roboto, Helvetica, Arial, sans-serif;
+     --header-font-family: var(--font-geist-sans);
+     --content-font-family: var(--font-geist-sans);
      --text-color-on-dark: #dbddde;
      --dark-background: #2d323e;
      --conv-details-help-tooltip-color: #7695a5;
@@ -294,6 +297,9 @@
  }
 
  body.dark {
+    font-family: var(--font-geist-sans);
+    font-optical-sizing: auto;
+    font-kerning: normal;
     --sidebar-bckgrnd-bottom-section-drk: #2d323e;
      --sidebar-bckgrnd-item-hover: rgba(248, 248, 248, 0.251);
      --sidebar-bckgrnd-item-border-radius:12px;
@@ -427,8 +433,8 @@
      --red-color: #f44336;
      --green-color: #4caf50;
      --green-400-color: #0d9488;
-     --header-font-family: Poppins, Roboto, Helvetica, Arial, sans-serif;
-     --content-font-family: Roboto, Helvetica, Arial, sans-serif;
+     --header-font-family: var(--font-geist-sans);
+     --content-font-family: var(--font-geist-sans);
      --text-color-on-dark: #dbddde;
      --dark-background: #2d323e;
      --conv-details-help-tooltip-color: #7695a5;

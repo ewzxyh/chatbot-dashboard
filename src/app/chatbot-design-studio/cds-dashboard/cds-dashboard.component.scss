@@ -18,7 +18,7 @@ $margin-top-card: 30px;
     overflow-x: hidden;
     overflow-y: hidden;
 
-    font-family: "Poppins", "Roboto", "Arial", sans-serif;
+    font-family: var(--font-geist-sans);
     color: #394f5a;
     font-size: 16px;
 }
@@ -174,7 +174,7 @@ $box-left-width: 250px;
 
 .cds-header {
     height: 60px;
-    font-family: "Poppins", Roboto, Arial, sans-serif !important;
+    font-family: var(--font-geist-sans) !important;
     line-height: 60px;
     font-size: 21px;
     color: #fff;
@@ -349,7 +349,7 @@ $box-left-width: 250px;
 
   label {
     font-weight: 500;
-    font-family: Poppins,Roboto,Arial,sans-serif;
+    font-family: var(--font-geist-sans);
     text-transform: capitalize;
     font-size: 14px;
     animation: blinker 1s linear infinite;
@@ -367,7 +367,7 @@ $box-left-width: 250px;
     color: #fff;
     box-shadow: none;
     font-weight: 500;
-    font-family: Poppins,Roboto,Arial,sans-serif;
+    font-family: var(--font-geist-sans);
     text-transform: capitalize;
     font-size: 14px;
     padding: 6px 12px;
@@ -383,7 +383,7 @@ $box-left-width: 250px;
     color: #fff;
     box-shadow: none;
     font-weight: 500;
-    font-family: Poppins,Roboto,Arial,sans-serif;
+    font-family: var(--font-geist-sans);
     text-transform: capitalize;
     font-size: 14px;
     padding: 6px 12px;
@@ -542,7 +542,7 @@ $box-left-width: 250px;
   
   .cds-dialog-popup-wpr .cds-dialog-popup-title {
     -webkit-font-smoothing: antialiased;
-    font-family: "Poppins", "Roboto", "Arial", sans-serif;
+    font-family: var(--font-geist-sans);
     font-size: 21px;
     color: #202124;
     line-height: 21px;
@@ -573,7 +573,7 @@ $box-left-width: 250px;
     cursor: pointer;
     z-index: 0;
     -webkit-font-smoothing: antialiased;
-    font-family: "Poppins", "Roboto", "Arial", sans-serif;
+    font-family: var(--font-geist-sans);
     letter-spacing: 0.25px;
     font-weight: 500;
     height: 36px;
@@ -800,7 +800,7 @@ $box-left-width: 250px;
   background-color: #2d323e !important;
   font-size: 12px !important;
   border-radius: 2px !important;
-  font-family: "Poppins", "Roboto", "Arial", sans-serif !important;
+  font-family: var(--font-geist-sans) !important;
   padding-top: 8px !important;
   padding-bottom: 8px !important;
   color: #fff !important;
