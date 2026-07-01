@@ -127,7 +127,7 @@
 .graph-footer-num {
     font-size: 26px;
     margin-bottom: 3px;
-    font-family: "Poppins", "Roboto", "Arial", sans-serif;
+    font-family: var(--font-geist-sans);
     -webkit-font-smoothing: antialiased;
     -moz-font-smoothing: antialiased;
     -o-font-smoothing: antialiased;
@@ -135,7 +135,7 @@
 }
 
 .graph-footer-text {
-    font-family: "Poppins", "Roboto", "Arial", sans-serif;
+    font-family: var(--font-geist-sans);
     -webkit-font-smoothing: antialiased;
     -moz-font-smoothing: antialiased;
     -o-font-smoothing: antialiased;

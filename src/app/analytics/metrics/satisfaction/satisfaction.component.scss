@@ -29,7 +29,7 @@
     padding-top: 24px;
     font-size: 18px;
     //color: #fff;
-    font-family:'Poppins', 'Roboto',  'Arial', sans-serif;
+    font-family: var(--font-geist-sans);
 }
 
 .chart-wrapper {
@@ -46,7 +46,7 @@
 
 .chart-container{
     //background-color: #1e88e5;
-    font-family: 'Poppins', 'Roboto',  'Arial', sans-serif;
+    font-family: var(--font-geist-sans);
 }
 
 .number-stars{
@@ -54,7 +54,7 @@
     line-height: 0;
     padding-top: 94px;
     color: #073f74;
-    font-family: 'Poppins', 'Roboto',  'Arial', sans-serif;
+    font-family: var(--font-geist-sans);
     font-weight: 400;
 }
 

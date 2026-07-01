@@ -103,7 +103,7 @@ $color-text-box: #566787;
     .box-setting-form {
         background: #425575;
         margin: 0px;
-        font-family: "Poppins", "Roboto", Arial, sans-serif;
+        font-family: var(--font-geist-sans);
         color: $color-text-box;
         text-align: left;
         padding: 6px 12px;

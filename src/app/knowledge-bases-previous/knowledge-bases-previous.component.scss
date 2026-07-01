@@ -1,7 +1,7 @@
 @import "../../assets/sass/md/_variables.scss";
 
 .card-content {
-    font-family: 'Poppins';
+    font-family: var(--font-geist-sans);
 }
 
 .add-kb-div {
@@ -18,7 +18,7 @@
 }
 
 .modal {
-    font-family: 'Poppins';
+    font-family: var(--font-geist-sans);
 }
 
 .modal-title {
@@ -371,7 +371,7 @@ table {
     background-color: #2d323e !important;
     font-size: 12px !important;
     border-radius: 2px !important;
-    font-family: "Poppins", "Roboto", "Arial", sans-serif !important;
+    font-family: var(--font-geist-sans) !important;
     padding-top: 8px !important;
     padding-bottom: 8px !important;
     color: #fff !important;

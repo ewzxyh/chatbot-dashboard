@@ -62,7 +62,7 @@ button.close {
 /* MODAL END */
 
 #checklist-modal {
-  font-family: 'Poppins','Roboto', 'Arial', sans-serif;
+  font-family: var(--font-geist-sans);
   font-size: 35px;
   // color: rgb(57, 79, 90)!important;
   font-weight: 600;
@@ -190,7 +190,7 @@ pre {
 .custom__modal__title {
   color: #262f3c;
   text-align: center;
-  font-family: "Poppins";
+  font-family: var(--font-geist-sans);
   margin-top: 20px;
   font-size: 28px;
 }

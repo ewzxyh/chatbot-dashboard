@@ -1,7 +1,7 @@
 @import "./src/assets/sass/md/_variables.scss";
 
 .integrations-content {
-    font-family: 'Poppins', 'Roboto', 'Arial', sans-serif !important;
+    font-family: var(--font-geist-sans) !important;
     display: flex;
     flex-direction: row;
     align-items: flex-start;
@@ -87,7 +87,7 @@
 mat-expansion-panel ::ng-deep {
     background-color: transparent;
     box-shadow: none;
-    font-family: 'Poppins' !important;
+    font-family: var(--font-geist-sans) !important;
     //color: var(--text-color);
 
     .mat-expansion-panel-header {

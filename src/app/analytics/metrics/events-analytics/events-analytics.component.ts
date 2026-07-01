@@ -281,7 +281,7 @@ export class EventsAnalyticsComponent implements OnInit {
           beforeDraw: function (chartInstance, easing) {
             var ctx = chartInstance.chart.ctx;
             ctx.height = 128
-            ctx.font ='Roboto';
+            ctx.font = 'Geist Sans';
             var chartArea = chartInstance.chartArea;
           }
         }]

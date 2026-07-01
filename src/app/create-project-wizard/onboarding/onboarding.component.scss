@@ -14,7 +14,7 @@ $color-pro-plan: #3ea9f5;
   /**  local variables **/ 
   --width-col-rigth: 360px;
   //----------------------------------//
-  font-family: "Poppins","Roboto",Arial,sans-serif;
+  font-family: var(--font-geist-sans);
   background: white;
   width: 100%;
   margin: 0px; 

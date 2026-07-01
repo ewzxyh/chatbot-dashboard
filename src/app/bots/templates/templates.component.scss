@@ -432,7 +432,7 @@
     // font-size: 1em;
     // margin: 0 0 0.3em;
     color: #3c4858;
-    font-family: "Poppins";
+    font-family: var(--font-geist-sans);
     font-weight: 400;
     font-size: 18px;
     margin-top: 21px !important;
@@ -455,7 +455,7 @@
     padding: 0 2em 1em;
     margin: 0;
     color: #d7bdca;
-    font-family: Roboto;
+    font-family: var(--font-geist-sans);
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 3;
@@ -1765,7 +1765,7 @@
     background-color: #2d323e !important;
     font-size: 12px !important;
     border-radius: 2px !important;
-    font-family: "Poppins", "Roboto", "Arial", sans-serif !important;
+    font-family: var(--font-geist-sans) !important;
     padding-top: 8px !important;
     padding-bottom: 8px !important;
     color: #fff !important;
@@ -1786,7 +1786,7 @@
 .cmnty-text {
     max-width: 800px;
     text-align: center;
-    font-family: "Poppins", "Roboto", "Arial", sans-serif;
+    font-family: var(--font-geist-sans);
     font-size: 16px;
     line-height: normal;
     font-weight: 400;

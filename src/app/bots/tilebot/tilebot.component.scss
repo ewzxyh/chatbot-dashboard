@@ -370,7 +370,7 @@ and also iPads specifically.
 }
 
 .title-attribute {
-    font-family: "Poppins", "Roboto", "Arial", sans-serif;
+    font-family: var(--font-geist-sans);
     color: #394f5a;
     font-weight: 500;
 }
@@ -381,7 +381,7 @@ and also iPads specifically.
 }
 
 .faq-table-title {
-    font-family: "Poppins", "Roboto", "Arial", sans-serif;
+    font-family: var(--font-geist-sans);
     color: #394f5a;
     font-weight: 500;
     font-size: 16px;
@@ -429,7 +429,7 @@ and also iPads specifically.
 }
 
 .checkbox-label {
-    font-family: "Poppins", "Roboto", "Arial", sans-serif;
+    font-family: var(--font-geist-sans);
     color: #394f5a;
     font-weight: 500;
 }
@@ -684,7 +684,7 @@ input[type="text"]:disabled::placeholder {
     color: #fff !important;
     font-size: 12px !important;
     border-radius: 2px !important;
-    font-family: "Poppins", "Roboto", "Arial", sans-serif;
+    font-family: var(--font-geist-sans);
     padding-top: 8px !important;
     padding-bottom: 8px !important;
     border: 1px solid #555555 !important;
@@ -841,7 +841,7 @@ input[type="text"]:disabled::placeholder {
 .answers-count {
     color: #353f45;
     padding: 6px 12px;
-    font-family: "Poppins", "Roboto", "Arial", sans-serif;
+    font-family: var(--font-geist-sans);
     font-weight: 500;
     margin-left: 9px;
     margin-top: 0px;
@@ -1199,7 +1199,7 @@ input[type="text"]:disabled::placeholder {
     -webkit-box-align: center;
     align-items: center;
     display: inline-flex;
-    font-family: "Poppins", sans-serif;
+    font-family: var(--font-geist-sans);
     font-weight: 600;
     justify-content: center;
     text-align: center;

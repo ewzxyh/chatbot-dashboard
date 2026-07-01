@@ -251,7 +251,7 @@ p.member:hover {
 }
 
 .customh4 {
-  font-family: 'Poppins', 'Roboto', 'Arial', sans-serif;
+  font-family: var(--font-geist-sans);
   font-size: 16px;
   font-weight: 400;
   //    color: #394f5a !important;
@@ -316,13 +316,13 @@ span .switch-agent-admin-requests-btn {
 .table-head-span {
   color: #566787;
   font-weight: 500;
-  font-family: 'Poppins', 'Roboto', 'Arial', sans-serif;
+  font-family: var(--font-geist-sans);
   // text-transform: uppercase;
   font-size: 13px;
 }
 
 .table-body-span {
-  font-family: 'Poppins', 'Roboto', 'Arial', sans-serif;
+  font-family: var(--font-geist-sans);
   color: rgb(118, 149, 165);
 }
 
@@ -508,7 +508,7 @@ span .switch-agent-admin-requests-btn {
 /// PULSE (end)
 
 .huge {
-  font-family: "Lato", sans-serif;
+  font-family: var(--font-geist-sans);
   font-weight: 400;
 }
 
@@ -1662,7 +1662,7 @@ span .switch-agent-admin-requests-btn {
   background-color: #fff !important;
   font-size: 11px !important;
   border-radius: 2px !important;
-  font-family: 'Poppins', 'Roboto', 'Arial', sans-serif;
+  font-family: var(--font-geist-sans);
   padding-top: 5px !important;
   padding-bottom: 5px !important;
   border: 1px solid #ccc;
@@ -1694,7 +1694,7 @@ span .switch-agent-admin-requests-btn {
 }
 
 .graph-legend .advanced-pie-legend-wrapper .advanced-legend .total-value {
-  font-family: 'Lato', sans-serif;
+  font-family: var(--font-geist-sans);
   font-weight: 400;
   font-size: 36px;
   color: rgba(0, 0, 0, 0.54) !important;
@@ -1736,7 +1736,7 @@ span .switch-agent-admin-requests-btn {
 }
 
 .legend-item .item-value {
-  font-family: 'Lato', sans-serif;
+  font-family: var(--font-geist-sans);
   font-weight: 400;
   font-size: 24px;
   color: rgba(0, 0, 0, 0.54) !important;

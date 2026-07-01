@@ -1,7 +1,7 @@
 /** Uniforma la grafica a modal-delete-namespace **/
 
 :host {
-  font-family: var(--header-font-family, 'Poppins', 'Roboto', 'Arial', sans-serif);
+  font-family: var(--font-geist-sans);
 }
 
 
@@ -11,7 +11,7 @@
 //   font-weight: 600;
 //   color: #3c4858;
 //   margin-bottom: 8px;
-//   font-family: var(--header-font-family, 'Poppins', 'Roboto', 'Arial', sans-serif);
+//   font-family: var(--font-geist-sans);
 // }
 
 .form-container {
@@ -49,11 +49,11 @@
   font-size: 16px;
   margin: 0;
   color: #3c4858;
-  font-family: var(--header-font-family, 'Poppins', 'Roboto', 'Arial', sans-serif);
+  font-family: var(--font-geist-sans);
 }
 
 ::ng-deep .mat-dialog-actions {
-  font-family: var(--header-font-family, 'Poppins', 'Roboto', 'Arial', sans-serif);
+  font-family: var(--font-geist-sans);
   padding: 8px 0;
   display: flex;
   flex-wrap: wrap;
@@ -84,7 +84,7 @@
     line-height: 36px;
     padding: 0 16px;
     overflow: visible;
-    font-family: Roboto, "Helvetica Neue", sans-serif;
+    font-family: var(--font-geist-sans);
     font-size: 14px;
     font-weight: 500;
     border-radius: var(--btn-border-radius);
@@ -106,7 +106,7 @@
   height: 40px;
   font-size: 15px;
   border-radius: 6px;
-  font-family: var(--header-font-family, 'Poppins', 'Roboto', 'Arial', sans-serif);
+  font-family: var(--font-geist-sans);
 }
 
 ::ng-deep .mat-dialog-ko-btn {
@@ -116,7 +116,7 @@
   height: 40px;
   font-size: 15px;
   border-radius: 6px;
-  font-family: var(--header-font-family, 'Poppins', 'Roboto', 'Arial', sans-serif);
+  font-family: var(--font-geist-sans);
 }
 
 ::ng-deep .mat-dialog-ko-btn:hover {

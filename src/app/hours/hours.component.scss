@@ -43,7 +43,7 @@
   -ms-user-select: none;
   user-select: none;
   padding-top: 3px;
-  font-family: 'Poppins';
+  font-family: var(--font-geist-sans);
 }
 
 /* Hide the browser's default checkbox */
@@ -830,7 +830,7 @@ button.close {
   line-height: 30px;
   font-size: 14px;
   color: white;
-  font-family: Trebuchet, Arial, sans-serif;
+  font-family: var(--font-geist-sans);
   font-weight: bold;
   box-sizing: border-box;
 }
@@ -1004,7 +1004,7 @@ button.close {
 // }
 
 .selector-bar {
-  font-family: 'Poppins';
+  font-family: var(--font-geist-sans);
   display: flex;
   flex-direction: row;
   justify-content: space-between;

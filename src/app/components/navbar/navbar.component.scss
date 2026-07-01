@@ -531,7 +531,7 @@ button.close.custom-hover:hover {
   margin-bottom: 0px;
   font-size: 16px;
   color: #3c4858;
-  font-family: 'Poppins', 'Roboto', 'Arial', sans-serif;
+  font-family: var(--font-geist-sans);
   font-weight: 600;
 }
 
@@ -1004,7 +1004,7 @@ button.close.custom-hover:hover {
   position: relative;
   text-align: center;
   color: #93a2ac;
-  font-family: Lato, Roboto, Helvetica, Arial, sans-serif;
+  font-family: var(--font-geist-sans);
   font-weight: 100;
   margin: 2rem;
 }
@@ -1107,7 +1107,7 @@ button.close.custom-hover:hover {
   height: 41px;
   line-height: 1.2;
   border: 1px solid #eee;
-  font-family: 'Poppins', 'Roboto', 'Arial', sans-serif;
+  font-family: var(--font-geist-sans);
   text-transform: capitalize;
   font-weight: 500;
 
@@ -1175,7 +1175,7 @@ button.close.custom-hover:hover {
   background-color: #2d323e !important;
   font-size: 12px !important;
   border-radius: 2px !important;
-  font-family: 'Poppins', 'Roboto', 'Arial', sans-serif;
+  font-family: var(--font-geist-sans);
   padding-top: 8px !important;
   padding-bottom: 8px !important;
 }
@@ -1819,7 +1819,7 @@ button.close.custom-hover:hover {
   line-height: 18px;
   letter-spacing: -0.01em;
   text-align: right;
-  font-family: Lato, Roboto, Helvetica, Arial, sans-serif;
+  font-family: var(--font-geist-sans);
 }
 
 .give-feedback {
@@ -1841,7 +1841,7 @@ button.close.custom-hover:hover {
   top: 12px;
   border: 1px solid #fff;
   font-weight: bold;
-  font-family: arial;
+  font-family: var(--font-geist-sans);
   line-height: 18px;
   letter-spacing: 0;
   opacity: 1;

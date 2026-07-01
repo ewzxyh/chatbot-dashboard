@@ -10,7 +10,7 @@
   /**  local variables **/ 
   --width-col-rigth: 360px;
   //----------------------------------//
-  font-family: $mdb-font-family-poppins;
+  font-family: var(--font-geist-sans);
   background: white;
   width: 100%;
   margin: 0px; 
@@ -317,7 +317,7 @@
 // }
 
 // .project-name-input {
-//   font-family: "Poppins", Arial, sans-serif;;
+//   font-family: var(--font-geist-sans);;
 //   font-size: 36px;
 //   line-height: 54px;
 //   font-weight: 500;
@@ -326,7 +326,7 @@
 // }
 
 // .project-name-label {
-//   font-family: "Poppins", Arial, sans-serif;;
+//   font-family: var(--font-geist-sans);;
 //   font-size: 36px;
 //   line-height: 54px;
 //   font-weight: 500;
@@ -405,7 +405,7 @@
 
 // .wizard-span-success-msg {
 //   font-size: 18px;
-//   font-family: "Poppins", Arial, sans-serif;;
+//   font-family: var(--font-geist-sans);;
 //   top: 2px;
 //   position: relative;
 //   margin-left: 8px;
@@ -413,7 +413,7 @@
 
 // .wizard-span-processing-msg {
 //   font-size: 18px;
-//   font-family: "Poppins", Arial, sans-serif;;
+//   font-family: var(--font-geist-sans);;
 //   top: 2px;
 //   position: relative;
 // }

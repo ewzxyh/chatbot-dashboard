@@ -13,7 +13,7 @@ $color-pro-plan: #3ea9f5;
 .select-templates-or-kb {
     padding: 0;
     margin: 0;
-    font-family: 'Poppins',Arial,sans-serif;
+    font-family: var(--font-geist-sans);
     height: calc(100vh - 150px);
     position: relative;
     .col-left {

@@ -4,7 +4,7 @@
 @import "./src/assets/sass/md/_variables.scss";
 
 #chat21-container {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: var(--font-geist-sans);
   font-size-adjust: none;
   font-size: 100%;
   font-style: normal;
@@ -12,7 +12,7 @@
   font-stretch: normal;
   font-variant: normal;
   font-weight: normal;
-  font: normal normal 100% "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font: normal normal 100% var(--font-geist-sans);
   text-align: left;
   -moz-text-align-last: initial;
   text-align-last: initial;
@@ -420,7 +420,7 @@ div.clear {
 }
 
 .c21-last-time {
-  font-family: "Poppins", "Roboto", "Arial", sans-serif;
+  font-family: var(--font-geist-sans);
   font-size: 9px;
   color: #aaa;
   float: right;
@@ -439,7 +439,7 @@ div.clear {
 }
 
 .c21-msg {
-  font-family: "Poppins", "Roboto", "Arial", sans-serif;
+  font-family: var(--font-geist-sans);
   font-weight: 400;
   color: #3a3c4c;
   font-size: 12px;
@@ -1074,7 +1074,7 @@ input[type="text"]:disabled {
   width: 100%;
   height: auto;
   vertical-align: middle;
-  font-family: "Helvetica Neue", "Apple Color Emoji", Helvetica, Arial, sans-serif;
+  font-family: var(--font-geist-sans);
   font-weight: 400;
   word-wrap: break-word;
   margin: 0;
@@ -1221,7 +1221,7 @@ input[type="text"]:disabled {
   border-radius: 40px;
   padding: 0 16px;
   color: #fff;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: var(--font-geist-sans);
   font-weight: 400;
   font-size: 12px;
   display: flex;
@@ -1303,7 +1303,7 @@ input[type="text"]:disabled {
   border-radius: 40px;
   padding: 0 16px;
   color: #fff;
-  font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+  font-family: var(--font-geist-sans);
   font-weight: 400;
   font-size: 12px;
   display: flex;
@@ -1391,7 +1391,7 @@ input[type="text"]:disabled {
 //   line-height: 16px;
 //   font-size: 9px;
 //   color: white;
-//   font-family: Trebuchet, Arial, sans-serif;
+//   font-family: var(--font-geist-sans);
 //   font-weight: bold;
 //   box-sizing: border-box;
 // }
@@ -1464,7 +1464,7 @@ input[type="text"]:disabled {
 //   line-height: 24px;
 //   font-size: 14px;
 //   color: white;
-//   font-family: Trebuchet, Arial, sans-serif;
+//   font-family: var(--font-geist-sans);
 //   font-weight: bold;
 //   box-sizing: border-box;
 // }
@@ -1827,7 +1827,7 @@ button.buttonRounded:hover {
   // padding: 15px 0px 15px 0px;
   padding: 5px 0px 15px 0px;
   border: none;
-  font: normal 13px "Roboto", Helvetica, sans-serif;
+  font: normal 13px var(--font-geist-sans);
   color: rgba(255, 255, 255, 0.9);
   // color:#12b674;
   text-transform: capitalize;
@@ -1917,7 +1917,7 @@ button.buttonRounded:hover {
   // top: 20px;
   top: 13px;
   font-size: 13px;
-  // font: normal 13px "Roboto", Helvetica, sans-serif;
+  // font: normal 13px var(--font-geist-sans);
   text-transform: uppercase;
 }
 
@@ -1958,7 +1958,7 @@ button.buttonRounded:hover {
 }
 
 .widget-appearance-section {
-  font-family: "Poppins", "Roboto", "Arial", sans-serif;
+  font-family: var(--font-geist-sans);
   font-weight: 600;
   margin-bottom: 4px;
   font-size: 14px;
@@ -1967,7 +1967,7 @@ button.buttonRounded:hover {
 .card-title {
   text-transform: none;
   color: #566787;
-  font-family: "Poppins", "Roboto", "Arial", sans-serif;
+  font-family: var(--font-geist-sans);
   height: 30px;
   font-size: 16px;
 }
@@ -2079,7 +2079,7 @@ button.buttonRounded:hover {
   line-height: 30px;
   font-size: 14px;
   color: white;
-  font-family: Trebuchet, Arial, sans-serif;
+  font-family: var(--font-geist-sans);
   font-weight: bold;
   box-sizing: border-box;
 }
@@ -2852,7 +2852,7 @@ button.buttonRounded:hover {
     border-radius: 9999px;
     background: var(--blue-20);
     color: #fff;
-    font-family: 'Poppins';
+    font-family: var(--font-geist-sans);
     font-size: 12px;
     padding: 4px 16px;
     text-transform: none;

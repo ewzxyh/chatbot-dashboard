@@ -7,7 +7,7 @@
   max-height: 80vh;      /* Altezza massima (80% viewport) */
   overflow-y: auto;      /* Scroll se ci sono troppe righe */
   z-index: 1000;         /* Sopra tutti gli elementi */
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-family: var(--font-geist-sans);
   cursor: grab;
 
   &.cdk-drag-preview {

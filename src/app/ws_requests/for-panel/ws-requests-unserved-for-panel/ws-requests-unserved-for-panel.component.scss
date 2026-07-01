@@ -123,7 +123,7 @@ p.member:hover {
 }
 
 .customh4 {
-    font-family:'Poppins','Roboto', 'Arial', sans-serif;
+    font-family: var(--font-geist-sans);
     font-size: 16px;
     font-weight: 400;
     //    color: #394f5a !important;
@@ -188,13 +188,13 @@ span .switch-agent-admin-requests-btn {
 .table-head-span {
     color: #566787;
     font-weight: 700;
-    font-family: 'Poppins','Roboto', 'Arial', sans-serif;
+    font-family: var(--font-geist-sans);
     // text-transform: uppercase;
     font-size: 13px;
 }
 
 .table-body-span {
-    font-family: 'Poppins','Roboto', 'Arial', sans-serif;
+    font-family: var(--font-geist-sans);
     color: rgb(118, 149, 165);
 }
 
@@ -444,7 +444,7 @@ span .switch-agent-admin-requests-btn {
 /// PULSE (end)
 
 .huge {
-    font-family: "Lato", sans-serif;
+    font-family: var(--font-geist-sans);
     font-weight: 400;
 }
 
@@ -620,7 +620,7 @@ span .switch-agent-admin-requests-btn {
     color: #1e2129;
     background-color: #a9abad;
     text-transform: uppercase;
-    font-family: "Montserrat", sans-serif;
+    font-family: var(--font-geist-sans);
     font-weight: 500;
     // margin-top: 8px;
     // margin-bottom: 8px;
@@ -749,7 +749,7 @@ span .switch-agent-admin-requests-btn {
     font-size: 17px;
     font-weight: 400;
     text-align: center;
-    font-family:'Poppins','Roboto', 'Arial', sans-serif;
+    font-family: var(--font-geist-sans);
 }
 
 .left-sidebar--lead-name-and-request-wrapper {
@@ -775,7 +775,7 @@ span .switch-agent-admin-requests-btn {
     white-space: nowrap;
     text-overflow: ellipsis;
     font-weight: 600;
-    font-family:'Poppins','Roboto', 'Arial', sans-serif;
+    font-family: var(--font-geist-sans);
 }
 
 .requester-status-in-unserved-list {
@@ -1175,7 +1175,7 @@ span .switch-agent-admin-requests-btn {
     font-size: 20px;
     font-weight: 400;
     /* text-align: center; */
-    font-family: Helvetica Neue,sans-serif;
+    font-family: var(--font-geist-sans);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -1187,7 +1187,7 @@ span .switch-agent-admin-requests-btn {
     text-overflow: ellipsis;
     overflow: hidden;
     font-weight: 400;
-    font-family: Helvetica, Helvetica, Arial, sans-serif;
+    font-family: var(--font-geist-sans);
     margin-top: 4px;
     color: var(--text-color);
 }
@@ -1199,7 +1199,7 @@ span .switch-agent-admin-requests-btn {
     overflow: hidden;
     text-overflow: ellipsis;
     color: var(--secondary-text-color);
-    font-family: "Helvetica Neue", sans-serif;
+    font-family: var(--font-geist-sans);
 
     // color: #7695a5;
 }

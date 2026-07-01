@@ -3,9 +3,9 @@
 
 
 .tiledesk_card_header {
-    padding:0px !important; 
-    -webkit-box-shadow:none !important;  
-    box-shadow: none !important; 
+    padding:0px !important;
+    -webkit-box-shadow:none !important;
+    box-shadow: none !important;
     width: 0;height: 0 !important;
     position: relative !important;
     top: 24px !important;
@@ -15,7 +15,7 @@
 }
 
 .card-header_icon {
-    background-color: #ffffff !important; 
+    background-color: #ffffff !important;
     font-size: 46px;
 }
 
@@ -29,8 +29,8 @@
 }
 
 .card_content_header_last_update_icons {
-    font-size: 16px; 
-    position: relative; 
+    font-size: 16px;
+    position: relative;
     top: 4px;
 
 }
@@ -38,7 +38,7 @@
 .request_count {
     font-size: 72px;
     line-height: 72px;
-    font-family: 'Poppins','Roboto', 'Arial', sans-serif;
+    font-family: var(--font-geist-sans);
 
     margin-top: 35px;
 }
@@ -51,23 +51,23 @@
 }
 
 .request_count_footer {
-    font-family:'Poppins','Roboto', 'Arial', sans-serif;
+    font-family: var(--font-geist-sans);
     font-size: 16px;
-    color:rgba(0,0,0,.54); 
+    color:rgba(0,0,0,.54);
     text-align: center;
 }
 // END - CARDS WITH THE COUNTS OF THE REQUESTS: TOTALS SERVED AND UNSERVED
 
 .c21-title {
-    font-family: 'Poppins','Roboto', 'Arial', sans-serif;
+    font-family: var(--font-geist-sans);
     font-size: 16px;
-    color:rgba(0,0,0,.54); 
+    color:rgba(0,0,0,.54);
 }
 
 .card-header-custom {
     box-shadow: none!important;
-    margin-left: 0px; 
-    margin-right: 0px; 
+    margin-left: 0px;
+    margin-right: 0px;
     border-bottom: 1px solid #eff3f5
 }
 
@@ -143,17 +143,17 @@
   }
 
 
- 
+
 //   ----------------------
   .section {
     position: relative;
-    
+
   }
-  
+
   .section img {
       position: absolute;
   }
-  
+
   .top {
       animation-name: fade;
       animation-timing-function: ease-in-out;
@@ -161,11 +161,11 @@
       animation-duration: 8s;
       animation-direction: alternate;
   }
-  
+
   @keyframes fade {
       0% {
           opacity: 1;
-          
+
       }
       25% {
           opacity: 1;
@@ -196,9 +196,9 @@
     // color: rgba(255, 255, 255, 1) !important;
 }
 
-.ct-line { 
+.ct-line {
     stroke: rgba(30, 136, 229, 0.7) !important;
-   
+
 }
 .ct-series-a .ct-point {
     stroke: rgba(30, 136, 229, 0.8) !important;
@@ -223,7 +223,7 @@
 .outline-btn-analytics:hover {
     color: #fff;
     background-color:  #1e88e5;
-} 
+}
 
 .outline-btn-analytics {
     background-color: transparent;
@@ -244,10 +244,10 @@
 
 
 // .demopage-title {
-//     margin-top:10px; 
-//     margin-bottom:5px; 
-//     font-family:'Poppins','Roboto', 'Arial', sans-serif; 
-//     text-align:center; 
+//     margin-top:10px;
+//     margin-bottom:5px;
+//     font-family: var(--font-geist-sans);
+//     text-align:center;
 //     color: #1e88e5;
 //     line-height: 41px;
 //     font-weight: 400;
@@ -255,11 +255,11 @@
 
 // .demopage-subtitle {
 //     margin-top: 5px !important;
-//     font-family:'Poppins','Roboto', 'Arial', sans-serif; 
+//     font-family: var(--font-geist-sans);
 //     text-align:center;
 // }
 
-  // to 992 
+  // to 992
 @media (max-width: 992px) {
     .left-div-padding  {
         padding-top:10px;
@@ -268,7 +268,7 @@
 }
 
 @media (min-width:992px) {
-    .col-container {       
+    .col-container {
         display: flex;
         // display: table;
     }
@@ -292,7 +292,7 @@
 }
 
 
-@media (min-width:992px)  and (max-width: 1340px){ 
+@media (min-width:992px)  and (max-width: 1340px){
 
     .left-side-in-col-container {
         width: 35% !important;
@@ -309,6 +309,6 @@
     .demopage-subtitle {
         font-size: 1.5em !important;
     }
-    
+
 }
 

@@ -6,13 +6,13 @@
 
 .chart-header-subtitle {
     font-size: 18px;
-    font-family: 'Poppins', 'Roboto', 'Arial', sans-serif;
+    font-family: var(--font-geist-sans);
 }
 
 .range-selected {
     margin: 8px !important;
     color: rgba(0, 0, 0, 0.5);
-    font-family: "Poppins", "Roboto", "Arial", sans-serif;
+    font-family: var(--font-geist-sans);
     font-size: 16px;
     display: block;
 }

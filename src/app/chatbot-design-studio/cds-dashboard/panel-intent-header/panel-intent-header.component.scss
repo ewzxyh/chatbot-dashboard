@@ -15,7 +15,7 @@ $width-title: 80%;
       line-height: normal;
       color: #ffffffb3;
       font-weight: normal;
-      font-family: 'Poppins','Roboto',Arial,sans-serif;
+      font-family: var(--font-geist-sans);
     }
     
 
@@ -105,7 +105,7 @@ $width-title: 80%;
     color: $light-black;
     box-shadow: none !important;
     font-weight: 500 !important;
-    font-family: "Poppins", "Roboto", "Arial", sans-serif !important;
+    font-family: var(--font-geist-sans) !important;
     text-transform: capitalize !important;
     font-size: 14px !important;
 }

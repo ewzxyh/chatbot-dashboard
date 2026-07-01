@@ -69,7 +69,7 @@ $color-star: #ff9d28;
         }
     }
     .text {
-        font-family: "Roboto",Arial,sans-serif;
+        font-family: var(--font-geist-sans);
         font-size: 1em;
         width: 100%;
         margin: 0px; 

@@ -172,7 +172,7 @@ button.close {
 }
 
 .checkbox-label {
-  font-family: 'Poppins','Roboto', 'Arial', sans-serif;
+  font-family: var(--font-geist-sans);
   color: #394f5a;
   font-weight: 500;
 }
@@ -2560,7 +2560,7 @@ body.swal2-no-backdrop .swal2-shown.swal2-bottom-right {
     // font-size: 1em;
     // margin: 0 0 0.3em;
     color: #3c4858;
-    font-family: "Poppins";
+    font-family: var(--font-geist-sans);
     font-weight: 400;
     font-size: 18px;
     margin-top: 21px !important;
@@ -2584,7 +2584,7 @@ body.swal2-no-backdrop .swal2-shown.swal2-bottom-right {
     padding: 0 2em 1em;
     margin: 0;
     color: #d7bdca;
-    font-family: Roboto;
+    font-family: var(--font-geist-sans);
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 3;

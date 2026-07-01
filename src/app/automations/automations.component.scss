@@ -202,7 +202,7 @@ p {
 }
 
 .custom-button {
-    //font-family: 'Poppins' !important;
+    //font-family: var(--font-geist-sans) !important;
     background-color: white;
     color: var(--blue-20);
     border: solid 1px var(--blue-20);
@@ -611,7 +611,7 @@ p {
     white-space: nowrap;
     height: fit-content;
     font-size: 16px;
-    font-family: 'Poppins';
+    font-family: var(--font-geist-sans);
 }
 
 .grid-right-column {
@@ -619,7 +619,7 @@ p {
     // background: #ecf0f1;
     // border-radius: 0 10px 10px 0;
     height: fit-content;
-    font-family: 'Poppins';
+    font-family: var(--font-geist-sans);
     font-weight: 400;
 }
 

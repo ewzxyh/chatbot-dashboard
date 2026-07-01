@@ -479,7 +479,7 @@ export class PanoramicaComponent implements OnInit {
             //ctx.fillStyle = 'red'; // your color here
             ctx.height = 128
             //chartInstance.chart.canvas.parentNode.style.height = '128px';
-            ctx.font = 'Roboto'
+            ctx.font = 'Geist Sans'
             var chartArea = chartInstance.chartArea;
             //ctx.fillRect(chartArea.left, chartArea.top, chartArea.right - chartArea.left, chartArea.bottom - chartArea.top);
           }

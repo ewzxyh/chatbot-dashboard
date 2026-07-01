@@ -60,7 +60,7 @@
 .demopage-title {
   margin-top: 10px;
   margin-bottom: 5px;
-  font-family:'Poppins','Roboto', 'Arial', sans-serif;
+  font-family: var(--font-geist-sans);
   text-align: center;
   color: #1e88e5;
   line-height: 41px;
@@ -69,7 +69,7 @@
 
 .demopage-subtitle {
   margin-top: 5px !important;
-  font-family: 'Poppins','Roboto', 'Arial', sans-serif;
+  font-family: var(--font-geist-sans);
   text-align: center;
 }
 

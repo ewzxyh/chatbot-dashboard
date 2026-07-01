@@ -10,7 +10,7 @@
   /**  local variables **/
   --width-col-rigth: 360px;
   //----------------------------------//
-  font-family: $mdb-font-family-poppins;
+  font-family: var(--font-geist-sans);
   background: white;
   width: 100%;
   margin: 0px;
@@ -239,7 +239,7 @@ $color-pro-plan: #3ea9f5;
 
 .install-widget-page-title {
   margin-top: 10px;
-  font-family: "Poppins", Arial, sans-serif;
+  font-family: var(--font-geist-sans);
   font-size: 36px;
 }
 

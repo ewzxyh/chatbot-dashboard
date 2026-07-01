@@ -136,10 +136,10 @@
 
 
               <!-- <div  class="oaerror info" style="margin-bottom: 16px;">
-            <p *ngIf="selectedSlot.id === 0" style=" font-size: 16px; font-family: 'Poppins','Roboto', 'Arial', sans-serif; color: #394f5a;">
+            <p *ngIf="selectedSlot.id === 0" style=" font-size: 16px; font-family: var(--font-geist-sans); color: #394f5a;">
               {{ "HoursPage.ActivateTimetables" | translate }}
             </p>
-            <p *ngIf="selectedSlot.id !== 0" style=" font-size: 16px; font-family: 'Poppins','Roboto', 'Arial', sans-serif; color: #394f5a;">
+            <p *ngIf="selectedSlot.id !== 0" style=" font-size: 16px; font-family: var(--font-geist-sans); color: #394f5a;">
               {{ "HoursPage.ActivateSlotTimetables" | translate }}
             </p>
 
@@ -162,7 +162,7 @@
 
                 <div class="row">
                   <div class="col-sm-12">
-                    <!-- style=" font-size: 16px; font-family: 'Poppins', sans-serif !important; color: #394f5a;" -->
+                    <!-- style=" font-size: 16px; font-family: var(--font-geist-sans) !important; color: #394f5a;" -->
                     <p style="font-size: 14px; color: #3c4858; font-weight: 400;margin-bottom: 5px;"
                       [ngClass]="{'day_label_disabled' : !selectedSlot.active}">
                       Time zone

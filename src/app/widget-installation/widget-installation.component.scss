@@ -27,7 +27,7 @@
   // padding-right: 42px;
   font-size: 18px;
   font-weight: 600;
-  font-family: 'Poppins', 'Roboto', 'Arial', sans-serif;
+  font-family: var(--font-geist-sans);
   padding-left: 0px;
   border-bottom-color: #ececec;
   // padding-top: 30px;
@@ -45,7 +45,7 @@
   margin-bottom: 0px;
   height: 40px !important;
   position: relative;
-  font-family: 'Poppins', 'Roboto', 'Arial', sans-serif;
+  font-family: var(--font-geist-sans);
   // font-size: 18px;
   font-size: 18px;
   margin-top: 10px;
@@ -219,7 +219,7 @@
     text-align: center;
     width: 100%;
     position: relative;
-    font-family: 'Poppins', 'Roboto', 'Arial', sans-serif;
+    font-family: var(--font-geist-sans);
     font-size: 18px;
   }
 

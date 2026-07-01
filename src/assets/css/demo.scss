@@ -1642,7 +1642,7 @@ th {
 .analytics-date-range-selected {
   margin: 8px !important;
   color: rgba(0, 0, 0, 0.5);
-  font-family: "Poppins", "Roboto", "Arial", sans-serif;
+  font-family: var(--font-geist-sans);
   font-size: 16px;
   display: block;
 }
@@ -2062,7 +2062,7 @@ span.navbar-brand-title {
 }
 
 .custom-ng2-tooltip {
-  font-family: "Poppins", "Roboto", "Arial", sans-serif;
+  font-family: var(--font-geist-sans);
   font-size: 14px;
   font-style: normal;
   letter-spacing: normal;
@@ -2142,19 +2142,19 @@ span.navbar-brand-title {
 .ng2-tooltip-subject {
   font-weight: 500;
   font-size: 13px;
-  font-family: "Poppins", "Roboto", "Arial", sans-serif;
+  font-family: var(--font-geist-sans);
   font-size: 12px;
 }
 
 .ng2-tooltip-firt-text {
   font-weight: 400;
-  font-family: "Poppins", "Roboto", "Arial", sans-serif;
+  font-family: var(--font-geist-sans);
   font-size: 12px;
 }
 
 .ng2-most-recent-comment-section-title {
   font-weight: 400;
-  font-family: "Poppins", "Roboto", "Arial", sans-serif;
+  font-family: var(--font-geist-sans);
   font-size: 12px;
   color: rgb(104, 115, 125);
   margin-bottom: 0px;
@@ -2175,7 +2175,7 @@ span.navbar-brand-title {
 .ng2-comment-sender {
   font-weight: 500;
   font-size: 12px;
-  font-family: "Poppins", "Roboto", "Arial", sans-serif;
+  font-family: var(--font-geist-sans);
   // float: left;
   flex: 1;
 }
@@ -2184,13 +2184,13 @@ span.navbar-brand-title {
   color: rgb(104, 115, 125);
   font-weight: 500;
   font-size: 10px;
-  font-family: "Poppins", "Roboto", "Arial", sans-serif;
+  font-family: var(--font-geist-sans);
   // float: right;
 }
 
 .ng2-latest-comment {
   font-weight: 400;
-  font-family: "Poppins", "Roboto", "Arial", sans-serif;
+  font-family: var(--font-geist-sans);
   font-size: 10px;
   margin-bottom: 0px;
 }
@@ -2529,7 +2529,7 @@ footer ul {
   // color: #555555 !important;
   font-size: 14px !important;
   // border-radius: 2px !important;
-  font-family: "Poppins", "Roboto", "Arial", sans-serif;
+  font-family: var(--font-geist-sans);
   // padding-top: 8px !important;
   // padding-bottom: 8px !important;
   // border: 1px solid #e5effe !important;
@@ -2540,7 +2540,7 @@ footer ul {
   color: $light-black;
   box-shadow: none;
   font-weight: 500;
-  font-family: "Poppins", Roboto, Arial, sans-serif;
+  font-family: var(--font-geist-sans);
   text-transform: capitalize;
   font-size: 14px;
   padding: 6px 12px;
@@ -2601,7 +2601,7 @@ appdashboard-app-store>div>div>div>div>div>div.card-content>div.available-from-b
   text-transform: none;
   border-radius: 999px;
   box-shadow: unset;
-  font-family: "Poppins", "Roboto", "Arial", sans-serif;
+  font-family: var(--font-geist-sans);
 }
 
 .btn--primary:hover {
@@ -2647,7 +2647,7 @@ appdashboard-app-store>div>div>div>div>div>div.card-content>div.available-from-b
   background-color: #fff;
   border-radius: 999px;
   box-shadow: unset;
-  font-family: "Poppins", "Roboto", "Arial", sans-serif;
+  font-family: var(--font-geist-sans);
   text-transform: unset;
 }
 
@@ -2699,7 +2699,7 @@ appdashboard-app-store>div>div>div>div>div>div.card-content>div.available-from-b
   text-transform: none;
   border-radius: 999px;
   box-shadow: unset;
-  font-family: "Poppins", "Roboto", "Arial", sans-serif;
+  font-family: var(--font-geist-sans);
 }
 
 .btn.btn--blu:hover {
@@ -2747,7 +2747,7 @@ appdashboard-app-store>div>div>div>div>div>div.card-content>div.available-from-b
   background-color: #fff;
   border-radius: 999px !important;
   box-shadow: unset;
-  font-family: "Poppins", "Roboto", "Arial", sans-serif;
+  font-family: var(--font-geist-sans);
   text-transform: unset;
 }
 
@@ -2799,7 +2799,7 @@ appdashboard-app-store>div>div>div>div>div>div.card-content>div.available-from-b
   text-transform: none;
   border-radius: 999px;
   box-shadow: unset;
-  font-family: "Poppins", "Roboto", "Arial", sans-serif;
+  font-family: var(--font-geist-sans);
 }
 
 .btn.btn-p:hover {

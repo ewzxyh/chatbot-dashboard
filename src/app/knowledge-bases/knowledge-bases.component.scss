@@ -297,7 +297,7 @@
 }
 
 .modal {
-    font-family: 'Poppins';
+    font-family: var(--font-geist-sans);
 }
 
 .modal-title {
@@ -877,7 +877,7 @@ table {
     background-color: #2d323e !important;
     font-size: 12px !important;
     border-radius: 2px !important;
-    font-family: "Poppins", "Roboto", "Arial", sans-serif !important;
+    font-family: var(--font-geist-sans) !important;
     padding-top: 8px !important;
     padding-bottom: 8px !important;
     color: #fff;
@@ -925,7 +925,7 @@ table {
     background-color: #2d323e !important;
     font-size: 12px !important;
     border-radius: 2px !important;
-    font-family: "Poppins", "Roboto", "Arial", sans-serif !important;
+    font-family: var(--font-geist-sans) !important;
     padding: 8px !important;
     color: #fff !important;
     text-align: center;
@@ -1406,7 +1406,7 @@ table {
     margin-bottom: 0px;
     color: #353f45;
     font-weight: 400;
-    // font-family: "Poppins";
+    // font-family: var(--font-geist-sans);
     margin-top: 25px;
     text-align: center;
     width: 100%;

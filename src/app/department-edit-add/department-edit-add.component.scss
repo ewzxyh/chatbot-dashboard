@@ -183,7 +183,7 @@ input[type="radio"] {
   border-left-width: 5px;
   border-radius: 3px;
   margin: 0 auto;
-  font-family: 'Poppins', 'Roboto', 'Arial', sans-serif;
+  font-family: var(--font-geist-sans);
   font-size: 14px;
 }
 
@@ -576,7 +576,7 @@ select[disabled] {
   line-height: 30px;
   font-size: 14px;
   color: white;
-  font-family: Trebuchet, Arial, sans-serif;
+  font-family: var(--font-geist-sans);
   font-weight: bold;
   box-sizing: border-box;
 }
@@ -653,7 +653,7 @@ select[disabled] {
   white-space: nowrap;
   position: relative;
   top: 16px;
-  font-family: 'Poppins', 'Roboto', 'Arial', sans-serif;
+  font-family: var(--font-geist-sans);
   font-weight: 400;
 }
 

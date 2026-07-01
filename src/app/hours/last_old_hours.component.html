@@ -148,10 +148,10 @@
 
 
               <!-- <div  class="oaerror info" style="margin-bottom: 16px;">
-            <p *ngIf="selectedSlot.id === 0" style=" font-size: 16px; font-family: 'Poppins','Roboto', 'Arial', sans-serif; color: #394f5a;">
+            <p *ngIf="selectedSlot.id === 0" style=" font-size: 16px; font-family: var(--font-geist-sans); color: #394f5a;">
               {{ "HoursPage.ActivateTimetables" | translate }}
             </p>
-            <p *ngIf="selectedSlot.id !== 0" style=" font-size: 16px; font-family: 'Poppins','Roboto', 'Arial', sans-serif; color: #394f5a;">
+            <p *ngIf="selectedSlot.id !== 0" style=" font-size: 16px; font-family: var(--font-geist-sans); color: #394f5a;">
               {{ "HoursPage.ActivateSlotTimetables" | translate }}
             </p>
 
@@ -174,7 +174,7 @@
 
                 <div class="row">
                   <div class="col-sm-12">
-                    <!-- style=" font-size: 16px; font-family: 'Poppins', sans-serif !important; color: #394f5a;" -->
+                    <!-- style=" font-size: 16px; font-family: var(--font-geist-sans) !important; color: #394f5a;" -->
                     <p style="font-size: 14px; color: #3c4858; font-weight: 400;"
                       [ngClass]="{'day_label_disabled' : !selectedSlot.active}">
                       Time zone
@@ -260,7 +260,7 @@
                           <tr>
                             <th>
                               <span
-                                style="color: #394f5a; font-family:'Poppins','Roboto', 'Arial', sans-serif; font-weight: 500;"
+                                style="color: #394f5a; font-family: var(--font-geist-sans); font-weight: 500;"
                                 [ngClass]="{'day_label_disabled' : !selectedSlot.active}">
                                 <!-- <strong> -->
                                 {{ "HoursPage.Day" | translate }}
@@ -270,7 +270,7 @@
 
                             <th colspan="2">
                               <span
-                                style="color: #394f5a; font-family:'Poppins','Roboto', 'Arial', sans-serif; font-weight: 500;"
+                                style="color: #394f5a; font-family: var(--font-geist-sans); font-weight: 500;"
                                 [ngClass]="{'day_label_disabled' : !selectedSlot.active}">
                                 <!-- <strong> -->
                                 {{ "HoursPage.Status" | translate }}
@@ -290,7 +290,7 @@
                             <th style="padding-left: 25px;">
                               <!--  color: #566787  -->
                               <span
-                                style="color: #394f5a; font-family: 'Poppins','Roboto', 'Arial', sans-serif; font-weight: 500;"
+                                style="color: #394f5a; font-family: var(--font-geist-sans); font-weight: 500;"
                                 [ngClass]="{'day_label_disabled' : !selectedSlot.active}">
                                 <!-- <strong> -->
                                 {{ "HoursPage.Morning" | translate }}
@@ -302,7 +302,7 @@
 
                             <th style="padding-left: 25px;">
                               <span
-                                style="color: #394f5a; font-family: 'Poppins','Roboto', 'Arial', sans-serif; font-weight: 500;"
+                                style="color: #394f5a; font-family: var(--font-geist-sans); font-weight: 500;"
                                 [ngClass]="{'day_label_disabled' : !selectedSlot.active}">
                                 <!-- <strong> -->
                                 {{ "HoursPage.Afternoon" | translate }}

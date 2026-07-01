@@ -139,7 +139,7 @@
 
 .connect-whatsapp-wizard-title {
     font-size: 24px;
-    font-family: Poppins, Roboto, Arial, sans-serif;
+    font-family: var(--font-geist-sans);
     color: #e0f0ff;
     padding: 0px 1px;
     -webkit-font-smoothing: antialiased;
@@ -176,7 +176,7 @@ height: 40px;
     font-size: 18px;
     color: var(--blue-light);
     cursor: pointer;
-    font-family: Poppins,Roboto,Arial,sans-serif;
+    font-family: var(--font-geist-sans);
     font-weight: 400;
 
 }

@@ -223,7 +223,7 @@ div.is-active > a > i {
 .onBlackBckgrnd {
   // color: rgba(255, 255, 255, 0.6);
   color: $brand-sidebar-inactive-item-text-color;
-  font-family: "Poppins", "Roboto", "Arial", sans-serif;
+  font-family: var(--font-geist-sans);
 }
 
 /* SIDEBAR ACTIVE ITEMS TEXT */
@@ -399,7 +399,7 @@ button.close {
 }
 
 .username {
-  font-family: "Poppins", "Roboto", "Arial", sans-serif;
+  font-family: var(--font-geist-sans);
 }
 
 .avatar-container {
@@ -568,7 +568,7 @@ button.close {
 #sidebaravatar-altenative-user-avatar {
   // line-height: 2.9;
   font-weight: 400;
-  font-family: "Poppins", "Roboto", "Arial", sans-serif;
+  font-family: var(--font-geist-sans);
   left: 50%;
   top: 50%;
   -webkit-transform: translate(-50%, -50%);
@@ -1198,7 +1198,7 @@ button.close {
   position: relative;
   text-align: center;
   color: #93a2ac;
-  font-family: Lato;
+  font-family: var(--font-geist-sans);
   font-weight: 100;
   margin: 2rem;
 }
@@ -1267,7 +1267,7 @@ button.close {
   top: -25px;
   color: #fff;
   font-size: 7px;
-  font-family: arial;
+  font-family: var(--font-geist-sans);
   text-align: center;
   line-height: 10px;
   font-weight: 700;
@@ -1504,7 +1504,7 @@ button.close {
   color: #fff !important;
   font-size: 12px !important;
   border-radius: 2px !important;
-  font-family: "Poppins", "Roboto", "Arial", sans-serif !important;
+  font-family: var(--font-geist-sans) !important;
   padding-top: 8px !important;
   padding-bottom: 8px !important;
 
@@ -1515,7 +1515,7 @@ button.close {
   color: #fff !important;
   font-size: 12px !important;
   border-radius: 2px !important;
-  font-family: "Poppins", "Roboto", "Arial", sans-serif !important;
+  font-family: var(--font-geist-sans) !important;
   padding-top: 8px !important;
   padding-bottom: 8px !important;
   margin-left: 51px !important;

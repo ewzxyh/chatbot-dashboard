@@ -259,7 +259,7 @@
     color: rgb(255, 255, 255);
     font-size: 16px;
     font-weight: 400;
-    font-family: "Helvetica Neue", sans-serif;
+    font-family: var(--font-geist-sans);
 }
 
 .contact-name {
@@ -313,7 +313,7 @@ ul li {
     padding: 12px;
     // border-radius: 20px;
     // margin-bottom: 2px;
-    font-family: muli, Helvetica Neue, Arial, sans-serif;
+    font-family: var(--font-geist-sans);
     font-size: 12px;
     font-weight: 400;
     line-height: 1.4 !important;
@@ -448,7 +448,7 @@ ul li {
     background: transparent;
     overflow: auto;
     -webkit-overflow-scrolling: touch;
-    font-family: muli, Helvetica Neue, Arial, sans-serif;
+    font-family: var(--font-geist-sans);
     font-size: 12px;
     font-weight: 400;
     overflow-x: hidden;

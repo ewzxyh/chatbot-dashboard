@@ -510,7 +510,7 @@ $box-left-width: 250px;
     position: absolute;
     z-index: 1201 !important;
     -webkit-font-smoothing: antialiased;
-    // font-family: Roboto,RobotoDraft,Helvetica,Arial,sans-serif;
+    // font-family: var(--font-geist-sans);
     font-size: 14px;
     font-weight: 400;
     letter-spacing: 0.2px;

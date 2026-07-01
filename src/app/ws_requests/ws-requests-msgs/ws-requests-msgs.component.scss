@@ -1122,7 +1122,7 @@ and also iPads specifically.
 }
 
 .request-category {
-  font-family: "Poppins", "Roboto", "Arial", sans-serif;
+  font-family: var(--font-geist-sans);
   // font-weight: 500;
   font-size: 16px;
   position: relative;
@@ -1136,7 +1136,7 @@ span .conv-svg-icon {
 }
 
 .row-header {
-  font-family: "Poppins", "Roboto", "Arial", sans-serif;
+  font-family: var(--font-geist-sans);
   color: #394f5a;
   font-weight: 500;
   margin-bottom: 0px;
@@ -2175,7 +2175,7 @@ span .conv-svg-icon {
 }
 
 .mat-toolbar {
-  font: 600 20px/32px Muli, Helvetica Neue, Arial, sans-serif;
+  font: 600 20px/32px var(--font-geist-sans);
   margin: 0;
 }
 
@@ -2373,7 +2373,7 @@ span .conv-svg-icon {
 
 .contact-fullname-in-right-sidebar {
   font-weight: 700;
-  font-family: "Helvetica Neue", sans-serif;
+  font-family: var(--font-geist-sans);
   display: block;
   font-size: 18px;
   white-space: nowrap;
@@ -2673,7 +2673,7 @@ span .conv-svg-icon {
 }
 
 .altenative-avatar-conv-detail {
-  font-family: "Poppins", "Roboto", "Arial", sans-serif;
+  font-family: var(--font-geist-sans);
   font-weight: 400;
   position: absolute;
   color: #fff;
@@ -2960,7 +2960,7 @@ span .conv-svg-icon {
 //   color: #555555 !important;
 //   font-size: 12px !important;
 //   border-radius: 2px !important;
-//   font-family: "Poppins", "Roboto", "Arial", sans-serif !important;
+//   font-family: var(--font-geist-sans) !important;
 //   padding-top: 8px !important;
 //   padding-bottom: 8px !important;
 //   border: 1px solid #e5effe !important;
@@ -2970,7 +2970,7 @@ span .conv-svg-icon {
   background-color: #2d323e !important;
   font-size: 12px !important;
   border-radius: 2px !important;
-  font-family: "Poppins", "Roboto", "Arial", sans-serif !important;
+  font-family: var(--font-geist-sans) !important;
   padding-top: 8px !important;
   padding-bottom: 8px !important;
   color: #fff !important;
@@ -3472,7 +3472,7 @@ span .conv-svg-icon {
 
 .sat-popover-agent-fullname {
   font-size: 13px;
-  font-family: "Poppins", "Roboto", "Arial", sans-serif;
+  font-family: var(--font-geist-sans);
   font-weight: 400;
   margin-bottom: 3px;
   letter-spacing: -0.6px;
@@ -3869,7 +3869,7 @@ span .conv-svg-icon {
 //   line-height: 16px;
 //   letter-spacing: -0.01em;
 //   font-weight: 400;
-//   font-family: Poppins, Roboto, Arial, sans-serif;
+//   font-family: var(--font-geist-sans);
 // }
 
 .dropdown__menu-form--active {
@@ -4159,7 +4159,7 @@ label {
 
 // working status
 .request-working-status {
-  font-family: "Roboto", "Arial", sans-serif;
+  font-family: var(--font-geist-sans);
   width: 20px;
   height: 20px;
   justify-content: center;
@@ -6147,7 +6147,7 @@ label {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  font-family: "Poppins", "Roboto", "Arial", sans-serif;
+  font-family: var(--font-geist-sans);
   background-color: var(--card-background-color);
 }
 

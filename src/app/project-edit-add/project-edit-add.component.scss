@@ -207,7 +207,7 @@ button.close {
   line-height: 30px;
   font-size: 14px;
   color: white;
-  font-family: Trebuchet, Arial, sans-serif;
+  font-family: var(--font-geist-sans);
   font-weight: bold;
   box-sizing: border-box;
 }
@@ -1160,7 +1160,7 @@ button.close {
   font-size: 12px !important;
   line-height: 1.2;
   border-radius: 2px !important;
-  font-family: "Poppins", "Roboto", "Arial", sans-serif;
+  font-family: var(--font-geist-sans);
   padding-top: 8px !important;
   padding-bottom: 8px !important;
   border: 1px solid #555555 !important;
@@ -1179,7 +1179,7 @@ button.close {
 
 
 .appsumo-account-instruction {
-  font-family: "Poppins", "Roboto", "Arial", sans-serif;
+  font-family: var(--font-geist-sans);
   text-align: left;
 }
 
@@ -1303,7 +1303,7 @@ button.close {
 .pricing-page-header-title-text {
   -webkit-box-flex: 1;
   flex-grow: 1;
-  font-family: "Poppins", "Roboto", "Arial", sans-serif;
+  font-family: var(--font-geist-sans);
 }
 
 .pricing-page-header-period-switch-wpr {
@@ -1443,7 +1443,7 @@ button.close {
   line-height: 31px;
   letter-spacing: -0.01em;
   color: rgb(8, 15, 26);
-  font-family: "Poppins", "Roboto", "Arial", sans-serif;
+  font-family: var(--font-geist-sans);
 }
 
 .span-8 {
@@ -1619,7 +1619,7 @@ button.close {
   text-transform: unset;
   font-weight: 400;
   box-shadow: unset;
-  font-family: "Poppins", "Roboto", "Arial", sans-serif;
+  font-family: var(--font-geist-sans);
 }
 
 .btn-new {
@@ -1726,7 +1726,7 @@ button.close {
   border-radius: 9999px;
   background: var(--blue-20);
   color: #fff;
-  font-family: 'Poppins';
+  font-family: var(--font-geist-sans);
   font-size: 12px;
   padding: 4px 16px;
   text-transform: none;

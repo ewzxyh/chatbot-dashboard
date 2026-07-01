@@ -1,7 +1,7 @@
 .boxdays {
     height: 33px;
     //border: 1px solid grey;
-    font-family: 'Poppins', 'Roboto', 'Arial', sans-serif;
+    font-family: var(--font-geist-sans);
     font-size: 100%;
     display: inline-block; //-->allow content vertical align
     vertical-align: middle;
@@ -46,13 +46,13 @@
     //color: #fff;
     display: inline-block; //-->allow content vertical align
     vertical-align: middle;
-    font-family: 'Poppins', 'Roboto', 'Arial', sans-serif;
+    font-family: var(--font-geist-sans);
     //text-align: center;
 }
 
 .chart-container {
     //background-color: #1e88e5;
-    font-family: 'Poppins', 'Roboto', 'Arial', sans-serif;
+    font-family: var(--font-geist-sans);
 }
 
 .number-analytics {
@@ -69,7 +69,7 @@
     line-height: 0;
     padding-top: 94px;
     color: #073f74;
-    font-family: 'Poppins', 'Roboto', 'Arial', sans-serif;
+    font-family: var(--font-geist-sans);
 }
 
 @media screen and (min-width: 768px) {
@@ -146,7 +146,7 @@
     line-height: 33px;
     letter-spacing: -0.01em;
     color: rgb(172, 184, 203);
-    font-family: Lato, Roboto, Helvetica, Arial, sans-serif;;
+    font-family: var(--font-geist-sans);;
 }
 
 .percentage-symbol {

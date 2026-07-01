@@ -11,7 +11,7 @@
   /**  local variables **/ 
   --width-col-rigth: 360px;
   //----------------------------------//
-  font-family: $mdb-font-family-poppins;
+  font-family: var(--font-geist-sans);
   background: white;
   width: 100%;
   margin: 0px; 
@@ -249,7 +249,7 @@ $color-pro-plan: #3ea9f5;
 
 .install-widget-page-title {
   margin-top: 10px;
-  font-family: "Poppins", Arial, sans-serif;
+  font-family: var(--font-geist-sans);
   font-size: 36px;
 }
 
@@ -503,7 +503,7 @@ pre {
 .pricing-page-header-title-text {
   -webkit-box-flex: 1;
   flex-grow: 1;
-  font-family: "Poppins","Roboto", "Arial", sans-serif;
+  font-family: var(--font-geist-sans);
 }
 
 .pricing-page-header-period-switch-wpr {
@@ -642,7 +642,7 @@ pre {
   line-height: 31px;
   letter-spacing: -0.01em;
   color: rgb(8, 15, 26);
-  font-family: "Poppins","Roboto", "Arial", sans-serif;
+  font-family: var(--font-geist-sans);
 }
 .span-8 {
   display: block;
@@ -816,7 +816,7 @@ pre {
   text-transform: unset;
   font-weight: 400;
   box-shadow: unset;
-  font-family: "Poppins", "Roboto", "Arial", sans-serif;
+  font-family: var(--font-geist-sans);
 }
 
 .btn-new {

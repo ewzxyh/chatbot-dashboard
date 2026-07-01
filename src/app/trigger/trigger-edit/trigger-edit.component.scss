@@ -8,7 +8,7 @@ input[type="text"] {
 }
 
 .custom-label {
-  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+  font-family: var(--font-geist-sans);
   color: #7695a5;
   height: 36px;
   padding-top: 8px !important;
@@ -219,7 +219,7 @@ $f21blue: #039be5;
   line-height: 30px;
   font-size: 14px;
   color: white;
-  font-family: Trebuchet, Arial, sans-serif;
+  font-family: var(--font-geist-sans);
   font-weight: bold;
   box-sizing: border-box;
 }

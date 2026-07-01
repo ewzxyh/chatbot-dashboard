@@ -14,7 +14,7 @@ $color-pro-plan: #3ea9f5;
 .box-step-2 {
     padding: 0;
     margin: 0;
-    font-family: 'Poppins',Arial,sans-serif;
+    font-family: var(--font-geist-sans);
     .col-left {
         background: $color-white;
         width: 50%;
@@ -284,7 +284,7 @@ $color-pro-plan: #3ea9f5;
         -webkit-box-align: center;
         align-items: center;
         font-size: 18px;
-        font-family: "Poppins","Roboto", "Arial", sans-serif;
+        font-family: var(--font-geist-sans);
         .step-number {
             display: flex;
         }
