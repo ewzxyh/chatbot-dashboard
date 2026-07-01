@@ -1,5 +1,7 @@
 import { Component, OnInit, TemplateRef } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { Subscription } from 'rxjs';
+import { timeout } from 'rxjs/operators';
 import { AdminService } from '../../services/admin.service';
 import { formatAdminText } from '../admin-text.util';
 
@@ -33,12 +35,16 @@ export class AdminProjectsComponent implements OnInit {
   modalMessage = '';
   usageSnapshot: any = null;
   usageSnapshots: any[] = [];
+  usageSnapshotRowsData: any[] = [];
+  usageChannelRows: any[] = [];
+  usageTypeRows: any[] = [];
   usageLoading = false;
   usageSnapshotLoading = false;
   usageError = '';
   usageSnapshotMessage = '';
   billingLifecycle: any = null;
   billingEvents: any[] = [];
+  billingSummaryRowsData: any[] = [];
   billingLoading = false;
   billingActionLoading = false;
   billingReason = '';
@@ -48,6 +54,10 @@ export class AdminProjectsComponent implements OnInit {
   billingJobLoading = false;
   billingJobMessage = '';
   planDisplayNames: any = { Free: 'Iniciante', Starter: 'Standard', Pro: 'Pro', Business: 'Enterprise', Custom: 'Custom' };
+  private usageRequestSub: Subscription = null;
+  private usageSnapshotsRequestSub: Subscription = null;
+  private billingRequestSub: Subscription = null;
+  private readonly modalRequestTimeoutMs = 20000;
 
   constructor(private adminService: AdminService, private dialog: MatDialog) { }
   ngOnInit() {
@@ -79,30 +89,42 @@ export class AdminProjectsComponent implements OnInit {
     return formatAdminText(value);
   }
 
+  private cancelProjectModalRequests() {
+    if (this.usageRequestSub) this.usageRequestSub.unsubscribe();
+    if (this.usageSnapshotsRequestSub) this.usageSnapshotsRequestSub.unsubscribe();
+    if (this.billingRequestSub) this.billingRequestSub.unsubscribe();
+    this.usageRequestSub = null;
+    this.usageSnapshotsRequestSub = null;
+    this.billingRequestSub = null;
+  }
+
   openPlanModal(p: any, template?: TemplateRef<any>) {
+    this.cancelProjectModalRequests();
     this.selectedProject = p; this.modalPlanKey = ''; this.modalMessage = ''; this.showPlanModal = true;
     if (template) this.openProjectDialog(template);
   }
   savePlan() {
     if (!this.modalPlanKey) return;
     this.adminService.updateProjectPlan(this.selectedProject._id, this.modalPlanKey).subscribe(
-      (res) => { this.modalMessage = 'Plano alterado.' + (res.warning ? ' ' + res.warning : ''); this.loadProjects(); },
+      () => { this.loadProjects(); this.closeModals(); },
       (err) => { this.modalMessage = 'Erro: ' + (err.error?.error || 'Falha'); }
     );
   }
 
   openTrialModal(p: any, template?: TemplateRef<any>) {
+    this.cancelProjectModalRequests();
     this.selectedProject = p; this.modalTrialDays = 14; this.modalMessage = ''; this.showTrialModal = true;
     if (template) this.openProjectDialog(template);
   }
   saveTrial() {
     this.adminService.extendTrial(this.selectedProject._id, this.modalTrialDays).subscribe(
-      (res) => { this.modalMessage = 'Teste estendido.' + (res.warning ? ' ' + res.warning : ''); this.loadProjects(); },
+      () => { this.loadProjects(); this.closeModals(); },
       (err) => { this.modalMessage = 'Erro: ' + (err.error?.error || 'Falha'); }
     );
   }
 
   openQuotasModal(p: any, template?: TemplateRef<any>) {
+    this.cancelProjectModalRequests();
     this.selectedProject = p;
     this.modalQuotas = {
       contacts: p.profile?.quotes?.contacts || 0, platforms: p.profile?.quotes?.platforms || 0,
@@ -114,25 +136,35 @@ export class AdminProjectsComponent implements OnInit {
   }
   saveQuotas() {
     this.adminService.updateQuotas(this.selectedProject._id, this.modalQuotas).subscribe(
-      (res) => { this.modalMessage = 'Cotas atualizadas.'; this.loadProjects(); },
+      () => { this.loadProjects(); this.closeModals(); },
       (err) => { this.modalMessage = 'Erro: ' + (err.error?.error || 'Falha'); }
     );
   }
 
   openUsageModal(p: any, template?: TemplateRef<any>) {
+    this.cancelProjectModalRequests();
     this.selectedProject = p;
     this.usageSnapshot = null;
     this.usageSnapshots = [];
+    this.usageSnapshotRowsData = [];
+    this.usageChannelRows = [];
+    this.usageTypeRows = [];
     this.usageError = '';
     this.usageSnapshotMessage = '';
     this.usageLoading = true;
     this.showUsageModal = true;
     if (template) this.openProjectDialog(template, '900px');
 
-    this.adminService.getProjectUsage(p._id, true).subscribe(
-      (res) => { this.usageSnapshot = res; this.usageLoading = false; },
+    this.usageRequestSub = this.adminService.getProjectUsage(p._id, true).pipe(timeout(this.modalRequestTimeoutMs)).subscribe(
+      (res) => {
+        this.usageSnapshot = res;
+        this.usageSnapshotRowsData = this.buildUsageSnapshotRows(res);
+        this.usageChannelRows = this.usageEntries(res && res.messages ? res.messages.byChannel : null).slice(0, 10);
+        this.usageTypeRows = this.usageEntries(res && res.messages ? res.messages.byType : null).slice(0, 10);
+        this.usageLoading = false;
+      },
       (err) => {
-        this.usageError = 'Erro: ' + (err.error?.error || 'Falha ao carregar uso');
+        this.usageError = 'Erro: ' + (err.name === 'TimeoutError' ? 'Tempo esgotado ao carregar uso' : (err.error?.error || 'Falha ao carregar uso'));
         this.usageLoading = false;
       }
     );
@@ -141,12 +173,15 @@ export class AdminProjectsComponent implements OnInit {
 
   loadUsageSnapshots(projectId: string) {
     this.usageSnapshotLoading = true;
-    this.adminService.getProjectUsageSnapshots(projectId).subscribe(
+    this.usageSnapshotsRequestSub = this.adminService.getProjectUsageSnapshots(projectId).pipe(timeout(this.modalRequestTimeoutMs)).subscribe(
       (res) => {
-        this.usageSnapshots = res.data || [];
+        this.usageSnapshots = (res.data || []).slice(0, 10);
         this.usageSnapshotLoading = false;
       },
-      () => { this.usageSnapshotLoading = false; }
+      () => {
+        this.usageSnapshotMessage = 'Falha ao carregar histórico de uso.';
+        this.usageSnapshotLoading = false;
+      }
     );
   }
 
@@ -154,9 +189,8 @@ export class AdminProjectsComponent implements OnInit {
     if (!this.selectedProject) return;
     this.usageSnapshotMessage = 'Salvando...';
     this.adminService.saveProjectUsageSnapshot(this.selectedProject._id, true).subscribe(
-      (res) => {
-        this.usageSnapshotMessage = 'Snapshot salvo: ' + res.periodKey;
-        this.loadUsageSnapshots(this.selectedProject._id);
+      () => {
+        this.closeModals();
       },
       (err) => { this.usageSnapshotMessage = 'Erro: ' + (err.error?.error || 'Falha ao salvar snapshot'); }
     );
@@ -179,9 +213,11 @@ export class AdminProjectsComponent implements OnInit {
   }
 
   openBillingModal(p: any, template?: TemplateRef<any>) {
+    this.cancelProjectModalRequests();
     this.selectedProject = p;
     this.billingLifecycle = null;
     this.billingEvents = [];
+    this.billingSummaryRowsData = [];
     this.billingReason = '';
     this.billingMessage = '';
     this.billingLoading = true;
@@ -192,14 +228,15 @@ export class AdminProjectsComponent implements OnInit {
 
   loadBillingLifecycle(projectId: string) {
     this.billingLoading = true;
-    this.adminService.getProjectBillingLifecycle(projectId).subscribe(
+    this.billingRequestSub = this.adminService.getProjectBillingLifecycle(projectId).pipe(timeout(this.modalRequestTimeoutMs)).subscribe(
       (res) => {
         this.billingLifecycle = res.summary;
-        this.billingEvents = res.events || [];
+        this.billingSummaryRowsData = this.buildBillingSummaryRows(res.summary);
+        this.billingEvents = (res.events || []).slice(0, 10);
         this.billingLoading = false;
       },
       (err) => {
-        this.billingMessage = 'Erro: ' + (err.error?.error || 'Falha ao carregar cobrança');
+        this.billingMessage = 'Erro: ' + (err.name === 'TimeoutError' ? 'Tempo esgotado ao carregar cobrança' : (err.error?.error || 'Falha ao carregar cobrança'));
         this.billingLoading = false;
       }
     );
@@ -210,12 +247,10 @@ export class AdminProjectsComponent implements OnInit {
     this.billingActionLoading = true;
     this.billingMessage = 'Aplicando...';
     this.adminService.applyProjectBillingAction(this.selectedProject._id, action, this.billingReason).subscribe(
-      (res) => {
-        this.billingLifecycle = res.summary;
-        this.billingMessage = 'Ação aplicada.';
+      () => {
         this.billingActionLoading = false;
         this.loadProjects();
-        this.loadBillingLifecycle(this.selectedProject._id);
+        this.closeModals();
       },
       (err) => {
         this.billingMessage = 'Erro: ' + (err.error?.error || 'Falha');
@@ -301,37 +336,37 @@ export class AdminProjectsComponent implements OnInit {
       .sort((a, b) => b.value - a.value);
   }
 
-  usageSnapshotRows(): any[] {
-    if (!this.usageSnapshot) return [];
+  buildUsageSnapshotRows(snapshot: any): any[] {
+    if (!snapshot) return [];
     return [
-      { label: 'Contatos', value: this.usageValue(this.usageSnapshot.contacts) },
-      { label: 'Novos contatos no período', value: this.usageSnapshot.contacts?.newInPeriod || 0 },
-      { label: 'Membros', value: this.usageValue(this.usageSnapshot.members) },
-      { label: 'Plataformas', value: this.usageValue(this.usageSnapshot.platforms) },
-      { label: 'Conversas no período', value: this.usageSnapshot.conversations?.current || 0 },
-      { label: 'Mensagens no período', value: this.usageSnapshot.messages?.total || 0 },
-      { label: 'Tokens IA', value: this.usageValue(this.usageSnapshot.tokens) },
-      { label: 'E-mail', value: this.usageValue(this.usageSnapshot.email) },
-      { label: 'Anexos referenciados', value: this.usageSnapshot.attachments?.count || 0 },
-      { label: 'Storage medido', value: this.formatBytes(this.usageSnapshot.attachments?.bytes) },
-      { label: 'Downloads/previews de mídia', value: this.usageSnapshot.mediaTraffic?.requests || 0 },
-      { label: 'Tráfego de mídia', value: this.formatBytes(this.usageSnapshot.mediaTraffic?.bytes) },
-      { label: 'Custo estimado mensal', value: (this.usageSnapshot.costEstimate?.currency || 'USD') + ' ' + (this.usageSnapshot.costEstimate?.estimatedCostMonthly || 0) }
+      { label: 'Contatos', value: this.usageValue(snapshot.contacts) },
+      { label: 'Novos contatos no período', value: snapshot.contacts?.newInPeriod || 0 },
+      { label: 'Membros', value: this.usageValue(snapshot.members) },
+      { label: 'Plataformas', value: this.usageValue(snapshot.platforms) },
+      { label: 'Conversas no período', value: snapshot.conversations?.current || 0 },
+      { label: 'Mensagens no período', value: snapshot.messages?.total || 0 },
+      { label: 'Tokens IA', value: this.usageValue(snapshot.tokens) },
+      { label: 'E-mail', value: this.usageValue(snapshot.email) },
+      { label: 'Anexos referenciados', value: snapshot.attachments?.count || 0 },
+      { label: 'Storage medido', value: this.formatBytes(snapshot.attachments?.bytes) },
+      { label: 'Downloads/previews de mídia', value: snapshot.mediaTraffic?.requests || 0 },
+      { label: 'Tráfego de mídia', value: this.formatBytes(snapshot.mediaTraffic?.bytes) },
+      { label: 'Custo estimado mensal', value: (snapshot.costEstimate?.currency || 'USD') + ' ' + (snapshot.costEstimate?.estimatedCostMonthly || 0) }
     ];
   }
 
-  billingSummaryRows(): any[] {
-    if (!this.billingLifecycle) return [];
+  buildBillingSummaryRows(lifecycle: any): any[] {
+    if (!lifecycle) return [];
     return [
-      { label: 'Status', value: this.billingStatusLabel(this.billingLifecycle.status) },
-      { label: 'Plano', value: this.billingLifecycle.planDisplayName || this.billingLifecycle.plan },
-      { label: 'Tipo', value: this.billingLifecycle.type },
-      { label: 'Período', value: this.billingLifecycle.billingPeriod || 'N/D' },
-      { label: 'Fim do período', value: this.billingLifecycle.subEnd ? this.formatDateTime(this.billingLifecycle.subEnd) : 'N/D' },
-      { label: 'Acesso até', value: this.billingLifecycle.accessEndsAt ? this.formatDateTime(this.billingLifecycle.accessEndsAt) : 'N/D' },
-      { label: 'Falhas de pagamento', value: this.billingLifecycle.paymentFailureCount || 0 },
-      { label: 'Motivo', value: this.billingLifecycle.billingStatusReason || 'N/D' },
-      { label: 'Pode usar recursos pagos', value: this.billingLifecycle.canUsePaidFeatures ? 'Sim' : 'Não' }
+      { label: 'Status', value: this.billingStatusLabel(lifecycle.status) },
+      { label: 'Plano', value: lifecycle.planDisplayName || lifecycle.plan },
+      { label: 'Tipo', value: lifecycle.type },
+      { label: 'Período', value: lifecycle.billingPeriod || 'N/D' },
+      { label: 'Fim do período', value: lifecycle.subEnd ? this.formatDateTime(lifecycle.subEnd) : 'N/D' },
+      { label: 'Acesso até', value: lifecycle.accessEndsAt ? this.formatDateTime(lifecycle.accessEndsAt) : 'N/D' },
+      { label: 'Falhas de pagamento', value: lifecycle.paymentFailureCount || 0 },
+      { label: 'Motivo', value: lifecycle.billingStatusReason || 'N/D' },
+      { label: 'Pode usar recursos pagos', value: lifecycle.canUsePaidFeatures ? 'Sim' : 'Não' }
     ];
   }
 
@@ -365,6 +400,7 @@ export class AdminProjectsComponent implements OnInit {
   }
 
   closeModals() {
+    this.cancelProjectModalRequests();
     this.dialog.closeAll();
     this.showPlanModal = false;
     this.showTrialModal = false;
@@ -375,10 +411,17 @@ export class AdminProjectsComponent implements OnInit {
     this.modalMessage = '';
     this.usageSnapshot = null;
     this.usageSnapshots = [];
+    this.usageSnapshotRowsData = [];
+    this.usageChannelRows = [];
+    this.usageTypeRows = [];
+    this.usageLoading = false;
+    this.usageSnapshotLoading = false;
     this.usageError = '';
     this.usageSnapshotMessage = '';
     this.billingLifecycle = null;
     this.billingEvents = [];
+    this.billingSummaryRowsData = [];
+    this.billingLoading = false;
     this.billingReason = '';
     this.billingMessage = '';
     this.billingActionLoading = false;
