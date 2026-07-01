@@ -80,19 +80,6 @@
   gap: 8px;
   align-items: center;
   margin-bottom: 14px;
-
-  select,
-  input {
-    min-height: 32px;
-    border: 1px solid #cfd8dc;
-    border-radius: 6px;
-    padding: 6px 9px;
-    font-size: 13px;
-  }
-
-  input {
-    width: 150px;
-  }
 }
 
 .audit-layout {

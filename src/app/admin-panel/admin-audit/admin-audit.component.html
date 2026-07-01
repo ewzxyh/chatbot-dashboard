@@ -4,7 +4,7 @@
       <h2>Auditoria</h2>
       <p>Registro de ações administrativas e mudanças por API com payload sanitizado.</p>
     </div>
-    <button type="button" class="btn-primary" (click)="refresh()">Atualizar</button>
+    <button mat-flat-button color="primary" type="button" class="btn-primary" (click)="refresh()">Atualizar</button>
   </div>
 
   <div class="audit-summary" *ngIf="summary">
@@ -31,12 +31,17 @@
   </div>
 
   <div class="audit-filters">
-    <select [(ngModel)]="filters.range" (change)="applyFilters()">
+    <mat-form-field appearance="outline" class="admin-filter-field">
+      <mat-label>Período</mat-label>
+      <select matNativeControl [(ngModel)]="filters.range" (change)="applyFilters()">
       <option value="24h">Ultimas 24h</option>
       <option value="7d">Ultimos 7 dias</option>
       <option value="30d">Ultimos 30 dias</option>
-    </select>
-    <select [(ngModel)]="filters.action" (change)="applyFilters()">
+      </select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="admin-filter-field">
+      <mat-label>Ação</mat-label>
+      <select matNativeControl [(ngModel)]="filters.action" (change)="applyFilters()">
       <option value="">Todas as ações</option>
       <option value="api.create">Criação API</option>
       <option value="api.update">Atualização API</option>
@@ -45,25 +50,44 @@
       <option value="admin.project_trial_update">Trial</option>
       <option value="admin.project_quotas_update">Quotas</option>
       <option value="admin.billing_lifecycle_action">Billing</option>
-    </select>
-    <select [(ngModel)]="filters.method" (change)="applyFilters()">
+      </select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="admin-filter-field">
+      <mat-label>Método</mat-label>
+      <select matNativeControl [(ngModel)]="filters.method" (change)="applyFilters()">
       <option value="">Todos os metodos</option>
       <option value="GET">GET</option>
       <option value="POST">POST</option>
       <option value="PUT">PUT</option>
       <option value="PATCH">PATCH</option>
       <option value="DELETE">DELETE</option>
-    </select>
-    <select [(ngModel)]="filters.success" (change)="applyFilters()">
+      </select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="admin-filter-field">
+      <mat-label>Status</mat-label>
+      <select matNativeControl [(ngModel)]="filters.success" (change)="applyFilters()">
       <option value="">Todos os status</option>
       <option value="true">Sucesso</option>
       <option value="false">Falha</option>
-    </select>
-    <input type="text" [(ngModel)]="filters.project_id" placeholder="Projeto" (keyup.enter)="applyFilters()" />
-    <input type="text" [(ngModel)]="filters.actor" placeholder="Ator/e-mail" (keyup.enter)="applyFilters()" />
-    <input type="text" [(ngModel)]="filters.entityType" placeholder="Entidade" (keyup.enter)="applyFilters()" />
-    <input type="text" [(ngModel)]="filters.search" placeholder="Buscar" (keyup.enter)="applyFilters()" />
-    <button type="button" class="btn-secondary" (click)="applyFilters()">Filtrar</button>
+      </select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="admin-filter-field">
+      <mat-label>Projeto</mat-label>
+      <input matInput type="text" [(ngModel)]="filters.project_id" (keyup.enter)="applyFilters()" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="admin-filter-field">
+      <mat-label>Ator/e-mail</mat-label>
+      <input matInput type="text" [(ngModel)]="filters.actor" (keyup.enter)="applyFilters()" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="admin-filter-field">
+      <mat-label>Entidade</mat-label>
+      <input matInput type="text" [(ngModel)]="filters.entityType" (keyup.enter)="applyFilters()" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="admin-filter-field">
+      <mat-label>Buscar</mat-label>
+      <input matInput type="text" [(ngModel)]="filters.search" (keyup.enter)="applyFilters()" />
+    </mat-form-field>
+    <button mat-stroked-button type="button" class="btn-secondary" (click)="applyFilters()">Filtrar</button>
   </div>
 
   <div *ngIf="errorMessage" class="audit-error">{{ errorMessage }}</div>
@@ -106,8 +130,8 @@
       <div class="admin-pagination">
         <span>{{ totalCount }} eventos | Página {{ page + 1 }}</span>
         <div>
-          <button type="button" [disabled]="page === 0" (click)="prevPage()">Anterior</button>
-          <button type="button" [disabled]="(page + 1) * limit >= totalCount" (click)="nextPage()">Proxima</button>
+          <button mat-stroked-button type="button" [disabled]="page === 0" (click)="prevPage()">Anterior</button>
+          <button mat-stroked-button type="button" [disabled]="(page + 1) * limit >= totalCount" (click)="nextPage()">Proxima</button>
         </div>
       </div>
     </div>
@@ -115,7 +139,7 @@
     <aside class="audit-detail" *ngIf="selectedEvent">
       <div class="audit-detail-header">
         <h3>Detalhes</h3>
-        <button type="button" class="btn-secondary" (click)="clearSelection()">Fechar</button>
+        <button mat-stroked-button type="button" class="btn-secondary" (click)="clearSelection()">Fechar</button>
       </div>
       <dl>
         <dt>Ação</dt><dd>{{ selectedEvent.action }}</dd>

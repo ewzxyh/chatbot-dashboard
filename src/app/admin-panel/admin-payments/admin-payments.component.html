@@ -1,11 +1,14 @@
 <div class="admin-filters">
-  <select [(ngModel)]="filterStatus" (change)="onFilterChange()">
-    <option value="">Todos os status</option>
-    <option value="created">Criado</option>
-    <option value="AUTHORIZED">Autorizado</option>
-    <option value="active">Ativo</option>
-    <option value="canceled">Cancelado</option>
-  </select>
+  <mat-form-field appearance="outline" class="admin-filter-field">
+    <mat-label>Status</mat-label>
+    <mat-select [(ngModel)]="filterStatus" (selectionChange)="onFilterChange()">
+      <mat-option value="">Todos os status</mat-option>
+      <mat-option value="created">Criado</mat-option>
+      <mat-option value="AUTHORIZED">Autorizado</mat-option>
+      <mat-option value="active">Ativo</mat-option>
+      <mat-option value="canceled">Cancelado</mat-option>
+    </mat-select>
+  </mat-form-field>
 </div>
 
 <div *ngIf="isLoading" style="text-align: center; padding: 40px;">Carregando...</div>
@@ -30,7 +33,7 @@
 <div class="admin-pagination">
   <span>{{ totalCount }} pagamentos | Página {{ page + 1 }}</span>
   <div>
-    <button type="button" [disabled]="page === 0" (click)="prevPage()">Anterior</button>
-    <button type="button" [disabled]="(page + 1) * limit >= totalCount" (click)="nextPage()">Proxima</button>
+    <button mat-stroked-button type="button" [disabled]="page === 0" (click)="prevPage()">Anterior</button>
+    <button mat-stroked-button type="button" [disabled]="(page + 1) * limit >= totalCount" (click)="nextPage()">Proxima</button>
   </div>
 </div>

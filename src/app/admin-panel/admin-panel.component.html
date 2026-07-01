@@ -2,16 +2,18 @@
   <div class="admin-header">
     <h1>Painel Administrativo</h1>
   </div>
-  <nav class="admin-nav">
-    <a routerLink="dashboard" routerLinkActive="active">Dashboard</a>
-    <a routerLink="projects" routerLinkActive="active">Projetos</a>
-    <a routerLink="users" routerLinkActive="active">Usuários</a>
-    <a routerLink="payments" routerLinkActive="active">Pagamentos</a>
-    <a routerLink="operation" routerLinkActive="active">Operação</a>
-    <a routerLink="audit" routerLinkActive="active">Auditoria</a>
-    <a routerLink="privacy" routerLinkActive="active">Privacidade</a>
+  <nav mat-tab-nav-bar [tabPanel]="adminTabPanel" class="admin-nav">
+    <a mat-tab-link routerLink="dashboard" routerLinkActive #dashboardLink="routerLinkActive" [active]="dashboardLink.isActive">Dashboard</a>
+    <a mat-tab-link routerLink="projects" routerLinkActive #projectsLink="routerLinkActive" [active]="projectsLink.isActive">Projetos</a>
+    <a mat-tab-link routerLink="users" routerLinkActive #usersLink="routerLinkActive" [active]="usersLink.isActive">Usuários</a>
+    <a mat-tab-link routerLink="payments" routerLinkActive #paymentsLink="routerLinkActive" [active]="paymentsLink.isActive">Pagamentos</a>
+    <a mat-tab-link routerLink="operation" routerLinkActive #operationLink="routerLinkActive" [active]="operationLink.isActive">Operação</a>
+    <a mat-tab-link routerLink="audit" routerLinkActive #auditLink="routerLinkActive" [active]="auditLink.isActive">Auditoria</a>
+    <a mat-tab-link routerLink="privacy" routerLinkActive #privacyLink="routerLinkActive" [active]="privacyLink.isActive">Privacidade</a>
   </nav>
-  <div class="admin-content">
-    <router-outlet></router-outlet>
-  </div>
+  <mat-tab-nav-panel #adminTabPanel>
+    <div class="admin-content">
+      <router-outlet></router-outlet>
+    </div>
+  </mat-tab-nav-panel>
 </div>

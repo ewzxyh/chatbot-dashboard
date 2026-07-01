@@ -4,7 +4,7 @@
       <h2>Privacidade e LGPD</h2>
       <p>Exportação e anonimização manual de dados pessoais por projeto.</p>
     </div>
-    <button type="button" (click)="loadConfig()" [disabled]="isLoadingConfig">Atualizar</button>
+    <button mat-flat-button color="primary" type="button" (click)="loadConfig()" [disabled]="isLoadingConfig">Atualizar</button>
   </div>
 
   <div *ngIf="errorMessage" class="privacy-error">{{ errorMessage }}</div>
@@ -37,25 +37,25 @@
     <section class="privacy-section">
       <h3>Contato</h3>
       <div class="privacy-form">
-        <label>
-          Projeto
-          <input type="text" [(ngModel)]="projectId" placeholder="ID do projeto">
-        </label>
-        <label>
-          Identificador
-          <input type="text" [(ngModel)]="identifier" placeholder="Email, telefone, lead_id ou _id">
-        </label>
-        <label>
-          Motivo da anonimização
-          <input type="text" [(ngModel)]="reason" placeholder="Ex.: solicitação LGPD do titular">
-        </label>
+        <mat-form-field appearance="outline">
+          <mat-label>Projeto</mat-label>
+          <input matInput type="text" [(ngModel)]="projectId" placeholder="ID do projeto">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Identificador</mat-label>
+          <input matInput type="text" [(ngModel)]="identifier" placeholder="Email, telefone, lead_id ou _id">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Motivo da anonimização</mat-label>
+          <input matInput type="text" [(ngModel)]="reason" placeholder="Ex.: solicitação LGPD do titular">
+        </mat-form-field>
       </div>
 
       <div class="privacy-actions">
-        <button type="button" (click)="exportContact()" [disabled]="!canSubmit() || isExporting">
+        <button mat-stroked-button type="button" (click)="exportContact()" [disabled]="!canSubmit() || isExporting">
           {{ isExporting ? 'Exportando...' : 'Exportar dados' }}
         </button>
-        <button type="button" class="danger" (click)="anonymizeContact()" [disabled]="!canSubmit() || isAnonymizing">
+        <button mat-flat-button color="warn" type="button" class="danger" (click)="anonymizeContact()" [disabled]="!canSubmit() || isAnonymizing">
           {{ isAnonymizing ? 'Anonimizando...' : 'Anonimizar contato' }}
         </button>
       </div>
@@ -64,10 +64,10 @@
     <section class="privacy-section">
       <h3>Retenção operacional</h3>
       <div class="privacy-form">
-        <label>
-          Projeto opcional
-          <input type="text" [(ngModel)]="retentionProjectId" placeholder="Vazio executa globalmente">
-        </label>
+        <mat-form-field appearance="outline">
+          <mat-label>Projeto opcional</mat-label>
+          <input matInput type="text" [(ngModel)]="retentionProjectId" placeholder="Vazio executa globalmente">
+        </mat-form-field>
       </div>
       <div class="privacy-retention-grid" *ngIf="retentionStatus">
         <div>
@@ -88,13 +88,13 @@
         </div>
       </div>
       <div class="privacy-actions">
-        <button type="button" (click)="loadRetentionStatus()" [disabled]="isLoadingRetention">
+        <button mat-stroked-button type="button" (click)="loadRetentionStatus()" [disabled]="isLoadingRetention">
           {{ isLoadingRetention ? 'Atualizando...' : 'Atualizar status' }}
         </button>
-        <button type="button" (click)="runRetention(true)" [disabled]="isRunningRetention">
+        <button mat-stroked-button type="button" (click)="runRetention(true)" [disabled]="isRunningRetention">
           {{ isRunningRetention ? 'Executando...' : 'Simular retenção' }}
         </button>
-        <button type="button" class="danger" (click)="runRetention(false)" [disabled]="isRunningRetention">
+        <button mat-flat-button color="warn" type="button" class="danger" (click)="runRetention(false)" [disabled]="isRunningRetention">
           Executar limpeza
         </button>
       </div>

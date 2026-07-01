@@ -1,6 +1,9 @@
 <div class="admin-filters">
-  <input type="text" [(ngModel)]="searchText" placeholder="Buscar por email ou nome..." style="width: 300px;" (keyup.enter)="onSearch()" />
-  <button type="button" (click)="onSearch()">Buscar</button>
+  <mat-form-field appearance="outline" class="admin-filter-field wide">
+    <mat-label>Buscar</mat-label>
+    <input matInput type="text" [(ngModel)]="searchText" placeholder="Email ou nome" (keyup.enter)="onSearch()" />
+  </mat-form-field>
+  <button mat-flat-button color="primary" type="button" (click)="onSearch()">Buscar</button>
 </div>
 
 <div *ngIf="isLoading" style="text-align: center; padding: 40px;">Carregando...</div>
@@ -23,7 +26,7 @@
 <div class="admin-pagination">
   <span>{{ totalCount }} usuários | Página {{ page + 1 }}</span>
   <div>
-    <button type="button" [disabled]="page === 0" (click)="prevPage()">Anterior</button>
-    <button type="button" [disabled]="(page + 1) * limit >= totalCount" (click)="nextPage()">Proxima</button>
+    <button mat-stroked-button type="button" [disabled]="page === 0" (click)="prevPage()">Anterior</button>
+    <button mat-stroked-button type="button" [disabled]="(page + 1) * limit >= totalCount" (click)="nextPage()">Proxima</button>
   </div>
 </div>

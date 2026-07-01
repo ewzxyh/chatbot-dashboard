@@ -3,27 +3,27 @@
 
 <div *ngIf="stats && !isLoading">
   <div class="stats-grid">
-    <div class="stat-card">
+    <mat-card class="stat-card">
       <div class="stat-value">{{ stats.totalProjects }}</div>
       <div class="stat-label">Projetos</div>
-    </div>
-    <div class="stat-card">
+    </mat-card>
+    <mat-card class="stat-card">
       <div class="stat-value">{{ stats.totalUsers }}</div>
       <div class="stat-label">Usuários</div>
-    </div>
-    <div class="stat-card">
+    </mat-card>
+    <mat-card class="stat-card">
       <div class="stat-value">R$ {{ stats.monthlyRevenue | number:'1.2-2' }}</div>
       <div class="stat-label">Receita mensal estimada</div>
-    </div>
+    </mat-card>
   </div>
 
   <div style="margin-top: 24px;">
     <h3 style="font-size: 16px; font-weight: 600; color: #333; margin-bottom: 12px;">Distribuição por plano</h3>
     <div class="plan-distribution">
-      <div *ngFor="let key of getPlanKeys()" class="plan-dist-item">
+      <mat-card *ngFor="let key of getPlanKeys()" class="plan-dist-item">
         <span class="plan-dist-name">{{ planDisplayNames[key] || key }}</span>
         <span class="plan-dist-count">{{ stats.planDistribution[key] }}</span>
-      </div>
+      </mat-card>
     </div>
   </div>
 </div>

@@ -1,20 +1,26 @@
 <div class="admin-filters">
-  <select [(ngModel)]="filterPlanType" (change)="page=0; loadProjects()">
-    <option value="">Todos os tipos</option>
-    <option value="free">Free</option>
-    <option value="payment">Pagos</option>
-  </select>
-  <select [(ngModel)]="filterPlanName" (change)="page=0; loadProjects()">
-    <option value="">Todos os planos</option>
-    <option value="Free">Free</option>
-    <option value="Starter">Starter</option>
-    <option value="Pro">Pro</option>
-    <option value="Business">Business</option>
-    <option value="Custom">Custom</option>
-  </select>
+  <mat-form-field appearance="outline" class="admin-filter-field">
+    <mat-label>Tipo</mat-label>
+    <mat-select [(ngModel)]="filterPlanType" (selectionChange)="page=0; loadProjects()">
+      <mat-option value="">Todos os tipos</mat-option>
+      <mat-option value="free">Free</mat-option>
+      <mat-option value="payment">Pagos</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="outline" class="admin-filter-field">
+    <mat-label>Plano</mat-label>
+    <mat-select [(ngModel)]="filterPlanName" (selectionChange)="page=0; loadProjects()">
+      <mat-option value="">Todos os planos</mat-option>
+      <mat-option value="Free">Free</mat-option>
+      <mat-option value="Starter">Starter</mat-option>
+      <mat-option value="Pro">Pro</mat-option>
+      <mat-option value="Business">Business</mat-option>
+      <mat-option value="Custom">Custom</mat-option>
+    </mat-select>
+  </mat-form-field>
 </div>
 
-<div style="margin: 12px 0 18px; padding: 12px 14px; border: 1px solid #e1e8f5; border-radius: 6px; background: #f8fbff;">
+<mat-card class="admin-toolbar-card">
   <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
     <div>
       <strong>Billing automático</strong>
@@ -24,9 +30,9 @@
       </span>
     </div>
     <div>
-      <button type="button" class="btn-action" (click)="loadBillingJobStatus()" [disabled]="billingJobLoading">Atualizar</button>
-      <button type="button" class="btn-action" (click)="runBillingJob(true)" [disabled]="billingJobLoading">Simular</button>
-      <button type="button" class="btn-action" (click)="runBillingJob(false)" [disabled]="billingJobLoading">Executar</button>
+      <button mat-stroked-button type="button" class="btn-action" (click)="loadBillingJobStatus()" [disabled]="billingJobLoading">Atualizar</button>
+      <button mat-stroked-button type="button" class="btn-action" (click)="runBillingJob(true)" [disabled]="billingJobLoading">Simular</button>
+      <button mat-flat-button color="primary" type="button" class="btn-action" (click)="runBillingJob(false)" [disabled]="billingJobLoading">Executar</button>
     </div>
   </div>
   <div *ngIf="billingJobMessage" class="modal-message" style="margin-top: 8px;">{{ billingJobMessage }}</div>
@@ -39,7 +45,7 @@
     Ignorados: {{ billingJobResult.skipped || 0 }} |
     Erros: {{ billingJobResult.errors || 0 }}
   </div>
-</div>
+</mat-card>
 
 <div *ngIf="isLoading" style="text-align: center; padding: 40px;">Carregando...</div>
 
@@ -60,11 +66,11 @@
       <td>{{ p.profile?.agents || '—' }}</td>
       <td>{{ p.createdAt | date:'dd/MM/yyyy' }}</td>
       <td>
-        <button type="button" class="btn-action" (click)="openPlanModal(p)">Plano</button>
-        <button type="button" class="btn-action" (click)="openTrialModal(p)">Trial</button>
-        <button type="button" class="btn-action" (click)="openQuotasModal(p)">Quotas</button>
-        <button type="button" class="btn-action" (click)="openUsageModal(p)">Uso</button>
-        <button type="button" class="btn-action" (click)="openBillingModal(p)">Billing</button>
+        <button mat-stroked-button type="button" class="btn-action" (click)="openPlanModal(p)">Plano</button>
+        <button mat-stroked-button type="button" class="btn-action" (click)="openTrialModal(p)">Trial</button>
+        <button mat-stroked-button type="button" class="btn-action" (click)="openQuotasModal(p)">Quotas</button>
+        <button mat-stroked-button type="button" class="btn-action" (click)="openUsageModal(p)">Uso</button>
+        <button mat-stroked-button type="button" class="btn-action" (click)="openBillingModal(p)">Billing</button>
       </td>
     </tr>
   </tbody>
@@ -73,8 +79,8 @@
 <div class="admin-pagination">
   <span>{{ totalCount }} projetos | Página {{ page + 1 }}</span>
   <div>
-    <button type="button" [disabled]="page === 0" (click)="prevPage()">Anterior</button>
-    <button type="button" [disabled]="(page + 1) * limit >= totalCount" (click)="nextPage()">Próxima</button>
+    <button mat-stroked-button type="button" [disabled]="page === 0" (click)="prevPage()">Anterior</button>
+    <button mat-stroked-button type="button" [disabled]="(page + 1) * limit >= totalCount" (click)="nextPage()">Próxima</button>
   </div>
 </div>
 
