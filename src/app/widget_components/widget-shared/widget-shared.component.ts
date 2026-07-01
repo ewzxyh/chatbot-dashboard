@@ -9,7 +9,7 @@ export class WidgetSharedComponent implements OnInit {
 
   availableTranslations: Array<any> = []
   readonly defaultWidgetLanguageCode = 'pt';
-  readonly defaultWidgetLanguageName = 'Portuguese';
+  readonly defaultWidgetLanguageName = 'Português brasileiro';
 
   languages = [
     { code: 'ar', name: 'Arabic', type: '--- Pre-translated ---' },
@@ -19,7 +19,7 @@ export class WidgetSharedComponent implements OnInit {
     { code: 'de', name: 'German', type: '--- Pre-translated ---' },
     { code: 'it', name: 'Italian', type: '--- Pre-translated ---' },
     { code: 'kk', name: 'Kazakh (Beta)', type: '--- Pre-translated ---' },
-    { code: 'pt', name: 'Portuguese', type: '--- Pre-translated ---' },
+    { code: 'pt', name: 'Português brasileiro', type: '--- Pre-translated ---' },
     { code: 'ru', name: 'Russian', type: '--- Pre-translated ---' },
     { code: 'sr', name: 'Serbian', type: '--- Pre-translated ---' },
     { code: 'es', name: 'Spanish, Castilian', type: '--- Pre-translated ---' },
