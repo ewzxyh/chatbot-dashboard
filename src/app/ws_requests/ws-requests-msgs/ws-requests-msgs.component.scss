@@ -162,15 +162,15 @@
 }
 
 .messageText {
-  font-family: Tahoma, Verdana, Segoe, sans-serif;
+  font-family: var(--content-font-family);
 }
 
 .messageTime {
-  font-family: Tahoma, Verdana, Segoe, sans-serif;
+  font-family: var(--font-geist-mono);
 }
 
 .senderFullname {
-  font-family: Tahoma, Verdana, Segoe, sans-serif;
+  font-family: var(--content-font-family);
 }
 
 #fixed-button {
@@ -6497,4 +6497,3 @@ label {
   font-weight: 300;
   font-size: 14px;
 }
-
