@@ -13,7 +13,7 @@ import { ProjectService } from 'app/services/project.service';
 import { BrandService } from 'app/services/brand.service';
 import { LoggerService } from 'app/services/logger/logger.service';
 import { AuthService } from 'app/core/auth.service';
-import { emailDomainWhiteList, tranlatedLanguage } from 'app/utils/util';
+import { emailDomainWhiteList } from 'app/utils/util';
 import { FaqKbService } from 'app/services/faq-kb.service';
 import { BotLocalDbService } from 'app/services/bot-local-db.service';
 import { DepartmentService } from 'app/services/department.service';
@@ -815,20 +815,8 @@ export class OnboardingContentComponent extends WidgetSetUpBaseComponent impleme
   }
 
   addWidgetDefaultLanguage() {
-    this.browser_lang = this.translate.getBrowserLang();
-
-    if (tranlatedLanguage.includes(this.browser_lang)) {
-      const langName = this.getLanguageNameFromCode(this.browser_lang)
-      // this.logger.log('[WIZARD - CREATE-PRJCT] - langName ', langName)
-
-      this.temp_SelectedLangName = langName;
-      this.temp_SelectedLangCode = this.browser_lang
-    } else {
-
-      this.temp_SelectedLangName = 'English';
-      this.temp_SelectedLangCode = 'en'
-    }
-
+    this.temp_SelectedLangName = this.defaultWidgetLanguageName;
+    this.temp_SelectedLangCode = this.defaultWidgetLanguageCode;
     this.addNewLanguage(this.temp_SelectedLangCode, this.temp_SelectedLangName)
 
   }

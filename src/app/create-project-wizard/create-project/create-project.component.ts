@@ -9,7 +9,7 @@ import { Location } from '@angular/common';
 import { BrandService } from '../../services/brand.service';
 import { LoggerService } from '../../services/logger/logger.service';
 import moment from 'moment';
-import { goToCDSVersion, tranlatedLanguage } from 'app/utils/util';
+import { goToCDSVersion } from 'app/utils/util';
 import { TranslateService } from '@ngx-translate/core';
 import { WidgetSetUpBaseComponent } from 'app/widget_components/widget-set-up/widget-set-up-base/widget-set-up-base.component';
 import { WidgetService } from 'app/services/widget.service';
@@ -91,20 +91,8 @@ export class CreateProjectComponent extends WidgetSetUpBaseComponent implements 
 
       this.CREATE_PRJCT_FOR_TEMPLATE_INSTALLATION = true
       // this.logger.log('[WIZARD - CREATE-PRJCT] CREATE_PRJCT_FOR_TEMPLATE_INSTALLATION ', this.CREATE_PRJCT_FOR_TEMPLATE_INSTALLATION)
-      this.browser_lang = this.translate.getBrowserLang();
-
-      if (tranlatedLanguage.includes(this.browser_lang)) {
-        const langName = this.getLanguageNameFromCode(this.browser_lang)
-        // this.logger.log('[WIZARD - CREATE-PRJCT] - langName ', langName)
-
-        this.temp_SelectedLangName = langName;
-        this.temp_SelectedLangCode = this.browser_lang
-      } else {
-        // this.selectedTranslationLabel = 'en'
-        // ENGLISH ARE USED AS DEFAULT IF THE USER DOESN'T SELECT ANY OTHER ONE LANGUAGE
-        this.temp_SelectedLangName = 'English';
-        this.temp_SelectedLangCode = 'en'
-      }
+      this.temp_SelectedLangName = this.defaultWidgetLanguageName;
+      this.temp_SelectedLangCode = this.defaultWidgetLanguageCode;
 
     } else if (this.router.url === '/create-project') {
       this.CLOSE_BTN_IS_HIDDEN = true;

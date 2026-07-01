@@ -8,6 +8,8 @@ import { Component, OnInit } from '@angular/core';
 export class WidgetSharedComponent implements OnInit {
 
   availableTranslations: Array<any> = []
+  readonly defaultWidgetLanguageCode = 'pt';
+  readonly defaultWidgetLanguageName = 'Portuguese';
 
   languages = [
     { code: 'ar', name: 'Arabic', type: '--- Pre-translated ---' },

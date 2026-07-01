@@ -11,7 +11,6 @@ import { WidgetService } from '../../services/widget.service';
 import { AppConfigService } from '../../services/app-config.service';
 import { LoggerService } from '../../services/logger/logger.service';
 import { Location } from '@angular/common';
-import { tranlatedLanguage } from 'app/utils/util';
 
 @Component({
   selector: 'appdashboard-configure-widget',
@@ -412,22 +411,9 @@ export class ConfigureWidgetComponent extends WidgetSetUpBaseComponent implement
 
 
   getALLDefaultTranslations() {
-    this.browser_lang = this.translate.getBrowserLang();
-    // console.log('[WIZARD - CONFIGURE-WIDGET] - browser_lang ', this.browser_lang)
-    if (tranlatedLanguage.includes(this.browser_lang)) {
-      const langName = this.getLanguageNameFromCode(this.browser_lang)
-      // console.log('[WIZARD - CONFIGURE-WIDGET] - langName ', langName)
-      this.selectedLang = langName
-      this.temp_SelectedLangName = langName;
-      this.temp_SelectedLangCode = this.browser_lang
-    } else {
-      // USED TO PRESELECT ENGLISH LANGUAGE VALUE IN THE SELECT LANGUAGE COMBO BOX
-      this.selectedLang = 'English'
-      // this.selectedTranslationLabel = 'en'
-      // ENGLISH ARE USED AS DEFAULT IF THE USER DOESN'T SELECT ANY OTHER ONE LANGUAGE
-      this.temp_SelectedLangName = 'English';
-      this.temp_SelectedLangCode = 'en'
-    }
+    this.selectedLang = this.defaultWidgetLanguageName
+    this.temp_SelectedLangName = this.defaultWidgetLanguageName;
+    this.temp_SelectedLangCode = this.defaultWidgetLanguageCode
 
     this.widgetService.getAllDefaultLabels().subscribe((translations: any) => {
 

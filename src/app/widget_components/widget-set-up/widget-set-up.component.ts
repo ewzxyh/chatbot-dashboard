@@ -1699,7 +1699,12 @@ export class WidgetSetUp extends WidgetSetUpBaseComponent implements OnInit, Aft
         this.logger.log('[WIDGET-SET-UP] - GET LABELS - defaultLangCode (onInit) 2', this.defaultLangCode);
 
         if (this.defaultLangCode === undefined) {
-          this.translateAndDisplayModalNoDefaultLangIsSet();
+          if (this.languages_codes.includes(this.defaultWidgetLanguageCode)) {
+            this.defaultLangCode = this.defaultWidgetLanguageCode;
+            this.makeDefaultLanguage(this.defaultWidgetLanguageCode);
+          } else {
+            this.translateAndDisplayModalNoDefaultLangIsSet();
+          }
         }
 
         this.logger.log('[WIDGET-SET-UP] - GET LABELS - Array of LANG CODE ', this.languages_codes);

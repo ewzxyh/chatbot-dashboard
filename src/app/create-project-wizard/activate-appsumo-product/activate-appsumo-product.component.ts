@@ -5,7 +5,7 @@ import { Project } from 'app/models/project-model';
 import { BrandService } from 'app/services/brand.service';
 import { LoggerService } from 'app/services/logger/logger.service';
 import { ProjectService } from 'app/services/project.service';
-import { appSumoHighlightedFeaturesPlanATier1, appSumoHighlightedFeaturesPlanATier2, appSumoHighlightedFeaturesPlanATier3, appSumoHighlightedFeaturesPlanATier4, APPSUMO_PLAN_SEATS, APP_SUMO_PLAN_NAME, emailDomainWhiteList, featuresPlanA, highlightedFeaturesPlanA, highlightedFeaturesPlanB, PLAN_NAME, tranlatedLanguage } from 'app/utils/util';
+import { appSumoHighlightedFeaturesPlanATier1, appSumoHighlightedFeaturesPlanATier2, appSumoHighlightedFeaturesPlanATier3, appSumoHighlightedFeaturesPlanATier4, APPSUMO_PLAN_SEATS, APP_SUMO_PLAN_NAME, emailDomainWhiteList, featuresPlanA, highlightedFeaturesPlanA, highlightedFeaturesPlanB, PLAN_NAME } from 'app/utils/util';
 import { TranslateService } from '@ngx-translate/core';
 import { WidgetSetUpBaseComponent } from 'app/widget_components/widget-set-up/widget-set-up-base/widget-set-up-base.component';
 import { WidgetService } from 'app/services/widget.service';
@@ -102,19 +102,8 @@ export class ActivateAppsumoProductComponent extends WidgetSetUpBaseComponent im
   }
 
   getLangNameAndLangCode() {
-    const browser_lang = this.translate.getBrowserLang();
-    
-    if (tranlatedLanguage.includes(browser_lang)) {
-      this.langName = this.getLanguageNameFromCode(browser_lang)
-      // this.logger.log('[WIZARD - CREATE-PRJCT] - langName ', langName)
-      this.langCode = browser_lang
-      
-    } else {
-      // this.selectedTranslationLabel = 'en'
-      // ENGLISH ARE USED AS DEFAULT IF THE USER DOESN'T SELECT ANY OTHER ONE LANGUAGE
-      this.langName = 'English';
-      this.langCode = 'en'
-    }
+    this.langName = this.defaultWidgetLanguageName;
+    this.langCode = this.defaultWidgetLanguageCode;
   }
 
   addNewLanguage(langCode: string, langName: string) {

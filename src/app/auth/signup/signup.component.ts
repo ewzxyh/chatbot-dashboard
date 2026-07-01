@@ -14,7 +14,7 @@ import moment from 'moment';
 import { LocalDbService } from 'app/services/users-local-db.service';
 import { ProjectService } from 'app/services/project.service';
 import { Project } from 'app/models/project-model';
-import { emailDomainWhiteList, tranlatedLanguage } from 'app/utils/util';
+import { emailDomainWhiteList } from 'app/utils/util';
 import { TitleCasePipe } from '@angular/common';
 declare const grecaptcha: any;
 import { WidgetSetUpBaseComponent } from 'app/widget_components/widget-set-up/widget-set-up-base/widget-set-up-base.component';
@@ -781,20 +781,8 @@ export class SignupComponent extends WidgetSetUpBaseComponent implements OnInit,
   }
 
   addWidgetDefaultLanguage() {
-    this.browser_lang = this.translate.getBrowserLang();
-
-    if (tranlatedLanguage.includes(this.browser_lang)) {
-      const langName = this.getLanguageNameFromCode(this.browser_lang)
-      // this.logger.log('[WIZARD - CREATE-PRJCT] - langName ', langName)
-
-      this.temp_SelectedLangName = langName;
-      this.temp_SelectedLangCode = this.browser_lang
-    } else {
-
-      this.temp_SelectedLangName = 'English';
-      this.temp_SelectedLangCode = 'en'
-    }
-
+    this.temp_SelectedLangName = this.defaultWidgetLanguageName;
+    this.temp_SelectedLangCode = this.defaultWidgetLanguageCode;
     this.addNewLanguage(this.temp_SelectedLangCode, this.temp_SelectedLangName)
 
   }
