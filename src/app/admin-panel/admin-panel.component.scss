@@ -61,8 +61,8 @@ tbody tr:hover { background: #f8fbff; }
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 9999; }
 .modal-card { background: white; padding: 24px; border-radius: 12px; width: 400px; }
 .modal-card h3 { margin: 0 0 16px; font-size: 16px; }
-.modal-card select, .modal-card input { width: 100%; padding: 8px; margin-bottom: 12px; border: 1px solid #ccc; border-radius: 6px; }
-.modal-card label { font-size: 13px; display: block; margin-bottom: 2px; }
+.modal-field { width: 100%; }
+.quota-fields { display: grid; gap: 4px; }
 .modal-message { font-size: 12px; color: #666; margin-bottom: 8px; }
 .modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
 .btn-primary { background: #1e88e5; color: white; border: none; }
