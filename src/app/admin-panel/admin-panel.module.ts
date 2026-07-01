@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorIntl, MatPaginatorModule } from '@angular/material/paginator';
@@ -68,6 +69,7 @@ function ptBrPaginatorIntl(): MatPaginatorIntl {
     FormsModule,
     MatButtonModule,
     MatCardModule,
+    MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
     MatPaginatorModule,

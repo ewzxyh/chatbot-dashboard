@@ -95,11 +95,11 @@
   <ng-container matColumnDef="actions">
     <th mat-header-cell *matHeaderCellDef>Ações</th>
     <td mat-cell *matCellDef="let p" class="admin-actions-cell">
-      <button mat-stroked-button type="button" class="btn-action" (click)="openPlanModal(p)">Plano</button>
-      <button mat-stroked-button type="button" class="btn-action" (click)="openTrialModal(p)">Trial</button>
-      <button mat-stroked-button type="button" class="btn-action" (click)="openQuotasModal(p)">Quotas</button>
-      <button mat-stroked-button type="button" class="btn-action" (click)="openUsageModal(p)">Uso</button>
-      <button mat-stroked-button type="button" class="btn-action" (click)="openBillingModal(p)">Billing</button>
+      <button mat-stroked-button type="button" class="btn-action" (click)="openPlanModal(p, planDialog)">Plano</button>
+      <button mat-stroked-button type="button" class="btn-action" (click)="openTrialModal(p, trialDialog)">Trial</button>
+      <button mat-stroked-button type="button" class="btn-action" (click)="openQuotasModal(p, quotasDialog)">Quotas</button>
+      <button mat-stroked-button type="button" class="btn-action" (click)="openUsageModal(p, usageDialog)">Uso</button>
+      <button mat-stroked-button type="button" class="btn-action" (click)="openBillingModal(p, billingDialog)">Billing</button>
     </td>
   </ng-container>
 
@@ -119,9 +119,9 @@
   (page)="onPageChange($event)">
 </mat-paginator>
 
-<div *ngIf="showPlanModal" class="modal-overlay" (click)="closeModals()">
-  <div class="modal-card" (click)="$event.stopPropagation()">
-    <h3>Alterar plano: {{ selectedProject?.name }}</h3>
+<ng-template #planDialog>
+  <h2 mat-dialog-title>Alterar plano: {{ selectedProject?.name }}</h2>
+  <mat-dialog-content class="admin-dialog-content">
     <mat-form-field appearance="outline" class="modal-field">
       <mat-label>Plano</mat-label>
       <mat-select [(ngModel)]="modalPlanKey">
@@ -133,31 +133,31 @@
       </mat-select>
     </mat-form-field>
     <div *ngIf="modalMessage" class="modal-message">{{ modalMessage }}</div>
-    <div class="modal-actions">
-      <button mat-stroked-button type="button" class="btn-secondary" (click)="closeModals()">Cancelar</button>
-      <button mat-flat-button color="primary" type="button" class="btn-primary" (click)="savePlan()" [disabled]="!modalPlanKey">Salvar</button>
-    </div>
-  </div>
-</div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-stroked-button type="button" class="btn-secondary" (click)="closeModals()">Cancelar</button>
+    <button mat-flat-button color="primary" type="button" class="btn-primary" (click)="savePlan()" [disabled]="!modalPlanKey">Salvar</button>
+  </mat-dialog-actions>
+</ng-template>
 
-<div *ngIf="showTrialModal" class="modal-overlay" (click)="closeModals()">
-  <div class="modal-card" (click)="$event.stopPropagation()">
-    <h3>Estender trial: {{ selectedProject?.name }}</h3>
+<ng-template #trialDialog>
+  <h2 mat-dialog-title>Estender trial: {{ selectedProject?.name }}</h2>
+  <mat-dialog-content class="admin-dialog-content">
     <mat-form-field appearance="outline" class="modal-field">
       <mat-label>Dias de trial</mat-label>
       <input matInput type="number" [(ngModel)]="modalTrialDays" min="1" max="365" />
     </mat-form-field>
     <div *ngIf="modalMessage" class="modal-message">{{ modalMessage }}</div>
-    <div class="modal-actions">
-      <button mat-stroked-button type="button" class="btn-secondary" (click)="closeModals()">Cancelar</button>
-      <button mat-flat-button color="primary" type="button" class="btn-primary" (click)="saveTrial()">Salvar</button>
-    </div>
-  </div>
-</div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-stroked-button type="button" class="btn-secondary" (click)="closeModals()">Cancelar</button>
+    <button mat-flat-button color="primary" type="button" class="btn-primary" (click)="saveTrial()">Salvar</button>
+  </mat-dialog-actions>
+</ng-template>
 
-<div *ngIf="showUsageModal" class="modal-overlay" (click)="closeModals()">
-  <div class="modal-card" (click)="$event.stopPropagation()">
-    <h3>Uso real: {{ selectedProject?.name }}</h3>
+<ng-template #usageDialog>
+  <h2 mat-dialog-title>Uso real: {{ selectedProject?.name }}</h2>
+  <mat-dialog-content class="admin-dialog-content admin-dialog-content-wide">
     <div *ngIf="usageLoading" style="padding: 24px 0;">Carregando...</div>
     <div *ngIf="usageError" class="modal-message">{{ usageError }}</div>
 
@@ -165,47 +165,41 @@
       <p style="margin: 0 0 12px 0; color: #60708f;">
         Período: {{ usageSnapshot.period?.start | date:'dd/MM/yyyy' }} - {{ usageSnapshot.period?.end | date:'dd/MM/yyyy' }}
       </p>
-      <table>
-        <tbody>
-          <tr><td>Contatos</td><td>{{ usageValue(usageSnapshot.contacts) }}</td></tr>
-          <tr><td>Novos contatos no período</td><td>{{ usageSnapshot.contacts?.newInPeriod || 0 }}</td></tr>
-          <tr><td>Membros</td><td>{{ usageValue(usageSnapshot.members) }}</td></tr>
-          <tr><td>Plataformas</td><td>{{ usageValue(usageSnapshot.platforms) }}</td></tr>
-          <tr><td>Conversas no período</td><td>{{ usageSnapshot.conversations?.current || 0 }}</td></tr>
-          <tr><td>Mensagens no período</td><td>{{ usageSnapshot.messages?.total || 0 }}</td></tr>
-          <tr><td>Tokens IA</td><td>{{ usageValue(usageSnapshot.tokens) }}</td></tr>
-          <tr><td>E-mail</td><td>{{ usageValue(usageSnapshot.email) }}</td></tr>
-          <tr><td>Anexos referenciados</td><td>{{ usageSnapshot.attachments?.count || 0 }}</td></tr>
-          <tr><td>Storage medido</td><td>{{ formatBytes(usageSnapshot.attachments?.bytes) }}</td></tr>
-          <tr><td>Downloads/previews de mídia</td><td>{{ usageSnapshot.mediaTraffic?.requests || 0 }}</td></tr>
-          <tr><td>Tráfego de mídia</td><td>{{ formatBytes(usageSnapshot.mediaTraffic?.bytes) }}</td></tr>
-          <tr><td>Custo estimado mensal</td><td>{{ usageSnapshot.costEstimate?.currency || 'USD' }} {{ usageSnapshot.costEstimate?.estimatedCostMonthly || 0 }}</td></tr>
-        </tbody>
+      <table mat-table [dataSource]="usageSnapshotRows()" class="admin-table admin-definition-table">
+        <ng-container matColumnDef="label">
+          <td mat-cell *matCellDef="let row">{{ row.label }}</td>
+        </ng-container>
+        <ng-container matColumnDef="value">
+          <td mat-cell *matCellDef="let row">{{ row.value }}</td>
+        </ng-container>
+        <tr mat-row *matRowDef="let row; columns: usageSnapshotColumns;"></tr>
       </table>
 
-      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 16px;">
+      <div class="admin-dialog-grid">
         <div>
           <h4 style="margin: 0 0 8px;">Mensagens por canal</h4>
-          <table *ngIf="usageEntries(usageSnapshot.messages?.byChannel).length">
-            <tbody>
-              <tr *ngFor="let channel of usageEntries(usageSnapshot.messages?.byChannel)">
-                <td>{{ channel.label }}</td>
-                <td>{{ channel.value }}</td>
-              </tr>
-            </tbody>
+          <table mat-table *ngIf="usageEntries(usageSnapshot.messages?.byChannel).length" [dataSource]="usageEntries(usageSnapshot.messages?.byChannel)" class="admin-table admin-definition-table">
+            <ng-container matColumnDef="label">
+              <td mat-cell *matCellDef="let channel">{{ channel.label }}</td>
+            </ng-container>
+            <ng-container matColumnDef="value">
+              <td mat-cell *matCellDef="let channel">{{ channel.value }}</td>
+            </ng-container>
+            <tr mat-row *matRowDef="let row; columns: usageBreakdownColumns;"></tr>
           </table>
           <div *ngIf="!usageEntries(usageSnapshot.messages?.byChannel).length" style="color: #60708f;">Sem mensagens por canal.</div>
         </div>
 
         <div>
           <h4 style="margin: 0 0 8px;">Mensagens por tipo</h4>
-          <table *ngIf="usageEntries(usageSnapshot.messages?.byType).length">
-            <tbody>
-              <tr *ngFor="let type of usageEntries(usageSnapshot.messages?.byType)">
-                <td>{{ type.label }}</td>
-                <td>{{ type.value }}</td>
-              </tr>
-            </tbody>
+          <table mat-table *ngIf="usageEntries(usageSnapshot.messages?.byType).length" [dataSource]="usageEntries(usageSnapshot.messages?.byType)" class="admin-table admin-definition-table">
+            <ng-container matColumnDef="label">
+              <td mat-cell *matCellDef="let type">{{ type.label }}</td>
+            </ng-container>
+            <ng-container matColumnDef="value">
+              <td mat-cell *matCellDef="let type">{{ type.value }}</td>
+            </ng-container>
+            <tr mat-row *matRowDef="let row; columns: usageBreakdownColumns;"></tr>
           </table>
           <div *ngIf="!usageEntries(usageSnapshot.messages?.byType).length" style="color: #60708f;">Sem mensagens por tipo.</div>
         </div>
@@ -214,48 +208,50 @@
       <h4 style="margin-top: 16px;">Histórico mensal</h4>
       <div *ngIf="usageSnapshotMessage" class="modal-message">{{ usageSnapshotMessage }}</div>
       <div *ngIf="usageSnapshotLoading" style="padding: 8px 0;">Carregando histórico...</div>
-      <table *ngIf="usageSnapshots.length">
-        <thead>
-          <tr><th>Período</th><th>Mensagens</th><th>Mídia</th><th>Custo</th></tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let snapshot of usageSnapshots">
-            <td>{{ snapshot.periodKey }}</td>
-            <td>{{ snapshot.metrics?.messages?.total || 0 }}</td>
-            <td>{{ formatBytes(snapshot.metrics?.mediaTraffic?.bytes) }}</td>
-            <td>{{ snapshot.metrics?.costEstimate?.currency || 'USD' }} {{ snapshot.metrics?.costEstimate?.estimatedCostMonthly || 0 }}</td>
-          </tr>
-        </tbody>
+      <table mat-table *ngIf="usageSnapshots.length" [dataSource]="usageSnapshots" class="admin-table">
+        <ng-container matColumnDef="period">
+          <th mat-header-cell *matHeaderCellDef>Período</th>
+          <td mat-cell *matCellDef="let snapshot">{{ snapshot.periodKey }}</td>
+        </ng-container>
+        <ng-container matColumnDef="messages">
+          <th mat-header-cell *matHeaderCellDef>Mensagens</th>
+          <td mat-cell *matCellDef="let snapshot">{{ snapshot.metrics?.messages?.total || 0 }}</td>
+        </ng-container>
+        <ng-container matColumnDef="media">
+          <th mat-header-cell *matHeaderCellDef>Mídia</th>
+          <td mat-cell *matCellDef="let snapshot">{{ formatBytes(snapshot.metrics?.mediaTraffic?.bytes) }}</td>
+        </ng-container>
+        <ng-container matColumnDef="cost">
+          <th mat-header-cell *matHeaderCellDef>Custo</th>
+          <td mat-cell *matCellDef="let snapshot">{{ snapshot.metrics?.costEstimate?.currency || 'USD' }} {{ snapshot.metrics?.costEstimate?.estimatedCostMonthly || 0 }}</td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="usageHistoryColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: usageHistoryColumns;"></tr>
       </table>
     </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-flat-button color="primary" type="button" class="btn-primary" (click)="saveUsageSnapshot()" [disabled]="usageLoading">Salvar snapshot</button>
+    <button mat-stroked-button type="button" class="btn-secondary" (click)="exportUsageCsv()">Exportar CSV</button>
+    <button mat-stroked-button type="button" class="btn-secondary" (click)="closeModals()">Fechar</button>
+  </mat-dialog-actions>
+</ng-template>
 
-    <div class="modal-actions">
-      <button mat-flat-button color="primary" type="button" class="btn-primary" (click)="saveUsageSnapshot()" [disabled]="usageLoading">Salvar snapshot</button>
-      <button mat-stroked-button type="button" class="btn-secondary" (click)="exportUsageCsv()">Exportar CSV</button>
-      <button mat-stroked-button type="button" class="btn-secondary" (click)="closeModals()">Fechar</button>
-    </div>
-  </div>
-</div>
-
-<div *ngIf="showBillingModal" class="modal-overlay" (click)="closeModals()">
-  <div class="modal-card" (click)="$event.stopPropagation()">
-    <h3>Billing: {{ selectedProject?.name }}</h3>
+<ng-template #billingDialog>
+  <h2 mat-dialog-title>Billing: {{ selectedProject?.name }}</h2>
+  <mat-dialog-content class="admin-dialog-content admin-dialog-content-wide">
     <div *ngIf="billingLoading" style="padding: 24px 0;">Carregando...</div>
     <div *ngIf="billingMessage" class="modal-message">{{ billingMessage }}</div>
 
     <div *ngIf="billingLifecycle && !billingLoading">
-      <table>
-        <tbody>
-          <tr><td>Status</td><td>{{ billingStatusLabel(billingLifecycle.status) }}</td></tr>
-          <tr><td>Plano</td><td>{{ billingLifecycle.planDisplayName || billingLifecycle.plan }}</td></tr>
-          <tr><td>Tipo</td><td>{{ billingLifecycle.type }}</td></tr>
-          <tr><td>Período</td><td>{{ billingLifecycle.billingPeriod || 'N/D' }}</td></tr>
-          <tr><td>Fim do período</td><td>{{ billingLifecycle.subEnd ? (billingLifecycle.subEnd | date:'dd/MM/yyyy HH:mm') : 'N/D' }}</td></tr>
-          <tr><td>Acesso até</td><td>{{ billingLifecycle.accessEndsAt ? (billingLifecycle.accessEndsAt | date:'dd/MM/yyyy HH:mm') : 'N/D' }}</td></tr>
-          <tr><td>Falhas de pagamento</td><td>{{ billingLifecycle.paymentFailureCount || 0 }}</td></tr>
-          <tr><td>Motivo</td><td>{{ billingLifecycle.billingStatusReason || 'N/D' }}</td></tr>
-          <tr><td>Pode usar recursos pagos</td><td>{{ billingLifecycle.canUsePaidFeatures ? 'Sim' : 'Não' }}</td></tr>
-        </tbody>
+      <table mat-table [dataSource]="billingSummaryRows()" class="admin-table admin-definition-table">
+        <ng-container matColumnDef="label">
+          <td mat-cell *matCellDef="let row">{{ row.label }}</td>
+        </ng-container>
+        <ng-container matColumnDef="value">
+          <td mat-cell *matCellDef="let row">{{ row.value }}</td>
+        </ng-container>
+        <tr mat-row *matRowDef="let row; columns: billingSummaryColumns;"></tr>
       </table>
 
       <mat-form-field appearance="outline" class="modal-field">
@@ -271,31 +267,37 @@
       </div>
 
       <h4 style="margin-top: 16px;">Histórico</h4>
-      <table *ngIf="billingEvents.length">
-        <thead>
-          <tr><th>Data</th><th>Evento</th><th>Status</th><th>Plano</th></tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let event of billingEvents">
-            <td>{{ event.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
-            <td>{{ event.event_type }}</td>
-            <td>{{ event.status }}</td>
-            <td>{{ event.plan_name || 'N/D' }}</td>
-          </tr>
-        </tbody>
+      <table mat-table *ngIf="billingEvents.length" [dataSource]="billingEvents" class="admin-table">
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef>Data</th>
+          <td mat-cell *matCellDef="let event">{{ event.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="event">
+          <th mat-header-cell *matHeaderCellDef>Evento</th>
+          <td mat-cell *matCellDef="let event">{{ event.event_type }}</td>
+        </ng-container>
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let event">{{ event.status }}</td>
+        </ng-container>
+        <ng-container matColumnDef="plan">
+          <th mat-header-cell *matHeaderCellDef>Plano</th>
+          <td mat-cell *matCellDef="let event">{{ event.plan_name || 'N/D' }}</td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="billingEventsColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: billingEventsColumns;"></tr>
       </table>
       <div *ngIf="!billingEvents.length" style="color: #60708f;">Sem eventos registrados.</div>
     </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-stroked-button type="button" class="btn-secondary" (click)="closeModals()">Fechar</button>
+  </mat-dialog-actions>
+</ng-template>
 
-    <div class="modal-actions">
-      <button mat-stroked-button type="button" class="btn-secondary" (click)="closeModals()">Fechar</button>
-    </div>
-  </div>
-</div>
-
-<div *ngIf="showQuotasModal" class="modal-overlay" (click)="closeModals()">
-  <div class="modal-card" (click)="$event.stopPropagation()">
-    <h3>Substituir cotas: {{ selectedProject?.name }}</h3>
+<ng-template #quotasDialog>
+  <h2 mat-dialog-title>Substituir cotas: {{ selectedProject?.name }}</h2>
+  <mat-dialog-content class="admin-dialog-content">
     <div class="quota-fields">
       <mat-form-field appearance="outline" class="modal-field" *ngFor="let field of ['contacts', 'platforms', 'agents', 'chatbots', 'kbs']">
         <mat-label>{{ field }}</mat-label>
@@ -303,9 +305,9 @@
       </mat-form-field>
     </div>
     <div *ngIf="modalMessage" class="modal-message">{{ modalMessage }}</div>
-    <div class="modal-actions">
-      <button mat-stroked-button type="button" class="btn-secondary" (click)="closeModals()">Cancelar</button>
-      <button mat-flat-button color="primary" type="button" class="btn-primary" (click)="saveQuotas()">Salvar</button>
-    </div>
-  </div>
-</div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-stroked-button type="button" class="btn-secondary" (click)="closeModals()">Cancelar</button>
+    <button mat-flat-button color="primary" type="button" class="btn-primary" (click)="saveQuotas()">Salvar</button>
+  </mat-dialog-actions>
+</ng-template>

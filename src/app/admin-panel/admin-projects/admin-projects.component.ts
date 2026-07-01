@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, TemplateRef } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { AdminService } from '../../services/admin.service';
 
 @Component({
@@ -8,6 +9,11 @@ import { AdminService } from '../../services/admin.service';
 export class AdminProjectsComponent implements OnInit {
   projects: any[] = [];
   displayedColumns = ['name', 'owner', 'plan', 'type', 'billing', 'contacts', 'members', 'createdAt', 'actions'];
+  usageSnapshotColumns = ['label', 'value'];
+  usageBreakdownColumns = ['label', 'value'];
+  usageHistoryColumns = ['period', 'messages', 'media', 'cost'];
+  billingSummaryColumns = ['label', 'value'];
+  billingEventsColumns = ['date', 'event', 'status', 'plan'];
   totalCount = 0;
   page = 0;
   limit = 20;
@@ -42,7 +48,7 @@ export class AdminProjectsComponent implements OnInit {
   billingJobMessage = '';
   planDisplayNames: any = { Free: 'Iniciante', Starter: 'Standard', Pro: 'Pro', Business: 'Enterprise', Custom: 'Custom' };
 
-  constructor(private adminService: AdminService) { }
+  constructor(private adminService: AdminService, private dialog: MatDialog) { }
   ngOnInit() {
     this.loadProjects();
     this.loadBillingJobStatus();
@@ -63,7 +69,15 @@ export class AdminProjectsComponent implements OnInit {
   prevPage() { if (this.page > 0) { this.page--; this.loadProjects(); } }
   onPageChange(event: any) { this.page = event.pageIndex; this.limit = event.pageSize; this.loadProjects(); }
 
-  openPlanModal(p: any) { this.selectedProject = p; this.modalPlanKey = ''; this.modalMessage = ''; this.showPlanModal = true; }
+  private openProjectDialog(template: TemplateRef<any>, width: string = '480px') {
+    this.dialog.closeAll();
+    this.dialog.open(template, { width, maxWidth: '95vw', maxHeight: '90vh', autoFocus: false });
+  }
+
+  openPlanModal(p: any, template?: TemplateRef<any>) {
+    this.selectedProject = p; this.modalPlanKey = ''; this.modalMessage = ''; this.showPlanModal = true;
+    if (template) this.openProjectDialog(template);
+  }
   savePlan() {
     if (!this.modalPlanKey) return;
     this.adminService.updateProjectPlan(this.selectedProject._id, this.modalPlanKey).subscribe(
@@ -72,7 +86,10 @@ export class AdminProjectsComponent implements OnInit {
     );
   }
 
-  openTrialModal(p: any) { this.selectedProject = p; this.modalTrialDays = 14; this.modalMessage = ''; this.showTrialModal = true; }
+  openTrialModal(p: any, template?: TemplateRef<any>) {
+    this.selectedProject = p; this.modalTrialDays = 14; this.modalMessage = ''; this.showTrialModal = true;
+    if (template) this.openProjectDialog(template);
+  }
   saveTrial() {
     this.adminService.extendTrial(this.selectedProject._id, this.modalTrialDays).subscribe(
       (res) => { this.modalMessage = 'Trial estendido.' + (res.warning ? ' ' + res.warning : ''); this.loadProjects(); },
@@ -80,7 +97,7 @@ export class AdminProjectsComponent implements OnInit {
     );
   }
 
-  openQuotasModal(p: any) {
+  openQuotasModal(p: any, template?: TemplateRef<any>) {
     this.selectedProject = p;
     this.modalQuotas = {
       contacts: p.profile?.quotes?.contacts || 0, platforms: p.profile?.quotes?.platforms || 0,
@@ -88,6 +105,7 @@ export class AdminProjectsComponent implements OnInit {
     };
     this.modalMessage = '';
     this.showQuotasModal = true;
+    if (template) this.openProjectDialog(template);
   }
   saveQuotas() {
     this.adminService.updateQuotas(this.selectedProject._id, this.modalQuotas).subscribe(
@@ -96,7 +114,7 @@ export class AdminProjectsComponent implements OnInit {
     );
   }
 
-  openUsageModal(p: any) {
+  openUsageModal(p: any, template?: TemplateRef<any>) {
     this.selectedProject = p;
     this.usageSnapshot = null;
     this.usageSnapshots = [];
@@ -104,6 +122,7 @@ export class AdminProjectsComponent implements OnInit {
     this.usageSnapshotMessage = '';
     this.usageLoading = true;
     this.showUsageModal = true;
+    if (template) this.openProjectDialog(template, '900px');
 
     this.adminService.getProjectUsage(p._id, true).subscribe(
       (res) => { this.usageSnapshot = res; this.usageLoading = false; },
@@ -154,7 +173,7 @@ export class AdminProjectsComponent implements OnInit {
     );
   }
 
-  openBillingModal(p: any) {
+  openBillingModal(p: any, template?: TemplateRef<any>) {
     this.selectedProject = p;
     this.billingLifecycle = null;
     this.billingEvents = [];
@@ -162,6 +181,7 @@ export class AdminProjectsComponent implements OnInit {
     this.billingMessage = '';
     this.billingLoading = true;
     this.showBillingModal = true;
+    if (template) this.openProjectDialog(template, '820px');
     this.loadBillingLifecycle(p._id);
   }
 
@@ -268,6 +288,44 @@ export class AdminProjectsComponent implements OnInit {
       .sort((a, b) => b.value - a.value);
   }
 
+  usageSnapshotRows(): any[] {
+    if (!this.usageSnapshot) return [];
+    return [
+      { label: 'Contatos', value: this.usageValue(this.usageSnapshot.contacts) },
+      { label: 'Novos contatos no período', value: this.usageSnapshot.contacts?.newInPeriod || 0 },
+      { label: 'Membros', value: this.usageValue(this.usageSnapshot.members) },
+      { label: 'Plataformas', value: this.usageValue(this.usageSnapshot.platforms) },
+      { label: 'Conversas no período', value: this.usageSnapshot.conversations?.current || 0 },
+      { label: 'Mensagens no período', value: this.usageSnapshot.messages?.total || 0 },
+      { label: 'Tokens IA', value: this.usageValue(this.usageSnapshot.tokens) },
+      { label: 'E-mail', value: this.usageValue(this.usageSnapshot.email) },
+      { label: 'Anexos referenciados', value: this.usageSnapshot.attachments?.count || 0 },
+      { label: 'Storage medido', value: this.formatBytes(this.usageSnapshot.attachments?.bytes) },
+      { label: 'Downloads/previews de mídia', value: this.usageSnapshot.mediaTraffic?.requests || 0 },
+      { label: 'Tráfego de mídia', value: this.formatBytes(this.usageSnapshot.mediaTraffic?.bytes) },
+      { label: 'Custo estimado mensal', value: (this.usageSnapshot.costEstimate?.currency || 'USD') + ' ' + (this.usageSnapshot.costEstimate?.estimatedCostMonthly || 0) }
+    ];
+  }
+
+  billingSummaryRows(): any[] {
+    if (!this.billingLifecycle) return [];
+    return [
+      { label: 'Status', value: this.billingStatusLabel(this.billingLifecycle.status) },
+      { label: 'Plano', value: this.billingLifecycle.planDisplayName || this.billingLifecycle.plan },
+      { label: 'Tipo', value: this.billingLifecycle.type },
+      { label: 'Período', value: this.billingLifecycle.billingPeriod || 'N/D' },
+      { label: 'Fim do período', value: this.billingLifecycle.subEnd ? this.formatDateTime(this.billingLifecycle.subEnd) : 'N/D' },
+      { label: 'Acesso até', value: this.billingLifecycle.accessEndsAt ? this.formatDateTime(this.billingLifecycle.accessEndsAt) : 'N/D' },
+      { label: 'Falhas de pagamento', value: this.billingLifecycle.paymentFailureCount || 0 },
+      { label: 'Motivo', value: this.billingLifecycle.billingStatusReason || 'N/D' },
+      { label: 'Pode usar recursos pagos', value: this.billingLifecycle.canUsePaidFeatures ? 'Sim' : 'Não' }
+    ];
+  }
+
+  formatDateTime(value: string): string {
+    return value ? new Date(value).toLocaleString('pt-BR') : 'N/D';
+  }
+
   usageMetricLabel(key: string): string {
     const labels: any = {
       casezap: 'CaseZap',
@@ -294,6 +352,7 @@ export class AdminProjectsComponent implements OnInit {
   }
 
   closeModals() {
+    this.dialog.closeAll();
     this.showPlanModal = false;
     this.showTrialModal = false;
     this.showQuotasModal = false;
