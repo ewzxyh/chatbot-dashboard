@@ -47,9 +47,9 @@
         <mat-option value="api.update">Atualização API</mat-option>
         <mat-option value="api.delete">Exclusão API</mat-option>
         <mat-option value="admin.project_plan_update">Plano</mat-option>
-        <mat-option value="admin.project_trial_update">Trial</mat-option>
-        <mat-option value="admin.project_quotas_update">Quotas</mat-option>
-        <mat-option value="admin.billing_lifecycle_action">Billing</mat-option>
+        <mat-option value="admin.project_trial_update">Teste</mat-option>
+        <mat-option value="admin.project_quotas_update">Cotas</mat-option>
+        <mat-option value="admin.billing_lifecycle_action">Cobrança</mat-option>
       </mat-select>
     </mat-form-field>
     <mat-form-field appearance="outline" class="admin-filter-field">
@@ -148,7 +148,7 @@
         [length]="totalCount"
         [pageIndex]="page"
         [pageSize]="limit"
-        [pageSizeOptions]="[25, 50, 100]"
+        [pageSizeOptions]="[10]"
         showFirstLastButtons
         (page)="onPageChange($event)">
       </mat-paginator>

@@ -16,7 +16,7 @@
 <table mat-table *ngIf="!isLoading" [dataSource]="payments" class="admin-table">
   <ng-container matColumnDef="project">
     <th mat-header-cell *matHeaderCellDef>Projeto</th>
-    <td mat-cell *matCellDef="let p">{{ p.projectName || p.project_id }}</td>
+    <td mat-cell *matCellDef="let p">{{ displayText(p.projectName || p.project_id) }}</td>
   </ng-container>
 
   <ng-container matColumnDef="plan">
@@ -37,12 +37,12 @@
   <ng-container matColumnDef="status">
     <th mat-header-cell *matHeaderCellDef>Status</th>
     <td mat-cell *matCellDef="let p">
-      <span [ngClass]="p.status === 'AUTHORIZED' || p.status === 'active' ? 'admin-state-success' : (p.status === 'canceled' ? 'admin-state-error' : 'admin-state-muted')">{{ p.status }}</span>
+      <span [ngClass]="p.status === 'AUTHORIZED' || p.status === 'active' ? 'admin-state-success' : (p.status === 'canceled' ? 'admin-state-error' : 'admin-state-muted')">{{ statusLabel(p.status) }}</span>
     </td>
   </ng-container>
 
   <ng-container matColumnDef="mandate">
-    <th mat-header-cell *matHeaderCellDef>Mandate</th>
+    <th mat-header-cell *matHeaderCellDef>Mandato</th>
     <td mat-cell *matCellDef="let p" class="admin-cell-muted">{{ p.mandate_id ? (p.mandate_id | slice:0:12) + '...' : '—' }}</td>
   </ng-container>
 
@@ -62,7 +62,7 @@
   [length]="totalCount"
   [pageIndex]="page"
   [pageSize]="limit"
-  [pageSizeOptions]="[10, 20, 50]"
+  [pageSizeOptions]="[10]"
   showFirstLastButtons
   (page)="onPageChange($event)">
 </mat-paginator>

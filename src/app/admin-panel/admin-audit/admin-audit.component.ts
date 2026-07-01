@@ -15,7 +15,7 @@ export class AdminAuditComponent implements OnInit {
   isLoadingSummary = false;
   errorMessage = '';
   page = 0;
-  limit = 50;
+  limit = 10;
   totalCount = 0;
   filters: any = {
     range: '24h',
@@ -123,9 +123,9 @@ export class AdminAuditComponent implements OnInit {
       'api.read': 'Leitura',
       'admin.read': 'Leitura admin',
       'admin.project_plan_update': 'Plano',
-      'admin.project_trial_update': 'Trial',
-      'admin.project_quotas_update': 'Quotas',
-      'admin.billing_lifecycle_action': 'Billing',
+      'admin.project_trial_update': 'Teste',
+      'admin.project_quotas_update': 'Cotas',
+      'admin.billing_lifecycle_action': 'Cobrança',
       'auth.write': 'Autenticação'
     };
     return labels[action] || action || '-';

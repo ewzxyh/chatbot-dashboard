@@ -15,7 +15,9 @@ export class AdminOperationComponent implements OnInit {
   alertMetricItems: any[] = [];
   statusCards: any[] = [];
   affectedItems: any[] = [];
+  alertRows: any[] = [];
   queueRows: any[] = [];
+  channelRows: any[] = [];
   events: any[] = [];
   affectedColumns = ['type', 'name', 'status', 'detail', 'lastAt'];
   alertColumns = ['severity', 'alert', 'occurrences', 'channel', 'lastAt'];
@@ -164,7 +166,7 @@ export class AdminOperationComponent implements OnInit {
 
     return rows.sort((a, b) => {
       return new Date(b.bucketStart).getTime() - new Date(a.bucketStart).getTime();
-    });
+    }).slice(0, 10);
   }
 
   channelKey(channel: any): string {
@@ -322,7 +324,9 @@ export class AdminOperationComponent implements OnInit {
     if (!this.summary) {
       this.statusCards = [];
       this.affectedItems = [];
+      this.alertRows = [];
       this.queueRows = [];
+      this.channelRows = [];
       return;
     }
 
@@ -339,7 +343,9 @@ export class AdminOperationComponent implements OnInit {
     const queueIssues = queues.filter((queue) => this.isQueueIssue(queue));
     const criticalAlerts = alerts.filter((alert) => String(alert.severity || '').toLowerCase() === 'critical');
 
-    this.queueRows = queues;
+    this.alertRows = alerts.slice(0, 10);
+    this.queueRows = queues.slice(0, 10);
+    this.channelRows = channels.slice(0, 10);
     this.statusCards = [
       {
         label: 'Status geral',
@@ -425,7 +431,7 @@ export class AdminOperationComponent implements OnInit {
       });
     });
 
-    return items.slice(0, 12);
+    return items.slice(0, 10);
   }
 
   getStatusLabel(status: string): string {
@@ -436,6 +442,9 @@ export class AdminOperationComponent implements OnInit {
       unknown: 'Sem configuração',
       skipped: 'Ignorado',
       failed: 'Falhou',
+      error: 'Erro',
+      warn: 'Aviso',
+      info: 'Informação',
       warning: 'Aviso',
       critical: 'Crítico',
       success: 'Sucesso',

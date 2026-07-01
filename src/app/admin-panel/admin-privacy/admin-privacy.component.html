@@ -44,7 +44,7 @@
         </mat-form-field>
         <mat-form-field appearance="outline">
           <mat-label>Identificador</mat-label>
-          <input matInput type="text" [(ngModel)]="identifier" placeholder="Email, telefone, lead_id ou _id">
+          <input matInput type="text" [(ngModel)]="identifier" placeholder="E-mail, telefone, lead_id ou _id">
         </mat-form-field>
         <mat-form-field appearance="outline">
           <mat-label>Motivo da anonimização</mat-label>
@@ -86,7 +86,7 @@
           <strong>{{ retentionStatus.counts?.leadsMatched || 0 }}</strong>
         </div>
         <div>
-          <span>Job automático</span>
+          <span>Tarefa automática</span>
           <strong>{{ retentionStatus.job?.started ? 'ativo' : 'inativo' }}</strong>
         </div>
       </div>

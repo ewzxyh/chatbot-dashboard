@@ -366,7 +366,7 @@ export class AdminService {
         'Authorization': this.TOKEN
       })
     };
-    let url = this.SERVER_BASE_PATH + 'sadmin/operational-events?limit=100';
+    let url = this.SERVER_BASE_PATH + 'sadmin/operational-events?limit=10';
     if (filters && filters.channel) { url += '&channel=' + encodeURIComponent(filters.channel); }
     if (filters && filters.level) { url += '&level=' + encodeURIComponent(filters.level); }
     if (filters && filters.project_id) { url += '&project_id=' + encodeURIComponent(filters.project_id); }
@@ -405,7 +405,7 @@ export class AdminService {
     };
     let url = this.SERVER_BASE_PATH + 'sadmin/audit-events'
       + '?page=' + encodeURIComponent(filters && filters.page !== undefined ? filters.page : 0)
-      + '&limit=' + encodeURIComponent(filters && filters.limit ? filters.limit : 50);
+      + '&limit=' + encodeURIComponent(filters && filters.limit ? filters.limit : 10);
     if (filters && filters.action) { url += '&action=' + encodeURIComponent(filters.action); }
     if (filters && filters.method) { url += '&method=' + encodeURIComponent(filters.method); }
     if (filters && filters.project_id) { url += '&project_id=' + encodeURIComponent(filters.project_id); }

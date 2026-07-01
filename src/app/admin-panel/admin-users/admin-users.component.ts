@@ -10,7 +10,7 @@ export class AdminUsersComponent implements OnInit {
   displayedColumns = ['name', 'email', 'verified', 'projects', 'createdAt'];
   totalCount = 0;
   page = 0;
-  limit = 20;
+  limit = 10;
   isLoading = true;
   searchText = '';
 

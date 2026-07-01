@@ -23,13 +23,13 @@
 <mat-card class="admin-toolbar-card">
   <div class="admin-toolbar-row">
     <div>
-      <strong>Billing automático</strong>
+      <strong>Cobrança automática</strong>
       <span class="admin-toolbar-meta">
-        Job: {{ billingJobStatus?.started ? 'ativo' : 'inativo' }}
+        Tarefa: {{ billingJobStatus?.started ? 'ativa' : 'inativa' }}
         <span *ngIf="billingJobStatus?.lastStatus">| último status: {{ billingJobStatus?.lastStatus }}</span>
       </span>
     </div>
-    <div>
+    <div class="admin-toolbar-actions">
       <button mat-stroked-button type="button" class="btn-action" (click)="loadBillingJobStatus()" [disabled]="billingJobLoading">Atualizar</button>
       <button mat-stroked-button type="button" class="btn-action" (click)="runBillingJob(true)" [disabled]="billingJobLoading">Simular</button>
       <button mat-flat-button color="primary" type="button" class="btn-action" (click)="runBillingJob(false)" [disabled]="billingJobLoading">Executar</button>
@@ -52,7 +52,7 @@
 <table mat-table *ngIf="!isLoading" [dataSource]="projects" class="admin-table admin-table-wide">
   <ng-container matColumnDef="name">
     <th mat-header-cell *matHeaderCellDef>Nome</th>
-    <td mat-cell *matCellDef="let p">{{ p.name }}</td>
+    <td mat-cell *matCellDef="let p">{{ displayText(p.name) }}</td>
   </ng-container>
 
   <ng-container matColumnDef="owner">
@@ -68,12 +68,12 @@
   <ng-container matColumnDef="type">
     <th mat-header-cell *matHeaderCellDef>Tipo</th>
     <td mat-cell *matCellDef="let p">
-      <span [ngClass]="p.profile?.type === 'payment' ? 'admin-state-success' : 'admin-state-muted'">{{ p.profile?.type }}</span>
+      <span [ngClass]="p.profile?.type === 'payment' ? 'admin-state-success' : 'admin-state-muted'">{{ planTypeLabel(p.profile?.type) }}</span>
     </td>
   </ng-container>
 
   <ng-container matColumnDef="billing">
-    <th mat-header-cell *matHeaderCellDef>Billing</th>
+    <th mat-header-cell *matHeaderCellDef>Cobrança</th>
     <td mat-cell *matCellDef="let p">{{ billingStatusLabel(p.profile?.billingStatus || (p.profile?.type === 'payment' ? 'active' : 'free')) }}</td>
   </ng-container>
 
@@ -95,11 +95,13 @@
   <ng-container matColumnDef="actions">
     <th mat-header-cell *matHeaderCellDef>Ações</th>
     <td mat-cell *matCellDef="let p" class="admin-actions-cell">
-      <button mat-stroked-button type="button" class="btn-action" (click)="openPlanModal(p, planDialog)">Plano</button>
-      <button mat-stroked-button type="button" class="btn-action" (click)="openTrialModal(p, trialDialog)">Trial</button>
-      <button mat-stroked-button type="button" class="btn-action" (click)="openQuotasModal(p, quotasDialog)">Quotas</button>
-      <button mat-stroked-button type="button" class="btn-action" (click)="openUsageModal(p, usageDialog)">Uso</button>
-      <button mat-stroked-button type="button" class="btn-action" (click)="openBillingModal(p, billingDialog)">Billing</button>
+      <div class="admin-actions-row">
+        <button mat-stroked-button type="button" class="btn-action" (click)="openPlanModal(p, planDialog)">Plano</button>
+        <button mat-stroked-button type="button" class="btn-action" (click)="openTrialModal(p, trialDialog)">Teste</button>
+        <button mat-stroked-button type="button" class="btn-action" (click)="openQuotasModal(p, quotasDialog)">Cotas</button>
+        <button mat-stroked-button type="button" class="btn-action" (click)="openUsageModal(p, usageDialog)">Uso</button>
+        <button mat-stroked-button type="button" class="btn-action" (click)="openBillingModal(p, billingDialog)">Cobrança</button>
+      </div>
     </td>
   </ng-container>
 
@@ -114,13 +116,13 @@
   [length]="totalCount"
   [pageIndex]="page"
   [pageSize]="limit"
-  [pageSizeOptions]="[10, 20, 50]"
+  [pageSizeOptions]="[10]"
   showFirstLastButtons
   (page)="onPageChange($event)">
 </mat-paginator>
 
 <ng-template #planDialog>
-  <h2 mat-dialog-title>Alterar plano: {{ selectedProject?.name }}</h2>
+  <h2 mat-dialog-title>Alterar plano: {{ displayText(selectedProject?.name) }}</h2>
   <mat-dialog-content class="admin-dialog-content">
     <mat-form-field appearance="outline" class="modal-field">
       <mat-label>Plano</mat-label>
@@ -141,10 +143,10 @@
 </ng-template>
 
 <ng-template #trialDialog>
-  <h2 mat-dialog-title>Estender trial: {{ selectedProject?.name }}</h2>
+  <h2 mat-dialog-title>Estender teste: {{ displayText(selectedProject?.name) }}</h2>
   <mat-dialog-content class="admin-dialog-content">
     <mat-form-field appearance="outline" class="modal-field">
-      <mat-label>Dias de trial</mat-label>
+      <mat-label>Dias de teste</mat-label>
       <input matInput type="number" [(ngModel)]="modalTrialDays" min="1" max="365" />
     </mat-form-field>
     <div *ngIf="modalMessage" class="modal-message">{{ modalMessage }}</div>
@@ -156,7 +158,7 @@
 </ng-template>
 
 <ng-template #usageDialog>
-  <h2 mat-dialog-title>Uso real: {{ selectedProject?.name }}</h2>
+  <h2 mat-dialog-title>Uso real: {{ displayText(selectedProject?.name) }}</h2>
   <mat-dialog-content class="admin-dialog-content admin-dialog-content-wide">
     <div *ngIf="usageLoading" class="admin-loading-state">Carregando...</div>
     <div *ngIf="usageError" class="modal-message">{{ usageError }}</div>
@@ -238,7 +240,7 @@
 </ng-template>
 
 <ng-template #billingDialog>
-  <h2 mat-dialog-title>Billing: {{ selectedProject?.name }}</h2>
+  <h2 mat-dialog-title>Cobrança: {{ displayText(selectedProject?.name) }}</h2>
   <mat-dialog-content class="admin-dialog-content admin-dialog-content-wide">
     <div *ngIf="billingLoading" class="admin-loading-state">Carregando...</div>
     <div *ngIf="billingMessage" class="modal-message">{{ billingMessage }}</div>
@@ -296,7 +298,7 @@
 </ng-template>
 
 <ng-template #quotasDialog>
-  <h2 mat-dialog-title>Substituir cotas: {{ selectedProject?.name }}</h2>
+  <h2 mat-dialog-title>Substituir cotas: {{ displayText(selectedProject?.name) }}</h2>
   <mat-dialog-content class="admin-dialog-content">
     <div class="quota-fields">
       <mat-form-field appearance="outline" class="modal-field" *ngFor="let field of ['contacts', 'platforms', 'agents', 'chatbots', 'kbs']">

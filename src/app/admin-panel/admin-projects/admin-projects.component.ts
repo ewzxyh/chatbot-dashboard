@@ -1,6 +1,7 @@
 import { Component, OnInit, TemplateRef } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { AdminService } from '../../services/admin.service';
+import { formatAdminText } from '../admin-text.util';
 
 @Component({
   selector: 'app-admin-projects',
@@ -16,7 +17,7 @@ export class AdminProjectsComponent implements OnInit {
   billingEventsColumns = ['date', 'event', 'status', 'plan'];
   totalCount = 0;
   page = 0;
-  limit = 20;
+  limit = 10;
   isLoading = true;
   filterPlanName = '';
   filterPlanType = '';
@@ -71,7 +72,11 @@ export class AdminProjectsComponent implements OnInit {
 
   private openProjectDialog(template: TemplateRef<any>, width: string = '480px') {
     this.dialog.closeAll();
-    this.dialog.open(template, { width, maxWidth: '95vw', maxHeight: '90vh', autoFocus: false });
+    this.dialog.open(template, { width, maxWidth: '95vw', maxHeight: '90vh', autoFocus: false, panelClass: 'admin-dialog-panel' });
+  }
+
+  displayText(value: any): string {
+    return formatAdminText(value);
   }
 
   openPlanModal(p: any, template?: TemplateRef<any>) {
@@ -92,7 +97,7 @@ export class AdminProjectsComponent implements OnInit {
   }
   saveTrial() {
     this.adminService.extendTrial(this.selectedProject._id, this.modalTrialDays).subscribe(
-      (res) => { this.modalMessage = 'Trial estendido.' + (res.warning ? ' ' + res.warning : ''); this.loadProjects(); },
+      (res) => { this.modalMessage = 'Teste estendido.' + (res.warning ? ' ' + res.warning : ''); this.loadProjects(); },
       (err) => { this.modalMessage = 'Erro: ' + (err.error?.error || 'Falha'); }
     );
   }
@@ -109,7 +114,7 @@ export class AdminProjectsComponent implements OnInit {
   }
   saveQuotas() {
     this.adminService.updateQuotas(this.selectedProject._id, this.modalQuotas).subscribe(
-      (res) => { this.modalMessage = 'Quotas atualizadas.'; this.loadProjects(); },
+      (res) => { this.modalMessage = 'Cotas atualizadas.'; this.loadProjects(); },
       (err) => { this.modalMessage = 'Erro: ' + (err.error?.error || 'Falha'); }
     );
   }
@@ -194,7 +199,7 @@ export class AdminProjectsComponent implements OnInit {
         this.billingLoading = false;
       },
       (err) => {
-        this.billingMessage = 'Erro: ' + (err.error?.error || 'Falha ao carregar billing');
+        this.billingMessage = 'Erro: ' + (err.error?.error || 'Falha ao carregar cobrança');
         this.billingLoading = false;
       }
     );
@@ -228,11 +233,11 @@ export class AdminProjectsComponent implements OnInit {
 
   runBillingJob(dryRun: boolean) {
     if (this.billingJobLoading) return;
-    if (!dryRun && !window.confirm('Executar o billing automático agora? Isso pode suspender projetos, enviar avisos e aplicar downgrade para Free.')) {
+    if (!dryRun && !window.confirm('Executar a cobrança automática agora? Isso pode suspender projetos, enviar avisos e aplicar downgrade para Free.')) {
       return;
     }
     this.billingJobLoading = true;
-    this.billingJobMessage = dryRun ? 'Simulando billing automático...' : 'Executando billing automático...';
+    this.billingJobMessage = dryRun ? 'Simulando cobrança automática...' : 'Executando cobrança automática...';
     this.billingJobResult = null;
     const payload: any = { dryRun: dryRun };
     if (!dryRun) payload.confirm = true;
@@ -246,7 +251,7 @@ export class AdminProjectsComponent implements OnInit {
         this.loadProjects();
       },
       (err) => {
-        this.billingJobMessage = 'Erro: ' + (err.error?.error || 'Falha ao executar billing automático');
+        this.billingJobMessage = 'Erro: ' + (err.error?.error || 'Falha ao executar cobrança automática');
         this.billingJobLoading = false;
       }
     );
@@ -255,15 +260,23 @@ export class AdminProjectsComponent implements OnInit {
   billingStatusLabel(status: string): string {
     const labels: any = {
       free: 'Free',
-      trialing: 'Trial',
+      trialing: 'Teste',
       pending_authorization: 'Pendente',
       active: 'Ativo',
-      grace_period: 'Grace',
+      grace_period: 'Carência',
       past_due: 'Atrasado',
       suspended: 'Suspenso',
       canceled: 'Cancelado'
     };
     return labels[status] || status || 'N/D';
+  }
+
+  planTypeLabel(type: string): string {
+    const labels: any = {
+      payment: 'Pago',
+      free: 'Grátis'
+    };
+    return labels[type] || type || 'N/D';
   }
 
   formatBytes(bytes: number): string {
@@ -339,8 +352,8 @@ export class AdminProjectsComponent implements OnInit {
       image: 'Imagem',
       file: 'Arquivo',
       document: 'Documento',
-      audio: 'Audio',
-      video: 'Video',
+      audio: 'Áudio',
+      video: 'Vídeo',
       contact: 'Contato',
       location: 'Localização',
       sticker: 'Figurinha',

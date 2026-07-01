@@ -1,7 +1,7 @@
 <div class="admin-filters">
   <mat-form-field appearance="outline" class="admin-filter-field wide">
     <mat-label>Buscar</mat-label>
-    <input matInput type="text" [(ngModel)]="searchText" placeholder="Email ou nome" (keyup.enter)="onSearch()" />
+    <input matInput type="text" [(ngModel)]="searchText" placeholder="E-mail ou nome" (keyup.enter)="onSearch()" />
   </mat-form-field>
   <button mat-flat-button color="primary" type="button" (click)="onSearch()">Buscar</button>
 </div>
@@ -15,7 +15,7 @@
   </ng-container>
 
   <ng-container matColumnDef="email">
-    <th mat-header-cell *matHeaderCellDef>Email</th>
+    <th mat-header-cell *matHeaderCellDef>E-mail</th>
     <td mat-cell *matCellDef="let u">{{ u.email }}</td>
   </ng-container>
 
@@ -47,7 +47,7 @@
   [length]="totalCount"
   [pageIndex]="page"
   [pageSize]="limit"
-  [pageSizeOptions]="[10, 20, 50]"
+  [pageSizeOptions]="[10]"
   showFirstLastButtons
   (page)="onPageChange($event)">
 </mat-paginator>

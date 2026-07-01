@@ -19,7 +19,7 @@ export class AdminDashboardComponent implements OnInit {
     this.isLoading = true;
     this.adminService.getStats().subscribe(
       (data) => { this.stats = data; this.isLoading = false; },
-      () => { this.errorMessage = 'Erro ao carregar estatisticas'; this.isLoading = false; }
+      () => { this.errorMessage = 'Erro ao carregar estatísticas'; this.isLoading = false; }
     );
   }
 
