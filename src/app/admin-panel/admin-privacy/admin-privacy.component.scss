@@ -29,14 +29,6 @@
   gap: 12px;
 }
 
-.privacy-card,
-.privacy-section {
-  background: #fff;
-  border: 1px solid #dde3ec;
-  border-radius: 8px;
-  box-shadow: 0 1px 2px rgba(31, 45, 61, .04);
-}
-
 .privacy-card {
   padding: 16px;
 
@@ -62,12 +54,6 @@
 
 .privacy-section {
   padding: 18px;
-
-  h3 {
-    margin: 0 0 14px;
-    font-size: 18px;
-    color: #1f2d3d;
-  }
 
   pre {
     max-height: 460px;

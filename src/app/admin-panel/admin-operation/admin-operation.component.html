@@ -27,7 +27,7 @@
       </mat-card>
     </div>
 
-    <div class="operation-section status-page-section">
+    <mat-card class="operation-section status-page-section">
       <div class="section-header">
         <h3>Impacto atual</h3>
         <span>{{ affectedItems.length }}</span>
@@ -57,10 +57,10 @@
         <tr mat-header-row *matHeaderRowDef="affectedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: affectedColumns;"></tr>
       </table>
-    </div>
+    </mat-card>
 
     <div class="operation-grid">
-      <div class="operation-section">
+      <mat-card class="operation-section">
         <div class="section-header">
           <h3>Serviços</h3>
         </div>
@@ -76,9 +76,9 @@
             </button>
           </mat-card>
         </div>
-      </div>
+      </mat-card>
 
-      <div class="operation-section">
+      <mat-card class="operation-section">
         <div class="section-header">
           <h3>Alertas abertos</h3>
           <div class="section-actions">
@@ -121,10 +121,10 @@
           <tr mat-header-row *matHeaderRowDef="alertColumns"></tr>
           <tr mat-row *matRowDef="let row; columns: alertColumns;"></tr>
         </table>
-      </div>
+      </mat-card>
     </div>
 
-    <div class="operation-section">
+    <mat-card class="operation-section">
       <div class="section-header">
         <h3>Filas RabbitMQ</h3>
         <span>{{ queueRows.length }}</span>
@@ -162,9 +162,9 @@
         <tr mat-header-row *matHeaderRowDef="queueColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: queueColumns;"></tr>
       </table>
-    </div>
+    </mat-card>
 
-    <div class="operation-section">
+    <mat-card class="operation-section">
       <div class="section-header">
         <h3>Histórico operacional</h3>
         <span *ngIf="metrics">{{ formatDate(metrics.generatedAt) }}</span>
@@ -276,9 +276,9 @@
         </table>
         <div *ngIf="metricRows.length === 0" class="empty-state">Nenhum histórico encontrado.</div>
       </div>
-    </div>
+    </mat-card>
 
-    <div class="operation-section">
+    <mat-card class="operation-section">
       <div class="section-header">
         <h3>Canais</h3>
       </div>
@@ -350,9 +350,9 @@
         <tr mat-header-row *matHeaderRowDef="channelColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: channelColumns;"></tr>
       </table>
-    </div>
+    </mat-card>
 
-    <div class="operation-section">
+    <mat-card class="operation-section">
       <div class="section-header">
         <h3>Eventos recentes</h3>
       </div>
@@ -419,6 +419,6 @@
         <tr mat-row *matRowDef="let row; columns: eventColumns;"></tr>
       </table>
       <div *ngIf="!isLoadingEvents && events.length === 0" class="empty-state">Nenhum evento encontrado.</div>
-    </div>
+    </mat-card>
   </div>
 </div>

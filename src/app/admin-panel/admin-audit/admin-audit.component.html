@@ -154,7 +154,7 @@
       </mat-paginator>
     </div>
 
-    <aside class="audit-detail" *ngIf="selectedEvent">
+    <mat-card class="audit-detail" *ngIf="selectedEvent">
       <div class="audit-detail-header">
         <h3>Detalhes</h3>
         <button mat-stroked-button type="button" class="btn-secondary" (click)="clearSelection()">Fechar</button>
@@ -175,6 +175,6 @@
       <pre>{{ asJson(selectedEvent.after) }}</pre>
       <h4>Metadados sanitizados</h4>
       <pre>{{ asJson(selectedEvent.metadata) }}</pre>
-    </aside>
+    </mat-card>
   </div>
 </div>
