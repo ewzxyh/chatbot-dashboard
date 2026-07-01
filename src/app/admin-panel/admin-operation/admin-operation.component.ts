@@ -17,6 +17,12 @@ export class AdminOperationComponent implements OnInit {
   affectedItems: any[] = [];
   queueRows: any[] = [];
   events: any[] = [];
+  affectedColumns = ['type', 'name', 'status', 'detail', 'lastAt'];
+  alertColumns = ['severity', 'alert', 'occurrences', 'channel', 'lastAt'];
+  queueColumns = ['name', 'status', 'ready', 'unacknowledged', 'total', 'consumers', 'source'];
+  metricColumns = ['period', 'events', 'errors', 'failed', 'alerts', 'critical', 'open'];
+  channelColumns = ['status', 'channel', 'name', 'provider', 'project', 'lastWebhook', 'lastError', 'actions'];
+  eventColumns = ['timestamp', 'level', 'channel', 'event', 'project', 'error'];
   isLoading = true;
   isLoadingMetrics = false;
   isLoadingEvents = false;

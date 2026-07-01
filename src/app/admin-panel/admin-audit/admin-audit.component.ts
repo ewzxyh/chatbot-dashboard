@@ -8,6 +8,7 @@ import { AdminService } from '../../services/admin.service';
 })
 export class AdminAuditComponent implements OnInit {
   events: any[] = [];
+  displayedColumns = ['timestamp', 'action', 'method', 'status', 'actor', 'project', 'entity', 'summary'];
   summary: any = null;
   selectedEvent: any = null;
   isLoading = false;
@@ -98,6 +99,12 @@ export class AdminAuditComponent implements OnInit {
       this.page--;
       this.loadEvents();
     }
+  }
+
+  onPageChange(event: any) {
+    this.page = event.pageIndex;
+    this.limit = event.pageSize;
+    this.loadEvents();
   }
 
   selectEvent(event: any) {
