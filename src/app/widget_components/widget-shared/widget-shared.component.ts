@@ -200,7 +200,17 @@ export class WidgetSharedComponent implements OnInit {
 
 
 
-  constructor() { }
+  private readonly languageDisplayNames = typeof Intl !== 'undefined' && (Intl as any).DisplayNames
+    ? new (Intl as any).DisplayNames(['pt-BR'], { type: 'language' })
+    : null;
+
+  constructor() {
+    this.languages = this.languages.map(language => ({
+      ...language,
+      name: this.getLocalizedLanguageName(language.code, language.name),
+      type: this.getLocalizedLanguageGroup(language.type)
+    }));
+  }
 
   ngOnInit() {
   }
@@ -255,5 +265,33 @@ export class WidgetSharedComponent implements OnInit {
 
   }
 
+  private getLocalizedLanguageName(code: string, fallback: string): string {
+    const betaSuffix = fallback.includes('(Beta)') ? ' (Beta)' : '';
+
+    if (code === 'pt') {
+      return 'Português brasileiro';
+    }
+
+    try {
+      const displayName = this.languageDisplayNames ? this.languageDisplayNames.of(code) : null;
+      return displayName ? this.capitalizeFirst(displayName) + betaSuffix : fallback;
+    } catch (e) {
+      return fallback;
+    }
+  }
+
+  private getLocalizedLanguageGroup(type: string): string {
+    if (type === '--- Pre-translated ---') {
+      return '--- Pré-traduzidos ---';
+    }
+    if (type === '--- Needs own translation ---') {
+      return '--- Requer tradução própria ---';
+    }
+    return type;
+  }
+
+  private capitalizeFirst(value: string): string {
+    return value ? value.charAt(0).toUpperCase() + value.slice(1) : value;
+  }
 
 }
