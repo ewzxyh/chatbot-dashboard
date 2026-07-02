@@ -238,12 +238,27 @@ input[type="text"] {
   opacity: 100 !important;
 }
 
-.projects-user-avatar-dropdown>a>.project-user-avatar>img {
+.projects-user-avatar-dropdown>a>.project-user-avatar>img,
+.projects-user-avatar-dropdown>a>.project-user-avatar>.user-avatar-initial {
   width: 30px;
   height: 30px;
   border-radius: 50%;
+}
+
+.projects-user-avatar-dropdown>a>.project-user-avatar>img {
   object-fit: cover;
   background: #fff;
+}
+
+.projects-user-avatar-dropdown>a>.project-user-avatar>.user-avatar-initial {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #dbe3ef;
+  background: #eef4ff;
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 600;
 }
 
 // Avatar dropdown menu specific styles

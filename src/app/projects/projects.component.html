@@ -166,7 +166,9 @@
                   <!-- --------------------------------------------------- -->
                   <!-- USECASE No profile image -->
                   <!-- --------------------------------------------------- -->
-                  <img *ngIf="!user?.hasImage" class="user-img" src="assets/img/no_image_user.png" />
+                  <span *ngIf="!user?.hasImage" class="user-avatar-initial">
+                    {{ (user?.firstname || user?.lastname || user?.email || 'U') | slice:0:1 | uppercase }}
+                  </span>
                 </div>
               </a>
 
