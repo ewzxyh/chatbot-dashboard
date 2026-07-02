@@ -237,6 +237,7 @@ export class NavbarComponent extends PricingBaseComponent implements OnInit, Aft
 
   newChangelogCount: boolean;
   showNotificationsPanel = false;
+  chatNotifications: any[] = [];
   // lastSeen: number = 0; // Replace with actual last seen timestamp (e.g., from user preferences)
   PERMISSION_TO_CHANGE_PROJECT: boolean;
   PERMISSION_TO_SIMULATE_CONVERSATION: boolean;
@@ -2250,6 +2251,7 @@ export class NavbarComponent extends PricingBaseComponent implements OnInit, Aft
       )
       .subscribe((requests) => {
         this.logger.log('[NAVBAR] notifyLastUnserved - requests  ', requests)
+        this.chatNotifications = this.getChatNotifications(requests);
         const unserved = requests.filter((requests: any) => {
           return requests.status === 100;
         });
@@ -2380,6 +2382,40 @@ export class NavbarComponent extends PricingBaseComponent implements OnInit, Aft
       }
     }
 
+  }
+
+  private getChatNotifications(requests: any[]): any[] {
+    if (!this.PERMISSION_TO_VIEW_UNASSIGNED_NOTIFICATIONS || !requests) {
+      return [];
+    }
+
+    return requests
+      .filter((request: any) => {
+        if (!request || request.status !== 100) {
+          return false;
+        }
+
+        return this.ROLE_IS_AGENT !== true || this.hasmeInAgents(request.agents) === true;
+      })
+      .slice(0, 10);
+  }
+
+  getChatNotificationTitle(request: any): string {
+    return request?.lead?.fullname || request?.requester_fullname || request?.requester?.fullname || 'Contato sem nome';
+  }
+
+  getChatNotificationText(request: any): string {
+    return request?.first_text || request?.text || request?.subject || 'Nova conversa aguardando atendimento';
+  }
+
+  openChatNotification(request: any): void {
+    const requestId = request?.request_id || request?._id || request?.id;
+    if (!requestId) {
+      return;
+    }
+
+    this.closeNotificationsPanel();
+    this.router.navigate(['project/' + this.projectId + '/wsrequest/' + requestId + '/messages']);
   }
 
 

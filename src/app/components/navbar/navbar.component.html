@@ -591,12 +591,10 @@
             </a>
 
           </li>
-          <!-- *ngIf="newChangelogCount" -->
-          <!-- newChangelogCount >  {{newChangelogCount }} -->
           <div *ngIf="project">
-            <div *ngIf="newChangelogCount === true" class="changelog-count">
+            <div *ngIf="chatNotifications.length > 0" class="changelog-count">
               <span>
-                1
+                {{ chatNotifications.length > 9 ? '9+' : chatNotifications.length }}
               </span>
 
             </div>
@@ -629,7 +627,20 @@
       <mat-icon svgIcon="td-x"></mat-icon>
     </button>
   </div>
-  <div class="chatcase-notifications-empty">
+  <div class="chatcase-notifications-list" *ngIf="chatNotifications.length > 0">
+    <button type="button" class="chatcase-notifications-item" *ngFor="let notification of chatNotifications"
+      (click)="openChatNotification(notification)">
+      <span class="chatcase-notifications-avatar">
+        {{ (getChatNotificationTitle(notification) || '?').charAt(0).toUpperCase() }}
+      </span>
+      <span class="chatcase-notifications-content">
+        <span class="chatcase-notifications-title">{{ getChatNotificationTitle(notification) }}</span>
+        <span class="chatcase-notifications-text">{{ getChatNotificationText(notification) }}</span>
+      </span>
+      <mat-icon svgIcon="td-chevron-right"></mat-icon>
+    </button>
+  </div>
+  <div class="chatcase-notifications-empty" *ngIf="chatNotifications.length === 0">
     <mat-icon svgIcon="td-bell"></mat-icon>
     <h3>Nenhuma notificação no momento</h3>
     <p>Quando houver novas notificações importantes, elas aparecerão aqui.</p>
