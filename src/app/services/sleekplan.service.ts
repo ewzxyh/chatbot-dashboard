@@ -8,6 +8,7 @@ import { LoggerService } from './logger/logger.service';
 export class SleekplanService {
   private sleekplanLoaded = false;
   private sleekplanLoadPromise: Promise<void> | null = null;
+  private readonly defaultScriptUrl = 'https://client.sleekplan.com/sdk/e.js';
   constructor(
     private logger: LoggerService,
   ) { }
@@ -16,21 +17,16 @@ export class SleekplanService {
     return window['CHATCASE_ENABLE_SLEEKPLAN'] === true;
   }
 
-  loadSleekplan(): Promise<void> {
+  loadSleekplan(force = false): Promise<void> {
     this.logger.log('[SLEEKPLAN-SERV] - loadSleekplan ');
     return new Promise((resolve, reject) => {
-      if (!this.isEnabled()) {
+      if (!force && !this.isEnabled()) {
         this.logger.log('[SLEEKPLAN-SERV] - disabled by ChatCase configuration');
         resolve();
         return;
       }
 
-      const scriptUrl = window['CHATCASE_SLEEKPLAN_SCRIPT_URL'];
-      if (!scriptUrl) {
-        this.logger.log('[SLEEKPLAN-SERV] - missing ChatCase Sleekplan script URL');
-        resolve();
-        return;
-      }
+      const scriptUrl = window['CHATCASE_SLEEKPLAN_SCRIPT_URL'] || this.defaultScriptUrl;
 
       if (this.sleekplanLoaded) {
         resolve();

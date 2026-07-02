@@ -2801,30 +2801,55 @@ export class NavbarComponent extends PricingBaseComponent implements OnInit, Aft
     this.logger.log('[NAVBAR] open Sleekplan this.user', this.user)
     this.logger.log('[NAVBAR] open Sleekplan ', window['$sleek'])
     const openSleekplan = () => {
+      if (window['$sleek'] && typeof window['$sleek'].open === 'function') {
+        window['$sleek'].open('notifications');
+        this.markChangelogSeen();
+        return true;
+      }
       if (window['$sleek'] && typeof window['$sleek'].toggle === 'function') {
-        window['$sleek'].toggle();
+        window['$sleek'].toggle('notifications');
         this.markChangelogSeen();
         return true;
       }
       return false;
     };
 
-    if (!openSleekplan() && this.user && this.sleekplanService.isEnabled()) {
+    let requestedSleekplanOpen = false;
+    const loadAndOpenSleekplan = () => {
+      if (requestedSleekplanOpen) {
+        return;
+      }
+      requestedSleekplanOpen = true;
+      this.sleekplanService.loadSleekplan(true)
+        .then(() => setTimeout(openSleekplan, 250))
+        .catch(err => this.logger.error('[NAVBAR] - Sleekplan initialization failed', err));
+    };
+
+    if (openSleekplan()) {
+      return;
+    }
+
+    if (this.user) {
+      setTimeout(loadAndOpenSleekplan, 800);
       this.sleekplanSsoService.getSsoToken(this.user).subscribe(
         (response) => {
           window['SLEEK_USER'] = { token: response['token'] }
-          this.sleekplanService.loadSleekplan()
-            .then(() => setTimeout(openSleekplan, 250))
-            .catch(err => this.logger.error('[NAVBAR] - Sleekplan initialization failed', err));
+          loadAndOpenSleekplan();
         },
         (error) => {
           this.logger.error('[NAVBAR] - Failed to fetch Sleekplan SSO token', error);
+          loadAndOpenSleekplan();
         }
       );
+    } else {
+      loadAndOpenSleekplan();
     }
   }
 
   private markChangelogSeen(): void {
+    if (!this.user || !this.user._id) {
+      return;
+    }
     const lastSeen = Date.now()
     this.logger.log('[NAVBAR] open Sleekplan lastSeen ', lastSeen)
     // localStorage.setItem('lastSeenTimestamp', this.lastSeen.toString());
