@@ -575,7 +575,7 @@
         </ng-container>  
 
         <!-- -------------------------------------------- -->
-        <!-- Notifications and Sleekplan -->
+        <!-- Notifications -->
         <!-- -------------------------------------------- -->
         <ng-container *ngIf="isVisiblePay" style="position: relative;">
           <li *ngIf="project">
@@ -601,16 +601,6 @@
           </div>
 
         </ng-container>
-
-        <li *ngIf="project && isSleekplanEnabled()">
-          <a>
-            <button class="give-feedback" type="button" (click)="openSleekplan()"
-              matTooltipClass="custom-mat-tooltip-navbar" matTooltip="Novidades e feedback"
-              matTooltipPosition="below" matTooltipHideDelay="100">
-              <mat-icon svgIcon="td-speakerphone"></mat-icon>
-            </button>
-          </a>
-        </li>
 
         <!-- <li *ngIf="!project">
           <a style="cursor: pointer;" (click)="goToProjects()">

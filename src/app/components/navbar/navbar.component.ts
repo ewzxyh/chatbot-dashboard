@@ -336,7 +336,6 @@ export class NavbarComponent extends PricingBaseComponent implements OnInit, Aft
 
     this.getActiveRoute();
     this.hidePendingEmailNotification();
-    this.detectRouteAndInitSleekPlan();
 
     // this.checkUserImageUploadIsComplete();
 
@@ -366,7 +365,6 @@ export class NavbarComponent extends PricingBaseComponent implements OnInit, Aft
     this.manageVoiceQuotaVisibility()
 
     this.listenSoundPreference()
-    this.listenToLiveAnnouncementOpened()
     // this.listenToQuotasReachedInHome()
 
     // this.listenToWSRequestsDataCallBack()
@@ -1243,7 +1241,6 @@ export class NavbarComponent extends PricingBaseComponent implements OnInit, Aft
 
       // GET ALL PROJECTS WHEN IS PUBLISHED THE USER
       if (this.user) {
-        this.fetchNewChangelogCount(this.user);
         const stored_preferred_lang = localStorage.getItem(this.user._id + '_lang')
 
         if (stored_preferred_lang) {
