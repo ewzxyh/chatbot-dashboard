@@ -162,7 +162,7 @@ export class DashboardIconService {
     visibility: 'eye',
     visibility_off: 'eye-off',
     volume_down: 'volume',
-    volume_off: 'volume',
+    volume_off: 'volume-off',
     volume_up: 'volume',
     view_list: 'list',
     warning: 'alert-triangle',

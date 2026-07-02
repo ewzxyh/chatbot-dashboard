@@ -489,10 +489,14 @@
         <!--  Sound on / off -->
         <!--  ------------------------------------------------ -->
         <li *ngIf="project">
-          <a style="cursor: pointer;" *ngIf="NOTIFICATION_SOUND === 'enabled'" (click)="soundOFF()">
+          <a style="cursor: pointer;" *ngIf="NOTIFICATION_SOUND === 'enabled'" (click)="soundOFF()"
+            matTooltipClass="custom-mat-tooltip-navbar" matTooltip="{{ 'SoundEnabled' | translate }}"
+            matTooltipPosition="above" matTooltipHideDelay="100">
             <i class="material-icons">volume_up</i>
           </a>
-          <a style="cursor: pointer;" *ngIf="NOTIFICATION_SOUND === 'disabled'" (click)="soundON()">
+          <a style="cursor: pointer;" *ngIf="NOTIFICATION_SOUND === 'disabled'" (click)="soundON()"
+            matTooltipClass="custom-mat-tooltip-navbar" matTooltip="{{ 'SoundDisabled' | translate }}"
+            matTooltipPosition="above" matTooltipHideDelay="100">
             <i class="material-icons">volume_off</i>
             <!-- <p class="d-lg-none d-md-none">soundoff</p> -->
           </a>
