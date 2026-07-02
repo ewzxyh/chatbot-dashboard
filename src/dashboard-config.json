@@ -28,6 +28,10 @@
   "oauth2SigninEnabled": "${OAUTH2_SIGNIN_ENABLED}",
   "pineconeReranking":"${PINECONE_RERANKING}",
   "logoutURL": "${LOGOUT_URL}",
+  "chatcaseSleekplanEnabled": "${CHATCASE_ENABLE_SLEEKPLAN}",
+  "chatcaseSleekplanProductId": "${CHATCASE_SLEEKPLAN_PRODUCT_ID}",
+  "chatcaseSleekplanScriptUrl": "${CHATCASE_SLEEKPLAN_SCRIPT_URL}",
+  "chatcaseSleekplanSsoBaseUrl": "${CHATCASE_SLEEKPLAN_SSO_BASE_URL}",
   "firebase": {
       "apiKey": "${FIREBASE_APIKEY}",
       "authDomain": "${FIREBASE_AUTHDOMAIN}",

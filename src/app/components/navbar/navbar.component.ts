@@ -1744,7 +1744,7 @@ export class NavbarComponent extends PricingBaseComponent implements OnInit, Aft
             // Sleekplan is already loaded
             return;
           }
-          if (this.user && this.isVisiblePay && !this.browserRefresh && this.sleekplanService.isEnabled())
+          if (this.user && !this.browserRefresh && this.sleekplanService.isEnabled())
             this.sleekplanSso(this.user)
         }
         this.logger.log('[NAVBAR] this.user', this.user)
@@ -1804,7 +1804,7 @@ export class NavbarComponent extends PricingBaseComponent implements OnInit, Aft
 
         // window['$sleek'].sso = { token: response['token'] }
 
-        window['SLEEK_USER'] = { token: response['token'] }
+        this.setSleekplanUserToken(response['token']);
 
         // Load the Sleekplan widget
         this.sleekplanService.loadSleekplan().then(() => {
@@ -2832,7 +2832,58 @@ export class NavbarComponent extends PricingBaseComponent implements OnInit, Aft
 
   openFeedback(): void {
     this.showNotificationsPanel = true;
-    this.markChangelogSeen();
+  }
+
+  isSleekplanEnabled(): boolean {
+    return this.sleekplanService.isEnabled();
+  }
+
+  openSleekplan(): void {
+    if (!this.sleekplanService.isEnabled()) {
+      return;
+    }
+
+    const openWidget = () => {
+      try {
+        if (window['$sleek'] && typeof window['$sleek'].open === 'function') {
+          window['$sleek'].open('notifications');
+          this.markChangelogSeen();
+        }
+      } catch (err) {
+        this.logger.error('[NAVBAR] - Sleekplan open notifications failed', err);
+      }
+    };
+
+    const loadAndOpen = () => {
+      this.sleekplanService.loadSleekplan()
+        .then(() => this.sleekplanService.waitForSleekplanReady())
+        .then(() => openWidget())
+        .catch(err => this.logger.error('[NAVBAR] - Sleekplan initialization failed', err));
+    };
+
+    if (this.user) {
+      this.sleekplanSsoService.getSsoToken(this.user).subscribe(
+        (response) => {
+          this.setSleekplanUserToken(response['token']);
+          loadAndOpen();
+        },
+        (error) => {
+          this.logger.error('[NAVBAR] - Failed to fetch Sleekplan SSO token', error);
+          loadAndOpen();
+        }
+      );
+      return;
+    }
+
+    loadAndOpen();
+  }
+
+  private setSleekplanUserToken(token: string): void {
+    window['SLEEK_USER'] = { token };
+
+    if (window['$sleek'] && typeof window['$sleek'].setUser === 'function') {
+      window['$sleek'].setUser({ token });
+    }
   }
 
   closeNotificationsPanel(): void {

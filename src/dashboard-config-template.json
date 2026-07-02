@@ -33,6 +33,10 @@
   "sentryEnvironment": "${DASHBOARD_SENTRY_ENVIRONMENT}",
   "sentryRelease": "${DASHBOARD_SENTRY_RELEASE}",
   "sentryTracesSampleRate": "${DASHBOARD_SENTRY_TRACES_SAMPLE_RATE}",
+  "chatcaseSleekplanEnabled": "${CHATCASE_ENABLE_SLEEKPLAN}",
+  "chatcaseSleekplanProductId": "${CHATCASE_SLEEKPLAN_PRODUCT_ID}",
+  "chatcaseSleekplanScriptUrl": "${CHATCASE_SLEEKPLAN_SCRIPT_URL}",
+  "chatcaseSleekplanSsoBaseUrl": "${CHATCASE_SLEEKPLAN_SSO_BASE_URL}",
   "firebase": {
     "apiKey": "${FIREBASE_APIKEY}",
     "authDomain": "${FIREBASE_AUTHDOMAIN}",

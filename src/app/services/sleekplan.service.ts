@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { LoggerService } from './logger/logger.service';
+import { AppConfigService } from './app-config.service';
 
 
 @Injectable({
@@ -14,10 +15,12 @@ export class SleekplanService {
   private readonly defaultScriptUrl = 'https://client.sleekplan.com/sdk/e.js';
   constructor(
     private logger: LoggerService,
+    private appConfigService: AppConfigService,
   ) { }
 
   isEnabled(): boolean {
-    return window['CHATCASE_ENABLE_SLEEKPLAN'] === true;
+    const enabled = window['CHATCASE_ENABLE_SLEEKPLAN'] || this.getConfigValue('chatcaseSleekplanEnabled');
+    return enabled === true || enabled === 'true';
   }
 
   waitForSleekplanReady(timeoutMs = 10000): Promise<void> {
@@ -66,7 +69,7 @@ export class SleekplanService {
         return;
       }
 
-      const scriptUrl = window['CHATCASE_SLEEKPLAN_SCRIPT_URL'] || this.defaultScriptUrl;
+      const scriptUrl = window['CHATCASE_SLEEKPLAN_SCRIPT_URL'] || this.getConfigValue('chatcaseSleekplanScriptUrl') || this.defaultScriptUrl;
 
       if (this.sleekplanLoaded) {
         resolve();
@@ -89,7 +92,7 @@ export class SleekplanService {
           }
         };
         window['$sleek'] = window['$sleek'] || [];
-        window['SLEEK_PRODUCT_ID'] = window['CHATCASE_SLEEKPLAN_PRODUCT_ID'] || this.defaultProductId;
+        window['SLEEK_PRODUCT_ID'] = window['CHATCASE_SLEEKPLAN_PRODUCT_ID'] || this.getConfigValue('chatcaseSleekplanProductId') || this.defaultProductId;
 
         // Dynamically load the Sleekplan script
         const script = document.createElement('script');
@@ -126,6 +129,11 @@ export class SleekplanService {
     document.addEventListener('sleek:init', () => {
       this.sleekplanReady = true;
     }, false);
+  }
+
+  private getConfigValue(key: string): any {
+    const value = this.appConfigService.getConfig()?.[key];
+    return typeof value === 'string' && value.indexOf('${') === 0 ? null : value;
   }
 
 

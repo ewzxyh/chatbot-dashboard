@@ -2,14 +2,18 @@ import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 
 import { SleekplanService } from './sleekplan.service';
 import { LoggerService } from './logger/logger.service';
+import { AppConfigService } from './app-config.service';
 
 describe('SleekplanService', () => {
   let service: SleekplanService;
+  let remoteConfig: any;
 
   beforeEach(() => {
+    remoteConfig = {};
     TestBed.configureTestingModule({
       providers: [
-        { provide: LoggerService, useValue: { log: () => { }, error: () => { } } }
+        { provide: LoggerService, useValue: { log: () => { }, error: () => { } } },
+        { provide: AppConfigService, useValue: { getConfig: () => remoteConfig } }
       ]
     });
     service = TestBed.inject(SleekplanService);
@@ -18,6 +22,7 @@ describe('SleekplanService', () => {
   afterEach(() => {
     delete window['$sleek'];
     delete window['SLEEK_PRODUCT_ID'];
+    delete window['CHATCASE_ENABLE_SLEEKPLAN'];
     delete window['CHATCASE_SLEEKPLAN_PRODUCT_ID'];
     delete window['SLEEK_SETTINGS'];
     document.getElementById('sleek-widget')?.remove();
@@ -25,6 +30,22 @@ describe('SleekplanService', () => {
 
   it('should be created', () => {
     expect(service).toBeTruthy();
+  });
+
+  it('should accept boolean and string values for the enable flag', () => {
+    expect(service.isEnabled()).toBe(false);
+
+    window['CHATCASE_ENABLE_SLEEKPLAN'] = true;
+    expect(service.isEnabled()).toBe(true);
+
+    window['CHATCASE_ENABLE_SLEEKPLAN'] = 'true';
+    expect(service.isEnabled()).toBe(true);
+  });
+
+  it('should accept the enable flag from remote config', () => {
+    remoteConfig.chatcaseSleekplanEnabled = 'true';
+
+    expect(service.isEnabled()).toBe(true);
   });
 
   it('should skip automatic announcements when loading the widget', fakeAsync(() => {

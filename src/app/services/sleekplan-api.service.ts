@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { LoggerService } from './logger/logger.service';
 import { BehaviorSubject, of } from 'rxjs';
+import { AppConfigService } from './app-config.service';
 @Injectable({
   providedIn: 'root'
 })
@@ -10,12 +10,13 @@ export class SleekplanApiService {
  public hasOpenedChangelogfromPopup$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
 
   constructor(
-    private httpClient: HttpClient,
     private logger: LoggerService,
+    private appConfigService: AppConfigService,
   ) { }
 
   isEnabled(): boolean {
-    return window['CHATCASE_ENABLE_SLEEKPLAN'] === true;
+    const enabled = window['CHATCASE_ENABLE_SLEEKPLAN'] || this.getConfigValue('chatcaseSleekplanEnabled');
+    return enabled === true || enabled === 'true';
   }
 
   getNewChangelogCount() {
@@ -24,31 +25,17 @@ export class SleekplanApiService {
       return of({ data: { items: {} } });
     }
 
-    const apiKey = window['CHATCASE_SLEEKPLAN_API_KEY'];
-    const apiUrl = window['CHATCASE_SLEEKPLAN_API_URL'];
-    if (!apiKey || !apiUrl) {
-      this.logger.log('[SLEEKPLAN-SERVICE] - missing ChatCase Sleekplan API configuration');
-      return of({ data: { items: {} } });
-    }
-
-    const httpOptions = {
-      headers: new HttpHeaders({ 
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-        'Cache-Control': 'no-cache',  
-        'Pragma': 'no-cache'  
-      })
-    };
-    
-
-    const url = apiUrl + '?per_page=1'
-    this.logger.log('[SLEEKPLAN-SERVICE] - get last changelog');
-
-    return this.httpClient.get(url, httpOptions);
+    this.logger.log('[SLEEKPLAN-SERVICE] - changelog API disabled in browser');
+    return of({ data: { items: {} } });
   }
 
   hasOpenedSPChangelogFromPopup() {
     this.hasOpenedChangelogfromPopup$.next(true)
+  }
+
+  private getConfigValue(key: string): any {
+    const value = this.appConfigService.getConfig()?.[key];
+    return typeof value === 'string' && value.indexOf('${') === 0 ? null : value;
   }
 
 
