@@ -10,6 +10,7 @@ export class SleekplanService {
   private sleekplanReady = false;
   private sleekplanInitListenerBound = false;
   private sleekplanLoadPromise: Promise<void> | null = null;
+  private readonly defaultProductId = 937918520;
   private readonly defaultScriptUrl = 'https://client.sleekplan.com/sdk/e.js';
   constructor(
     private logger: LoggerService,
@@ -88,8 +89,7 @@ export class SleekplanService {
           }
         };
         window['$sleek'] = window['$sleek'] || [];
-        window['SLEEK_PRODUCT_ID'] = 869241497; // The good one product ID
-        // window['SLEEK_PRODUCT_ID'] = 615248482 // for test
+        window['SLEEK_PRODUCT_ID'] = window['CHATCASE_SLEEKPLAN_PRODUCT_ID'] || this.defaultProductId;
 
         // Dynamically load the Sleekplan script
         const script = document.createElement('script');
