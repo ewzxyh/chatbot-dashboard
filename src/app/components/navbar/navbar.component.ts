@@ -2803,8 +2803,29 @@ export class NavbarComponent extends PricingBaseComponent implements OnInit, Aft
     const openSleekplan = () => {
       try {
         if (window['$sleek'] && typeof window['$sleek'].open === 'function') {
-          window['$sleek'].open('notifications');
-          this.markChangelogSeen();
+          const openNotifications = () => {
+            window['$sleek'].open('notifications');
+            this.markChangelogSeen();
+          };
+
+          if (document.getElementById('sleek-widget')) {
+            openNotifications();
+            return true;
+          }
+
+          let openedNotifications = false;
+          const openAfterWidgetInit = () => {
+            if (openedNotifications) {
+              return;
+            }
+            openedNotifications = true;
+            document.removeEventListener('sleek:widget_init', openAfterWidgetInit, false);
+            openNotifications();
+          };
+
+          document.addEventListener('sleek:widget_init', openAfterWidgetInit, false);
+          window['$sleek'].open();
+          setTimeout(openAfterWidgetInit, 10000);
           return true;
         }
       } catch (err) {
