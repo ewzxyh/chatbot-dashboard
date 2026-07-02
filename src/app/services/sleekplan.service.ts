@@ -7,6 +7,8 @@ import { LoggerService } from './logger/logger.service';
 })
 export class SleekplanService {
   private sleekplanLoaded = false;
+  private sleekplanReady = false;
+  private sleekplanInitListenerBound = false;
   private sleekplanLoadPromise: Promise<void> | null = null;
   private readonly defaultScriptUrl = 'https://client.sleekplan.com/sdk/e.js';
   constructor(
@@ -18,6 +20,12 @@ export class SleekplanService {
   }
 
   waitForSleekplanReady(timeoutMs = 10000): Promise<void> {
+    this.bindSleekplanInitListener();
+
+    if (this.sleekplanReady) {
+      return Promise.resolve();
+    }
+
     return new Promise((resolve, reject) => {
       let resolved = false;
       const startedAt = Date.now();
@@ -27,8 +35,7 @@ export class SleekplanService {
           return;
         }
 
-        // Sleekplan only creates #sleek-widget after open(), so API readiness is the safe gate here.
-        if (window['$sleek'] && typeof window['$sleek'].open === 'function') {
+        if (this.sleekplanReady) {
           resolved = true;
           resolve();
           return;
@@ -50,6 +57,8 @@ export class SleekplanService {
   loadSleekplan(force = false): Promise<void> {
     this.logger.log('[SLEEKPLAN-SERV] - loadSleekplan ');
     return new Promise((resolve, reject) => {
+      this.bindSleekplanInitListener();
+
       if (!force && !this.isEnabled()) {
         this.logger.log('[SLEEKPLAN-SERV] - disabled by ChatCase configuration');
         resolve();
@@ -106,6 +115,17 @@ export class SleekplanService {
       this.sleekplanLoadPromise.then(resolve).catch(reject);
      
     });
+  }
+
+  private bindSleekplanInitListener(): void {
+    if (this.sleekplanInitListenerBound) {
+      return;
+    }
+
+    this.sleekplanInitListenerBound = true;
+    document.addEventListener('sleek:init', () => {
+      this.sleekplanReady = true;
+    }, false);
   }
 
 

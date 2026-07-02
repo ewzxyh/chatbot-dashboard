@@ -2826,10 +2826,6 @@ export class NavbarComponent extends PricingBaseComponent implements OnInit, Aft
         .catch(err => this.logger.error('[NAVBAR] - Sleekplan initialization failed', err));
     };
 
-    if (openSleekplan()) {
-      return;
-    }
-
     if (this.user) {
       setTimeout(loadAndOpenSleekplan, 800);
       this.sleekplanSsoService.getSsoToken(this.user).subscribe(

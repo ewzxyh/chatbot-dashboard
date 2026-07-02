@@ -45,11 +45,15 @@ describe('SleekplanService', () => {
     expect(resolved).toBe(true);
   }));
 
-  it('should wait until the Sleekplan API is ready', fakeAsync(() => {
+  it('should wait until the Sleekplan SDK init event is fired', fakeAsync(() => {
     let resolved = false;
     service.waitForSleekplanReady().then(() => resolved = true);
 
     window['$sleek'] = { open: () => { } };
+    tick(100);
+    expect(resolved).toBe(false);
+
+    document.dispatchEvent(new Event('sleek:init'));
     tick(100);
 
     expect(resolved).toBe(true);
