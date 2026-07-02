@@ -2801,16 +2801,16 @@ export class NavbarComponent extends PricingBaseComponent implements OnInit, Aft
     this.logger.log('[NAVBAR] open Sleekplan this.user', this.user)
     this.logger.log('[NAVBAR] open Sleekplan ', window['$sleek'])
     const openSleekplan = () => {
-      if (window['$sleek'] && typeof window['$sleek'].open === 'function') {
-        window['$sleek'].open('notifications');
-        this.markChangelogSeen();
-        return true;
+      try {
+        if (window['$sleek'] && typeof window['$sleek'].open === 'function') {
+          window['$sleek'].open('notifications');
+          this.markChangelogSeen();
+          return true;
+        }
+      } catch (err) {
+        this.logger.error('[NAVBAR] - Sleekplan open notifications failed', err);
       }
-      if (window['$sleek'] && typeof window['$sleek'].toggle === 'function') {
-        window['$sleek'].toggle('notifications');
-        this.markChangelogSeen();
-        return true;
-      }
+
       return false;
     };
 
@@ -2821,7 +2821,8 @@ export class NavbarComponent extends PricingBaseComponent implements OnInit, Aft
       }
       requestedSleekplanOpen = true;
       this.sleekplanService.loadSleekplan(true)
-        .then(() => setTimeout(openSleekplan, 250))
+        .then(() => this.sleekplanService.waitForSleekplanReady())
+        .then(() => openSleekplan())
         .catch(err => this.logger.error('[NAVBAR] - Sleekplan initialization failed', err));
     };
 
