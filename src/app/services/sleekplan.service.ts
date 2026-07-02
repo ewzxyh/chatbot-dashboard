@@ -22,25 +22,20 @@ export class SleekplanService {
       let resolved = false;
       const startedAt = Date.now();
 
-      const cleanup = () => {
-        document.removeEventListener('sleek:widget_init', checkReady, false);
-      };
-
       const checkReady = () => {
         if (resolved) {
           return;
         }
 
-        if (window['$sleek'] && typeof window['$sleek'].open === 'function' && document.getElementById('sleek-widget')) {
+        // Sleekplan only creates #sleek-widget after open(), so API readiness is the safe gate here.
+        if (window['$sleek'] && typeof window['$sleek'].open === 'function') {
           resolved = true;
-          cleanup();
           resolve();
           return;
         }
 
         if (Date.now() - startedAt >= timeoutMs) {
           resolved = true;
-          cleanup();
           reject(new Error('Sleekplan widget did not become ready'));
           return;
         }
@@ -48,7 +43,6 @@ export class SleekplanService {
         setTimeout(checkReady, 100);
       };
 
-      document.addEventListener('sleek:widget_init', checkReady, false);
       checkReady();
     });
   }

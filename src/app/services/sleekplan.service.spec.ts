@@ -45,16 +45,12 @@ describe('SleekplanService', () => {
     expect(resolved).toBe(true);
   }));
 
-  it('should wait until the Sleekplan iframe is ready', fakeAsync(() => {
+  it('should wait until the Sleekplan API is ready', fakeAsync(() => {
     let resolved = false;
     service.waitForSleekplanReady().then(() => resolved = true);
 
     window['$sleek'] = { open: () => { } };
-    const iframe = document.createElement('iframe');
-    iframe.id = 'sleek-widget';
-    document.body.appendChild(iframe);
-    document.dispatchEvent(new Event('sleek:widget_init'));
-    tick();
+    tick(100);
 
     expect(resolved).toBe(true);
   }));
