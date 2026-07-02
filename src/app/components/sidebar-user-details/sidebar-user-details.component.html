@@ -3,7 +3,7 @@
     <div class="user-details-dshbrd-lang" (click)="goToUserProfileLanguageSection()"
         [ngStyle]="{ 'cursor': editProfileBtnVisible ? 'pointer' : 'default'}">
 
-        <span class="user-details-dshbrd-lang-code" style="text-transform: uppercase;color: #647491;font-size: 14px;">
+        <span class="user-details-dshbrd-lang-code" style="text-transform: uppercase;color: var(--sidebar-icon-color);font-size: 14px;">
             {{dsbrd_lang}}
         </span>
         <img [src]="flag_url" style="width: auto;height: 19px;">

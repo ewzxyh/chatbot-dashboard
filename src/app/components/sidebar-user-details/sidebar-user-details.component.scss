@@ -1,6 +1,7 @@
 #user-details {
-    background-color: #1e2129;
-    color: #fff;
+    background-color: #ffffff;
+    color: #0f172a;
+    border-right: 1px solid #e5e7eb;
     // height: calc(100% - 60px);
     height: 100%;
     overflow-y: auto;
@@ -22,10 +23,10 @@
     width: 3px;
 }
 #user-details::-webkit-scrollbar-track {
-    background-color: #1c2b45;
+    background-color: #f8fafc;
 }
 #user-details::-webkit-scrollbar-thumb {
-    background-color: #3c485b;
+    background-color: #cbd5e1;
     border-radius: 3px;
 }
 
@@ -37,7 +38,7 @@
 }
 
 #user-details .user-details-btn-close svg {
-    fill: #647491;
+    fill: var(--sidebar-icon-color);
 }
 
 #user-details .user-details-btn-close {
@@ -82,7 +83,7 @@ button.user-details-btn-close {
 
 .user-details-dshbrd-lang-code {
     text-transform: uppercase;
-    color: #647491;
+    color: var(--sidebar-icon-color);
     position: relative;
     top: 3px;
     cursor: pointer;
@@ -98,7 +99,7 @@ button.user-details-btn-close {
     -webkit-transform: translateX(-50%);
     transform: translateX(-50%);
     left: 50%;
-    background: #2d323e;
+    background: #f1f5f9;
 }
 
 .user-img-in-sidebar-user-details {
@@ -170,7 +171,7 @@ button.user-details-btn-close {
     text-align: center;
     margin-top: 0px;
     // text-transform: uppercase;
-    color: #a9afbb;
+    color: #475569;
     font-weight: 400;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -179,7 +180,7 @@ button.user-details-btn-close {
 
 .user-details-view-profile {
     font-size: 14px;
-    color: #00d5ff;
+    color: #1d8fe8;
     cursor: pointer;
     // -webkit-font-smoothing: antialiased;
 
@@ -192,7 +193,7 @@ button.user-details-btn-close {
 .availability-section {
     top: 324px;
     text-align: center;
-    background-color: #2d323e;
+    background-color: #f8fafc;
     // padding: 4px 0px;
     width: 192px;
     border-radius: 4px;
@@ -207,7 +208,7 @@ button.user-details-btn-close {
 .first-divider {
     margin-top: 365px;
     border: 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    border-top: 1px solid #e5e7eb;
     z-index: -1;
     position: relative;
 
@@ -233,7 +234,7 @@ button.user-details-btn-close {
 }
 .user-details-user-isbusy {
     color: #feb92c;
-    background-color: #2d323e;
+    background-color: #ffffff;
     border-radius: 50%;
     position: absolute;
     top: 96px;
@@ -255,7 +256,7 @@ button.user-details-btn-close {
 .user-details-plan-info {
     font-size: 13px;
     text-transform: capitalize;
-    color: #a9afbb;
+    color: #475569;
     font-weight: 500;
     -webkit-font-smoothing: antialiased;
     height: 100px;
@@ -271,7 +272,7 @@ button.user-details-btn-close {
 
 
 .user-details-help-center-icon {
-    color: #a9afbb;
+    color: #475569;
     font-size: 20px;
     vertical-align: middle;
     margin-right: 3px;
@@ -281,14 +282,14 @@ button.user-details-btn-close {
     margin-top: 6px;
     font-size: 13px;
     font-weight: 500;
-    color: #a9afbb;
+    color: #475569;
     -webkit-font-smoothing: antialiased;
     vertical-align: middle;
     cursor: pointer;
 }
 
 .user-details-help-center:hover { 
-    color: #fff;
+    color: #0f172a;
     text-decoration: underline;
 }
 
@@ -319,13 +320,13 @@ button.user-details-btn-close {
     padding-top: 49px;
 }
 .user-details-logout-icon {
-    color: #a9afbb;
+    color: var(--sidebar-icon-color);
     font-size: 30px;
     // margin-top: 30px;
 }
 
 .user-details-logout-icon:hover {
-    color: #fff;
+    color: var(--sidebar-hover-icon-color);
 }
 
 :host ::ng-deep .mat-slide-toggle.mat-checked:not(.mat-disabled) .mat-slide-toggle-bar {
@@ -377,7 +378,6 @@ button.user-details-btn-close {
     display: inline-block;
     // border-bottom: 1px dotted black;
   }
-  
   .tooltip .tooltiptext {
     visibility: hidden;
     width: 120px;
@@ -428,9 +428,7 @@ button.user-details-btn-close {
 //         display: flex !important;
 //         align-items: center !important;
 //     }
-    
 //     .ng-option-marked {
 //         background-color: #f5f5f5 !important;
 //     }
 // }
-  
