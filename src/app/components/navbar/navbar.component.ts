@@ -236,6 +236,7 @@ export class NavbarComponent extends PricingBaseComponent implements OnInit, Aft
   quotaResetEndDateLabel: string | null = null;
 
   newChangelogCount: boolean;
+  showNotificationsPanel = false;
   // lastSeen: number = 0; // Replace with actual last seen timestamp (e.g., from user preferences)
   PERMISSION_TO_CHANGE_PROJECT: boolean;
   PERMISSION_TO_SIMULATE_CONVERSATION: boolean;
@@ -2794,74 +2795,12 @@ export class NavbarComponent extends PricingBaseComponent implements OnInit, Aft
 
 
   openFeedback(): void {
-    // this.logger.log('[NAVBAR] open Sleekplan ', window['Sleekplan']) 
-    // if (window['Sleekplan']?.open) {
-    //   window['Sleekplan'].open();
-    // }this.user
-    this.logger.log('[NAVBAR] open Sleekplan this.user', this.user)
-    this.logger.log('[NAVBAR] open Sleekplan ', window['$sleek'])
-    const openSleekplan = () => {
-      try {
-        if (window['$sleek'] && typeof window['$sleek'].open === 'function') {
-          const openNotifications = () => {
-            window['$sleek'].open('notifications');
-            this.markChangelogSeen();
-          };
+    this.showNotificationsPanel = true;
+    this.markChangelogSeen();
+  }
 
-          if (document.getElementById('sleek-widget')) {
-            openNotifications();
-            return true;
-          }
-
-          let openedNotifications = false;
-          const openAfterWidgetInit = () => {
-            if (openedNotifications) {
-              return;
-            }
-            openedNotifications = true;
-            document.removeEventListener('sleek:widget_init', openAfterWidgetInit, false);
-            openNotifications();
-          };
-
-          document.addEventListener('sleek:widget_init', openAfterWidgetInit, false);
-          window['$sleek'].open();
-          setTimeout(openAfterWidgetInit, 10000);
-          return true;
-        }
-      } catch (err) {
-        this.logger.error('[NAVBAR] - Sleekplan open notifications failed', err);
-      }
-
-      return false;
-    };
-
-    let requestedSleekplanOpen = false;
-    const loadAndOpenSleekplan = () => {
-      if (requestedSleekplanOpen) {
-        return;
-      }
-      requestedSleekplanOpen = true;
-      this.sleekplanService.loadSleekplan(true)
-        .then(() => this.sleekplanService.waitForSleekplanReady())
-        .then(() => openSleekplan())
-        .catch(err => this.logger.error('[NAVBAR] - Sleekplan initialization failed', err));
-    };
-
-    if (this.user) {
-      setTimeout(loadAndOpenSleekplan, 800);
-      this.sleekplanSsoService.getSsoToken(this.user).subscribe(
-        (response) => {
-          window['SLEEK_USER'] = { token: response['token'] }
-          loadAndOpenSleekplan();
-        },
-        (error) => {
-          this.logger.error('[NAVBAR] - Failed to fetch Sleekplan SSO token', error);
-          loadAndOpenSleekplan();
-        }
-      );
-    } else {
-      loadAndOpenSleekplan();
-    }
+  closeNotificationsPanel(): void {
+    this.showNotificationsPanel = false;
   }
 
   private markChangelogSeen(): void {

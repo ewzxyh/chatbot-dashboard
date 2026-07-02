@@ -180,6 +180,7 @@ export class DashboardIconService {
     this.addTablerIcon('td-activity', 'activity');
     this.addTablerIcon('td-address-book', 'address-book');
     this.addTablerIcon('td-apps', 'apps');
+    this.addTablerIcon('td-bell', 'bell');
     this.addTablerIcon('td-book', 'book');
     this.addTablerIcon('td-bolt', 'bolt');
     this.addTablerIcon('td-brain', 'brain');

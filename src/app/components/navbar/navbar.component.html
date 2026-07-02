@@ -584,7 +584,7 @@
                 matTooltipClass="custom-mat-tooltip-navbar" matTooltip="{{ 'Notification' | translate }}"
                 matTooltipPosition="below" matTooltipHideDelay="100">
 
-                <i class="material-icons">notifications</i>
+                <mat-icon svgIcon="td-bell"></mat-icon>
                 
               </button>
 
@@ -614,6 +614,30 @@
     </div>
   </div>
 </nav>
+
+<div class="chatcase-notifications-overlay" *ngIf="showNotificationsPanel" (click)="closeNotificationsPanel()"></div>
+<aside class="chatcase-notifications-panel" *ngIf="showNotificationsPanel" role="dialog" aria-modal="true"
+  aria-label="Notificações">
+  <div class="chatcase-notifications-header">
+    <button type="button" class="chatcase-notifications-icon-btn" (click)="closeNotificationsPanel()"
+      matTooltip="Fechar" matTooltipClass="custom-mat-tooltip-navbar" matTooltipPosition="below">
+      <mat-icon svgIcon="td-chevron-left"></mat-icon>
+    </button>
+    <h2>Notificações</h2>
+    <button type="button" class="chatcase-notifications-icon-btn" (click)="closeNotificationsPanel()"
+      matTooltip="Fechar" matTooltipClass="custom-mat-tooltip-navbar" matTooltipPosition="below">
+      <mat-icon svgIcon="td-x"></mat-icon>
+    </button>
+  </div>
+  <div class="chatcase-notifications-empty">
+    <mat-icon svgIcon="td-bell"></mat-icon>
+    <h3>Nenhuma notificação no momento</h3>
+    <p>Quando houver novas notificações importantes, elas aparecerão aqui.</p>
+  </div>
+  <div class="chatcase-notifications-footer">
+    <button type="button" disabled>Marcar todas como lidas</button>
+  </div>
+</aside>
 
 
 <!-- ------------============= PENDING EMAIL VERIFICATION ALERT =============------------ -->
