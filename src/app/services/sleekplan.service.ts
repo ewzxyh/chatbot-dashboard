@@ -7,6 +7,7 @@ import { LoggerService } from './logger/logger.service';
 })
 export class SleekplanService {
   private sleekplanLoaded = false;
+  private sleekplanLoadPromise: Promise<void> | null = null;
   constructor(
     private logger: LoggerService,
   ) { }
@@ -36,32 +37,39 @@ export class SleekplanService {
         return;
       }
 
-      this.sleekplanLoaded = true;
+      if (this.sleekplanLoadPromise) {
+        this.sleekplanLoadPromise.then(resolve).catch(reject);
+        return;
+      }
 
-      // Configure Sleekplan product ID
-      window['$sleek'] = [];
-      window['SLEEK_PRODUCT_ID'] = 869241497; // The good one product ID
-      // window['SLEEK_PRODUCT_ID'] = 615248482 // for test
+      this.sleekplanLoadPromise = new Promise((loadResolve, loadReject) => {
+        // Configure Sleekplan product ID
+        window['$sleek'] = window['$sleek'] || [];
+        window['SLEEK_PRODUCT_ID'] = 869241497; // The good one product ID
+        // window['SLEEK_PRODUCT_ID'] = 615248482 // for test
 
-      // Dynamically load the Sleekplan script
-      const script = document.createElement('script');
-      script.type = 'text/javascript';
-      script.src = scriptUrl;
-      script.async = true;
+        // Dynamically load the Sleekplan script
+        const script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = scriptUrl;
+        script.async = true;
 
-      script.onload = () => {
-        this.logger.log('[SLEEKPLAN-SERV] - Sleekplan script loaded successfully');
-        resolve();
-        
-      };
+        script.onload = () => {
+          this.sleekplanLoaded = true;
+          this.logger.log('[SLEEKPLAN-SERV] - Sleekplan script loaded successfully');
+          loadResolve();
+        };
 
-      script.onerror = (error) => {
-        this.logger.error('[SLEEKPLAN-SERV] - Failed to load Sleekplan script', error);
-        reject(error);
-      };
+        script.onerror = (error) => {
+          this.sleekplanLoadPromise = null;
+          this.logger.error('[SLEEKPLAN-SERV] - Failed to load Sleekplan script', error);
+          loadReject(error);
+        };
 
-      document.head.appendChild(script);
+        document.head.appendChild(script);
+      });
 
+      this.sleekplanLoadPromise.then(resolve).catch(reject);
      
     });
   }

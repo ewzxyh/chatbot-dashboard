@@ -2800,8 +2800,31 @@ export class NavbarComponent extends PricingBaseComponent implements OnInit, Aft
     // }this.user
     this.logger.log('[NAVBAR] open Sleekplan this.user', this.user)
     this.logger.log('[NAVBAR] open Sleekplan ', window['$sleek'])
-    window['$sleek'].toggle();
+    const openSleekplan = () => {
+      if (window['$sleek'] && typeof window['$sleek'].toggle === 'function') {
+        window['$sleek'].toggle();
+        this.markChangelogSeen();
+        return true;
+      }
+      return false;
+    };
 
+    if (!openSleekplan() && this.user && this.sleekplanService.isEnabled()) {
+      this.sleekplanSsoService.getSsoToken(this.user).subscribe(
+        (response) => {
+          window['SLEEK_USER'] = { token: response['token'] }
+          this.sleekplanService.loadSleekplan()
+            .then(() => setTimeout(openSleekplan, 250))
+            .catch(err => this.logger.error('[NAVBAR] - Sleekplan initialization failed', err));
+        },
+        (error) => {
+          this.logger.error('[NAVBAR] - Failed to fetch Sleekplan SSO token', error);
+        }
+      );
+    }
+  }
+
+  private markChangelogSeen(): void {
     const lastSeen = Date.now()
     this.logger.log('[NAVBAR] open Sleekplan lastSeen ', lastSeen)
     // localStorage.setItem('lastSeenTimestamp', this.lastSeen.toString());

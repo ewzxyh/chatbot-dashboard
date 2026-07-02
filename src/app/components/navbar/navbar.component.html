@@ -580,7 +580,9 @@
         <ng-container *ngIf="isVisiblePay" style="position: relative;">
           <li *ngIf="project">
             <a>
-              <button class="give-feedback" (click)="openFeedback()">
+              <button class="give-feedback" type="button" (click)="openFeedback()"
+                matTooltipClass="custom-mat-tooltip-navbar" matTooltip="{{ 'Notification' | translate }}"
+                matTooltipPosition="below" matTooltipHideDelay="100">
 
                 <i class="material-icons">notifications</i>
                 
