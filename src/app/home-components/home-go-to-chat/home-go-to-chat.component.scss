@@ -1,4 +1,10 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
 .home-chat-card {
+  height: 100%;
   margin-top: 0;
   border: 1px solid #d8e0ea;
   border-radius: 0;
@@ -10,6 +16,7 @@
   display: grid;
   grid-template-columns: 1fr;
   align-items: start;
+  align-content: start;
   gap: 22px;
   padding: 40px 36px;
 }
@@ -69,6 +76,18 @@
   width: 18px;
   height: 18px;
   margin: 0 8px 0 0;
+}
+
+@media (max-width: 1180px) {
+  :host,
+  .home-chat-card {
+    height: auto;
+  }
+
+  .home-chat-card__content {
+    gap: 16px;
+    padding: 24px;
+  }
 }
 
 @media (max-width: 480px) {

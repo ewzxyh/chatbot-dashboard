@@ -88,7 +88,7 @@
                   <button *ngIf="PERMISSION_TO_VIEW_OP" id="adjust-operating-hours-btn" #editOperatingHoursBtn mat-mini-fab
                     aria-label="date_range icon" [satPopoverAnchor]="editOperatingHours"
                     (click)="editOperatingHours.toggle();" matTooltipClass="custom-mat-tooltip"
-                    matTooltip="Adjust operating hours" #tooltip="matTooltip" matTooltipPosition='below'
+                    matTooltip="Ajustar horário de atendimento" #tooltip="matTooltip" matTooltipPosition='below'
                     matTooltipHideDelay="100">
                     <mat-icon style="position: relative;top: -2px;"
                       [ngClass]="{'oph-disabled': !OPERATING_HOURS_ACTIVE || DISPLAY_OPH_AS_DISABLED, 'oph-enabled': OPERATING_HOURS_ACTIVE && !DISPLAY_OPH_AS_DISABLED }">
@@ -118,18 +118,18 @@
 
                           <div style="color: rgba(0, 0, 0, 0.87);font-weight: 500;font-size: 14px;">
                             <!-- {{'Hours' | translate}} -->
-                            General Operating Hours
+                            Horário de atendimento
                           </div>
 
                           <div style="font-size: 12px;font-weight: 500;text-transform: uppercase;">
                             <span *ngIf="!OPERATING_HOURS_ACTIVE || DISPLAY_OPH_AS_DISABLED">
                               <!-- {{'Disabled' | translate}} -->
-                              Disabled
+                              Desativado
                             </span>
 
                             <span *ngIf="OPERATING_HOURS_ACTIVE && !DISPLAY_OPH_AS_DISABLED">
                               <!-- {{'Enabled' | translate}} -->
-                              Enabled
+                              Ativo
                             </span>
                           </div>
                         </div>
@@ -148,7 +148,7 @@
                 <button id="dashlet-filter-btn" *ngIf="USER_ROLE !== 'agent'" mat-mini-fab aria-label="filter icon"
                   [matMenuTriggerFor]="dashletMenu" 
                   matTooltipClass="custom-mat-tooltip" 
-                  matTooltip="Dashlets filter"
+                  matTooltip="Filtros do painel"
                   #tooltip="matTooltip" 
                   matTooltipPosition='below' 
                   matTooltipHideDelay="100">
@@ -171,7 +171,7 @@
                   <button mat-menu-item (click)="$event.stopPropagation()">
                     <mat-checkbox class="home-settings-checkbox" [checked]="displayAnalyticsConvsGraph"
                       (change)="switchAnalyticsConvsGraph($event.checked)"></mat-checkbox>
-                    <span>Conversations chart</span>
+                    <span>Gráfico de conversas</span>
                   </button>
                   <!-- *ngIf="displayAnalyticsIndicators" -->
                   <!-- *ngIf="isVisibleANA" -->
@@ -180,7 +180,7 @@
                       (change)="switchAnalyticsIndicators($event.checked)">
                     </mat-checkbox>
 
-                    <span>Analytics Overview</span>
+                    <span>Resumo de métricas</span>
                   </button>
 
                   <!-- --------------------- -->
@@ -223,7 +223,7 @@
                   <button *ngIf="displayNewsAndDocumentation" mat-menu-item (click)="$event.stopPropagation()">
                     <mat-checkbox class="home-settings-checkbox" [checked]="displayNewsFeed"
                       (change)="switchNewsFeed($event.checked)"></mat-checkbox>
-                    <span>News Feed</span>
+                    <span>Novidades</span>
                   </button>
                 </mat-menu>
               </div>
@@ -236,7 +236,7 @@
         <!-- <div class="test">  -->
         <ng-container *ngIf="isVisibleQuoteSection">
           <mat-card *ngIf="!displayQuotaSkeleton" class="home-quota-banner"
-            [ngClass]="{'home-quota-banner-alert': emailsRunnedOut || tokensRunnedOut}">
+            [ngClass]="{'home-quota-banner-alert': usageStatusTone === 'critical'}">
 
             <div class="home-quota-banner-heading">
               <div>
@@ -262,7 +262,7 @@
 
                 <div class="home-quote-title-count-wpr">
                   <p class="quote-title" matTooltipClass="custom-mat-tooltip"
-                    matTooltip="Current usage" #tooltip="matTooltip" matTooltipPosition='above' matTooltipHideDelay="100">
+                    matTooltip="Uso atual" #tooltip="matTooltip" matTooltipPosition='above' matTooltipHideDelay="100">
                      {{'Platforms' | translate}}
                   </p>
                   <div class="quote-count">{{platforms_count | number:'1.0-0'}} / {{platforms_limit | number:'1.0-0'}}</div>
@@ -280,30 +280,24 @@
                 </div>
               </div>
               <!-- -------------------------- -->
-              <!-- AI Tokens -->
+              <!-- Contacts -->
               <!-- -------------------------- -->
-              <div class="home-quote-container" [ngClass]="{'home-quote-container-tokens-runned-out': tokensRunnedOut}">
+              <div class="home-quote-container">
                 <div class="home-quote-title-count-wpr">
-                  <p class="quote-title" matTooltipClass="custom-mat-tooltip" matTooltip="Current usage"
+                  <p class="quote-title" matTooltipClass="custom-mat-tooltip" matTooltip="Uso atual"
                     #tooltip="matTooltip" matTooltipPosition='above' matTooltipHideDelay="100">
-                    <!-- AI Tokens -->
-                     {{'AiTokens' | translate}}
+                    Contatos
                   </p>
-                  <div class="quote-count">{{tokens_count | number:'1.0-0'}} / {{tokens_limit | number:'1.0-0'}}</div>
-                  <div class="quota-runned-out-msg" *ngIf="tokensRunnedOut">
-                    <!-- You run out of AI Tokens -->
-                     {{'YouRunOutOfAiTokens' | translate}}
-                  </div>
+                  <div class="quote-count">{{contacts_count | number:'1.0-0'}} / {{contacts_limit | number:'1.0-0'}}</div>
                 </div>
 
                 <div class="quote">
                   <mat-progress-spinner class="example-margin" [strokeWidth]="5" [diameter]="50" [color]="'primary'"
-                    [mode]="'determinate'" [value]="tokens_perc"
-                    [ngClass]="{'mat-progress-spinner-token-runned-out': tokensRunnedOut}">
+                    [mode]="'determinate'" [value]="contacts_perc">
                   </mat-progress-spinner>
 
-                  <div class="percentage" [ngClass]="{'percentage-token-runned-out': tokensRunnedOut}">
-                    {{ tokens_perc }}
+                  <div class="percentage">
+                    {{ contacts_perc }}
                     <span style="font-size: 10px; margin-top: 2px; margin-left: 1px"> %</span>
                   </div>
                 </div>
@@ -316,7 +310,7 @@
               <div class="home-quote-container" [ngClass]="{'home-quote-container-email-runned-out': emailsRunnedOut}">
 
                 <div class="home-quote-title-count-wpr">
-                  <p class="quote-title" matTooltipClass="custom-mat-tooltip" matTooltip="Current usage"
+                  <p class="quote-title" matTooltipClass="custom-mat-tooltip" matTooltip="Uso atual"
                     #tooltip="matTooltip" matTooltipPosition='above' matTooltipHideDelay="100">
                    {{'Email' | translate}}
                   </p>
@@ -345,7 +339,7 @@
               <div *ngIf="diplayVXMLVoiceQuota" class="home-quote-container" [ngClass]="{'home-quote-container-voice-runned-out': voiceRunnedOut}">
 
                 <div class="home-quote-title-count-wpr">
-                  <p class="quote-title" matTooltipClass="custom-mat-tooltip" matTooltip="Current usage"
+                  <p class="quote-title" matTooltipClass="custom-mat-tooltip" matTooltip="Uso atual"
                     #tooltip="matTooltip" matTooltipPosition='above' matTooltipHideDelay="100">
                     {{'Voice' | translate}}
                    
@@ -368,13 +362,37 @@
                   </div>
                 </div>
               </div>
+
+              <!-- -------------------------- -->
+              <!-- Members -->
+              <!-- -------------------------- -->
+              <div *ngIf="!diplayVXMLVoiceQuota" class="home-quote-container home-quote-container-members">
+                <div class="home-quote-title-count-wpr">
+                  <p class="quote-title" matTooltipClass="custom-mat-tooltip" matTooltip="Uso atual"
+                    #tooltip="matTooltip" matTooltipPosition='above' matTooltipHideDelay="100">
+                    Membros
+                  </p>
+                  <div class="quote-count">{{members_count | number:'1.0-0'}} / {{members_limit | number:'1.0-0'}}</div>
+                </div>
+
+                <div class="quote">
+                  <mat-progress-spinner class="example-margin" [strokeWidth]="5" [diameter]="50" [color]="'primary'"
+                    [mode]="'determinate'" [value]="members_perc">
+                  </mat-progress-spinner>
+
+                  <div class="percentage">
+                    {{ members_perc }}
+                    <span style="font-size: 10px; margin-top: 2px; margin-left: 1px"> %</span>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div class="home-quota-resets">
               {{ 'QuotasReset' | translate }}: {{ quotaResetEndDateLabel | amDateFormat: 'LL' }}
             </div>
 
-            <div class="home-quotas-banner-footer" *ngIf="conversationsRunnedOut || emailsRunnedOut || tokensRunnedOut || voiceRunnedOut">
+            <div class="home-quotas-banner-footer" *ngIf="usageStatusTone === 'critical'">
               <div class="home-quota-banner-icon">
                 <svg xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
@@ -685,12 +703,12 @@
                       <mat-card class="home-kpi-card">
                         <mat-card-content class="home-kpi-card__content">
                           <div class="home-kpi-card__icon" aria-hidden="true">
-                            <mat-icon svgIcon="td-brain"></mat-icon>
+                            <mat-icon svgIcon="td-address-book"></mat-icon>
                           </div>
                           <div>
-                            <div class="home-kpi-card__value">{{ tokens_perc || 0 }}%</div>
-                            <div class="home-kpi-card__label">Tokens de IA</div>
-                            <div class="home-kpi-card__hint">{{ (tokens_count || 0) | number:'1.0-0' }} usados</div>
+                            <div class="home-kpi-card__value">{{ contacts_perc || 0 }}%</div>
+                            <div class="home-kpi-card__label">Contatos</div>
+                            <div class="home-kpi-card__hint">{{ (contacts_count || 0) | number:'1.0-0' }} ativos</div>
                           </div>
                         </mat-card-content>
                       </mat-card>
@@ -729,10 +747,10 @@
 
                             <div class="home-chart-row">
                               <div class="home-chart-row__label">
-                                <span>Tokens de IA</span>
-                                <strong>{{ tokens_perc || 0 }}%</strong>
+                                <span>Contatos</span>
+                                <strong>{{ contacts_perc || 0 }}%</strong>
                               </div>
-                              <mat-progress-bar mode="determinate" [value]="tokens_perc || 0"></mat-progress-bar>
+                              <mat-progress-bar mode="determinate" [value]="contacts_perc || 0"></mat-progress-bar>
                             </div>
 
                             <div class="home-chart-row">

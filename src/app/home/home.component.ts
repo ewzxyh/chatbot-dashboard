@@ -238,6 +238,14 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   platforms_limit = 0;
   platforms_perc = 0;
 
+  contacts_count = 0;
+  contacts_limit = 0;
+  contacts_perc = 0;
+
+  members_count = 0;
+  members_limit = 0;
+  members_perc = 0;
+
   messages_count = 0;
   messages_perc = 0;
   messages_limit = 0;
@@ -290,12 +298,24 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   allQuotas
 
   get usageStatusTone(): 'ok' | 'attention' | 'critical' {
-    if (this.conversationsRunnedOut || this.emailsRunnedOut || this.tokensRunnedOut || this.voiceRunnedOut) {
+    const platformsLimitReached = this.platforms_limit > 0 && this.platforms_count >= this.platforms_limit;
+    const contactsLimitReached = this.contacts_limit > 0 && this.contacts_count >= this.contacts_limit;
+    const membersLimitReached = this.members_limit > 0 && this.members_count >= this.members_limit;
+
+    if (
+      this.conversationsRunnedOut ||
+      this.emailsRunnedOut ||
+      (this.diplayVXMLVoiceQuota && this.voiceRunnedOut) ||
+      platformsLimitReached ||
+      contactsLimitReached ||
+      (!this.diplayVXMLVoiceQuota && membersLimitReached)
+    ) {
       return 'critical';
     }
     const quotaPercents = [
       this.platforms_perc || 0,
-      this.tokens_perc || 0,
+      this.contacts_perc || 0,
+      this.members_perc || 0,
       this.email_perc || 0,
       this.diplayVXMLVoiceQuota ? (this.voice_perc || 0) : 0
     ];
@@ -684,10 +704,18 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     this.casepayService.getStatus(this.projectId).subscribe((status: any) => {
-      if (status && status.usage && status.usage.platforms) {
-        this.platforms_count = status.usage.platforms.current || 0;
-        this.platforms_limit = status.usage.platforms.limit || 0;
+      if (status && status.usage) {
+        this.platforms_count = status.usage.platforms ? status.usage.platforms.current || 0 : 0;
+        this.platforms_limit = status.usage.platforms ? status.usage.platforms.limit || 0 : 0;
         this.platforms_perc = this.platforms_limit > 0 ? Math.min(100, Math.floor((this.platforms_count / this.platforms_limit) * 100)) : 0;
+
+        this.contacts_count = status.usage.contacts ? status.usage.contacts.current || 0 : 0;
+        this.contacts_limit = status.usage.contacts ? status.usage.contacts.limit || 0 : 0;
+        this.contacts_perc = this.contacts_limit > 0 ? Math.min(100, Math.floor((this.contacts_count / this.contacts_limit) * 100)) : 0;
+
+        this.members_count = status.usage.agents ? status.usage.agents.current || 0 : 0;
+        this.members_limit = status.usage.agents ? status.usage.agents.limit || 0 : 0;
+        this.members_perc = this.members_limit > 0 ? Math.min(100, Math.floor((this.members_count / this.members_limit) * 100)) : 0;
       }
     });
   }
