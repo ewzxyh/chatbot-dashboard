@@ -1,136 +1,80 @@
-<div class="other-analytics-report-wpr">
-  <div class="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-3 gap-6 w-full min-w-0">
-
-    <div class="flex flex-col flex-auto p-24 bg-analytics-card shadow rounded-2xl overflow-hidden">
-      <div class="flex items-start justify-between m-6 mb-12">
-        <div class="text-lg font-medium tracking-tight leading-6 truncate">
-
-          <!-- {{'LeadsAcquired' | translate}} -->
-          Leads Acquired
-        </div>
-        <div class="ml-2">
-          <div class="analytics-indicator-badge">
-            <!-- {{'Total' | translate}} -->
-            Total
-          </div>
-        </div>
-      </div>
-
-
-      <div class="flex flex-col items-center mt-2">
-        <div class="text-7xl sm:text-8xl font-bold tracking-tight leading-none other-analytics-num">
-          {{countOfActiveContacts | number:'1.0-0'}}
-        </div>
-        <div class="flex items-baseline justify-center w-full mt-5 text-secondary">
-          <!-- truncate -->
-
-          <ng-container *ngIf="PERMISSION_TO_VIEW_ANALYTICS">
-            <div *ngIf="USER_ROLE !== 'agent' && isVisibleANA" class="text-accent-link-on-white text-md font-medium ">
-                <div class="arrow-container" (click)="goToContacts()">
-                  <div id="arrow_1" class="arrow-wrapper">
-                    <div class="text-block" style="margin-right: 16px; font-size: 12px;">
-                      <!-- {{ 'GoToContactList' | translate }} -->
-                      Go to contact list
-                    </div>
-                    <div class="arrow arrow--right">
-                      <span></span>
-                    </div>
-                  </div>
-                </div>
-            </div>
-          </ng-container>
-        </div>
-      </div>
+<section class="home-analytics" aria-label="Resumo dos últimos 30 dias">
+  <header class="home-analytics__header">
+    <div>
+      <p class="home-analytics__eyebrow">Resumo operacional</p>
+      <h2 class="home-analytics__title">Movimento recente</h2>
     </div>
+    <span class="home-analytics__period">30 dias</span>
+  </header>
 
-    <div class="flex flex-col flex-auto p-24 bg-analytics-card shadow rounded-2xl overflow-hidden">
-      <div class="flex items-start justify-between m-6 mb-12">
-        <div class="text-lg font-medium tracking-tight leading-6 truncate">
-
-          <!-- {{'UniqueVisitors' | translate}} -->
-          Unique Visitors
-
+  <div class="home-analytics__grid">
+    <mat-card class="home-analytics-card">
+      <mat-card-content class="home-analytics-card__content">
+        <div class="home-analytics-card__icon" aria-hidden="true">
+          <mat-icon svgIcon="td-address-book"></mat-icon>
         </div>
-        <div class="ml-2">
-          <div class="analytics-indicator-badge">
-            <!-- {{'30days' | translate}} -->
-            30 days
-          </div>
+        <div class="home-analytics-card__body">
+          <span class="home-analytics-card__label">Contatos ativos</span>
+          <strong class="home-analytics-card__value">{{ (countOfActiveContacts || 0) | number:'1.0-0' }}</strong>
+          <span class="home-analytics-card__meta">Total atual</span>
         </div>
-      </div>
+        <button
+          *ngIf="PERMISSION_TO_VIEW_ANALYTICS && USER_ROLE !== 'agent' && isVisibleANA"
+          mat-stroked-button
+          color="primary"
+          class="home-analytics-card__action"
+          type="button"
+          (click)="goToContacts()">
+          Ver contatos
+          <mat-icon svgIcon="td-chevron-right"></mat-icon>
+        </button>
+      </mat-card-content>
+    </mat-card>
 
-      <div class="flex flex-col items-center mt-2">
-        <div class="text-7xl sm:text-8xl font-bold tracking-tight leading-none other-analytics-num">
-          {{countOfVisitors | number:'1.0-0'}}
+    <mat-card class="home-analytics-card">
+      <mat-card-content class="home-analytics-card__content">
+        <div class="home-analytics-card__icon" aria-hidden="true">
+          <mat-icon svgIcon="td-world"></mat-icon>
         </div>
-        <!-- <div class="other-analytics-text truncate">
-          {{'Last30DaysVisitors' | translate }}
-        </div> -->
-        <div class="flex items-baseline justify-center w-full mt-5 text-secondary">
-          
-          <ng-container *ngIf="PERMISSION_TO_VIEW_ANALYTICS">
-            <div *ngIf="USER_ROLE !== 'agent' && isVisibleANA" class="text-accent-link-on-white text-md font-medium ">
-              <div class="arrow-container" (click)="goToVisitorsAnalytics()">
-                <div id="arrow_1" class="arrow-wrapper">
-                  <div class="text-block" style="margin-right: 16px;font-size: 12px;">
-                    <!-- {{ 'FilterReportInAnalytics' | translate }} -->
-                    Filter report in analytics
-                  </div>
-                  <div class="arrow arrow--right">
-                    <span></span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </ng-container>
-
+        <div class="home-analytics-card__body">
+          <span class="home-analytics-card__label">Visitantes únicos</span>
+          <strong class="home-analytics-card__value">{{ (countOfVisitors || 0) | number:'1.0-0' }}</strong>
+          <span class="home-analytics-card__meta">Acessos identificados</span>
         </div>
-      </div>
-    </div>
+        <button
+          *ngIf="PERMISSION_TO_VIEW_ANALYTICS && USER_ROLE !== 'agent' && isVisibleANA"
+          mat-stroked-button
+          color="primary"
+          class="home-analytics-card__action"
+          type="button"
+          (click)="goToVisitorsAnalytics()">
+          Ver visitantes
+          <mat-icon svgIcon="td-chevron-right"></mat-icon>
+        </button>
+      </mat-card-content>
+    </mat-card>
 
-    <div class="flex flex-col flex-auto p-24 bg-analytics-card shadow rounded-2xl overflow-hidden">
-
-      <div class="flex items-start justify-between m-6 mb-12">
-        <div class="text-lg font-medium tracking-tight leading-6 truncate">
-
-          <!-- {{'BotsAddEditPage.Messages' | translate}} -->
-          Messages
-
+    <mat-card class="home-analytics-card">
+      <mat-card-content class="home-analytics-card__content">
+        <div class="home-analytics-card__icon" aria-hidden="true">
+          <mat-icon svgIcon="td-message"></mat-icon>
         </div>
-        <div class="ml-2">
-          <div class="analytics-indicator-badge">
-            <!-- {{'30days' | translate}} -->
-            30 days
-          </div>
+        <div class="home-analytics-card__body">
+          <span class="home-analytics-card__label">Mensagens</span>
+          <strong class="home-analytics-card__value">{{ (countOfLastMonthMsgs || 0) | number:'1.0-0' }}</strong>
+          <span class="home-analytics-card__meta">Recebidas no período</span>
         </div>
-      </div>
-
-      <div class="flex flex-col items-center mt-2">
-        <div class="text-7xl sm:text-8xl font-bold tracking-tight leading-none other-analytics-num">
-          {{countOfLastMonthMsgs | number:'1.0-0'}}
-        </div>
-        <!-- <div class="other-analytics-text truncate">
-          {{'Last30DaysMessages' | translate}}
-        </div> -->
-        <ng-container *ngIf="PERMISSION_TO_VIEW_ANALYTICS">
-          <div *ngIf="USER_ROLE !== 'agent' && isVisibleANA" class="flex items-baseline justify-center w-full mt-5 text-secondary">
-            <div class="text-accent-link-on-white text-md font-medium ">
-              <div class="arrow-container" (click)="goToMessagesAnalytics()">
-                <div id="arrow_1" class="arrow-wrapper">
-                  <div class="text-block" style="margin-right: 16px;font-size: 12px;">
-                    <!-- {{ 'FilterReportInAnalytics' | translate }} -->
-                    Filter report in analytics
-                  </div>
-                  <div class="arrow arrow--right">
-                    <span></span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </ng-container>
-
-      </div>
-    </div>
-
+        <button
+          *ngIf="PERMISSION_TO_VIEW_ANALYTICS && USER_ROLE !== 'agent' && isVisibleANA"
+          mat-stroked-button
+          color="primary"
+          class="home-analytics-card__action"
+          type="button"
+          (click)="goToMessagesAnalytics()">
+          Ver mensagens
+          <mat-icon svgIcon="td-chevron-right"></mat-icon>
+        </button>
+      </mat-card-content>
+    </mat-card>
   </div>
+</section>
