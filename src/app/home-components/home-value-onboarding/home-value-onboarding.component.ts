@@ -16,6 +16,14 @@ interface OnboardingStep {
   icon: string;
 }
 
+interface SummaryCard {
+  title: string;
+  value: string;
+  detail: string;
+  icon: string;
+  tone: 'ok' | 'attention' | 'neutral';
+}
+
 @Component({
   selector: 'appdashboard-home-value-onboarding',
   templateUrl: './home-value-onboarding.component.html',
@@ -33,6 +41,8 @@ export class HomeValueOnboardingComponent implements OnInit, OnChanges {
   flowCount = 0;
   conversationCount = 0;
   steps: OnboardingStep[] = [];
+  summaryCards: SummaryCard[] = [];
+  private initialized = false;
 
   constructor(
     private router: Router,
@@ -42,6 +52,7 @@ export class HomeValueOnboardingComponent implements OnInit, OnChanges {
   ) {}
 
   ngOnInit() {
+    this.initialized = true;
     this.refresh();
   }
 
@@ -50,7 +61,7 @@ export class HomeValueOnboardingComponent implements OnInit, OnChanges {
       this.flowCount = this.getFlowCount(this.chatbots);
       this.buildSteps();
     }
-    if (changes.projectId && this.projectId) {
+    if (this.initialized && changes.projectId && this.projectId) {
       this.refresh();
     }
   }
@@ -70,6 +81,33 @@ export class HomeValueOnboardingComponent implements OnInit, OnChanges {
   get progressPercent(): number {
     if (!this.steps.length) return 0;
     return Math.round((this.completedSteps / this.steps.length) * 100);
+  }
+
+  get pendingSteps(): number {
+    return this.steps.filter(step => !step.done).length;
+  }
+
+  get isLoading(): boolean {
+    return this.loadingChannels || this.loadingConversations;
+  }
+
+  get statusTone(): 'success' | 'warning' | 'neutral' {
+    if (this.isLoading) return 'neutral';
+    if (this.steps.length && this.completedSteps === this.steps.length) return 'success';
+    return 'warning';
+  }
+
+  get statusLabel(): string {
+    if (this.isLoading) return 'Atualizando';
+    if (this.steps.length && this.completedSteps === this.steps.length) return 'Pronto para atender';
+    const suffix = this.pendingSteps === 1 ? 'etapa pendente' : 'etapas pendentes';
+    return this.pendingSteps + ' ' + suffix;
+  }
+
+  get statusDetail(): string {
+    if (this.isLoading) return 'Verificando canais e conversas';
+    if (this.steps.length && this.completedSteps === this.steps.length) return 'Canais, fluxo e atendimento configurados';
+    return 'Siga a próxima ação para ativar o atendimento';
   }
 
   runStep(step: OnboardingStep) {
@@ -92,6 +130,7 @@ export class HomeValueOnboardingComponent implements OnInit, OnChanges {
 
   private loadChannels() {
     this.loadingChannels = true;
+    this.buildSummaryCards();
     forkJoin({
       casezap: this.integrationService.getIntegrationInstances('casezap', this.projectId).pipe(catchError(() => of([]))),
       whatsapp: this.integrationService.getIntegrationInstances('whatsapp', this.projectId).pipe(catchError(() => of([])))
@@ -110,6 +149,7 @@ export class HomeValueOnboardingComponent implements OnInit, OnChanges {
 
   private loadConversationCount() {
     this.loadingConversations = true;
+    this.buildSummaryCards();
     this.wsRequestsService.getConversationCount(this.projectId).subscribe((res: any) => {
       this.conversationCount = this.parseConversationCount(res);
       this.loadingConversations = false;
@@ -126,29 +166,63 @@ export class HomeValueOnboardingComponent implements OnInit, OnChanges {
       {
         key: 'channel',
         title: 'Canal conectado',
-        detail: this.channelCount > 0 ? this.channelCount + ' plataforma(s) ativa(s)' : 'Conecte CaseZap ou WABA',
+        detail: this.channelCount > 0 ? this.formatCount(this.channelCount, 'canal ativo', 'canais ativos') : 'Conecte o canal de atendimento',
         action: this.channelCount > 0 ? 'Gerenciar' : 'Conectar',
         done: this.channelCount > 0,
         enabled: this.canManageChannels,
-        icon: 'forum'
+        icon: 'td-plug-connected'
       },
       {
         key: 'flow',
         title: 'Fluxo inicial',
-        detail: this.flowCount > 0 ? this.flowCount + ' fluxo(s) criado(s)' : 'Use um modelo pronto de WhatsApp',
+        detail: this.flowCount > 0 ? this.formatCount(this.flowCount, 'fluxo criado', 'fluxos criados') : 'Use um modelo pronto para começar',
         action: this.flowCount > 0 ? 'Ver fluxos' : 'Usar modelo',
         done: this.flowCount > 0,
         enabled: this.canManageFlows,
-        icon: 'account_tree'
+        icon: 'td-sitemap'
       },
       {
         key: 'conversation',
         title: 'Primeiro atendimento',
-        detail: this.conversationCount > 0 ? this.conversationCount + ' conversa(s) em andamento' : 'Abra o chat para acompanhar as mensagens',
-        action: 'Abrir chat',
+        detail: this.conversationCount > 0 ? this.formatCount(this.conversationCount, 'conversa registrada', 'conversas registradas') : 'Abra o chat para acompanhar as mensagens',
+        action: 'Abrir atendimentos',
         done: this.conversationCount > 0,
         enabled: true,
-        icon: 'support_agent'
+        icon: 'td-message-circle'
+      }
+    ];
+    this.buildSummaryCards();
+  }
+
+  private buildSummaryCards() {
+    this.summaryCards = [
+      {
+        title: 'Canais',
+        value: this.loadingChannels ? '-' : String(this.channelCount),
+        detail: this.channelCount > 0 ? 'conectados' : 'precisa conectar',
+        icon: 'td-plug-connected',
+        tone: this.channelCount > 0 ? 'ok' : 'attention'
+      },
+      {
+        title: 'Fluxos',
+        value: String(this.flowCount),
+        detail: this.flowCount > 0 ? 'criados' : 'sem fluxo inicial',
+        icon: 'td-sitemap',
+        tone: this.flowCount > 0 ? 'ok' : 'attention'
+      },
+      {
+        title: 'Conversas',
+        value: this.loadingConversations ? '-' : String(this.conversationCount),
+        detail: this.conversationCount > 0 ? 'registradas' : 'sem atendimento ainda',
+        icon: 'td-message-circle',
+        tone: this.conversationCount > 0 ? 'ok' : 'neutral'
+      },
+      {
+        title: 'Progresso',
+        value: this.completedSteps + '/' + this.steps.length,
+        detail: 'primeiros passos',
+        icon: 'td-check',
+        tone: this.steps.length && this.completedSteps === this.steps.length ? 'ok' : 'attention'
       }
     ];
   }
@@ -175,5 +249,9 @@ export class HomeValueOnboardingComponent implements OnInit, OnChanges {
     return ['unassigned', 'assigned', 'bot_assigned', 'open', 'closed']
       .map(key => Number(res[key] || 0))
       .reduce((total, value) => total + value, 0);
+  }
+
+  private formatCount(count: number, singular: string, plural: string): string {
+    return count + ' ' + (count === 1 ? singular : plural);
   }
 }
