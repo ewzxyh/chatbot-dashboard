@@ -31,7 +31,8 @@
 
 .card {
   margin: 18px 0 0 0px !important;
-  width: 834px !important;
+  width: 100% !important;
+  max-width: 100%;
 }
 
 .card-image>.fa {
