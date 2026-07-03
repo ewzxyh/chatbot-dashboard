@@ -2,14 +2,13 @@
   <mat-card-content class="value-onboarding__content">
   <div class="value-onboarding__header">
     <div class="value-onboarding__title">
-      <div class="value-onboarding__eyebrow">Atendimento agora</div>
-      <h2>Prepare este projeto para atender clientes</h2>
-      <p>Conecte o canal, publique um fluxo e acompanhe o primeiro atendimento.</p>
+      <div class="value-onboarding__eyebrow">Atendimento</div>
+      <h2>Ative o projeto</h2>
+      <p>Conecte canal, fluxo e chat.</p>
     </div>
 
     <div class="value-onboarding__status" [ngClass]="'is-' + statusTone">
       <span>{{ statusLabel }}</span>
-      <small>{{ statusDetail }}</small>
     </div>
   </div>
 
@@ -17,13 +16,12 @@
     <mat-icon svgIcon="td-alert-triangle"></mat-icon>
 
     <div class="value-onboarding__attention-copy">
-      <strong>Atenção necessária</strong>
       <span>{{ step.title }}</span>
       <small>{{ step.enabled ? step.detail : 'Você não tem permissão para executar esta ação.' }}</small>
     </div>
 
     <button
-      mat-stroked-button
+      mat-flat-button
       color="primary"
       type="button"
       (click)="runStep(step)"
@@ -53,7 +51,7 @@
     <div class="value-onboarding__tracker-head">
       <div>
         <div class="value-onboarding__section-label">Primeiros passos</div>
-        <p>Conclua as etapas essenciais para deixar o atendimento pronto.</p>
+        <p>Conclua o básico.</p>
       </div>
 
       <div class="value-onboarding__progress-circle">
@@ -88,7 +86,7 @@
         </div>
 
         <button
-          mat-stroked-button
+          mat-flat-button
           color="primary"
           type="button"
           class="value-onboarding__action"

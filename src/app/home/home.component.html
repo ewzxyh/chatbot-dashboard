@@ -240,9 +240,7 @@
 
             <div class="home-quota-banner-heading">
               <div>
-                <div class="home-section-kicker">Uso do mês</div>
-                <h2>Limites do projeto</h2>
-                <p>Resumo dos recursos principais para atendimento, IA e comunicação.</p>
+                <h2>Limites</h2>
               </div>
 
               <mat-chip-list aria-label="Status do uso mensal">
@@ -656,15 +654,7 @@
 
               <div class="home-dashboard-grid">
                 <div class="home-dashboard-main-column">
-                  <section class="home-insights-section" aria-label="Indicadores do projeto">
-                    <div class="home-insights-heading">
-                      <div>
-                        <div class="home-section-kicker">Painel operacional</div>
-                        <h2>Indicadores do projeto</h2>
-                        <p>KPIs e consumo mensal para acompanhar o atendimento sem sair da Home.</p>
-                      </div>
-                    </div>
-
+                  <section class="home-insights-section" aria-label="KPIs do projeto">
                     <div class="home-insights-grid">
                       <mat-card class="home-kpi-card">
                         <mat-card-content class="home-kpi-card__content">
@@ -674,7 +664,7 @@
                           <div>
                             <div class="home-kpi-card__value">{{ (chatbots?.length || 0) | number:'1.0-0' }}</div>
                             <div class="home-kpi-card__label">Fluxos</div>
-                            <div class="home-kpi-card__hint">criados no projeto</div>
+                            <div class="home-kpi-card__hint">no projeto</div>
                           </div>
                         </mat-card-content>
                       </mat-card>
@@ -687,7 +677,7 @@
                           <div>
                             <div class="home-kpi-card__value">{{ (messages_count || 0) | number:'1.0-0' }}</div>
                             <div class="home-kpi-card__label">Mensagens</div>
-                            <div class="home-kpi-card__hint">uso do mês</div>
+                            <div class="home-kpi-card__hint">mês</div>
                           </div>
                         </mat-card-content>
                       </mat-card>
@@ -721,11 +711,6 @@
                       <mat-card class="home-chart-card">
                         <mat-card-content class="home-chart-card__content">
                           <div class="home-chart-card__heading">
-                            <div>
-                              <div class="home-section-kicker">Chart</div>
-                              <h3>Uso por recurso</h3>
-                              <p>Leitura rápida dos limites mais importantes do mês.</p>
-                            </div>
                             <mat-chip-list aria-label="Status do uso por recurso">
                               <mat-chip class="home-status-badge" [ngClass]="'is-' + usageStatusTone" selected>
                                 {{ usageStatusLabel }}

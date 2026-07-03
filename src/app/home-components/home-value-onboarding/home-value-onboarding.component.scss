@@ -16,19 +16,26 @@
   margin: 0;
   padding: 0;
   border: 1px solid var(--home-border);
-  border-radius: 12px;
-  background: var(--home-surface);
+  border-radius: 0;
+  background: transparent;
   box-shadow: none;
 }
 
 .value-onboarding__content {
   display: block;
-  padding: 32px !important;
+  padding: 40px 36px !important;
 }
 
-:host ::ng-deep .mat-stroked-button.mat-primary {
-  border-color: var(--home-primary) !important;
-  color: var(--home-primary-strong) !important;
+:host ::ng-deep .mat-flat-button.mat-primary {
+  background: var(--home-primary) !important;
+  color: #ffffff !important;
+  border-radius: 0 !important;
+}
+
+:host ::ng-deep .mat-flat-button .mat-button-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 :host ::ng-deep .mat-progress-spinner circle {
@@ -71,16 +78,19 @@
 }
 
 .value-onboarding__status {
-  display: flex;
+  display: inline-flex;
   flex: 0 0 auto;
-  flex-direction: column;
-  gap: 4px;
+  align-items: center;
+  gap: 8px;
   max-width: 280px;
-  padding: 10px 14px;
+  padding: 8px 12px;
   border: 1px solid #dbe4f0;
-  border-radius: 999px;
+  border-radius: 0;
   color: var(--home-muted);
   background: #f8fafc;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .value-onboarding__status span {
@@ -118,9 +128,9 @@
   align-items: center;
   gap: 14px;
   margin-top: 18px;
-  padding: 14px 16px;
+  padding: 18px 20px;
   border: 1px solid #f3d4af;
-  border-radius: 10px;
+  border-radius: 0;
   color: var(--home-text);
   background: #fff8ef;
 }
@@ -171,20 +181,24 @@
 .value-onboarding__summary {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
-  margin-top: 24px;
+  gap: 0;
+  margin-top: 28px;
+  border-top: 1px solid var(--home-border);
+  border-left: 1px solid var(--home-border);
 }
 
 .value-onboarding__summary-item {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 18px;
   min-width: 0;
-  min-height: 96px;
-  padding: 16px;
-  border: 1px solid var(--home-border);
-  border-radius: 10px;
-  background: var(--home-soft);
+  min-height: 112px;
+  padding: 24px;
+  border: 0;
+  border-right: 1px solid var(--home-border);
+  border-bottom: 1px solid var(--home-border);
+  border-radius: 0;
+  background: transparent;
 }
 
 .value-onboarding__summary-icon,
@@ -200,7 +214,8 @@
 .value-onboarding__summary-icon {
   width: 42px;
   height: 42px;
-  border-radius: 14px;
+  border: 1px solid var(--home-border);
+  border-radius: 0;
 }
 
 .value-onboarding__summary-icon mat-icon,
@@ -244,7 +259,7 @@
 
 .value-onboarding__summary-item.is-ok {
   border-color: #cbeed8;
-  background: #f6fff9;
+  background: transparent;
 }
 
 .value-onboarding__summary-item.is-ok .value-onboarding__summary-icon {
@@ -258,8 +273,8 @@
 }
 
 .value-onboarding__tracker {
-  margin-top: 24px;
-  padding-top: 22px;
+  margin-top: 32px;
+  padding-top: 28px;
   border-top: 1px solid var(--home-border);
 }
 
@@ -292,7 +307,7 @@
   height: 6px;
   margin: 18px 0 16px;
   overflow: hidden;
-  border-radius: 999px;
+  border-radius: 0;
   background: #e8eef7;
 }
 
@@ -306,7 +321,9 @@
 .value-onboarding__steps {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
+  gap: 0;
+  border-top: 1px solid var(--home-border);
+  border-left: 1px solid var(--home-border);
 }
 
 .value-onboarding__step {
@@ -314,11 +331,13 @@
   grid-template-columns: 42px minmax(0, 1fr);
   gap: 12px;
   align-items: start;
-  min-height: 136px;
-  padding: 16px;
-  border: 1px solid var(--home-border);
-  border-radius: 10px;
-  background: #ffffff;
+  min-height: 152px;
+  padding: 24px;
+  border: 0;
+  border-right: 1px solid var(--home-border);
+  border-bottom: 1px solid var(--home-border);
+  border-radius: 0;
+  background: transparent;
 }
 
 .value-onboarding__step.is-done {
@@ -333,7 +352,8 @@
 .value-onboarding__icon {
   width: 42px;
   height: 42px;
-  border-radius: 14px;
+  border: 1px solid var(--home-border);
+  border-radius: 0;
 }
 
 .value-onboarding__step.is-done .value-onboarding__icon {
@@ -369,7 +389,6 @@
   justify-self: start;
   min-height: 40px;
   margin-top: 2px;
-  border-radius: 18px;
 }
 
 @media (max-width: 1180px) {
