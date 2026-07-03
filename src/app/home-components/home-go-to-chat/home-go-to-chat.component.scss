@@ -1,5 +1,5 @@
 .home-chat-card {
-  margin-top: 18px;
+  margin-top: 0;
   border: 1px solid #dbe6f3;
   border-radius: 12px;
   background: #ffffff;
@@ -8,9 +8,9 @@
 
 .home-chat-card__content {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 24px;
+  grid-template-columns: 1fr;
+  align-items: start;
+  gap: 18px;
   padding: 24px;
 }
 
@@ -64,11 +64,12 @@
 
 .home-chat-card__actions {
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
 }
 
 .home-chat-card__button {
-  min-height: 42px;
+  width: 100%;
+  min-height: 44px;
   padding: 0 18px !important;
   border-radius: 999px !important;
   font-weight: 700;
@@ -80,29 +81,9 @@
   margin-right: 8px;
 }
 
-@media (max-width: 768px) {
-  .home-chat-card__content {
-    grid-template-columns: auto minmax(0, 1fr);
-  }
-
-  .home-chat-card__actions {
-    grid-column: 2;
-    justify-content: flex-start;
-  }
-}
-
 @media (max-width: 480px) {
   .home-chat-card__content {
-    grid-template-columns: 1fr;
     gap: 16px;
     padding: 20px;
-  }
-
-  .home-chat-card__actions {
-    grid-column: auto;
-  }
-
-  .home-chat-card__button {
-    width: 100%;
   }
 }

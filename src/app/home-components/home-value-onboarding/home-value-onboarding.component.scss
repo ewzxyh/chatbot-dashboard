@@ -13,12 +13,26 @@
   --home-success: #0f7a48;
   --home-warning: #9a5a00;
 
-  margin: 0 0 20px;
-  padding: 24px;
+  margin: 0;
+  padding: 0;
   border: 1px solid var(--home-border);
   border-radius: 12px;
   background: var(--home-surface);
   box-shadow: none;
+}
+
+.value-onboarding__content {
+  display: block;
+  padding: 32px !important;
+}
+
+:host ::ng-deep .mat-stroked-button.mat-primary {
+  border-color: var(--home-primary) !important;
+  color: var(--home-primary-strong) !important;
+}
+
+:host ::ng-deep .mat-progress-spinner circle {
+  stroke: var(--home-primary) !important;
 }
 
 .value-onboarding__header {
@@ -116,6 +130,11 @@
   width: 22px;
   height: 22px;
   color: var(--home-warning);
+}
+
+.value-onboarding__attention button {
+  min-height: 44px;
+  flex: 0 0 auto;
 }
 
 .value-onboarding__attention-copy {
@@ -368,8 +387,8 @@
 }
 
 @media (max-width: 640px) {
-  .value-onboarding {
-    padding: 18px;
+  .value-onboarding__content {
+    padding: 20px !important;
   }
 
   .value-onboarding__header,

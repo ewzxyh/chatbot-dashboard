@@ -289,6 +289,25 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   quotasLimits
   allQuotas
 
+  get usageStatusTone(): 'ok' | 'attention' | 'critical' {
+    if (this.conversationsRunnedOut || this.emailsRunnedOut || this.tokensRunnedOut || this.voiceRunnedOut) {
+      return 'critical';
+    }
+    const quotaPercents = [
+      this.platforms_perc || 0,
+      this.tokens_perc || 0,
+      this.email_perc || 0,
+      this.diplayVXMLVoiceQuota ? (this.voice_perc || 0) : 0
+    ];
+    return quotaPercents.some(value => value >= 80) ? 'attention' : 'ok';
+  }
+
+  get usageStatusLabel(): string {
+    if (this.usageStatusTone === 'critical') return 'Limite atingido';
+    if (this.usageStatusTone === 'attention') return 'Atenção';
+    return 'Uso normal';
+  }
+
   PERMISSION_TO_VIEW_FLOWS: boolean;
   PERMISSION_TO_VIEW_KB: boolean;
   PERMISSION_TO_VIEW_ANALYTICS: boolean;

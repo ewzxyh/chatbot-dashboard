@@ -11,6 +11,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { SatPopoverModule } from '@ncstate/sat-popover';
 import {MatButtonModule} from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatChipsModule } from '@angular/material/chips';
 import { HomeConvsGraphComponent } from 'app/home-components/home-convs-graph/home-convs-graph.component';
 import { HomeWhatsappAccountComponent } from 'app/home-components/home-whatsapp-account/home-whatsapp-account.component';
 import { HomeCreateChatbotComponent } from 'app/home-components/home-create-chatbot/home-create-chatbot.component';
@@ -59,6 +60,7 @@ const routes: Routes = [
     SatPopoverModule,
     MatButtonModule,
     MatCardModule,
+    MatChipsModule,
     MatProgressSpinnerModule,
     MomentModule
   ],

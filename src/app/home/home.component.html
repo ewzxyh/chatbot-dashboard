@@ -46,8 +46,8 @@
                 <!-- style="flex-direction: row !important;" -->
                 <div class="min-w-0 ml-4" style="display: flex; align-items: center;">
                   <!-- leading-7 -->
-                  <div class="text-2xl md-text-5xl font-w-400 tracking-tight  md-leading-snug truncate project---name" style="line-height: 36px; margin-top: 6px;">
-                    <span style="font-family: var(--font-geist-sans);">
+                  <div class="text-2xl md-text-5xl font-w-400 tracking-tight md-leading-snug project---name" style="line-height: 36px; margin-top: 6px;">
+                    <span class="project---name-text" style="font-family: var(--font-geist-sans);">
                       {{ prjct_name }}
                     </span>
                     <span class="material-icons home-edit-project-name-icon" (click)="goToProjectSettingsGeneral()"
@@ -235,15 +235,22 @@
         <!--  *ngIf="!displayQuotaSkeleton"-->
         <!-- <div class="test">  -->
         <ng-container *ngIf="isVisibleQuoteSection">
-          <div *ngIf="!displayQuotaSkeleton" class="home-quota-banner"
+          <mat-card *ngIf="!displayQuotaSkeleton" class="home-quota-banner"
             [ngClass]="{'home-quota-banner-alert': emailsRunnedOut || tokensRunnedOut}">
 
-            <!-- <div class="home-quota-banner-title-wpr">
-
-              <div class="home-quota-banner-title-no-alert" [ngClass]="{'home-quota-banner-title-alert': conversationsRunnedOut || emailsRunnedOut || tokensRunnedOut}">
-                Current usage
+            <div class="home-quota-banner-heading">
+              <div>
+                <div class="home-section-kicker">Uso do mês</div>
+                <h2>Limites do projeto</h2>
+                <p>Resumo dos recursos principais para atendimento, IA e comunicação.</p>
               </div>
-            </div> -->
+
+              <mat-chip-list aria-label="Status do uso mensal">
+                <mat-chip class="home-status-badge" [ngClass]="'is-' + usageStatusTone" selected>
+                  {{ usageStatusLabel }}
+                </mat-chip>
+              </mat-chip-list>
+            </div>
 
             <div class="home-quota-wpr">
 
@@ -389,15 +396,15 @@
               </span>
               <span
                 *ngIf="prjct_profile_type === 'payment' && subscription_is_active === true || prjct_profile_type === 'free'">
-                ATTENTION: You have used up one or more of your monthly resources. 
-                <span *ngIf="USER_ROLE === 'owner'">  To increase monthly resources quotas,
-                  <span class="sales-mail-to" (click)="contacUsViaEmail()"> contact our sales team </span>
+                Atenção: um ou mais recursos mensais chegaram ao limite.
+                <span *ngIf="USER_ROLE === 'owner'"> Para aumentar as cotas,
+                  <span class="sales-mail-to" (click)="contacUsViaEmail()"> fale com o time comercial </span>
                 </span>
-                <span *ngIf="USER_ROLE !== 'owner'">  To increase monthly resources quotas, contact the project owner </span>
+                <span *ngIf="USER_ROLE !== 'owner'"> Para aumentar as cotas, fale com o proprietário do projeto. </span>
                 
               </span>
             </div>
-          </div>
+          </mat-card>
           <!--  *ngIf="displayQuotaSkeleton" -->
           <div *ngIf="displayQuotaSkeleton" class="first-card is-loading" style="height: 68px;">
 
@@ -639,7 +646,7 @@
 
           <ng-container *ngIf="!showskeleton ">
 
-            <span *ngIf="USER_ROLE !== 'agent'">
+            <section *ngIf="USER_ROLE !== 'agent'" class="home-dashboard-shell" aria-label="Painel inicial do projeto">
               <appdashboard-home-value-onboarding
                 [projectId]="projectId"
                 [chatbots]="chatbots"
@@ -647,22 +654,24 @@
                 [canManageFlows]="PERMISSION_TO_VIEW_FLOWS">
               </appdashboard-home-value-onboarding>
 
-              <ng-container *ngIf="areVisibleChatbot">
-                <home-cds (goToCreateChatbot)="goToCreateChatbot()" 
-                  [chatbots]="chatbots" 
-                  [project]="project"
-                  [displayKbHeroSection]="displayKbHeroSection" 
-                  [isVisibleKNB]="isVisibleKNB"
-                  [areVisibleChatbot]="areVisibleChatbot"
-                  [USER_ROLE]="USER_ROLE"
-                  [PERMISSION_TO_VIEW_FLOWS]="PERMISSION_TO_VIEW_FLOWS"
-                  [PERMISSION_TO_VIEW_KB]="PERMISSION_TO_VIEW_KB">
-                </home-cds>
-              </ng-container>
+              <div class="home-dashboard-grid">
+                <div class="home-dashboard-main-column">
+                  <ng-container *ngIf="areVisibleChatbot">
+                    <home-cds (goToCreateChatbot)="goToCreateChatbot()"
+                      [chatbots]="chatbots"
+                      [project]="project"
+                      [displayKbHeroSection]="displayKbHeroSection"
+                      [isVisibleKNB]="isVisibleKNB"
+                      [areVisibleChatbot]="areVisibleChatbot"
+                      [USER_ROLE]="USER_ROLE"
+                      [PERMISSION_TO_VIEW_FLOWS]="PERMISSION_TO_VIEW_FLOWS"
+                      [PERMISSION_TO_VIEW_KB]="PERMISSION_TO_VIEW_KB">
+                    </home-cds>
+                  </ng-container>
            
 
 
-              <div class="home--blocks" id="homeBlocks" *ngFor="let item of child_list_order" style="margin-top:18px ;">
+                  <div class="home--blocks" id="homeBlocks" *ngFor="let item of child_list_order">
                
                 <!-- ----------------------- -->
                 <!-- Child 1 Convs Graph -->
@@ -782,8 +791,14 @@
                   </ng-container>
                 </ng-container>
 
+                  </div>
+                </div>
+
+                <aside class="home-dashboard-side-column" aria-label="Acesso rápido">
+                  <appdashboard-home-go-to-chat></appdashboard-home-go-to-chat>
+                </aside>
               </div>
-            </span>
+            </section>
             <span *ngIf="USER_ROLE === 'agent'">
               <div class="home--blocks">
 

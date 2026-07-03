@@ -1,5 +1,5 @@
 .home-cds-card {
-  margin-top: 18px;
+  margin-top: 0;
   border: 1px solid rgba(34, 80, 140, 0.16);
   border-radius: 12px;
   box-shadow: none !important;
@@ -12,7 +12,7 @@
   grid-template-columns: auto minmax(0, 1fr) auto auto;
   gap: 24px;
   align-items: center;
-  padding: 28px 30px !important;
+  padding: 32px !important;
 }
 
 .home-cds-card__icon {
@@ -67,6 +67,7 @@
 .home-cds-card__description strong {
   color: var(--text-color);
   font-weight: 600;
+  overflow-wrap: anywhere;
 }
 
 .home-cds-card__meta {
