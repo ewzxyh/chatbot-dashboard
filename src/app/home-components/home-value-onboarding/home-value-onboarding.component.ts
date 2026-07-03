@@ -110,6 +110,11 @@ export class HomeValueOnboardingComponent implements OnInit, OnChanges {
     return 'Siga a próxima ação para ativar o atendimento';
   }
 
+  get attentionStep(): OnboardingStep | null {
+    if (this.isLoading) return null;
+    return this.steps.find(step => !step.done) || null;
+  }
+
   runStep(step: OnboardingStep) {
     if (!step || !step.enabled) return;
     if (step.key === 'channel') {

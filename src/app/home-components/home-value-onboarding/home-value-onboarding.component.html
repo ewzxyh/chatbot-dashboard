@@ -12,6 +12,25 @@
     </div>
   </div>
 
+  <div class="value-onboarding__attention" *ngIf="attentionStep as step">
+    <mat-icon svgIcon="td-alert-triangle"></mat-icon>
+
+    <div class="value-onboarding__attention-copy">
+      <strong>Atenção necessária</strong>
+      <span>{{ step.title }}</span>
+      <small>{{ step.enabled ? step.detail : 'Você não tem permissão para executar esta ação.' }}</small>
+    </div>
+
+    <button
+      mat-stroked-button
+      color="primary"
+      type="button"
+      (click)="runStep(step)"
+      [disabled]="!step.enabled">
+      {{ step.action }}
+    </button>
+  </div>
+
   <div class="value-onboarding__summary" role="list">
     <div
       class="value-onboarding__summary-item"
