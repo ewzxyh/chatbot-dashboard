@@ -14,18 +14,15 @@ import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
 import { HomeConvsGraphComponent } from 'app/home-components/home-convs-graph/home-convs-graph.component';
 import { HomeWhatsappAccountComponent } from 'app/home-components/home-whatsapp-account/home-whatsapp-account.component';
-import { HomeCreateChatbotComponent } from 'app/home-components/home-create-chatbot/home-create-chatbot.component';
 import { HomeNewsFeedComponent } from 'app/home-components/home-news-feed/home-news-feed.component';
 import { HomeAnalyticsIndicatorComponent } from 'app/home-components/home-analytics-indicator/home-analytics-indicator.component';
 import { HomeWhatsappAccountWizardComponent } from 'app/home-components/home-whatsapp-account-wizard/home-whatsapp-account-wizard.component';
 import { HomeWhatsappAccountWizardModalComponent } from 'app/home-components/home-whatsapp-account-wizard/home-whatsapp-account-wizard-modal/home-whatsapp-account-wizard-modal.component';
 import { HomeCustomizeWidgetComponent } from 'app/home-components/home-customize-widget/home-customize-widget.component';
-import { HomeCreateTeammateComponent } from 'app/home-components/home-create-teammate/home-create-teammate.component';
-import { HomeKbComponent } from 'app/home-components/home-kb/home-kb.component';
-import { HomeCdsComponent } from 'app/home-components/home-cds/home-cds.component';
 import { HomeGoToChatComponent } from 'app/home-components/home-go-to-chat/home-go-to-chat.component';
 import { HomeValueOnboardingComponent } from 'app/home-components/home-value-onboarding/home-value-onboarding.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MomentModule } from 'ngx-moment';
 const routes: Routes = [
   { path: "", component: HomeComponent},
@@ -36,15 +33,11 @@ const routes: Routes = [
     HomeComponent,
     HomeConvsGraphComponent,
     HomeWhatsappAccountComponent,
-    HomeCreateChatbotComponent,
     HomeNewsFeedComponent,
     HomeAnalyticsIndicatorComponent,
     HomeWhatsappAccountWizardComponent,
     HomeWhatsappAccountWizardModalComponent,
     HomeCustomizeWidgetComponent,
-    HomeCreateTeammateComponent,
-    HomeKbComponent,
-    HomeCdsComponent,
     HomeGoToChatComponent,
     HomeValueOnboardingComponent
   ],
@@ -62,6 +55,7 @@ const routes: Routes = [
     MatCardModule,
     MatChipsModule,
     MatProgressSpinnerModule,
+    MatProgressBarModule,
     MomentModule
   ],
   exports: [

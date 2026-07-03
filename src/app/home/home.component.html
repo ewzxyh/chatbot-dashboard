@@ -656,18 +656,120 @@
 
               <div class="home-dashboard-grid">
                 <div class="home-dashboard-main-column">
-                  <ng-container *ngIf="areVisibleChatbot">
-                    <home-cds (goToCreateChatbot)="goToCreateChatbot()"
-                      [chatbots]="chatbots"
-                      [project]="project"
-                      [displayKbHeroSection]="displayKbHeroSection"
-                      [isVisibleKNB]="isVisibleKNB"
-                      [areVisibleChatbot]="areVisibleChatbot"
-                      [USER_ROLE]="USER_ROLE"
-                      [PERMISSION_TO_VIEW_FLOWS]="PERMISSION_TO_VIEW_FLOWS"
-                      [PERMISSION_TO_VIEW_KB]="PERMISSION_TO_VIEW_KB">
-                    </home-cds>
-                  </ng-container>
+                  <section class="home-insights-section" aria-label="Indicadores do projeto">
+                    <div class="home-insights-heading">
+                      <div>
+                        <div class="home-section-kicker">Painel operacional</div>
+                        <h2>Indicadores do projeto</h2>
+                        <p>KPIs e consumo mensal para acompanhar o atendimento sem sair da Home.</p>
+                      </div>
+                    </div>
+
+                    <div class="home-insights-grid">
+                      <mat-card class="home-kpi-card">
+                        <mat-card-content class="home-kpi-card__content">
+                          <div class="home-kpi-card__icon" aria-hidden="true">
+                            <mat-icon svgIcon="td-git-branch"></mat-icon>
+                          </div>
+                          <div>
+                            <div class="home-kpi-card__value">{{ (chatbots?.length || 0) | number:'1.0-0' }}</div>
+                            <div class="home-kpi-card__label">Fluxos</div>
+                            <div class="home-kpi-card__hint">criados no projeto</div>
+                          </div>
+                        </mat-card-content>
+                      </mat-card>
+
+                      <mat-card class="home-kpi-card">
+                        <mat-card-content class="home-kpi-card__content">
+                          <div class="home-kpi-card__icon" aria-hidden="true">
+                            <mat-icon svgIcon="td-message"></mat-icon>
+                          </div>
+                          <div>
+                            <div class="home-kpi-card__value">{{ (messages_count || 0) | number:'1.0-0' }}</div>
+                            <div class="home-kpi-card__label">Mensagens</div>
+                            <div class="home-kpi-card__hint">uso do mês</div>
+                          </div>
+                        </mat-card-content>
+                      </mat-card>
+
+                      <mat-card class="home-kpi-card">
+                        <mat-card-content class="home-kpi-card__content">
+                          <div class="home-kpi-card__icon" aria-hidden="true">
+                            <mat-icon svgIcon="td-brain"></mat-icon>
+                          </div>
+                          <div>
+                            <div class="home-kpi-card__value">{{ tokens_perc || 0 }}%</div>
+                            <div class="home-kpi-card__label">Tokens de IA</div>
+                            <div class="home-kpi-card__hint">{{ (tokens_count || 0) | number:'1.0-0' }} usados</div>
+                          </div>
+                        </mat-card-content>
+                      </mat-card>
+
+                      <mat-card class="home-kpi-card">
+                        <mat-card-content class="home-kpi-card__content">
+                          <div class="home-kpi-card__icon" aria-hidden="true">
+                            <mat-icon svgIcon="td-mail"></mat-icon>
+                          </div>
+                          <div>
+                            <div class="home-kpi-card__value">{{ email_perc || 0 }}%</div>
+                            <div class="home-kpi-card__label">E-mail</div>
+                            <div class="home-kpi-card__hint">{{ (email_count || 0) | number:'1.0-0' }} enviados</div>
+                          </div>
+                        </mat-card-content>
+                      </mat-card>
+
+                      <mat-card class="home-chart-card">
+                        <mat-card-content class="home-chart-card__content">
+                          <div class="home-chart-card__heading">
+                            <div>
+                              <div class="home-section-kicker">Chart</div>
+                              <h3>Uso por recurso</h3>
+                              <p>Leitura rápida dos limites mais importantes do mês.</p>
+                            </div>
+                            <mat-chip-list aria-label="Status do uso por recurso">
+                              <mat-chip class="home-status-badge" [ngClass]="'is-' + usageStatusTone" selected>
+                                {{ usageStatusLabel }}
+                              </mat-chip>
+                            </mat-chip-list>
+                          </div>
+
+                          <div class="home-chart-list">
+                            <div class="home-chart-row">
+                              <div class="home-chart-row__label">
+                                <span>Plataformas</span>
+                                <strong>{{ platforms_perc || 0 }}%</strong>
+                              </div>
+                              <mat-progress-bar mode="determinate" [value]="platforms_perc || 0"></mat-progress-bar>
+                            </div>
+
+                            <div class="home-chart-row">
+                              <div class="home-chart-row__label">
+                                <span>Tokens de IA</span>
+                                <strong>{{ tokens_perc || 0 }}%</strong>
+                              </div>
+                              <mat-progress-bar mode="determinate" [value]="tokens_perc || 0"></mat-progress-bar>
+                            </div>
+
+                            <div class="home-chart-row">
+                              <div class="home-chart-row__label">
+                                <span>E-mail</span>
+                                <strong>{{ email_perc || 0 }}%</strong>
+                              </div>
+                              <mat-progress-bar mode="determinate" [value]="email_perc || 0"></mat-progress-bar>
+                            </div>
+
+                            <div class="home-chart-row" *ngIf="diplayVXMLVoiceQuota">
+                              <div class="home-chart-row__label">
+                                <span>Voz</span>
+                                <strong>{{ voice_perc || 0 }}%</strong>
+                              </div>
+                              <mat-progress-bar mode="determinate" [value]="voice_perc || 0"></mat-progress-bar>
+                            </div>
+                          </div>
+                        </mat-card-content>
+                      </mat-card>
+                    </div>
+                  </section>
            
 
 
@@ -730,57 +832,6 @@
                 </ng-container>
 
                 <!-- ----------------------- -->
-                <!-- Child 5 Create Chatbot -->
-                <!-- ----------------------- -->
-                <ng-container *ngIf="PERMISSION_TO_VIEW_FLOWS">
-                  <ng-container *ngIf="item.type === 'child5' && areVisibleChatbot">
-                    <appdashboard-home-create-chatbot #childCreateChatbot *ngIf="displayCreateChatbot"
-                      [use_case_for_child]="use_case_for_child" 
-                      [solution_channel_for_child]="solution_channel_for_child"
-                      [chatbots]="chatbots"
-                      [projectId]="projectId"
-                      (trackUserAction)="trackUserAction($event)">
-                    </appdashboard-home-create-chatbot>
-                  </ng-container>
-                </ng-container>
-
-
-
-                <!-- ----------------------- -->
-                <!-- Child 7 KB -->
-                <!-- ----------------------- -->
-                <!-- *ngIf="displayKnowledgeBase" -->
-                <ng-container *ngIf="PERMISSION_TO_VIEW_KB">
-                  <ng-container *ngIf="areVisibleChatbot">
-                    <ng-container *ngIf="item.type === 'child7' && isVisibleKNB && !displayKbHeroSection">
-                      <appdashboard-home-kb (trackUserAction)="trackUserAction($event)">
-                      </appdashboard-home-kb>
-                    </ng-container>
-                  </ng-container>
-                </ng-container> 
-
-                <!-- <ng-container  *ngIf="areVisibleChatbot">
-                  <ng-container *ngIf="item.type === 'child6' && isVisibleKNB">
-                    <appdashboard-home-kb (trackUserAction)="trackUserAction($event)">
-                    </appdashboard-home-kb>
-                  </ng-container>
-                </ng-container> -->
-
-
-
-                <!-- ----------------------- -->
-                <!-- Child 6 Create Teammate -->
-                <!-- ----------------------- -->
-                <ng-container *ngIf="item.type === 'child7'">
-                  <ng-container *ngIf="PERMISSION_TO_VIEW_TEAMMATES">
-                    <appdashboard-home-create-teammate *ngIf="displayInviteTeammate"
-                      [PERMISSION_TO_READ_TEAMMATE_DETAILS]="PERMISSION_TO_READ_TEAMMATE_DETAILS"
-                      [PERMISSION_TO_INVITE]="PERMISSION_TO_INVITE">
-                    </appdashboard-home-create-teammate>
-                  </ng-container>
-                </ng-container>
-
-                <!-- ----------------------- -->
                 <!-- Child 8 Customize Widget -->
                 <!-- ----------------------- -->
                 <ng-container *ngIf="item.type === 'child8'">
@@ -813,8 +864,6 @@
                   [USER_ROLE]="USER_ROLE">
                 </appdashboard-home-analytics-indicator> -->
 
-
-                <appdashboard-home-create-teammate> </appdashboard-home-create-teammate>
 
                 <appdashboard-home-go-to-chat></appdashboard-home-go-to-chat>
 

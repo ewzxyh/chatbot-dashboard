@@ -2937,6 +2937,28 @@ img {
   stroke: var(--home-blue) !important;
 }
 
+.home-main-content ::ng-deep .mat-progress-bar-fill::after {
+  background-color: var(--home-blue) !important;
+}
+
+.home-main-content ::ng-deep .mat-progress-bar-buffer {
+  background-color: #e8f2ff !important;
+}
+
+.home-dashboard-shell ::ng-deep .mat-flat-button .mat-button-wrapper,
+.home-dashboard-shell ::ng-deep .mat-stroked-button .mat-button-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.home-dashboard-shell ::ng-deep .mat-button-wrapper .mat-icon {
+  flex: 0 0 auto;
+  margin: 0 !important;
+  line-height: 1;
+}
+
 .home-main-content .card {
   width: 100% !important;
   max-width: 100%;
@@ -2956,7 +2978,6 @@ img {
 .home-blocks-wpr > section,
 .home-blocks-wpr .home--blocks,
 .home-blocks-wpr appdashboard-home-value-onboarding,
-.home-blocks-wpr home-cds,
 .home-blocks-wpr appdashboard-home-go-to-chat {
   display: block;
   width: 100%;
@@ -2979,8 +3000,157 @@ img {
 .home-dashboard-main-column,
 .home-dashboard-side-column {
   display: grid;
-  gap: 22px;
+  gap: 20px;
   min-width: 0;
+}
+
+.home-insights-section {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+}
+
+.home-insights-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.home-insights-heading h2,
+.home-chart-card__heading h3 {
+  margin: 0;
+  color: var(--home-text);
+  font-family: var(--font-geist-sans);
+  font-weight: 650;
+  letter-spacing: 0;
+}
+
+.home-insights-heading h2 {
+  font-size: 24px;
+  line-height: 32px;
+}
+
+.home-insights-heading p,
+.home-chart-card__heading p {
+  margin: 6px 0 0;
+  color: var(--home-muted);
+  font-size: 14px;
+  line-height: 21px;
+}
+
+.home-insights-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.home-kpi-card,
+.home-chart-card {
+  margin: 0 !important;
+  border: 1px solid var(--home-border);
+  background: #fff;
+}
+
+.home-kpi-card__content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 22px !important;
+}
+
+.home-kpi-card__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: #eef6ff;
+  color: var(--home-blue);
+}
+
+.home-kpi-card__icon mat-icon {
+  width: 26px;
+  height: 26px;
+}
+
+.home-kpi-card__value {
+  color: var(--home-text);
+  font-family: var(--font-geist-sans);
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 32px;
+  font-variant-numeric: tabular-nums;
+}
+
+.home-kpi-card__label {
+  margin-top: 4px;
+  color: var(--home-text);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 18px;
+}
+
+.home-kpi-card__hint {
+  margin-top: 2px;
+  color: var(--home-muted);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.home-chart-card {
+  grid-column: 1 / -1;
+}
+
+.home-chart-card__content {
+  display: grid;
+  gap: 22px;
+  padding: 26px !important;
+}
+
+.home-chart-card__heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.home-chart-card__heading h3 {
+  font-size: 22px;
+  line-height: 28px;
+}
+
+.home-chart-list {
+  display: grid;
+  gap: 18px;
+}
+
+.home-chart-row {
+  display: grid;
+  gap: 8px;
+}
+
+.home-chart-row__label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  color: var(--home-muted);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.home-chart-row__label strong {
+  color: var(--home-text);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.home-chart-row ::ng-deep .mat-progress-bar {
+  height: 9px;
+  border-radius: 999px;
+  overflow: hidden;
 }
 
 .home--blocks {
@@ -3001,6 +3171,22 @@ img {
   }
 
   .home-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .home-insights-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .home-insights-heading,
+  .home-chart-card__heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .home-insights-grid {
     grid-template-columns: 1fr;
   }
 }
