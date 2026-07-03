@@ -2908,6 +2908,15 @@ img {
   align-self: center;
 }
 
+.home-blocks-wpr > span,
+.home-blocks-wpr .home--blocks,
+.home-blocks-wpr appdashboard-home-value-onboarding,
+.home-blocks-wpr home-cds {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
 @media (max-width: 868px) {
   .home-blocks-wpr {
     display: unset;
