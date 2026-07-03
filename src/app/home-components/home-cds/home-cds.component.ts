@@ -50,6 +50,7 @@ export class HomeCdsComponent extends PricingBaseComponent implements OnInit, On
   // chatbots:  Array<Chatbot> = [];
   chatbotName: string;
   lastUpdatedChatbot: Chatbot;
+  flowChatbotCount = 0;
   showSpinner: boolean
   chatbotsUsingNamespace: any;
   kbNameSpaceid: string = '';
@@ -204,9 +205,14 @@ export class HomeCdsComponent extends PricingBaseComponent implements OnInit, On
   }
 
   sortChatbots() {
-    if (this.chatbots && this.chatbots.length > 0) {
+    const flowChatbots = (this.chatbots || []).filter(bot => bot && bot.type !== 'identity');
+    this.flowChatbotCount = flowChatbots.length;
+    this.chatbotName = '';
+    this.lastUpdatedChatbot = null;
 
-      this.chatbots.sort(function compare(a: Chatbot, b: Chatbot) {
+    if (flowChatbots.length > 0) {
+
+      flowChatbots.sort(function compare(a: Chatbot, b: Chatbot) {
         if (a['updatedAt'] > b['updatedAt']) {
           return -1;
         }
@@ -216,19 +222,19 @@ export class HomeCdsComponent extends PricingBaseComponent implements OnInit, On
         return 0;
       });
 
-      this.logger.log('[HOME-CDS] - GET FAQKB RES (sorted)', this.chatbots);
+      this.logger.log('[HOME-CDS] - GET FAQKB RES (sorted)', flowChatbots);
 
-      this.chatbotName = this.chatbots[0].name;
-      this.lastUpdatedChatbot = this.chatbots[0];
+      this.chatbotName = flowChatbots[0].name;
+      this.lastUpdatedChatbot = flowChatbots[0];
       this.logger.log('[HOME-CDS] - chatbotName ', this.chatbotName);
       this.logger.log('[HOME-CDS] - lastUpdatedChatbot', this.lastUpdatedChatbot);
     }
   }
 
   goToBotProfile() {
-     this.logger.log('[HOME-CDS] - goToBotProfile  projectId ', this.projectId);
+    this.logger.log('[HOME-CDS] - goToBotProfile  projectId ', this.projectId);
     if (this.USER_ROLE !== 'agent') {
-      if (this.chatbots?.length > 0) {
+      if (this.lastUpdatedChatbot) {
         // this.router.navigate(['project/' + this.project._id + '/tilebot/intents/', bot_id, botType]);
         // this.router.navigate(['project/' + this.projectId + '/cds/', bot._id, 'intent', '0', 'h']);
         if(this.lastUpdatedChatbot.type === 'external') {
@@ -238,7 +244,7 @@ export class HomeCdsComponent extends PricingBaseComponent implements OnInit, On
           goToCDSVersion(this.router, this.lastUpdatedChatbot, this.projectId, this.appConfigService.getConfig().cdsBaseUrl)
         }
         // goToCDSVersion(this.router, this.lastUpdatedChatbot, this.projectId, this.appConfigService.getConfig().cdsBaseUrl)
-      } else if (this.chatbots?.length === 0) {
+      } else if (this.flowChatbotCount === 0) {
 
         if (this.chatBotLimit) {
           if (this.chatbotCount < this.chatBotLimit) {

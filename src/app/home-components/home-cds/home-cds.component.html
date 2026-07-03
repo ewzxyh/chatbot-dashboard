@@ -7,30 +7,30 @@
       </div>
 
       <div class="home-cds-card__body">
-        <div class="home-cds-card__eyebrow">Seus fluxos</div>
-        <h2 class="home-cds-card__title" *ngIf="chatbots?.length > 0">Seu fluxo atual</h2>
-        <h2 class="home-cds-card__title" *ngIf="chatbots?.length === 0">Você ainda não tem fluxos</h2>
+        <div class="home-cds-card__eyebrow">{{ lastUpdatedChatbot ? 'Continuar trabalhando' : 'Seus fluxos' }}</div>
+        <h2 class="home-cds-card__title" *ngIf="lastUpdatedChatbot">Continue de onde parou</h2>
+        <h2 class="home-cds-card__title" *ngIf="!lastUpdatedChatbot">Você ainda não tem fluxos</h2>
 
-        <p class="home-cds-card__description" *ngIf="chatbots?.length > 0">
-          Continue editando <strong>{{ chatbotName }}</strong> ou revise seus fluxos quando precisar ajustar o atendimento.
+        <p class="home-cds-card__description" *ngIf="lastUpdatedChatbot">
+          Abra <strong>{{ chatbotName }}</strong>, o fluxo atualizado mais recentemente neste projeto.
         </p>
-        <p class="home-cds-card__description" *ngIf="chatbots?.length === 0">
+        <p class="home-cds-card__description" *ngIf="!lastUpdatedChatbot">
           Crie um fluxo para automatizar respostas, encaminhar atendimentos e organizar o primeiro contato.
         </p>
       </div>
 
-      <div class="home-cds-card__meta" *ngIf="chatbots?.length > 0">
-        <span class="home-cds-card__badge">Fluxo ativo</span>
+      <div class="home-cds-card__meta" *ngIf="lastUpdatedChatbot">
+        <span class="home-cds-card__badge">Fluxo recente</span>
         <span class="home-cds-card__count">
-          {{ chatbots?.length }} {{ chatbots?.length === 1 ? 'fluxo cadastrado' : 'fluxos cadastrados' }}
+          {{ flowChatbotCount }} {{ flowChatbotCount === 1 ? 'fluxo cadastrado' : 'fluxos cadastrados' }}
         </span>
       </div>
 
       <div class="home-cds-card__actions">
         <button mat-flat-button color="primary" class="home-cds-card__button" (click)="goToBotProfile()">
-          <mat-icon [svgIcon]="chatbots?.length > 0 ? 'td-pencil' : 'td-plus'"></mat-icon>
-          <span *ngIf="chatbots?.length > 0">Editar fluxo</span>
-          <span *ngIf="chatbots?.length === 0">Criar primeiro fluxo</span>
+          <mat-icon [svgIcon]="lastUpdatedChatbot ? 'td-pencil' : 'td-plus'"></mat-icon>
+          <span *ngIf="lastUpdatedChatbot">Continuar edição</span>
+          <span *ngIf="!lastUpdatedChatbot">Criar primeiro fluxo</span>
         </button>
       </div>
     </mat-card-content>
