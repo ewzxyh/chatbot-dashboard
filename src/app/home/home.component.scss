@@ -3011,7 +3011,13 @@ img {
   min-width: 0;
 }
 
+.home-dashboard-main-column {
+  display: contents;
+}
+
 .home-dashboard-side-column {
+  grid-column: 2;
+  grid-row: 1;
   margin-left: -1px;
   border-left: 1px solid var(--home-border);
 }
@@ -3023,6 +3029,7 @@ img {
 
 .home-insights-section {
   display: grid;
+  grid-column: 1;
   gap: 0;
   min-width: 0;
 }
@@ -3183,6 +3190,9 @@ img {
 }
 
 .home--blocks {
+  grid-column: 1 / -1;
+  min-width: 0;
+  width: 100%;
   margin-top: 0 !important;
 }
 
@@ -3198,9 +3208,16 @@ img {
   }
 
   .home-dashboard-side-column {
+    grid-column: 1;
+    grid-row: auto;
     margin-left: 0;
     margin-top: -1px;
     border-left: 0;
+  }
+
+  .home-insights-section,
+  .home--blocks {
+    grid-column: 1;
   }
 
   .home-insights-grid {

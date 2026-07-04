@@ -1,113 +1,77 @@
 <div class="convesations-analytics-report-wpr">
-
-  <div class="sm:col-span-2 lg:col-span-3 dark flex flex-col flex-auto bg-card overflow-hidden">
-    <div class="flex items-center justify-between mt-10 ml-10 mr-6 sm:mr-10 mb-12">
-     
-      <div class="flex flex-col gap-6" >
-        <div class="mr-4 text-2xl md:text-3xl graph-title tracking-tight leading-7">
-          Conversations Overview
+  <div class="home-convs-card">
+    <div class="home-convs-header">
+      <div class="home-convs-heading">
+        <div class="graph-title">
+          Gráfico de conversas
         </div>
         <ng-container *ngIf="PERMISSION_TO_VIEW_ANALYTICS">
-          <div *ngIf="USER_ROLE !== 'agent' && isVisibleANA" class="text-accent-link-on-black" (click)="goToRequestsAnalytics()">
-            <span> More filter in Analytics </span>
+          <button
+            *ngIf="USER_ROLE !== 'agent' && isVisibleANA"
+            class="home-convs-link"
+            type="button"
+            (click)="goToRequestsAnalytics()">
+            <span>Ver em Analytics</span>
             <span class="material-icons m-i-arrow-on-black">
               keyboard_arrow_right
             </span>
-          </div>
+          </button>
         </ng-container>
-
       </div>
 
-
-      <div class="ml-2">
-        <button [ngClass]="{'active-period': numOfDays === 30}" class="period-switch-btn"
+      <div class="home-convs-actions">
+        <button
+          [ngClass]="{'active-period': numOfDays === 30}"
+          class="period-switch-btn"
+          type="button"
           (click)="selectConversationsRange(30)">
-          Last 30 days
+          Últimos 30 dias
         </button>
 
-        <button [ngClass]="{'active-period': numOfDays === 7}" class="period-switch-btn" style="margin-left: 3px;"
+        <button
+          [ngClass]="{'active-period': numOfDays === 7}"
+          class="period-switch-btn"
+          type="button"
           (click)="selectConversationsRange(7)">
-          Last 7 days
+          Últimos 7 dias
         </button>
-
-        <!-- <div class="analytics-link-wpr">
-          <div class="analytics-link" (click)="goToRequestsAnalytics()">
-            More filter in Analytics
-          </div>
-        </div> -->
-
-
-        <!-- <div id="" class="graph-period-badge" >
-          
-         </div>
-
-        <div class="graph-period-badge" >
-         Last 7 days
-        </div> -->
-
-        <!-- <mat-button-toggle-group class="hidden sm:inline-flex border-none space-x-1" value="this-year"
-          #visitorsYearSelector="matButtonToggleGroup">
-          <mat-button-toggle class="px-1.5 rounded-full overflow-hidden border-none font-medium" value="last-year">Last
-            Year
-          </mat-button-toggle>
-          <mat-button-toggle class="px-1.5 rounded-full overflow-hidden border-none font-medium" value="this-year">This
-            Year
-          </mat-button-toggle>
-        </mat-button-toggle-group> -->
-        <!-- <div class="sm:hidden">
-          <button mat-icon-button [matMenuTriggerFor]="visitorsMenu">
-            <mat-icon [svgIcon]="'heroicons_outline:dots-vertical'"></mat-icon>
-          </button>
-          <mat-menu #visitorsMenu="matMenu">
-            <button mat-menu-item>This Year</button>
-            <button mat-menu-item>Last Year</button>
-          </mat-menu>
-        </div> -->
       </div>
     </div>
 
-    <div  class="flex flex-col flex-auto h-80">
-
-      <!-- <canvas id="last7dayChart" style="background-color: #1C2533;"></canvas> -->
-      <canvas id="lastNdayChart" style="background-color: #1C2533;"></canvas>
+    <div class="home-convs-chart">
+      <canvas id="lastNdayChart"></canvas>
     </div>
   </div>
 
-  <div class="grid graph-footer grid-cols-1 gap-8 w-full mt-8">
-
-    <div class="flex flex-col flex-auto overflow-hidden items-center">
-      
-      <span  class="graph-footer-num">
+  <div class="graph-footer">
+    <div class="graph-footer-item">
+      <span class="graph-footer-num">
         <!-- {{totalHuman + totalBot | number:'1.0-0'}} -->
         {{totalHuman  | number:'1.0-0'}}
       </span>
       <!-- <span *ngIf="numOfDays === 7" class="graph-footer-num">  {{countOfLastSevenDaysRequests + countOfLastSevenDaysRequestsHandledByBot | number:'1.0-0'}} </span>
       <span *ngIf="numOfDays === 30" class="graph-footer-num"> {{countOfLastMonthRequests | number:'1.0-0'}} </span> -->
-      <span class="graph-footer-text"> Total </span>
+      <span class="graph-footer-text">Total</span>
     </div>
 
-    <div class="flex flex-col flex-auto overflow-hidden items-center">
-     
-      <span  class="graph-footer-num">
+    <div class="graph-footer-item">
+      <span class="graph-footer-num">
         {{totalBot | number:'1.0-0'}}
       </span>
       <!-- <span *ngIf="numOfDays === 7" class="graph-footer-num"> {{countOfLastSevenDaysRequestsHandledByBot | number:'1.0-0'}} </span>
       <span *ngIf="numOfDays === 30" class="graph-footer-num"> {{countOfLastMonthRequestsHandledByBots | number:'1.0-0'}}</span> -->
-      <span class="graph-footer-text"> Handled by bots </span>
+      <span class="graph-footer-text">Atendidas por bots</span>
     </div>
 
-    <div class="flex flex-col flex-auto overflow-hidden items-center">
-     
-      <span  class="graph-footer-num">
+    <div class="graph-footer-item">
+      <span class="graph-footer-num">
         {{percentageOfRequestsHandledByBots}}<span class="home-percentage-symbol">%</span>
       </span>
       <!-- <span *ngIf="numOfDays === 7" class="graph-footer-num"> {{percentageOfSevenDaysRequestsHandledByBots}}% </span>
       <span *ngIf="numOfDays === 30" class="graph-footer-num"> {{percentageOfLastMonthRequestsHandledByBots}}% </span> -->
-      <span class="graph-footer-text"> Percentage handled by bots</span>
+      <span class="graph-footer-text">% atendidas por bots</span>
     </div>
   </div>
-
-
 </div>
 
 <!-- <div class="other-analytics-report-wpr">

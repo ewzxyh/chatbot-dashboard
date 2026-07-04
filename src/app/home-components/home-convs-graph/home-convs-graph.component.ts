@@ -410,13 +410,13 @@ export class HomeConvsGraphComponent implements OnInit, OnChanges {
             label: this.servedByBots,
             data: botCounts,
             fill: true,
-            backgroundColor: 'rgba(129,140,248, 0.6)',
-            borderColor: 'rgba(129,140,248, 1)',
+            backgroundColor: 'rgba(245, 158, 11, 0.12)',
+            borderColor: '#f59e0b',
             borderWidth: 3,
             borderDash: [],
             borderDashOffset: 0.0,
-            pointBackgroundColor: 'rgba(129,140,248, 1)', //'rgba(255, 255, 255, 0.8)',
-            pointBorderColor: 'rgba(129,140,248, 1)', //'#b00e0e'
+            pointBackgroundColor: '#f59e0b', //'rgba(255, 255, 255, 0.8)',
+            pointBorderColor: '#f59e0b', //'#b00e0e'
             lineTension: 0.4,
           },
           {
@@ -424,13 +424,13 @@ export class HomeConvsGraphComponent implements OnInit, OnChanges {
             label: this.translate.instant('TotalConversations'),
             data: humanCounts,
             fill: true,
-            backgroundColor: 'rgba(30, 136, 229, 0.6)',
-            borderColor: 'rgba(30, 136, 229, 1)',
+            backgroundColor: 'rgba(33, 150, 243, 0.12)',
+            borderColor: '#2196f3',
             borderWidth: 3,
             borderDash: [],
             borderDashOffset: 0.0,
-            pointBackgroundColor: 'rgba(30, 136, 229, 1)',
-            pointBorderColor: 'rgba(30, 136, 229, 1)',
+            pointBackgroundColor: '#2196f3',
+            pointBorderColor: '#2196f3',
             lineTension: 0.4,
           }
         ]
@@ -447,8 +447,9 @@ export class HomeConvsGraphComponent implements OnInit, OnChanges {
           align: "center",
           fullWidth: false,
           labels: {
+            fontColor: '#475569',
+            padding: 16,
             usePointStyle: false,
-            // padding: 10
           }
         },
         scales: {
@@ -456,12 +457,12 @@ export class HomeConvsGraphComponent implements OnInit, OnChanges {
             ticks: {
               beginAtZero: true,
               display: true,
-              fontColor: 'white',
+              fontColor: '#475569',
             },
             gridLines: {
               display: true,
               borderDash: [8, 4],
-              color: 'rgba(255, 255, 255, 0.5)',
+              color: 'rgba(148, 163, 184, 0.35)',
               lineWidth: 0.5
             }
 
@@ -470,7 +471,7 @@ export class HomeConvsGraphComponent implements OnInit, OnChanges {
             gridLines: {
               display: true,
               borderDash: [8, 4],
-              color: 'rgba(255, 255, 255, 0.5)',
+              color: 'rgba(148, 163, 184, 0.35)',
               lineWidth: 0.5
 
             },
@@ -483,7 +484,7 @@ export class HomeConvsGraphComponent implements OnInit, OnChanges {
                 }
               },
               display: true,
-              fontColor: 'white',
+              fontColor: '#475569',
               suggestedMax: higherCount + 1,
             }
           }]
@@ -622,13 +623,13 @@ export class HomeConvsGraphComponent implements OnInit, OnChanges {
                 data: _requestsByDayBotServed_series_array,
                 fill: true, //riempie zona sottostante dati
                 lineTension: 0.4,
-                backgroundColor: 'rgba(129,140,248, 0.6)', // 'rgba(232, 32, 32, 0.6)',
-                borderColor: 'rgba(129,140,248, 1)', // 'rgba(189, 16, 16, 1)',
+                backgroundColor: 'rgba(245, 158, 11, 0.12)', // 'rgba(232, 32, 32, 0.6)',
+                borderColor: '#f59e0b', // 'rgba(189, 16, 16, 1)',
                 borderWidth: 3,
                 borderDash: [],
                 borderDashOffset: 0.0,
-                pointBackgroundColor: 'rgba(129,140,248, 1)', //'rgba(255, 255, 255, 0.8)',
-                pointBorderColor: 'rgba(129,140,248, 1)' //'#b00e0e'
+                pointBackgroundColor: '#f59e0b', //'rgba(255, 255, 255, 0.8)',
+                pointBorderColor: '#f59e0b' //'#b00e0e'
               },
               {
                 label: this.servedByHumans, //this.translate.instant('ServedByHumans'), // 'Served by humans',//active labet setting to true the legend value
@@ -665,12 +666,12 @@ export class HomeConvsGraphComponent implements OnInit, OnChanges {
                 ticks: {
                   beginAtZero: true,
                   display: true,
-                  fontColor: 'white',
+                  fontColor: '#475569',
                 },
                 gridLines: {
                   display: true,
                   borderDash: [8, 4],
-                  color: 'rgba(255, 255, 255, 0.5)',
+                  color: 'rgba(148, 163, 184, 0.35)',
                   lineWidth: 0.5
                 }
 
@@ -679,7 +680,7 @@ export class HomeConvsGraphComponent implements OnInit, OnChanges {
                 gridLines: {
                   display: true,
                   borderDash: [8, 4],
-                  color: 'rgba(255, 255, 255, 0.5)',
+                  color: 'rgba(148, 163, 184, 0.35)',
                   lineWidth: 0.5
 
                 },
@@ -692,7 +693,7 @@ export class HomeConvsGraphComponent implements OnInit, OnChanges {
                     }
                   },
                   display: true,
-                  fontColor: 'white',
+                  fontColor: '#475569',
                   suggestedMax: higherCount + 1,
                 }
               }]
