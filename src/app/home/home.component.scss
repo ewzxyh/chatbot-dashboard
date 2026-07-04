@@ -3013,6 +3013,7 @@ img {
 
 .home-dashboard-side-column {
   margin-left: -1px;
+  border-left: 1px solid var(--home-border);
 }
 
 .home-dashboard-side-column appdashboard-home-go-to-chat {
@@ -3199,6 +3200,7 @@ img {
   .home-dashboard-side-column {
     margin-left: 0;
     margin-top: -1px;
+    border-left: 0;
   }
 
   .home-insights-grid {
@@ -3734,7 +3736,8 @@ img {
   gap: 0;
   align-items: stretch;
   border-top: 1px solid var(--home-border);
-  border-left: 0;
+  border-right: 1px solid var(--home-border);
+  border-left: 1px solid var(--home-border);
 }
 
 .home-quota-resets {
