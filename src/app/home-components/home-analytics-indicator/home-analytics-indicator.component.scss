@@ -6,8 +6,6 @@
 
 .home-analytics {
   background: transparent;
-  border-bottom: 1px solid var(--home-border, #d8e4f2);
-  border-top: 1px solid var(--home-border, #d8e4f2);
   box-sizing: border-box;
   display: grid;
   gap: 28px;
@@ -49,6 +47,7 @@
 }
 
 .home-analytics__grid {
+  border-bottom: 1px solid var(--home-border, #d8e4f2);
   border-left: 1px solid var(--home-border, #d8e4f2);
   border-top: 1px solid var(--home-border, #d8e4f2);
   display: grid;
@@ -145,6 +144,10 @@
   .home-analytics-card {
     border-bottom: 1px solid var(--home-border, #d8e4f2);
   }
+
+  .home-analytics-card:last-child {
+    border-bottom: 0;
+  }
 }
 
 @media (max-width: 640px) {
@@ -162,6 +165,7 @@
   }
 
   .home-analytics-card__content {
+    grid-template-columns: 1fr;
     min-height: auto;
     padding: 28px !important;
   }

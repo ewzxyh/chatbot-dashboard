@@ -438,8 +438,8 @@
   }
 
   .value-onboarding__step {
-    grid-template-columns: 38px minmax(0, 1fr);
-    padding: 14px;
+    grid-template-columns: 1fr;
+    padding: 20px;
   }
 
   .value-onboarding__icon {
@@ -448,6 +448,7 @@
   }
 
   .value-onboarding__action {
+    grid-column: 1;
     min-height: 44px;
   }
 }

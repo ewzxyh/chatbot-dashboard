@@ -6,9 +6,7 @@
 
 .convesations-analytics-report-wpr {
   background: transparent;
-  border-bottom: 1px solid var(--home-border, #d8e4f2);
   border-radius: 0;
-  border-top: 1px solid var(--home-border, #d8e4f2);
   box-shadow: none;
   box-sizing: border-box;
   padding: 40px 48px;
@@ -115,6 +113,7 @@
 }
 
 .graph-footer {
+  border-bottom: 1px solid var(--home-border, #d8e4f2);
   border-left: 1px solid var(--home-border, #d8e4f2);
   border-top: 1px solid var(--home-border, #d8e4f2);
   display: grid;
