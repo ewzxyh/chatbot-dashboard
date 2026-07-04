@@ -3770,8 +3770,12 @@ img {
   border-right: 0;
 }
 
-.home-quote-container-members {
+.home-quote-container-email {
   display: none;
+}
+
+.home-quote-container-members {
+  border-right: 0;
 }
 
 .home-quote-container-conversations-runned-out {
@@ -4043,6 +4047,10 @@ img {
 
   .home-quote-container:nth-child(2n) {
     border-right: 0;
+  }
+
+  .home-quote-container-email {
+    display: flex;
   }
 
   .home-quote-container-members {
