@@ -641,7 +641,7 @@
 
                         <div class="bot-type-logo-wpr" *ngIf="faqkb.type === 'internal'">
                           <div class="bot-type-logo--img-wpr " style="top: -39px; left: 14px;">
-                            <img class="bot-type-logo" src="assets/img/tiledesk_logo_no_text.png" />
+                            <img class="bot-type-logo" src="assets/img/chatcase_logo_no_text.png" />
                           </div>
                         </div>
 
@@ -686,19 +686,21 @@
                           <ng-container *ngIf="!faqkb?.subtype || faqkb?.subtype === 'chatbot'">
                             <img *ngIf="UPLOAD_ENGINE_IS_FIREBASE"
                               src="https://firebasestorage.googleapis.com/v0/b/{{storageBucket}}/o/profiles%2F{{faqkb?._id}}%2Fphoto.jpg?alt=media"
-                              onerror="this.src='assets/img/avatar_bot_tiledesk.svg'" />
+                              onerror="this.src='assets/img/avatar_bot_chatcase.svg'" />
 
-                            <img *ngIf="!UPLOAD_ENGINE_IS_FIREBASE" [src]="faqkb.botImage"
-                              onerror="this.src='assets/img/avatar_bot_tiledesk.svg'" />
+                            <img *ngIf="!UPLOAD_ENGINE_IS_FIREBASE"
+                              [src]="faqkb?.botImage || 'assets/img/avatar_bot_chatcase.svg'"
+                              onerror="this.src='assets/img/avatar_bot_chatcase.svg'" />
                           </ng-container>
 
                           <ng-container *ngIf="faqkb?.subtype && faqkb?.subtype !== 'chatbot'">
                             <img *ngIf="UPLOAD_ENGINE_IS_FIREBASE"
                               src="https://firebasestorage.googleapis.com/v0/b/{{storageBucket}}/o/profiles%2F{{faqkb?._id}}%2Fphoto.jpg?alt=media"
-                              onerror="this.src='assets/img/avatar_flow_tiledesk.svg'" />
+                              onerror="this.src='assets/img/avatar_flow_chatcase.svg'" />
 
-                            <img *ngIf="!UPLOAD_ENGINE_IS_FIREBASE" [src]="faqkb.botImage"
-                              onerror="this.src='assets/img/avatar_flow_tiledesk.svg'" />
+                            <img *ngIf="!UPLOAD_ENGINE_IS_FIREBASE"
+                              [src]="faqkb?.botImage || 'assets/img/avatar_flow_chatcase.svg'"
+                              onerror="this.src='assets/img/avatar_flow_chatcase.svg'" />
 
                           </ng-container>
 
