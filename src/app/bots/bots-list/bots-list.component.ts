@@ -1300,10 +1300,13 @@ export class BotListComponent extends PricingBaseComponent implements OnInit, On
     img.src = image_url;
   }
 
-  ensureAvatarImage(event: Event, fallback: string) {
+  ensureAvatarImage(event: Event, fallback: string, faqkb?: FaqKb & { botImage?: string }) {
     const img = event.target as HTMLImageElement;
 
     if (img && (img.naturalWidth <= 1 || img.naturalHeight <= 1) && !img.src.endsWith(fallback)) {
+      if (faqkb) {
+        faqkb.botImage = fallback;
+      }
       img.src = fallback;
     }
   }
