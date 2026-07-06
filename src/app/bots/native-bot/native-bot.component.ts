@@ -695,13 +695,13 @@ export class NativeBotComponent extends BotsBaseComponent implements OnInit {
 
   verifyImageURL(image_url, callBack) {
     const img = new Image();
-    img.src = image_url;
     img.onload = function () {
-      callBack(true);
+      callBack(img.naturalWidth > 1 && img.naturalHeight > 1);
     };
     img.onerror = function () {
       callBack(false);
     };
+    img.src = image_url;
   }
 
 
