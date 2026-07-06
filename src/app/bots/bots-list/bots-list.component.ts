@@ -1300,6 +1300,14 @@ export class BotListComponent extends PricingBaseComponent implements OnInit, On
     img.src = image_url;
   }
 
+  ensureAvatarImage(event: Event, fallback: string) {
+    const img = event.target as HTMLImageElement;
+
+    if (img && (img.naturalWidth <= 1 || img.naturalHeight <= 1) && !img.src.endsWith(fallback)) {
+      img.src = fallback;
+    }
+  }
+
   getOSCODE() {
     this.public_Key = this.appConfigService.getConfig().t2y12PruGU9wUtEGzBJfolMIgK;
     // this.logger.log('AppConfigService getAppConfig (BOT LIST) public_Key', this.public_Key);
