@@ -1266,7 +1266,7 @@ export class BotListComponent extends PricingBaseComponent implements OnInit, On
     const baseUrl = this.appConfigService.getConfig().baseImageUrl;
     const imageUrl = baseUrl + 'files?path=uploads%2Fusers%2F' + bot._id + '%2Fimages%2Fthumbnails_200_200-photo.jpg';
     this.botProfileImageExist = false;
-    this.botProfileImageurl = "assets/img/avatar_bot_tiledesk.svg"
+    this.botProfileImageurl = "assets/img/avatar_bot_chatcase.svg"
     bot.botImage = this.botProfileImageurl
     // bot.botImage = imageUrl + '&' + new Date().getTime();
     const self = this;
