@@ -1296,7 +1296,7 @@ export class BotListComponent extends PricingBaseComponent implements OnInit, On
       try {
         callBack(hasVisibleAvatarContent(img));
       } catch (_error) {
-        callBack(true);
+        callBack(false);
       }
     };
     img.onerror = function () {
@@ -1351,7 +1351,12 @@ export class BotListComponent extends PricingBaseComponent implements OnInit, On
         img.src = fallback;
       }
     } catch (_error) {
-      return;
+      if (img && !img.src.endsWith(fallback)) {
+        if (faqkb) {
+          faqkb.botImage = fallback;
+        }
+        img.src = fallback;
+      }
     }
   }
 
