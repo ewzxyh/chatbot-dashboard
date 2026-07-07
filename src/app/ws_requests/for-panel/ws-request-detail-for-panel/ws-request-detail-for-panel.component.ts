@@ -584,7 +584,7 @@ export class WsRequestDetailForPanelComponent extends WsSharedComponent implemen
   onImageError(message, index) {
     this.logger.log('[REQUEST-DTLS-X-PANEL] - onImageError  message ', message, 'index ', index)
     if (message.sender.includes('bot_')) {
-      message['avatar_url'] = "assets/img/avatar_bot_tiledesk.svg"
+      message['avatar_url'] = "assets/img/avatar_bot_chatcase.svg"
     } else {
       message['avatar_url'] = "assets/img/no_image_user.png"
     }

@@ -19,10 +19,10 @@
 
         <div class="sidebar-bot-profile-img-wpr" style="width: 0%;">
           <img *ngIf="botProfileImageExist === true || botImageHasBeenUploaded === true" class="sidebar-bot-profile-img"
-            [src]="botProfileImageurl" onerror="this.src='assets/img/avatar_bot_tiledesk.svg'" />
+            [src]="botProfileImageurl" onerror="this.src='assets/img/avatar_bot_chatcase.svg'" />
 
           <img *ngIf="botProfileImageExist === false && botImageHasBeenUploaded !== true"
-            class="sidebar-bot-profile-img" src="assets/img/avatar_bot_tiledesk.svg" />
+            class="sidebar-bot-profile-img" src="assets/img/avatar_bot_chatcase.svg" />
         </div>
         <a>
           <p *ngIf="IS_OPEN === true" class="custom_paragraph" style="position: relative;left: 27px;margin-top: 8px;">

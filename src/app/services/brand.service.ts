@@ -134,7 +134,7 @@ export class BrandService {
   }
 
   isEmpty(url: string) {
-    return (url === undefined || url == null || url.length <= 0) ? true : false;
+    return (url === undefined || url == null || url.length <= 0 || /^\$\{[^}]+\}$/.test(url)) ? true : false;
   }
 
   // getData() {

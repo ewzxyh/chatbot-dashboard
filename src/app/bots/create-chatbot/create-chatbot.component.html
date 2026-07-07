@@ -87,19 +87,19 @@
                                 <div class="template-card-img-row template-img">
                                     <!-- <img *ngIf="!startChatBot?.bigImage" style="width: 40px; height: 40px;"
                                         src="https://firebasestorage.googleapis.com/v0/b/tiledesk-prod-v2.appspot.com/o/profiles%2F{{startChatBot._id}}%2Fphoto.jpg?alt=media"
-                                        onerror="this.src='assets/img/avatar_bot_tiledesk.svg'">
+                                        onerror="this.src='assets/img/avatar_bot_chatcase.svg'">
                                     <img *ngIf="startChatBot?.bigImage" style="width: auto; height: 40px;"
                                         src="{{startChatBot.bigImage}}"> -->
 
                                     <span *ngIf="!startChatBot?.bigImage">
                                         <img *ngIf="UPLOAD_ENGINE_IS_FIREBASE"
                                             src="https://firebasestorage.googleapis.com/v0/b/{{storageBucket}}/o/profiles%2F{{startChatBot?._id}}%2Fphoto.jpg?alt=media"
-                                            onerror="this.src='assets/img/avatar_bot_tiledesk.svg'"
+                                            onerror="this.src='assets/img/avatar_bot_chatcase.svg'"
                                             style="width: auto; height: 40px;" />
 
                                         <img *ngIf="!UPLOAD_ENGINE_IS_FIREBASE"
                                             src="{{baseUrl}}files?path=uploads%2Fusers%2F{{startChatBot?._id}}%2Fimages%2Fthumbnails_200_200-photo.jpg"
-                                            onerror="this.src='assets/img/avatar_bot_tiledesk.svg'"
+                                            onerror="this.src='assets/img/avatar_bot_chatcase.svg'"
                                             style="width: auto; height: 40px;" />
                                     </span>
                                     <span *ngIf="startChatBot?.bigImage">

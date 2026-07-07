@@ -286,10 +286,10 @@
                                         <span *ngIf="!template?.bigImage">
                                             <img *ngIf="UPLOAD_ENGINE_IS_FIREBASE" style="width: 40px; height: 40px;"
                                                 src="https://firebasestorage.googleapis.com/v0/b/tiledesk-prod-v2.appspot.com/o/profiles%2F{{template._id}}%2Fphoto.jpg?alt=media"
-                                                onerror="this.src='assets/img/avatar_bot_tiledesk.svg'">
+                                                onerror="this.src='assets/img/avatar_bot_chatcase.svg'">
                                             <img *ngIf="!UPLOAD_ENGINE_IS_FIREBASE" style="width: 40px; height: 40px;"
                                                 src="{{baseUrl}}files?path=uploads%2Fusers%2F{{template?._id}}%2Fimages%2Fthumbnails_200_200-photo.jpg"
-                                                onerror="this.src='assets/img/avatar_bot_tiledesk.svg'">
+                                                onerror="this.src='assets/img/avatar_bot_chatcase.svg'">
                                         </span>
                                         <span *ngIf="template?.bigImage">
                                             <img src="{{template.bigImage}}" style="width: auto; height: 40px;">
@@ -442,7 +442,7 @@
                         <!-- Community tempaltes   -->
                         <div *ngIf="COMMUNITY_TEMPLATE" class="css-ph3dp7 cmnty-tmplt-list--wpr">
                             <div class="cmnty-img-wpr">
-                                <img class="cmnty-img" src="assets/img/logos/Tiledesk_community_v2.svg" />
+                                <img class="cmnty-img" src="assets/img/logos/chatcase_community_v2.svg" />
                             </div>
                             <div class="cmnty-text">
                                 <!-- Explore a world of possibilities in our Community, where you'll discover a vast array of
@@ -594,13 +594,13 @@
                                                                     <img *ngIf="UPLOAD_ENGINE_IS_FIREBASE"
                                                                         class="cmnty-chatbot-img"
                                                                         src="https://firebasestorage.googleapis.com/v0/b/{{storageBucket}}/o/profiles%2F{{template?._id}}%2Fphoto.jpg?alt=media"
-                                                                        onerror="this.src='assets/img/avatar_bot_tiledesk.svg'"
+                                                                        onerror="this.src='assets/img/avatar_bot_chatcase.svg'"
                                                                         style="position: absolute; inset: 0px; box-sizing: border-box; padding: 0px; border: none; margin: auto; display: block; width: 0px; height: 0px; min-width: 100%; max-width: 100%; min-height: 100%; max-height: 100%; object-fit: cover;" />
 
                                                                     <img *ngIf="!UPLOAD_ENGINE_IS_FIREBASE"
                                                                         class="cmnty-chatbot-img"
                                                                         src="{{baseUrl}}files?path=uploads%2Fusers%2F{{template?._id}}%2Fimages%2Fthumbnails_200_200-photo.jpg"
-                                                                        onerror="this.src='assets/img/avatar_bot_tiledesk.svg'"
+                                                                        onerror="this.src='assets/img/avatar_bot_chatcase.svg'"
                                                                         style="position: absolute; inset: 0px; box-sizing: border-box; padding: 0px; border: none; margin: auto; display: block; width: 0px; height: 0px; min-width: 100%; max-width: 100%; min-height: 100%; max-height: 100%; object-fit: cover;" />
                                                                 </span>
                                                                 <span *ngIf="template?.bigImage">

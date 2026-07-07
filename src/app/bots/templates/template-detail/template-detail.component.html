@@ -16,10 +16,10 @@
                 <!-- <span *ngIf="!template?.bigImage">
                     <img *ngIf="UPLOAD_ENGINE_IS_FIREBASE" style="width: 40px; height: 40px;"
                         src="https://firebasestorage.googleapis.com/v0/b/{{storageBucket}}/o/profiles%2F{{template._id}}%2Fphoto.jpg?alt=media"
-                        onerror="this.src='assets/img/avatar_bot_tiledesk.svg'">
+                        onerror="this.src='assets/img/avatar_bot_chatcase.svg'">
                     <img *ngIf="!UPLOAD_ENGINE_IS_FIREBASE" style="width: 40px; height: 40px;"
                         src="{{baseUrl}}files?path=uploads%2Fusers%2F{{template?._id}}%2Fimages%2Fthumbnails_200_200-photo.jpg"
-                        onerror="this.src='assets/img/avatar_bot_tiledesk.svg'">
+                        onerror="this.src='assets/img/avatar_bot_chatcase.svg'">
                 </span> -->
 
                 <img *ngIf="template?.bigImage" style="width: auto; height: 40px; margin-right: 12px;" src="{{template.bigImage}}">

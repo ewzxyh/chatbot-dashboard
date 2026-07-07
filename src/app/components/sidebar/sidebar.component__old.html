@@ -6,10 +6,10 @@
 
     <div class="logo-img" (click)="goToHome()" style="cursor: pointer;">
 
-      <!-- assets/img/tiledesk-logo_white_orange.svg -->
+      <!-- assets/img/logos/chatcase-logo_white_orange.svg -->
    
       <!-- note to center the logo remove > left: 26px -->
-      <!-- <img style="width:45%; top:20px;left: 26px" src="assets/img/tiledesk-logo_white_orange.svg" /> -->
+      <!-- <img style="width:45%; top:20px;left: 26px" src="assets/img/logos/chatcase-logo_white_orange.svg" /> -->
       <img *ngIf="SIDEBAR_IS_SMALL === false" class="sidebar__logo" [ngClass]="{'sidebar__logo_no_rocket' : hidechangelogrocket === true }"
         [src]="sidebarLogoWhite_Url" />
         <img *ngIf="SIDEBAR_IS_SMALL === true" class="small-sidebar__logo"
