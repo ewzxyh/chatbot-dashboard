@@ -1283,6 +1283,7 @@ export class BotListComponent extends PricingBaseComponent implements OnInit, On
 
       } else {
         self.botProfileImageExist = imageExists
+        bot.botImage = fallbackImage;
 
         // this.logger.log('[CDS-CHATBOT-DTLS] BOT PROFILE IMAGE (FAQ-COMP) - BOT PROFILE IMAGE EXIST ? ', imageExists, 'usecase native')
 
