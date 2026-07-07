@@ -1326,6 +1326,10 @@ export class BotListComponent extends PricingBaseComponent implements OnInit, On
     const pixels = context.getImageData(0, 0, sampleSize, sampleSize).data;
     let visiblePixels = 0;
     let nonWhitePixels = 0;
+    let minX = sampleSize;
+    let minY = sampleSize;
+    let maxX = -1;
+    let maxY = -1;
 
     for (let i = 0; i < pixels.length; i += 4) {
       const alpha = pixels[i + 3];
@@ -1336,10 +1340,24 @@ export class BotListComponent extends PricingBaseComponent implements OnInit, On
       visiblePixels++;
       if (pixels[i] < 235 || pixels[i + 1] < 235 || pixels[i + 2] < 235) {
         nonWhitePixels++;
+        const pixelIndex = i / 4;
+        const x = pixelIndex % sampleSize;
+        const y = Math.floor(pixelIndex / sampleSize);
+        minX = Math.min(minX, x);
+        minY = Math.min(minY, y);
+        maxX = Math.max(maxX, x);
+        maxY = Math.max(maxY, y);
       }
     }
 
-    return visiblePixels > 0 && nonWhitePixels >= Math.ceil(visiblePixels * 0.15);
+    if (visiblePixels === 0 || nonWhitePixels < Math.ceil(sampleSize * sampleSize * 0.08)) {
+      return false;
+    }
+
+    const contentWidth = maxX - minX + 1;
+    const contentHeight = maxY - minY + 1;
+
+    return contentWidth >= Math.ceil(sampleSize * 0.35) && contentHeight >= Math.ceil(sampleSize * 0.35);
   }
 
   ensureAvatarImage(event: Event, fallback: string, faqkb?: FaqKb & { botImage?: string }) {
