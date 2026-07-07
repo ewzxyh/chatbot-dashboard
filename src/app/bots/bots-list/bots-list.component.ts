@@ -1291,35 +1291,10 @@ export class BotListComponent extends PricingBaseComponent implements OnInit, On
 
   verifyImageURL(image_url, callBack) {
     const img = new Image();
+    const hasVisibleAvatarContent = this.hasVisibleAvatarContent.bind(this);
     img.onload = function () {
-      if (img.naturalWidth <= 1 || img.naturalHeight <= 1) {
-        callBack(false);
-        return;
-      }
-
       try {
-        const canvas = document.createElement('canvas');
-        const sampleSize = 12;
-        canvas.width = sampleSize;
-        canvas.height = sampleSize;
-
-        const context = canvas.getContext('2d');
-        if (!context) {
-          callBack(true);
-          return;
-        }
-
-        context.drawImage(img, 0, 0, sampleSize, sampleSize);
-        const pixels = context.getImageData(0, 0, sampleSize, sampleSize).data;
-
-        for (let i = 3; i < pixels.length; i += 4) {
-          if (pixels[i] > 8) {
-            callBack(true);
-            return;
-          }
-        }
-
-        callBack(false);
+        callBack(hasVisibleAvatarContent(img));
       } catch (_error) {
         callBack(true);
       }
@@ -1330,14 +1305,53 @@ export class BotListComponent extends PricingBaseComponent implements OnInit, On
     img.src = image_url;
   }
 
+  hasVisibleAvatarContent(img: HTMLImageElement) {
+    if (!img || img.naturalWidth <= 1 || img.naturalHeight <= 1) {
+      return false;
+    }
+
+    const canvas = document.createElement('canvas');
+    const sampleSize = 24;
+    canvas.width = sampleSize;
+    canvas.height = sampleSize;
+
+    const context = canvas.getContext('2d');
+    if (!context) {
+      return true;
+    }
+
+    context.drawImage(img, 0, 0, sampleSize, sampleSize);
+    const pixels = context.getImageData(0, 0, sampleSize, sampleSize).data;
+    let visiblePixels = 0;
+    let nonWhitePixels = 0;
+
+    for (let i = 0; i < pixels.length; i += 4) {
+      const alpha = pixels[i + 3];
+      if (alpha <= 8) {
+        continue;
+      }
+
+      visiblePixels++;
+      if (pixels[i] < 245 || pixels[i + 1] < 245 || pixels[i + 2] < 245) {
+        nonWhitePixels++;
+      }
+    }
+
+    return visiblePixels > 0 && nonWhitePixels >= Math.ceil(visiblePixels * 0.05);
+  }
+
   ensureAvatarImage(event: Event, fallback: string, faqkb?: FaqKb & { botImage?: string }) {
     const img = event.target as HTMLImageElement;
 
-    if (img && (img.naturalWidth <= 1 || img.naturalHeight <= 1) && !img.src.endsWith(fallback)) {
-      if (faqkb) {
-        faqkb.botImage = fallback;
+    try {
+      if (img && !img.src.endsWith(fallback) && !this.hasVisibleAvatarContent(img)) {
+        if (faqkb) {
+          faqkb.botImage = fallback;
+        }
+        img.src = fallback;
       }
-      img.src = fallback;
+    } catch (_error) {
+      return;
     }
   }
 
