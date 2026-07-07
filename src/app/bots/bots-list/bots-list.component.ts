@@ -1265,8 +1265,9 @@ export class BotListComponent extends PricingBaseComponent implements OnInit, On
   getBotProfileImage(bot) {
     const baseUrl = this.appConfigService.getConfig().baseImageUrl;
     const imageUrl = baseUrl + 'files?path=uploads%2Fusers%2F' + bot._id + '%2Fimages%2Fthumbnails_200_200-photo.jpg';
+    const fallbackImage = !bot.subtype || bot.subtype === "chatbot" ? "assets/img/avatar_bot_chatcase.svg" : "assets/img/avatar_flow_chatcase.svg";
     this.botProfileImageExist = false;
-    this.botProfileImageurl = "assets/img/avatar_bot_chatcase.svg"
+    this.botProfileImageurl = fallbackImage
     bot.botImage = this.botProfileImageurl
     // bot.botImage = imageUrl + '&' + new Date().getTime();
     const self = this;
@@ -1317,7 +1318,7 @@ export class BotListComponent extends PricingBaseComponent implements OnInit, On
 
     const context = canvas.getContext('2d');
     if (!context) {
-      return true;
+      return false;
     }
 
     context.drawImage(img, 0, 0, sampleSize, sampleSize);
@@ -1332,12 +1333,12 @@ export class BotListComponent extends PricingBaseComponent implements OnInit, On
       }
 
       visiblePixels++;
-      if (pixels[i] < 245 || pixels[i + 1] < 245 || pixels[i + 2] < 245) {
+      if (pixels[i] < 235 || pixels[i + 1] < 235 || pixels[i + 2] < 235) {
         nonWhitePixels++;
       }
     }
 
-    return visiblePixels > 0 && nonWhitePixels >= Math.ceil(visiblePixels * 0.05);
+    return visiblePixels > 0 && nonWhitePixels >= Math.ceil(visiblePixels * 0.15);
   }
 
   ensureAvatarImage(event: Event, fallback: string, faqkb?: FaqKb & { botImage?: string }) {
