@@ -1265,6 +1265,7 @@ export class BotListComponent extends PricingBaseComponent implements OnInit, On
   getBotProfileImage(bot) {
     const baseUrl = this.appConfigService.getConfig().baseImageUrl;
     const imageUrl = baseUrl + 'files?path=uploads%2Fusers%2F' + bot._id + '%2Fimages%2Fthumbnails_200_200-photo.jpg';
+    const avatarUrl = imageUrl + '&' + new Date().getTime();
     const fallbackImage = !bot.subtype || bot.subtype === "chatbot" ? "assets/img/avatar_bot_chatcase.svg" : "assets/img/avatar_flow_chatcase.svg";
     this.botProfileImageExist = false;
     this.botProfileImageurl = fallbackImage
@@ -1272,12 +1273,12 @@ export class BotListComponent extends PricingBaseComponent implements OnInit, On
     // bot.botImage = imageUrl + '&' + new Date().getTime();
     const self = this;
     this.logger.log('[BOTS-LIST] HERE YES 1')
-    this.verifyImageURL(imageUrl, function (imageExists) {
+    this.verifyImageURL(avatarUrl, function (imageExists) {
 
       if (imageExists === true) {
         self.botProfileImageExist = imageExists
         // this.logger.log('[BOTS-LIST] BOT PROFILE IMAGE (FAQ-COMP) - BOT PROFILE IMAGE EXIST ? ', imageExists, 'usecase native')
-        bot.botImage = imageUrl + '&' + new Date().getTime();
+        bot.botImage = avatarUrl;
         // this.botProfileImageurl = this.sanitizer.bypassSecurityTrustUrl(_botProfileImageurl)
         // self.setImageProfileUrl_Native(baseUrl)
 
