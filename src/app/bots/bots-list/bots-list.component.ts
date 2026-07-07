@@ -1292,7 +1292,37 @@ export class BotListComponent extends PricingBaseComponent implements OnInit, On
   verifyImageURL(image_url, callBack) {
     const img = new Image();
     img.onload = function () {
-      callBack(img.naturalWidth > 1 && img.naturalHeight > 1);
+      if (img.naturalWidth <= 1 || img.naturalHeight <= 1) {
+        callBack(false);
+        return;
+      }
+
+      try {
+        const canvas = document.createElement('canvas');
+        const sampleSize = 12;
+        canvas.width = sampleSize;
+        canvas.height = sampleSize;
+
+        const context = canvas.getContext('2d');
+        if (!context) {
+          callBack(true);
+          return;
+        }
+
+        context.drawImage(img, 0, 0, sampleSize, sampleSize);
+        const pixels = context.getImageData(0, 0, sampleSize, sampleSize).data;
+
+        for (let i = 3; i < pixels.length; i += 4) {
+          if (pixels[i] > 8) {
+            callBack(true);
+            return;
+          }
+        }
+
+        callBack(false);
+      } catch (_error) {
+        callBack(true);
+      }
     };
     img.onerror = function () {
       callBack(false);
