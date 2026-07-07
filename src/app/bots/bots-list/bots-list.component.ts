@@ -1364,19 +1364,25 @@ export class BotListComponent extends PricingBaseComponent implements OnInit, On
     const img = event.target as HTMLImageElement;
 
     try {
-      if (img && !img.src.endsWith(fallback) && !this.hasVisibleAvatarContent(img)) {
-        if (faqkb) {
-          faqkb.botImage = fallback;
-        }
-        img.src = fallback;
+      if (img && !img.src.includes(fallback) && !this.hasVisibleAvatarContent(img)) {
+        this.setAvatarFallback(event, fallback, faqkb);
       }
     } catch (_error) {
-      if (img && !img.src.endsWith(fallback)) {
-        if (faqkb) {
-          faqkb.botImage = fallback;
-        }
-        img.src = fallback;
+      if (img && !img.src.includes(fallback)) {
+        this.setAvatarFallback(event, fallback, faqkb);
       }
+    }
+  }
+
+  setAvatarFallback(event: Event, fallback: string, faqkb?: FaqKb & { botImage?: string }) {
+    const img = event.target as HTMLImageElement;
+
+    if (faqkb) {
+      faqkb.botImage = fallback;
+    }
+
+    if (img && !img.src.includes(fallback)) {
+      img.src = fallback;
     }
   }
 

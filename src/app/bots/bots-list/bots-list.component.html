@@ -684,27 +684,17 @@
 
                           <!--  -->
                           <ng-container *ngIf="!faqkb?.subtype || faqkb?.subtype === 'chatbot'">
-                            <img *ngIf="UPLOAD_ENGINE_IS_FIREBASE"
-                              src="https://firebasestorage.googleapis.com/v0/b/{{storageBucket}}/o/profiles%2F{{faqkb?._id}}%2Fphoto.jpg?alt=media"
-                              (load)="ensureAvatarImage($event, 'assets/img/avatar_bot_chatcase.svg', faqkb)"
-                              onerror="this.src='assets/img/avatar_bot_chatcase.svg'" />
-
-                            <img *ngIf="!UPLOAD_ENGINE_IS_FIREBASE"
+                            <img
                               [src]="faqkb?.botImage || 'assets/img/avatar_bot_chatcase.svg'"
                               (load)="ensureAvatarImage($event, 'assets/img/avatar_bot_chatcase.svg', faqkb)"
-                              onerror="this.src='assets/img/avatar_bot_chatcase.svg'" />
+                              (error)="setAvatarFallback($event, 'assets/img/avatar_bot_chatcase.svg', faqkb)" />
                           </ng-container>
 
                           <ng-container *ngIf="faqkb?.subtype && faqkb?.subtype !== 'chatbot'">
-                            <img *ngIf="UPLOAD_ENGINE_IS_FIREBASE"
-                              src="https://firebasestorage.googleapis.com/v0/b/{{storageBucket}}/o/profiles%2F{{faqkb?._id}}%2Fphoto.jpg?alt=media"
-                              (load)="ensureAvatarImage($event, 'assets/img/avatar_flow_chatcase.svg', faqkb)"
-                              onerror="this.src='assets/img/avatar_flow_chatcase.svg'" />
-
-                            <img *ngIf="!UPLOAD_ENGINE_IS_FIREBASE"
+                            <img
                               [src]="faqkb?.botImage || 'assets/img/avatar_flow_chatcase.svg'"
                               (load)="ensureAvatarImage($event, 'assets/img/avatar_flow_chatcase.svg', faqkb)"
-                              onerror="this.src='assets/img/avatar_flow_chatcase.svg'" />
+                              (error)="setAvatarFallback($event, 'assets/img/avatar_flow_chatcase.svg', faqkb)" />
 
                           </ng-container>
 
