@@ -202,7 +202,7 @@ tbody tr:hover { background: #f8fbff; }
   padding: 3px 0 11px !important;
 }
 
-.admin-container .admin-filter-field.mat-form-field-appearance-outline .mat-form-field-label {
+.admin-container .admin-filter-field.mat-form-field-appearance-outline:not(.mat-form-field-should-float) .mat-form-field-label {
   top: 1.325em;
 }
 .btn-action { margin: 0; }
