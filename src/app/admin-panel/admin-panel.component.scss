@@ -195,8 +195,15 @@ tbody tr:hover { background: #f8fbff; }
 
   .mat-form-field-infix {
     width: auto;
-    padding: 7px 0 !important;
   }
+}
+
+.admin-container .admin-filter-field.mat-form-field-appearance-outline .mat-form-field-infix {
+  padding: 0 0 14px !important;
+}
+
+.admin-container .admin-filter-field.mat-form-field-appearance-outline .mat-form-field-label {
+  top: 1.5em;
 }
 .btn-action { margin: 0; }
 .admin-state-success { color: #2e7d32; font-weight: 600; }
