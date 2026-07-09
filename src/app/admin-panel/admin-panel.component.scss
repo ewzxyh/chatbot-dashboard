@@ -199,15 +199,11 @@ tbody tr:hover { background: #f8fbff; }
 }
 
 .admin-container .admin-filter-field.mat-form-field-appearance-outline .mat-form-field-infix {
-  padding: 0 0 14px !important;
+  padding: 3px 0 11px !important;
 }
 
 .admin-container .admin-filter-field.mat-form-field-appearance-outline .mat-form-field-label {
-  top: 1em;
-}
-
-.admin-container .admin-filter-field.mat-form-field-appearance-outline .mat-input-element {
-  transform: translateY(-4px);
+  top: 1.325em;
 }
 .btn-action { margin: 0; }
 .admin-state-success { color: #2e7d32; font-weight: 600; }
