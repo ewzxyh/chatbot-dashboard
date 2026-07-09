@@ -227,7 +227,7 @@
       matTooltipPosition='right'
       matTooltipHideDelay="100"
       routerLinkActive="item-active">
-      <a id="casezap-anchor" class="customAncor" routerLink="project/{{ project._id }}/casezap">
+      <a id="casezap-anchor" class="customAncor" routerLink="project/{{ project._id }}/integrations" [queryParams]="{ name: 'casezap' }">
         <span class="bot-icon-wpr">
           <mat-icon svgIcon="td-brand-whatsapp" class="nav-sidebar-icon"></mat-icon>
         </span>
