@@ -18,6 +18,7 @@ import { PERMISSIONS } from 'app/utils/permissions.constants'
   styleUrls: ['./settings-sidebar.component.scss'],
 })
 export class SettingsSidebarComponent implements OnInit {
+  readonly ALL_PROJECT_MEMBERS_CAN_ACCESS_MENUS = true;
   EMAIL_TEMPLATE_NAME = [
     'assignedRequest',
     'assignedEmailMessage',
@@ -125,6 +126,7 @@ export class SettingsSidebarComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.enableAllProjectMenus();
     // Ripristina lo stato di USER_HAS_TOGGLE_SIDEBAR da localStorage
     const savedState = localStorage.getItem('settings_sidebar_manually_closed');
     if (savedState === 'true') {
@@ -607,9 +609,47 @@ export class SettingsSidebarComponent implements OnInit {
             this.logger.log('[SETTINGS-SIDEBAR] - Custom role (3) role', status.role, 'PERMISSION_TO_VIEW_PROJECTSETTINGS_ADVANCED_READ:', this.PERMISSION_TO_VIEW_PROJECTSETTINGS_ADVANCED_READ);
           }
 
-          // You can also check status.role === 'owner' if needed
+          this.enableAllProjectMenus();
         });
     }
+
+  enableAllProjectMenus() {
+    this.PERMISSION_TO_VIEW_WIDGET_SETUP = true;
+    this.PERMISSION_TO_VIEW_DEPTS = true;
+    this.PERMISSION_TO_VIEW_TEAMMATES_ROLES_GROUPS = true;
+    this.PERMISSION_TO_VIEW_TEAMMATES = true;
+    this.PERMISSION_TO_VIEW_ROLES = true;
+    this.PERMISSION_TO_VIEW_GROUPS = true;
+    this.PERMISSION_TO_VIEW_EMAIL_TICKETING = true;
+    this.PERMISSION_TO_VIEW_CANNED_RESPONSES = true;
+    this.PERMISSION_TO_UPDATE_CANNED = true;
+    this.PERMISSION_TO_VIEW_TAGS = true;
+    this.PERMISSION_TO_UPDATE_TAGS = true;
+    this.PERMISSION_TO_VIEW_OH = true;
+    this.PERMISSION_TO_VIEW_INTEGRATIONS = true;
+    this.PERMISSION_TO_VIEW_APPS = true;
+    this.PERMISSION_TO_VIEW_PROJECT_SETTINGS = true;
+    this.PERMISSION_TO_VIEW_PROJECTSETTINGS_GENERAL = true;
+    this.PERMISSION_TO_VIEW_PROJECTSETTINGS_DEVELOPER_READ = true;
+    this.PERMISSION_TO_VIEW_PROJECTSETTINGS_SMARTASSIGNMENT_READ = true;
+    this.PERMISSION_TO_VIEW_PROJECTSETTINGS_NOTIFICATION_READ = true;
+    this.PERMISSION_TO_VIEW_PROJECTSETTINGS_SECURITY_READ = true;
+    this.PERMISSION_TO_VIEW_PROJECTSETTINGS_BANNED_READ = true;
+    this.PERMISSION_TO_VIEW_PROJECTSETTINGS_ADVANCED_READ = true;
+    this.isVisibleANA = true;
+    this.isVisibleACT = true;
+    this.isVisibleTRI = true;
+    this.isVisibleGRO = true;
+    this.isVisibleDEP = true;
+    this.isVisibleOPH = true;
+    this.isVisibleCAR = true;
+    this.isVisibleLBS = true;
+    this.isVisibleAPP = true;
+    this.isVisibleETK = true;
+    this.isVisibleKNB = true;
+    this.isVisibleAUT = true;
+    this.isVisibleINT = true;
+  }
 
   getUserRole() {
     this.usersService.project_user_role_bs
@@ -892,6 +932,7 @@ export class SettingsSidebarComponent implements OnInit {
       // this.listenToKbVersion()
       this.getKnowledgeBaseSettings() 
     }
+    this.enableAllProjectMenus();
   }
 
 

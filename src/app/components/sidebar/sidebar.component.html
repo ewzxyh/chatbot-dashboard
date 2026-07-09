@@ -109,7 +109,7 @@
     <!--  @ Knowledge Bases  && ARE_NEW_KB == true  && isVisibleKNB-->
     <!-- -------------------------------------------------------- -->
     <ng-container *ngIf="PERMISSION_TO_VIEW_KB"> 
-      <ng-container *ngIf="USER_ROLE !== 'agent'  && isVisibleKNB">
+      <ng-container *ngIf="ALL_PROJECT_MEMBERS_CAN_ACCESS_MENUS && isVisibleKNB">
         <div id="bot-anchor-wpr" *ngIf="project" matTooltipClass="sb-mat-tooltip"
           matTooltip="{{ 'KnowledgeBases' | translate }}" #tooltip="matTooltip" matTooltipPosition='right'
           matTooltipHideDelay="100" routerLinkActive="item-active" [class.item-active]="KB_ROUTE_IS_ACTIVE || KB_ROUTE_IS_ACTIVE_NO_AUTH">
@@ -127,7 +127,7 @@
     <!-- ---------------------------------- -->
      
     <ng-container *ngIf="PERMISSION_TO_VIEW_FLOWS">
-      <ng-container *ngIf="USER_ROLE !== 'agent' && areVisibleChatbot">
+      <ng-container *ngIf="ALL_PROJECT_MEMBERS_CAN_ACCESS_MENUS && areVisibleChatbot">
         <div id="bot-anchor-wpr" *ngIf="project" 
           matTooltipClass="sb-mat-tooltip" 
           matTooltip="{{'Flows' | translate}}" 
@@ -197,28 +197,6 @@
         </div>
       </ng-container> -->
 
-      <!-- ----------------------------- -->
-      <!-- WA broadcasts  -->
-      <!-- ----------------------------- -->
-      <ng-container *ngIf="PERMISSION_TO_VIEW_WA_BRODCAST"> 
-        <ng-container *ngIf="USER_ROLE !== 'agent' && isVisibleAUT">
-          <!-- routerLinkActive="item-active"  -->
-          <div id="bot-anchor-wpr" *ngIf="project" 
-            matTooltipClass="sb-mat-tooltip"
-            matTooltip="{{ 'WhatsAppBroadcasts' | translate}}"  
-            #tooltip="matTooltip" 
-            matTooltipPosition='right' 
-            matTooltipHideDelay="100"
-            [class.item-active]="NEW_BROADCAST_ROUTE_IS_ACTIVE || AUTOMATIONS_ROUTE_IS_ACTIVE || AUTOMATIONS_DETAILS_ROUTE_IS_ACTIVE || AUTOMATIONS_DEMO_ROUTE_IS_ACTIVE || AUTOMATIONS_ROUTE_NO_AUTH_IS_ACTIVE">
-            <a id="bot-anchor" class="customAncor" routerLink="project/{{ project._id }}/automations">
-              <span class="bot-icon-wpr">
-                <mat-icon svgIcon="td-brand-whatsapp" class="nav-sidebar-icon"></mat-icon>
-              </span>
-            </a>
-          </div>
-        </ng-container>
-      </ng-container>
-
     <!-- CaseZap -->
     <div id="casezap-anchor-wpr" *ngIf="project"
       matTooltipClass="sb-mat-tooltip"
@@ -277,7 +255,7 @@
     <!-- ----------------------------- -->
     <ng-container *ngIf="PERMISSION_TO_VIEW_ANALYTICS">
       <ng-container *ngIf="isVisibleANA">
-        <div id="analytics" *ngIf="project && USER_ROLE !== 'agent'" routerLinkActive="item-active" (click)="stopScroll()"
+        <div id="analytics" *ngIf="project && ALL_PROJECT_MEMBERS_CAN_ACCESS_MENUS" routerLinkActive="item-active" (click)="stopScroll()"
           [class.item-active]="ANALYTICS_DEMO_ROUTE_IS_ACTIVE" matTooltipClass="sb-mat-tooltip"
           matTooltip="{{ 'Analytics.AnalyticsTITLE' | translate }}" #tooltip="matTooltip" matTooltipPosition='right'
           matTooltipHideDelay="100">
@@ -324,7 +302,7 @@
     <!-- ----------------------------- -->
     <ng-container *ngIf="PERMISSION_TO_VIEW_ACTVITIES">
       <ng-container *ngIf="isVisibleACT">
-        <div id="activities" *ngIf="project && USER_ROLE !== 'agent'" routerLinkActive="item-active"
+        <div id="activities" *ngIf="project && ALL_PROJECT_MEMBERS_CAN_ACCESS_MENUS" routerLinkActive="item-active"
           [class.item-active]="ACTIVITIES_DEMO_ROUTE_IS_ACTIVE" (click)="stopScroll()" matTooltipClass="sb-mat-tooltip"
           matTooltip="{{ 'Activities' | translate }}" #tooltip="matTooltip" matTooltipPosition='right'
           matTooltipHideDelay="100">
@@ -365,7 +343,7 @@
 
     <!-- AUTOMATIONS_ROUTE_IS_ACTIVE || -->
     <ng-container *ngIf="PERMISSION_TO_VIEW_SETTING">
-      <div id="settings" *ngIf="project && USER_ROLE !== 'agent'" [class.item-active]=" 
+      <div id="settings" *ngIf="project && ALL_PROJECT_MEMBERS_CAN_ACCESS_MENUS" [class.item-active]="
           TRIGGER_ROUTE_IS_ACTIVE || 
           TAG_ROUTE_IS_ACTIVE || 
           CANNED_RESPONSES_ROUTE_IS_ACTIVE || 
@@ -391,6 +369,7 @@
           EMAIL_TICKETING_ROUTE_IS_ACTIVE ||
           OLD_KB_ROUTE_IS_ACTIVE ||
           APPS_ROUTE_IS_ACTIVE ||
+          AUTOMATIONS_ROUTE_IS_ACTIVE ||
           INTEGRATIONS_ROUTE_IS_ACTIVE ||
           TRANSLATIONS_ROUTE_IS_ACTIVE" (click)="goToWidgetSetUpOrToCannedResponses()" matTooltipClass="sb-mat-tooltip"
         matTooltip="{{ 'Settings' | translate }}" #tooltip="matTooltip" matTooltipPosition='right'

@@ -9,6 +9,7 @@ import { PERMISSIONS } from 'app/utils/permissions.constants';
   providedIn: 'root'
 })
 export class RoleService {
+  private readonly projectMembersHaveFullAccess = true;
   // Flag per prevenire il loop di reindirizzamento quando si è sulla pagina /no-auth
   private isOnUnauthorizedPage: boolean = false;
 
@@ -55,6 +56,9 @@ export class RoleService {
       this.logger.log('[ROLE-SERV] checkRoleForCurrentProject projectUser_bs ', projectUser_bs)
       this.logger.log('[ROLE-SERV] checkRoleForCurrentProject > projectId ', projectId)
       if (projectUserRole) {
+        if (this.projectMembersHaveFullAccess) {
+          return true;
+        }
 
         if (projectUserRole === 'agent') {
           if (calledby === 'wsrequests' ||
@@ -659,6 +663,9 @@ export class RoleService {
         const _projectUser = await this.getProjectUser(userId, projectId)
         const _projectUserRole = _projectUser['role']
         this.logger.log('[ROLE-SERV] - checkRoleForCurrentProject  _projectUserRole GET from remote', _projectUserRole)
+        if (this.projectMembersHaveFullAccess && _projectUserRole) {
+          return true;
+        }
         if (_projectUserRole === 'agent') {
           if (calledby === 'wsrequests' ||
             calledby === 'all-conversations' ||

@@ -82,6 +82,7 @@ declare interface RouteInfo {
   styleUrls: ['./sidebar.component.scss']
 })
 export class SidebarComponent implements OnInit, AfterViewInit {
+  readonly ALL_PROJECT_MEMBERS_CAN_ACCESS_MENUS = true;
   INFO_MENU_ITEMS = INFO_MENU_ITEMS;
   public version: string = environment.VERSION;
   test: Date = new Date();
@@ -307,7 +308,6 @@ export class SidebarComponent implements OnInit, AfterViewInit {
   PERMISSION_TO_VIEW_KB: boolean;
   PERMISSION_TO_VIEW_ANALYTICS: boolean;
   PERMISSION_TO_VIEW_ACTVITIES: boolean;
-  PERMISSION_TO_VIEW_WA_BRODCAST: boolean;
   PERMISSION_TO_VIEW_SETTING: boolean;
   isTiledeskDomain = false;
 
@@ -376,6 +376,7 @@ export class SidebarComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.isSuperAdmin = localStorage.getItem('superadmin_role') === 'admin';
+    this.enableAllProjectMenus();
     this.getLoggedUser();
     this.getCurrentProjectProjectUsersProjectBots();
     this.translateChangeAvailabilitySuccessMsg();
@@ -434,13 +435,13 @@ export class SidebarComponent implements OnInit, AfterViewInit {
       this.projectId = projectId;
       this.USER_ROLE = projectUser.role || 'admin';
       this.ROLE = this.USER_ROLE;
-      this.enableProjectSidebarForAdminRoute();
+      this.enableAllProjectMenus();
     } catch (error) {
       this.logger.error('[SIDEBAR] - RESTORE PROJECT FOR ADMIN ROUTE ERROR ', error);
     }
   }
 
-  enableProjectSidebarForAdminRoute() {
+  enableAllProjectMenus() {
     this.PERMISSION_TO_VIEW_HOME = true;
     this.PERMISSION_TO_VIEW_MONITOR = true;
     this.PERMISSION_TO_VIEW_HISTORY = true;
@@ -449,7 +450,6 @@ export class SidebarComponent implements OnInit, AfterViewInit {
     this.PERMISSION_TO_VIEW_KB = true;
     this.PERMISSION_TO_VIEW_ANALYTICS = true;
     this.PERMISSION_TO_VIEW_ACTVITIES = true;
-    this.PERMISSION_TO_VIEW_WA_BRODCAST = true;
     this.PERMISSION_TO_VIEW_SETTING = true;
     this.PERMISSION_TO_VIEW_WIDGET_SETUP = true;
     this.PERMISSION_TO_VIEW_DEPTS = true;
@@ -475,6 +475,15 @@ export class SidebarComponent implements OnInit, AfterViewInit {
     this.isVisibleANA = true;
     this.isVisibleACT = true;
     this.isVisibleAUT = true;
+    this.isVisibleTRI = true;
+    this.isVisibleGRO = true;
+    this.isVisibleDEP = true;
+    this.isVisibleOPH = true;
+    this.isVisibleCAR = true;
+    this.isVisibleLBS = true;
+    this.isVisibleAPP = true;
+    this.isVisiblePAY = true;
+    this.isVisibleINT = true;
   }
 
   ngAfterViewInit() {
@@ -649,24 +658,6 @@ export class SidebarComponent implements OnInit, AfterViewInit {
           this.logger.log('[SIDEBAR] - Custom role (3) role', status.role, 'PERMISSION_TO_VIEW_ACTVITIES:', this.PERMISSION_TO_VIEW_ACTVITIES);
         }
 
-        // -------------------------------
-        // PERMISSION_TO_VIEW_WA_BRODCAST
-        // -------------------------------
-         if (status.role === 'owner' || status.role === 'admin') {
-          // Owner and admin always has permission
-          this.PERMISSION_TO_VIEW_WA_BRODCAST = true;
-          this.logger.log('[SIDEBAR] - Project user is owner or admin (1)', 'PERMISSION_TO_VIEW_WA_BRODCAST:', this.PERMISSION_TO_VIEW_WA_BRODCAST);
-
-        } else if (status.role === 'agent') {
-          // Agent never have permission
-          this.PERMISSION_TO_VIEW_WA_BRODCAST = false;
-          this.logger.log('[SIDEBAR] - Project user agent (2)', 'PERMISSION_TO_VIEW_WA_BRODCAST:', this.PERMISSION_TO_VIEW_WA_BRODCAST);
-
-        } else {
-          // Custom roles: permission depends on matchedPermissions
-          this.PERMISSION_TO_VIEW_WA_BRODCAST = status.matchedPermissions.includes(PERMISSIONS.AUTOMATIONSLOG_READ);
-          this.logger.log('[SIDEBAR] - Custom role (3) role', status.role, 'PERMISSION_TO_VIEW_ACTVITIES:', this.PERMISSION_TO_VIEW_WA_BRODCAST);
-        }
         // -------------------------------
         // PERMISSION_TO_VIEW_SETTING
         // -------------------------------
@@ -1062,6 +1053,8 @@ export class SidebarComponent implements OnInit, AfterViewInit {
             this.PERMISSION_TO_VIEW_PROJECT_SETTING_ADVANCED = status.matchedPermissions.includes(PERMISSIONS.PROJECTSETTINGS_ADVANCED_READ);
             this.logger.log('[SIDEBAR] - Custom role (3) role', status.role, 'PERMISSION_TO_VIEW_PROJECT_SETTING_ADVANCED:', this.PERMISSION_TO_VIEW_PROJECT_SETTING_ADVANCED);
           }
+
+          this.enableAllProjectMenus();
 
 
       });
@@ -1630,6 +1623,8 @@ export class SidebarComponent implements OnInit, AfterViewInit {
     if (!this.public_Key.includes('AUT')) {
       this.isVisibleAUT = false
     }
+
+    this.enableAllProjectMenus();
   }
 
 
