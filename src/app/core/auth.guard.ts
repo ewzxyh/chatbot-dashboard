@@ -69,7 +69,7 @@ export class AuthGuard implements CanActivate {
       // tslint:disable-next-line:no-debugger
       // debugger
       this.user = user;
-      this.logger.log('[AUTH-GUARD] USER ', user)
+      this.logger.log('[AUTH-GUARD] User session available ', Boolean(user))
      
     });
 
@@ -148,7 +148,7 @@ export class AuthGuard implements CanActivate {
   }
 
   getUserRole(user, project_id): Promise <any> {
-    this.logger.log('[AUTH-GUARD] getUserRole user' , user, ' project_id ', project_id) 
+    this.logger.log('[AUTH-GUARD] getUserRole user id' , user && user._id, ' project_id ', project_id)
     const SERVER_BASE_PATH = this.appConfigService.getConfig().SERVER_BASE_URL;
     const PROJECTS_URL = SERVER_BASE_PATH + project_id + '/project_users/users/' + user._id
 

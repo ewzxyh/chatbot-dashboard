@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AuthService } from '../../core/auth.service';
 import { AdminService } from '../../services/admin.service';
 
 @Component({
@@ -7,14 +8,16 @@ import { AdminService } from '../../services/admin.service';
 })
 export class AdminUsersComponent implements OnInit {
   users: any[] = [];
-  displayedColumns = ['name', 'email', 'verified', 'projects', 'createdAt'];
+  displayedColumns = ['name', 'email', 'verified', 'projects', 'createdAt', 'actions'];
   totalCount = 0;
   page = 0;
   limit = 10;
   isLoading = true;
   searchText = '';
+  impersonatingTargetId: string = null;
+  impersonationError = '';
 
-  constructor(private adminService: AdminService) { }
+  constructor(private adminService: AdminService, private auth: AuthService) { }
   ngOnInit() { this.loadUsers(); }
 
   loadUsers() {
@@ -29,4 +32,20 @@ export class AdminUsersComponent implements OnInit {
   onPageChange(event: any) { this.page = event.pageIndex; this.limit = event.pageSize; this.loadUsers(); }
   nextPage() { if ((this.page + 1) * this.limit < this.totalCount) { this.page++; this.loadUsers(); } }
   prevPage() { if (this.page > 0) { this.page--; this.loadUsers(); } }
+
+  impersonateUser(user: any) {
+    if (!user || !user._id || this.impersonatingTargetId) return;
+    const userName = [user.firstname, user.lastname].filter(Boolean).join(' ') || user.email;
+    if (!window.confirm('Acessar o dashboard como ' + userName + '?')) return;
+
+    this.impersonationError = '';
+    this.impersonatingTargetId = user._id;
+    this.auth.impersonate('user', user._id).subscribe(
+      () => { },
+      () => {
+        this.impersonationError = 'Não foi possível acessar como este usuário.';
+        this.impersonatingTargetId = null;
+      }
+    );
+  }
 }

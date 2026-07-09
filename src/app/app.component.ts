@@ -91,6 +91,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
     wsInitialized: boolean = false;
     currenturl: string
+    restoringAdminSession = false;
     // private logger: LoggerService = LoggerInstance.getInstance();
     // background_bottom_section = brand.sidebar.background_bottom_section
     constructor(
@@ -507,6 +508,26 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         return;
     }
 
+
+    get impersonationState() {
+        return this.auth.impersonation_bs.value;
+    }
+
+    get impersonationError() {
+        return this.auth.impersonation_error_bs.value;
+    }
+
+    restoreAdminSession() {
+        if (this.restoringAdminSession) {
+            return;
+        }
+        this.restoringAdminSession = true;
+        this.auth.restoreAdminSession()
+            .catch(() => { })
+            .finally(() => {
+                this.restoringAdminSession = false;
+            });
+    }
 
     ngOnInit() {
         // this.logger.log('[APP-COMPONENT] ====== >>> HELLO APP.COMP (ngOnInit)  ')
@@ -979,8 +1000,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.sleekplanSsoService.getSsoToken(user).subscribe(
             (response) => {
-                this.logger.log('[APP-COMP] sleekplanSso response ', response)
-                this.logger.log('[APP-COMP] sleekplanSso response token', response['token'])
+                this.logger.log('[APP-COMP] sleekplanSso token received')
 
 
                 window['SLEEK_USER'] = { token: response['token'] }
@@ -1024,7 +1044,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         let isActivePAY = this.getPAYValue()
         this.auth.user_bs.subscribe((user) => {
             this.user = user;
-            this.logger.log('% »»» WebSocketJs WF - APP-COMPONENT - LoggedUser ', user);
+            this.logger.log('% »»» WebSocketJs WF - APP-COMPONENT - User available ', Boolean(user));
 
             this.logger.log('% »»» WebSocketJs WF - APP-COMPONENT - isActivePAY ', isActivePAY);
             if (user && isActivePAY && this.sleekplanService.isEnabled()) {
@@ -1072,14 +1092,14 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     closeWSAndResetWsRequestsIfUserIsSignedOut_NoFB() {
         this.auth.user_bs.subscribe((user) => {
 
-            this.logger.log('[APP-COMPONENT] - closeWSAndResetWsRequestsIfUserIsSignedOut_NoFB ', user)
+            this.logger.log('[APP-COMPONENT] - closeWSAndResetWsRequestsIfUserIsSignedOut_NoFB - User available ', Boolean(user))
 
             if (user) {
-                this.logger.log('[APP-COMPONENT] - closeWSAndResetWsRequestsIfUserIsSignedOut_NoFB - User is signed in. ', user)
+                this.logger.log('[APP-COMPONENT] - closeWSAndResetWsRequestsIfUserIsSignedOut_NoFB - User is signed in')
                 this.userIsSignedIn = true
 
             } else {
-                this.logger.log('[APP-COMPONENT] - closeWSAndResetWsRequestsIfUserIsSignedOut_NoFB - No user is signed in. ', user)
+                this.logger.log('[APP-COMPONENT] - closeWSAndResetWsRequestsIfUserIsSignedOut_NoFB - No user is signed in')
 
                 this.webSocketClose()
                 this.wsRequestsService.resetWsRequestList()
@@ -1093,11 +1113,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.logger.log('[APP-COMPONENT] % »»» WebSocketJs WF - APP-COMPONENT - closeWSAndResetWsRequestsIfUserIsSignedOut ', typeof firebase.auth)
         firebase.auth().onAuthStateChanged(function (user) {
             if (user) {
-                this.logger.log('% »»» WebSocketJs WF - APP-COMPONENT - User is signed in. ', user)
+                this.logger.log('% »»» WebSocketJs WF - APP-COMPONENT - User is signed in')
                 this.userIsSignedIn = true
 
             } else {
-                this.logger.log('[APP-COMPONENT] % »»» WebSocketJs WF - APP-COMPONENT - closeWSAndResetWsRequestsIfUserIsSignedOut - No user is signed in. ', user)
+                this.logger.log('[APP-COMPONENT] % »»» WebSocketJs WF - APP-COMPONENT - closeWSAndResetWsRequestsIfUserIsSignedOut - No user is signed in')
 
                 this.userIsSignedIn = false
                 this.logger.log('[APP-COMPONENT] % »»» WebSocketJs WF - APP-COMPONENT - User is signed in. ', this.userIsSignedIn)

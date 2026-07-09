@@ -1,0 +1,75 @@
+:host {
+  --impersonation-banner-height: 56px;
+}
+
+.impersonation-banner {
+  position: sticky;
+  top: 0;
+  z-index: 1100;
+  box-sizing: border-box;
+  height: var(--impersonation-banner-height);
+  padding: 8px 20px;
+  border-bottom: 1px solid #c58b00;
+  background: #fff4cc;
+  color: #3d2d00;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.impersonation-banner-message {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  line-height: 1.35;
+}
+
+.impersonation-banner-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.impersonation-banner-error {
+  font-size: 12px;
+  font-weight: 600;
+  color: #8b1a1a;
+}
+
+.impersonation-banner button {
+  flex: 0 0 auto;
+  border-color: #765400;
+  color: #3d2d00;
+}
+
+.impersonation-banner button mat-icon {
+  margin-right: 6px;
+}
+
+.wrapper.impersonation-session-active {
+  height: calc(100vh - var(--impersonation-banner-height));
+}
+
+.wrapper.impersonation-session-active > .sidebar,
+.wrapper.impersonation-session-active > .user-details-sidebar {
+  top: var(--impersonation-banner-height);
+}
+
+@media (max-width: 600px) {
+  :host {
+    --impersonation-banner-height: 128px;
+  }
+
+  .impersonation-banner {
+    align-items: stretch;
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 12px;
+  }
+
+  .impersonation-banner button {
+    align-self: flex-end;
+  }
+}

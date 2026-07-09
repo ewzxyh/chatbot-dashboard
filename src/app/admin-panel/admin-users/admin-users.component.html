@@ -7,6 +7,7 @@
 </div>
 
 <div *ngIf="isLoading" class="admin-loading-state">Carregando...</div>
+<div *ngIf="impersonationError" class="admin-error-state" role="alert">{{ impersonationError }}</div>
 
 <table mat-table *ngIf="!isLoading" [dataSource]="users" class="admin-table">
   <ng-container matColumnDef="name">
@@ -34,6 +35,21 @@
   <ng-container matColumnDef="createdAt">
     <th mat-header-cell *matHeaderCellDef>Criado em</th>
     <td mat-cell *matCellDef="let u">{{ u.createdAt | date:'dd/MM/yyyy' }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="actions">
+    <th mat-header-cell *matHeaderCellDef>Ações</th>
+    <td mat-cell *matCellDef="let u" class="admin-actions-cell">
+      <button
+        mat-stroked-button
+        type="button"
+        class="btn-action"
+        (click)="impersonateUser(u)"
+        [disabled]="impersonatingTargetId !== null">
+        <mat-icon aria-hidden="true">person_search</mat-icon>
+        {{ impersonatingTargetId === u._id ? 'Entrando...' : 'Acessar como usuário' }}
+      </button>
+    </td>
   </ng-container>
 
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

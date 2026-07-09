@@ -2,6 +2,7 @@ import { Component, OnInit, TemplateRef } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
 import { timeout } from 'rxjs/operators';
+import { AuthService } from '../../core/auth.service';
 import { AdminService } from '../../services/admin.service';
 import { formatAdminText } from '../admin-text.util';
 
@@ -53,13 +54,15 @@ export class AdminProjectsComponent implements OnInit {
   billingJobResult: any = null;
   billingJobLoading = false;
   billingJobMessage = '';
+  impersonatingTargetId: string = null;
+  impersonationError = '';
   planDisplayNames: any = { Free: 'Iniciante', Starter: 'Standard', Pro: 'Pro', Business: 'Enterprise', Custom: 'Custom' };
   private usageRequestSub: Subscription = null;
   private usageSnapshotsRequestSub: Subscription = null;
   private billingRequestSub: Subscription = null;
   private readonly modalRequestTimeoutMs = 20000;
 
-  constructor(private adminService: AdminService, private dialog: MatDialog) { }
+  constructor(private adminService: AdminService, private dialog: MatDialog, private auth: AuthService) { }
   ngOnInit() {
     this.loadProjects();
     this.loadBillingJobStatus();
@@ -87,6 +90,21 @@ export class AdminProjectsComponent implements OnInit {
 
   displayText(value: any): string {
     return formatAdminText(value);
+  }
+
+  impersonateProject(project: any) {
+    if (!project || !project._id || this.impersonatingTargetId) return;
+    if (!window.confirm('Acessar o dashboard do projeto ' + this.displayText(project.name) + '?')) return;
+
+    this.impersonationError = '';
+    this.impersonatingTargetId = project._id;
+    this.auth.impersonate('project', project._id).subscribe(
+      () => { },
+      () => {
+        this.impersonationError = 'Não foi possível acessar este projeto.';
+        this.impersonatingTargetId = null;
+      }
+    );
   }
 
   private cancelProjectModalRequests() {

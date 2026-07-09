@@ -7,7 +7,8 @@ import {
   NavigationStart,
 } from '@angular/router'
 import { NotifyService } from './notify.service'
-import { Observable } from 'rxjs'
+import { defer, from, Observable, throwError } from 'rxjs'
+import { finalize, map, switchMap } from 'rxjs/operators'
 import { environment } from '../../environments/environment'
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { User } from '../models/user-model'
@@ -48,6 +49,50 @@ export class SuperUser {
 
 // .end SUPER USER
 
+export type ImpersonationTargetType = 'user' | 'project';
+
+export interface ImpersonationResponse {
+  token: string;
+  user: User;
+  projectId?: string;
+  role?: string;
+  expiresIn: number;
+}
+
+export interface ImpersonationState {
+  targetType: ImpersonationTargetType;
+  targetId: string;
+  expiresAt: number;
+}
+
+type ImpersonationPhase = 'starting' | 'active';
+
+interface ImpersonationBackup {
+  phase: ImpersonationPhase;
+  nonce: string;
+  targetType: ImpersonationTargetType;
+  targetId: string;
+  route: string;
+  targetRoute: string;
+  storage: { [key: string]: string | null };
+  expiresAt?: number;
+  effectiveUserId?: string;
+  effectiveToken?: string;
+}
+
+const IMPERSONATION_BACKUP_KEY = 'chatcase_impersonation_backup';
+const IMPERSONATION_ID_PATTERN = /^[a-f0-9]{24}$/i;
+const IMPERSONATION_NONCE_PATTERN = /^[a-f0-9]{32}$/i;
+const IMPERSONATION_STORAGE_KEYS = [
+  'user',
+  'tiledesk_token',
+  'superadmin_role',
+  'project',
+  'role',
+  'current_project_user',
+  'last_project'
+];
+
 @Injectable()
 export class AuthService {
   PLAN_NAME = PLAN_NAME;
@@ -66,6 +111,8 @@ export class AuthService {
 
   public user_bs: BehaviorSubject<User> = new BehaviorSubject<User>(null)
   public project_bs: BehaviorSubject<Project> = new BehaviorSubject<Project>(null)
+  public impersonation_bs: BehaviorSubject<ImpersonationState> = new BehaviorSubject<ImpersonationState>(null)
+  public impersonation_error_bs: BehaviorSubject<string> = new BehaviorSubject<string>(null)
   public hasChangedProjectFroList$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false)
   public settingSidebarIsOpned: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true)
   public nativeBotSidebarIsOpened: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null)
@@ -95,6 +142,9 @@ export class AuthService {
 
   URL_last_fragment: string
   HAS_JWT: boolean
+  private impersonationRequestInProgress = false
+  private impersonationExpiryTimer: number = null
+  private impersonationStorageListener = (event: StorageEvent) => this.handleImpersonationStorageEvent(event)
 
   selected_project_id: string
   public_Key: string;
@@ -148,8 +198,13 @@ export class AuthService {
     this.APP_IS_DEV_MODE = isDevMode()
     // this.logger.log('[AUTH-SERV] ====== isDevMode ', this.APP_IS_DEV_MODE);
 
-    this.checkIfExistStoredUserAndPublish()
-    this.checkStoredProjectAndPublishIfPublishedProjectIsNull()
+    this.getAppConfigAnBuildUrl()
+    window.addEventListener('storage', this.impersonationStorageListener)
+    const shouldPublishStoredSession = this.bootstrapImpersonationState()
+    if (shouldPublishStoredSession) {
+      this.checkIfExistStoredUserAndPublish()
+      this.checkStoredProjectAndPublishIfPublishedProjectIsNull()
+    }
 
     this.logger.log('[AUTH-SERV] appConfigService.getConfig().pushEngine 1 ', appConfigService.getConfig().pushEngine)
     if (appConfigService.getConfig().pushEngine === 'firebase') {
@@ -158,7 +213,6 @@ export class AuthService {
     }
 
     this.checkIfExpiredSessionModalIsOpened()
-    this.getAppConfigAnBuildUrl()
     // this.getProjectPlan()
   }
 
@@ -220,6 +274,377 @@ export class AuthService {
     // this.logger.log('[AUTH-SERV] AppConfigService getAppConfig SIGNIN_BASE_URL', this.SIGNIN_BASE_URL);
     // this.logger.log('[AUTH-SERV] AppConfigService getAppConfig VERIFY_EMAIL_URL', this.VERIFY_EMAIL_URL);
     // this.logger.log('[AUTH-SERV] AppConfigService getAppConfig CREATE_CUSTOM_TOKEN_URL', this.CREATE_CUSTOM_TOKEN_URL);
+  }
+
+  get isImpersonating(): boolean {
+    return localStorage.getItem(IMPERSONATION_BACKUP_KEY) !== null;
+  }
+
+  impersonate(targetType: ImpersonationTargetType, targetId: string): Observable<ImpersonationResponse> {
+    return defer(() => {
+      if (this.isImpersonating || this.impersonationRequestInProgress) {
+        return throwError(new Error('An impersonation session is already active.'));
+      }
+
+      const nonce = this.createImpersonationNonce();
+      let backup: ImpersonationBackup;
+      let storageMutationStarted = false;
+      try {
+        backup = this.createStartingBackup(targetType, targetId, nonce);
+        localStorage.setItem(IMPERSONATION_BACKUP_KEY, JSON.stringify(backup));
+        this.assertStartingOwnership(nonce);
+      } catch (error) {
+        this.removeOwnedStartingBackup(nonce);
+        return throwError(error);
+      }
+
+      const httpOptions = {
+        headers: new HttpHeaders({
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': backup.storage.tiledesk_token
+        })
+      };
+      const url = this.SERVER_BASE_PATH + 'sadmin/impersonation';
+      this.impersonationRequestInProgress = true;
+
+      return this._httpClient.post<ImpersonationResponse>(url, { targetType, targetId }, httpOptions).pipe(
+        switchMap((response) => {
+          this.validateImpersonationResponse(response, backup);
+          this.assertStartingOwnership(nonce);
+          return from(this.switchFirebaseSession(response.token)).pipe(
+            map(() => {
+              this.assertStartingOwnership(nonce);
+              storageMutationStarted = true;
+              this.applyImpersonationStorage(response, backup);
+              return response;
+            })
+          );
+        }),
+        finalize(() => {
+          this.impersonationRequestInProgress = false;
+          if (!storageMutationStarted) {
+            this.removeOwnedStartingBackup(nonce);
+          }
+        })
+      );
+    });
+  }
+
+  async restoreAdminSession(): Promise<boolean> {
+    this.clearImpersonationExpiryTimer();
+    this.impersonation_error_bs.next(null);
+    const backup = this.getImpersonationBackup();
+    if (!backup || !this.hasValidRestorationInvariants(backup) ||
+      (backup.phase === 'active' && !this.hasValidActiveInvariants(backup))) {
+      return this.failClosedImpersonation();
+    }
+    const adminJwt = backup.storage.tiledesk_token;
+
+    try {
+      await this.switchFirebaseSession(adminJwt);
+    } catch (error) {
+      this.impersonation_error_bs.next('Não foi possível restaurar a sessão administrativa. Tente novamente.');
+      throw new Error('Unable to restore the Firebase admin session.');
+    }
+
+    if (!this.hasBackupOwnership(backup.phase, backup.nonce)) {
+      this.impersonation_error_bs.next('A sessão mudou em outra aba. Recarregue a página.');
+      throw new Error('Impersonation ownership changed during restore.');
+    }
+
+    this.replaceAuthStorage(backup.storage);
+    this.location.go(backup.route);
+    if (this.hasBackupOwnership(backup.phase, backup.nonce)) {
+      localStorage.removeItem(IMPERSONATION_BACKUP_KEY);
+    }
+    window.location.reload();
+    return true;
+  }
+
+  private applyImpersonationStorage(response: ImpersonationResponse, backup: ImpersonationBackup) {
+    this.assertStartingOwnership(backup.nonce);
+    const user: User = Object.assign({}, response.user, { token: response.token });
+    try {
+      this.replaceAuthStorage({
+        user: JSON.stringify(user),
+        tiledesk_token: response.token,
+        superadmin_role: null,
+        project: null,
+        role: backup.targetType === 'project' && response.role ? response.role : null,
+        current_project_user: null,
+        last_project: null
+      });
+      const activeBackup: ImpersonationBackup = Object.assign({}, backup, {
+        phase: 'active',
+        expiresAt: Date.now() + response.expiresIn * 1000,
+        effectiveUserId: user._id,
+        effectiveToken: response.token
+      });
+      this.location.go(backup.targetRoute);
+      localStorage.setItem(IMPERSONATION_BACKUP_KEY, JSON.stringify(activeBackup));
+      window.location.reload();
+    } catch (error) {
+      this.location.go(backup.route);
+      window.location.reload();
+      throw error;
+    }
+  }
+
+  private replaceAuthStorage(values: { [key: string]: string | null }) {
+    for (const key of IMPERSONATION_STORAGE_KEYS) {
+      localStorage.removeItem(key);
+      const value = values[key];
+      if (value !== null && value !== undefined) {
+        localStorage.setItem(key, value);
+      }
+    }
+  }
+
+  private createStartingBackup(targetType: ImpersonationTargetType, targetId: string, nonce: string): ImpersonationBackup {
+    const backup: ImpersonationBackup = {
+      phase: 'starting',
+      nonce,
+      targetType,
+      targetId,
+      route: this.router.url,
+      targetRoute: this.getExpectedTargetRoute(targetType, targetId),
+      storage: {}
+    };
+    for (const key of IMPERSONATION_STORAGE_KEYS) {
+      backup.storage[key] = localStorage.getItem(key);
+    }
+    if (!this.hasValidRestorationInvariants(backup)) {
+      throw new Error('Unable to snapshot the admin session.');
+    }
+    return backup;
+  }
+
+  private createImpersonationNonce(): string {
+    const values = new Uint32Array(4);
+    window.crypto.getRandomValues(values);
+    return Array.from(values).map((value) => value.toString(16).padStart(8, '0')).join('');
+  }
+
+  private validateImpersonationResponse(response: ImpersonationResponse, backup: ImpersonationBackup) {
+    const hasValidProjectId = response &&
+      (backup.targetType !== 'project' || !response.projectId || response.projectId === backup.targetId);
+    if (!response || !response.token || !response.user || typeof response.user._id !== 'string' || !response.user._id ||
+      !Number.isFinite(response.expiresIn) || response.expiresIn <= 0 || !hasValidProjectId) {
+      throw new Error('Invalid impersonation response.');
+    }
+  }
+
+  private assertStartingOwnership(nonce: string) {
+    const backup = this.getImpersonationBackup();
+    if (!backup || backup.phase !== 'starting' || backup.nonce !== nonce || !this.hasValidRestorationInvariants(backup)) {
+      throw new Error('Impersonation lock ownership was lost.');
+    }
+  }
+
+  private removeOwnedStartingBackup(nonce: string) {
+    const backup = this.getImpersonationBackup();
+    if (backup && backup.phase === 'starting' && backup.nonce === nonce) {
+      localStorage.removeItem(IMPERSONATION_BACKUP_KEY);
+    }
+  }
+
+  private hasBackupOwnership(phase: ImpersonationPhase, nonce: string): boolean {
+    const backup = this.getImpersonationBackup();
+    return Boolean(backup && backup.phase === phase && backup.nonce === nonce);
+  }
+
+  private hasValidRestorationInvariants(backup: ImpersonationBackup): boolean {
+    if (!backup || !backup.storage || !IMPERSONATION_NONCE_PATTERN.test(backup.nonce) ||
+      !IMPERSONATION_ID_PATTERN.test(backup.targetId) || !this.isAdminRoute(backup.route) ||
+      backup.targetRoute !== this.getExpectedTargetRoute(backup.targetType, backup.targetId) ||
+      !IMPERSONATION_STORAGE_KEYS.every((key) => Object.prototype.hasOwnProperty.call(backup.storage, key))) {
+      return false;
+    }
+
+    const adminUser = this.parseStoredValue<User>(backup.storage.user);
+    const adminToken = backup.storage.tiledesk_token;
+    return Boolean(adminUser && adminUser._id && adminToken && adminUser.token === adminToken &&
+      backup.storage.superadmin_role === 'admin');
+  }
+
+  private hasValidActiveInvariants(backup: ImpersonationBackup): boolean {
+    if (!this.hasValidActiveMetadata(backup)) {
+      return false;
+    }
+    const currentUser = this.parseStoredValue<User>(localStorage.getItem('user'));
+    const currentToken = localStorage.getItem('tiledesk_token');
+    return Boolean(currentUser && currentToken && currentUser._id === backup.effectiveUserId &&
+      currentUser.token === backup.effectiveToken && currentToken === backup.effectiveToken &&
+      localStorage.getItem('superadmin_role') === null);
+  }
+
+  private hasValidActiveMetadata(backup: ImpersonationBackup): boolean {
+    return backup.phase === 'active' && IMPERSONATION_ID_PATTERN.test(backup.effectiveUserId || '') &&
+      Boolean(backup.effectiveToken) && Number.isFinite(backup.expiresAt);
+  }
+
+  private getExpectedTargetRoute(targetType: ImpersonationTargetType, targetId: string): string {
+    if (!targetId || typeof targetId !== 'string') {
+      return '';
+    }
+    return targetType === 'project' ? '/project/' + targetId + '/home' : '/projects';
+  }
+
+  private isAdminRoute(route: string): boolean {
+    return typeof route === 'string' &&
+      (route === '/admin' || route.indexOf('/admin/') === 0 || route.indexOf('/admin?') === 0);
+  }
+
+  private bootstrapImpersonationState(): boolean {
+    const storedBackup = localStorage.getItem(IMPERSONATION_BACKUP_KEY);
+    if (!storedBackup) {
+      return true;
+    }
+
+    const backup = this.parseImpersonationBackup(storedBackup);
+    if (!backup || !this.hasValidRestorationInvariants(backup)) {
+      this.failClosedImpersonation();
+      return false;
+    }
+
+    if (backup.phase === 'starting') {
+      this.restoreAdminSession().catch(() => { });
+      return false;
+    }
+
+    if (!this.hasValidActiveInvariants(backup)) {
+      this.failClosedImpersonation();
+      return false;
+    }
+
+    this.impersonation_bs.next({
+      targetType: backup.targetType,
+      targetId: backup.targetId,
+      expiresAt: backup.expiresAt
+    });
+    if (backup.expiresAt <= Date.now()) {
+      this.restoreAdminSession().catch(() => { });
+      return false;
+    }
+    this.scheduleImpersonationExpiry(backup.expiresAt);
+    return true;
+  }
+
+  private scheduleImpersonationExpiry(expiresAt: number) {
+    this.clearImpersonationExpiryTimer();
+    this.impersonationExpiryTimer = window.setTimeout(() => {
+      this.restoreAdminSession().catch(() => { });
+    }, Math.max(0, expiresAt - Date.now()));
+  }
+
+  private clearImpersonationExpiryTimer() {
+    if (this.impersonationExpiryTimer !== null) {
+      window.clearTimeout(this.impersonationExpiryTimer);
+      this.impersonationExpiryTimer = null;
+    }
+  }
+
+  private async switchFirebaseSession(jwt: string): Promise<void> {
+    if (this.appConfigService.getConfig().firebaseAuth !== true) {
+      return;
+    }
+    const firebaseToken = await this.chat21CreateFirebaseCustomToken(jwt).toPromise();
+    if (typeof firebaseToken !== 'string' || !firebaseToken) {
+      throw new Error('Invalid Firebase custom token.');
+    }
+    await firebase.auth().signInWithCustomToken(firebaseToken);
+  }
+
+  private handleImpersonationStorageEvent(event: StorageEvent) {
+    if (event.storageArea !== localStorage || event.key !== IMPERSONATION_BACKUP_KEY || event.oldValue === event.newValue) {
+      return;
+    }
+
+    const nextBackup = this.parseImpersonationBackup(event.newValue);
+    const previousBackup = this.parseImpersonationBackup(event.oldValue);
+
+    if (nextBackup && nextBackup.phase === 'starting' && (!previousBackup || previousBackup.phase === 'starting')) {
+      return;
+    }
+    if (!event.newValue && previousBackup && previousBackup.phase === 'starting') {
+      return;
+    }
+
+    this.clearImpersonationExpiryTimer();
+    if (nextBackup && nextBackup.phase === 'active') {
+      if (!this.hasValidRestorationInvariants(nextBackup) || !this.hasValidActiveInvariants(nextBackup)) {
+        this.failClosedImpersonation();
+        return;
+      }
+      this.location.go(nextBackup.targetRoute);
+      window.location.reload();
+      return;
+    }
+    if (!event.newValue && previousBackup && previousBackup.phase === 'active') {
+      if (!this.hasValidRestorationInvariants(previousBackup) || !this.hasValidActiveMetadata(previousBackup)) {
+        this.failClosedImpersonation();
+        return;
+      }
+      const restoredUser = this.parseStoredValue<User>(localStorage.getItem('user'));
+      const restoredToken = localStorage.getItem('tiledesk_token');
+      const restoredAdmin = restoredUser && restoredToken && restoredUser.token === restoredToken &&
+        restoredToken === previousBackup.storage.tiledesk_token && localStorage.getItem('superadmin_role') === 'admin';
+      this.location.go(restoredAdmin ? previousBackup.route : '/login');
+      window.location.reload();
+      return;
+    }
+
+    this.failClosedImpersonation();
+  }
+
+  private getImpersonationBackup(): ImpersonationBackup | null {
+    return this.parseImpersonationBackup(localStorage.getItem(IMPERSONATION_BACKUP_KEY));
+  }
+
+  private parseImpersonationBackup(storedBackup: string | null): ImpersonationBackup | null {
+    if (!storedBackup) {
+      return null;
+    }
+
+    try {
+      const backup = JSON.parse(storedBackup) as ImpersonationBackup;
+      if (!backup || !backup.storage || typeof backup.nonce !== 'string' || !backup.nonce ||
+        (backup.phase !== 'starting' && backup.phase !== 'active') ||
+        (backup.targetType !== 'user' && backup.targetType !== 'project')) {
+        return null;
+      }
+      return backup;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  private parseStoredValue<T>(value: string | null): T | null {
+    if (!value) {
+      return null;
+    }
+    try {
+      return JSON.parse(value) as T;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  private clearImpersonationBackup() {
+    this.clearImpersonationExpiryTimer();
+    localStorage.removeItem(IMPERSONATION_BACKUP_KEY);
+    this.impersonation_bs.next(null);
+    this.impersonation_error_bs.next(null);
+  }
+
+  private failClosedImpersonation(): boolean {
+    this.clearImpersonationExpiryTimer();
+    this.replaceAuthStorage({});
+    this.location.go('/login');
+    localStorage.removeItem(IMPERSONATION_BACKUP_KEY);
+    window.location.reload();
+    return false;
   }
 
   // -------------------------------------------------------------------------
@@ -695,7 +1120,7 @@ export class AuthService {
       .post(url, JSON.stringify(body), httpOptions)
       .toPromise()
       .then((res) => {
-        this.logger.log('[AUTH-SERV] SIGNIN RES: ', res)
+        this.logger.log('[AUTH-SERV] SIGNIN response received')
         const jsonRes = res
         const user: User = jsonRes['user']
 
@@ -727,10 +1152,10 @@ export class AuthService {
         // SET USER IN LOCAL STORAGE
         localStorage.setItem('user', JSON.stringify(user))
         localStorage.setItem('tiledesk_token', user.token) // x autologin of Chat ionic
-        this.logger.log('[AUTH-SERV] > USER ', user)
+        this.logger.log('[AUTH-SERV] User session stored')
 
         ///////////////////
-        this.logger.log('[AUH-SERV] SSO - LOGIN 1. POST DATA ', jsonRes)
+        this.logger.log('[AUH-SERV] SSO - LOGIN response processed')
         if (jsonRes['success'] === true) {
           this.logger.log('[AUTH-SERV] SSO - LOGIN getConfig firebaseAuth', this.appConfigService.getConfig().firebaseAuth)
 
@@ -740,7 +1165,7 @@ export class AuthService {
             this.chat21CreateFirebaseCustomToken(jsonRes['token']).subscribe(
               (fbtoken: string) => {
                 // this.firebaseSignin(email, password).subscribe(fbtoken => {
-                this.logger.log('[AUTH-SERV] SSO - LOGIN 2. FIREBASE SIGNIN RESPO ', fbtoken)
+                this.logger.log('[AUTH-SERV] SSO - LOGIN Firebase token received')
 
                 if (fbtoken) {
                   // Firebase Sign in using custom token
@@ -809,8 +1234,7 @@ export class AuthService {
       //  this.logger.log('[Auth-SERV] calling sleekplanSso ')
       this.sleekplanSsoService.getSsoToken(user).subscribe(
         (response) => {
-          this.logger.log('[Auth-SERV] sleekplanSso response ', response)
-          this.logger.log('[Auth-SERV] sleekplanSso response token', response['token'])
+          this.logger.log('[Auth-SERV] sleekplanSso token received')
           this.logger.log('[Auth-SERV] sleekplanSso response $sleek', window['$sleek'])
 
 
@@ -855,7 +1279,7 @@ export class AuthService {
 
         })
         .then((FCMtoken) => {
-          this.logger.log('[AUTH-SERV] >>>> getPermission FCMtoken', FCMtoken)
+          this.logger.log('[AUTH-SERV] FCM token received')
           // Save FCM Token in Firebase
           this.FCMcurrentToken = FCMtoken
           this.updateToken(FCMtoken)
@@ -869,7 +1293,7 @@ export class AuthService {
   }
 
   updateToken(FCMcurrentToken) {
-    this.logger.log('[AUTH-SERV] >>>> updateToken ', FCMcurrentToken)
+    this.logger.log('[AUTH-SERV] Updating FCM token')
     // this.afAuth.authState.take(1).subscribe(user => {
     if (!this.userId || !FCMcurrentToken) {
       return
@@ -891,7 +1315,7 @@ export class AuthService {
 
     updates[connectionsRefinstancesId + connection] = device_model
 
-    this.logger.log('[AUTH-SERV] Firebase Cloud Messaging  - Update token updates ', updates)
+    this.logger.log('[AUTH-SERV] Firebase Cloud Messaging token update prepared')
     firebase.database().ref().update(updates)
   }
 
@@ -1153,6 +1577,7 @@ export class AuthService {
   }
 
   signOut(calledby: string) {    
+    this.clearImpersonationExpiryTimer()
     this.cacheService.clearAllProjectsCache()
     // Pulisci anche la cache dei progetti al logout
     this.projectCacheService.clearAllProjectCache()
@@ -1321,7 +1746,7 @@ export class AuthService {
       const stored__tiledeskToken = localStorage.getItem('tiledesk_token')
       if (stored__tiledeskToken) {
         localStorage.removeItem('tiledesk_token')
-        this.logger.log('[AUTH-SERV] SIGNOUT - STORED stored__tiledeskToken : ', stored__tiledeskToken)
+        this.logger.log('[AUTH-SERV] SIGNOUT - Removed stored token')
       }
 
       const stored__lastProject = localStorage.getItem('last_project')
@@ -1334,6 +1759,7 @@ export class AuthService {
     } else {
       this.logger.log('[AUTH-SERV] Signout current url contains request-for-panel ')
     }
+    this.clearImpersonationBackup()
 
     // ------------------------------------------------------------------------------------------------------------
     // RUN removeInstanceIdAndSignout() if pushEngine === 'firebase' +
@@ -1353,7 +1779,7 @@ export class AuthService {
     if (this.appConfigService.getConfig().pushEngine === 'firebase') {
       this.logger.log('[AUTH-SERV] signOut pushEngine FIREBASE')
       if (!this.APP_IS_DEV_MODE && this.FCM_Supported === true) {
-        this.logger.log('[AUTH-SERV] signOut this.FCMcurrentToken ', this.FCMcurrentToken)
+        this.logger.log('[AUTH-SERV] signOut has an FCM token')
         this.logger.log('[AUTH-SERV] signOut here 1 ')
         if (this.FCMcurrentToken !== undefined && this.userId !== undefined) {
           this.logger.log('[AUTH-SERV] signOut here 2 ')
@@ -1375,7 +1801,7 @@ export class AuthService {
               vapidKey: this.appConfigService.getConfig().firebase.vapidKey,
             })
             .then((FCMtoken) => {
-              this.logger.log('[AUTH-SERV] signOut >>>> getToken FCMtoken', FCMtoken)
+              this.logger.log('[AUTH-SERV] signOut retrieved the FCM token')
               this.FCMcurrentToken = FCMtoken
               const storedUser = localStorage.getItem('user')
               const storedUserObj = JSON.parse(storedUser)
@@ -1419,7 +1845,6 @@ export class AuthService {
 
   removeInstanceIdAndSignout(calledby, FCMcurrentToken, userId) {
     // this.logger.log('[AUTH-SERV] - removeInstanceIdAndSignout calledby ', calledby)
-    // this.logger.log('[AUTH-SERV] - removeInstanceIdAndSignout - FCM Token: ', FCMcurrentToken);
     // this.logger.log('[AUTH-SERV] - removeInstanceIdAndSignout - USER ID: ', userId);
     // this.connectionsRefinstancesId = this.urlNodeFirebase+"/users/"+userUid+"/instances/";
     const urlNodeFirebase = '/apps/tilechat'

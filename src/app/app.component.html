@@ -1,4 +1,22 @@
-<div class="wrapper">
+<div *ngIf="impersonationState || impersonationError" class="impersonation-banner" role="status" aria-live="polite">
+  <div class="impersonation-banner-message">
+    <mat-icon aria-hidden="true">warning</mat-icon>
+    <span class="impersonation-banner-copy">
+      <span *ngIf="impersonationState">
+        <strong>Sessão de suporte ativa.</strong>
+        Você está acessando como {{ impersonationState.targetType === 'project' ? 'um projeto' : 'outro usuário' }}.
+      </span>
+      <span *ngIf="!impersonationState"><strong>Recuperação de sessão pendente.</strong></span>
+      <span *ngIf="impersonationError" class="impersonation-banner-error" role="alert">{{ impersonationError }}</span>
+    </span>
+  </div>
+  <button mat-stroked-button type="button" (click)="restoreAdminSession()" [disabled]="restoringAdminSession">
+    <mat-icon aria-hidden="true">keyboard_return</mat-icon>
+    {{ restoringAdminSession ? 'Voltando...' : 'Voltar ao admin' }}
+  </button>
+</div>
+
+<div class="wrapper" [class.impersonation-session-active]="impersonationState || impersonationError">
   <!-- <div class="sidebar" data-color='red' data-image=""> -->
   <appdashboard-image-viewer></appdashboard-image-viewer>
 
