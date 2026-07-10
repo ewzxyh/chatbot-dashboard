@@ -135,7 +135,7 @@
                   <button mat-stroked-button type="button" [disabled]="isTestingChannel(channelKey(row))" (click)="testChannel(row)">
                     {{ isTestingChannel(channelKey(row)) ? 'Testando...' : 'Testar canal' }}
                   </button>
-                  <button mat-stroked-button type="button" [disabled]="isRegisteringWebhook(channelKey(row))" (click)="registerWebhook(row)">
+                  <button *ngIf="canRegisterWebhook(row)" mat-stroked-button type="button" [disabled]="isRegisteringWebhook(channelKey(row))" (click)="registerWebhook(row)">
                     {{ isRegisteringWebhook(channelKey(row)) ? 'Registrando...' : 'Registrar webhook' }}
                   </button>
                   <button mat-stroked-button type="button" (click)="showChannelErrors(row)">Ver erros</button>

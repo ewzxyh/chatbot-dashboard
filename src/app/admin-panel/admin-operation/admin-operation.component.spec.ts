@@ -403,7 +403,7 @@ describe('AdminOperationComponent', () => {
     expect(component.notificationTestResult.status).toBe('success');
   });
 
-  it('restaura teste, webhook e erros para cada canal paginado', () => {
+  it('registra WABA pelo produto quando o diagnostico usa canal webhook', () => {
     component.ngOnInit();
     const channel = component.channelRows[0];
 
@@ -412,7 +412,7 @@ describe('AdminOperationComponent', () => {
     component.showChannelErrors(channel);
 
     expect(adminService.testChannelConnection).toHaveBeenCalledWith('webhook', 'integration-1');
-    expect(adminService.registerChannelWebhook).toHaveBeenCalledWith('webhook', 'integration-1');
+    expect(adminService.registerChannelWebhook).toHaveBeenCalledWith('waba', 'integration-1');
     expect(component.channelTestResults['webhook:integration-1'].providerHealth).toBe('ok');
     expect(component.webhookRegisterResults['webhook:integration-1'].status).toBe('registered');
     expect(component.tab).toBe('events');
@@ -422,6 +422,24 @@ describe('AdminOperationComponent', () => {
       project_id: 'project-1',
       integrationId: 'integration-1'
     });
+  });
+
+  it('registra CaseZap pelo produto allowlisted', () => {
+    component.ngOnInit();
+    const channel = { ...channels.data[0], product: 'casezap' as const, channel: 'casezap' as const };
+
+    component.registerWebhook(channel);
+
+    expect(adminService.registerChannelWebhook).toHaveBeenCalledWith('casezap', 'integration-1');
+  });
+
+  it('nao oferece registro para produto nao suportado', () => {
+    const channel = { ...channels.data[0], product: 'unknown' as never };
+
+    expect(component.canRegisterWebhook(channel)).toBe(false);
+    component.registerWebhook(channel);
+
+    expect(adminService.registerChannelWebhook).not.toHaveBeenCalled();
   });
 
   it('mantem testes de canais concorrentes isolados por integracao', () => {

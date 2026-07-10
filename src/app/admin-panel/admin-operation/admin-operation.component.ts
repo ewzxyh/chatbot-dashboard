@@ -30,6 +30,7 @@ import { isOperationalIssueStatus, isOperationalQueueIssue } from '../admin-oper
 
 type OperationTab = 'channels' | 'alerts' | 'diagnostics' | 'events';
 type OperationResourceType = 'service' | 'queue';
+type SupportedWebhookProduct = 'casezap' | 'waba';
 
 interface OperationTabDefinition {
   id: OperationTab;
@@ -398,6 +399,10 @@ export class AdminOperationComponent implements OnInit, OnDestroy {
     return this.registeringWebhookKeys.has(key);
   }
 
+  canRegisterWebhook(channel: ChannelDiagnostic): boolean {
+    return this.getWebhookProduct(channel) !== null;
+  }
+
   testChannel(channel: ChannelDiagnostic): void {
     if (!channel || this.destroyed) return;
     const key = this.channelKey(channel);
@@ -422,12 +427,13 @@ export class AdminOperationComponent implements OnInit, OnDestroy {
   }
 
   registerWebhook(channel: ChannelDiagnostic): void {
-    if (!channel || this.destroyed) return;
+    const product = this.getWebhookProduct(channel);
+    if (!channel || this.destroyed || !product) return;
     const key = this.channelKey(channel);
     if (this.isRegisteringWebhook(key)) return;
     this.registeringWebhookKeys.add(key);
     this.webhookRegisterResults[key] = null;
-    const subscription = this.adminService.registerChannelWebhook(channel.channel, channel.integrationId).subscribe(
+    const subscription = this.adminService.registerChannelWebhook(product, channel.integrationId).subscribe(
       (response) => {
         this.webhookRegisterResults[key] = response && response.result ? response.result : response;
         this.registeringWebhookKeys.delete(key);
@@ -461,6 +467,11 @@ export class AdminOperationComponent implements OnInit, OnDestroy {
       integrationId: ''
     };
     this.loadEvents();
+  }
+
+  private getWebhookProduct(channel: ChannelDiagnostic): SupportedWebhookProduct | null {
+    const product = this.normalizeString(channel ? channel.product : null).toLowerCase();
+    return product === 'casezap' || product === 'waba' ? product : null;
   }
 
   testStorage(): void {

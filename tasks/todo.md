@@ -160,3 +160,15 @@
 - Erro inicial não exibe tabela, paginação ou empty state; dados anteriores permanecem visíveis apenas como estado stale durante falha de refresh.
 - TS de Projects/Users/Payments e chamadas de impersonação/ações administrativas permaneceram inalterados.
 - Harness focal `13/13`, `ngc` e build passaram; suite completa segue bloqueada por imports legados ausentes.
+
+# Correcao: registro de webhooks por produto
+
+- [x] Enviar WABA/CaseZap a partir de `channel.product`, normalizado e allowlisted.
+- [x] Ocultar o botão e bloquear a ação para produtos não suportados.
+- [x] Validar tsc admin, `ngc`, build production e diff.
+
+## Review
+
+- Diagnóstico WABA com `channel: webhook` envia request backend com `channel: waba`; CaseZap envia `channel: casezap`.
+- `tsc` app/admin e `tsc` de specs administrativos passaram; `ngc` e build production passaram.
+- Karma permanece conhecido como bloqueado antes das assertions pelos imports legados ausentes (`rxjs-compat`, Analytics e `@angular/http/testing`); não houve tentativa de corrigir essa infraestrutura.
