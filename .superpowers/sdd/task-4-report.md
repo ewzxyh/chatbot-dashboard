@@ -1,38 +1,60 @@
-# Task 4: Operacao paginada
+# Task 4: Operacao administrativa
 
-## Entrega
+## Entrega atual
 
-- Operacao usa abas Canais e Alertas com filtros server-side, `count`, `page`, `limit`, loading, erro, retry e empty.
-- Requests de detalhe e summary cancelam a inscricao anterior e validam um request id; callbacks stale nao alteram estado.
-- `ngOnDestroy` encerra query params, detalhe e summary.
-- `getOperationalHealthSummary` adiciona contexto `missing`/`stale` sem executar probes. Erro de summary tem retry independente.
-- A mesma sanitizacao allowlisted e aplicada na query inicial, troca de aba e request HTTP.
-- Query params ignorados ou invalidos sao substituidos pela forma canonica via Router com `replaceUrl`, sem reload ou loop.
-- `tab`, `resource` e `resourceType` permanecem internos. Somente alertas recebem `service` ou `queue` derivados.
-- Recursos `ok` sem causa no Dashboard aparecem como status sem link; recursos acionaveis mantem deep-link para alertas abertos.
-- O spec do Dashboard nao importa mais `fs` ou `path`.
+- Canais e Alertas continuam paginados no servidor, com filtros, count/page/limit, loading, erro, retry e empty.
+- Requests de detalhe, summary, eventos e metricas cancelam a inscricao anterior, validam request id e fazem teardown no destroy.
+- Summary continua read-only, com contexto distinto para `missing`, aviso para `stale` e retry de erro.
+- Query params permanecem canonicalizados via Router `replaceUrl`; abas legadas removem paginacao, filtros e deep-links incompativeis.
+- `tab`, `resource` e `resourceType` continuam internos. Somente Alertas traduz resource para `service` ou `queue`.
+- Recursos `ok` sem causa no Dashboard continuam sem deep-link.
+- A aba Canais recupera teste de conexao, registro de webhook e acesso aos erros do canal.
+- Diagnostico / Infraestrutura usa o summary V2 para servicos e filas e oferece testes explicitos de storage e notificacao.
+- Eventos / Metricas recupera filtros, loading, erro, retry, empty, agregados e tabelas historicas.
+- `admin-operational-status.util.ts` voltou a ser consumido. Filas V2 sem contadores usam status/cause para nao tratar campo ausente como zero.
+- `changeLimit()` foi removido; o `mat-paginator` continua enviando page e pageSize por `changePage()`.
 
-## Contrato backend
+## Inventario antigo versus atual
 
-- O commit aprovado `be85d5fd` esta no HEAD local do servidor.
-- `queue` e allowlisted e consulta `OperationalAlert.queue` antes da paginacao.
-- `to=YYYY-MM-DD` e inclusivo ate `23:59:59.999Z`; a validacao frontend usa a mesma semantica para ranges.
+Fonte antiga: `git show 122039881:src/app/admin-panel/admin-operation/admin-operation.component.ts`.
+
+| Capacidade | Metodo antigo | Consumo atual |
+| --- | --- | --- |
+| Summary/diagnosticos/filas | `getHealthSummary` | `getOperationalHealthSummary` (delega ao mesmo metodo) |
+| Canais paginados | ausente | `getOperationalChannels` |
+| Alertas paginados | ausente | `getOperationalAlerts` |
+| Teste de storage | `testStorageConnection` | restaurado |
+| Teste de canal | `testChannelConnection` | restaurado |
+| Teste de notificacao | `testOperationalAlertNotification` | restaurado |
+| Registro de webhook | `registerChannelWebhook` | restaurado |
+| Erros de canal/eventos | `getOperationalEvents` | restaurado |
+| Metricas | `getOperationalMetrics` | restaurado |
+
+Nenhum metodo publico consumido pela tela antiga ficou sem fluxo funcional; os dois metodos paginados novos permanecem ativos.
+
+## Contrato backend preservado
+
+- O backend aprovado `be85d5fd` aceita `queue` e fim de dia inclusivo.
+- Requests paginados continuam allowlisted e nunca recebem filtros das abas legadas.
+- A troca para Diagnostico ou Eventos cancela o request paginado em andamento antes de iniciar qualquer carga legada.
 
 ## TDD
 
-- RED: Subjects fora de ordem mostraram a resposta anterior restaurando `page=1`; os specs tambem falharam pelas APIs ausentes de summary, teardown, canonicalizacao e recursos acionaveis.
-- GREEN: harness isolado passou para race, canonicalizacao, missing, teardown e link saudavel; os tres specs focais compilam.
+- RED: o spec focal falhou por ausencia das quatro abas, oito capacidades, estados de eventos/metricas e retries.
+- RED adicional: o utilitario legado marcou fila V2 `ok` sem `consumers` como problema.
+- GREEN: specs focais compilam e harness isolado passou para cancelamento, chamadas antigas, filtros, erros/retries, canonicalizacao e filas V2.
 
 ## Validacao
 
 - PASS: `npx ngc -p src/tsconfig.app.json`.
-- PASS: compilacao TypeScript focada dos specs de Operacao, Dashboard e AdminService com `--skipLibCheck`.
-- PASS: harness isolado da auditoria Task 4.
-- PASS: `npx ng build --configuration production` em 69s.
+- PASS: compilacao TypeScript focada dos specs de Operacao, Dashboard e AdminService.
+- PASS: harness isolado da restauracao dos fluxos e adaptador de filas V2.
+- PASS: `npx ng build --configuration production` em 54s, hash `23e3e6e621fd99c2`.
 - PASS: `git diff --check`.
-- BLOCKED: Karma nao inicia porque `karma-coverage-istanbul-reporter` continua ausente no setup local.
+- BLOCKED: Karma oficial ainda requer `karma-coverage-istanbul-reporter`, ausente no setup local.
+- BLOCKED: configuracao Karma focal sem cobertura compilou o bundle, mas nao publicou `main.js` ao ChromeHeadless em 180s; executou 0 casos.
 
 ## Preocupacoes
 
-- O build mantem warnings preexistentes de seletores CSS e CommonJS de `chart.js`, sem falha.
-- A suite Karma segue indisponivel ate a dependencia legada ser restaurada ou a configuracao ser corrigida.
+- A suite browser permanece indisponivel pelo setup Karma; a cobertura executavel ficou no harness isolado e na compilacao focal.
+- O build mantem warnings preexistentes de dois seletores CSS e da dependencia CommonJS `chart.js`.

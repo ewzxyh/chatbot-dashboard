@@ -2,9 +2,9 @@
   <header class="operation-toolbar admin-page-heading">
     <div>
       <h2>Operacao</h2>
-      <p>Diagnosticos persistidos de canais e alertas.</p>
+      <p>Canais, alertas, infraestrutura e historico operacional.</p>
     </div>
-    <button mat-stroked-button type="button" (click)="refresh()" [disabled]="isLoading || isSummaryLoading">
+    <button mat-stroked-button type="button" (click)="refresh()" [disabled]="isLoading || isSummaryLoading || isLoadingEvents || isLoadingMetrics">
       <mat-icon>refresh</mat-icon>
       Atualizar
     </button>
@@ -27,8 +27,8 @@
     Snapshot desatualizado. Os detalhes abaixo continuam disponiveis.
   </div>
 
-  <mat-tab-group [selectedIndex]="tab === 'alerts' ? 1 : 0" (selectedTabChange)="selectTab($event.index === 1 ? 'alerts' : 'channels')" class="operation-tabs">
-    <mat-tab label="Canais">
+  <mat-tab-group [selectedIndex]="selectedTabIndex" (selectedTabChange)="selectTabByIndex($event.index)" class="operation-tabs">
+    <mat-tab [label]="operationTabs[0].label">
       <section class="operation-section" aria-labelledby="channels-heading">
         <div class="section-header">
           <div>
@@ -128,6 +128,26 @@
               <th mat-header-cell *matHeaderCellDef>Ultima checagem</th>
               <td mat-cell *matCellDef="let row">{{ formatDate(row.checkedAt) }}</td>
             </ng-container>
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>Acoes</th>
+              <td mat-cell *matCellDef="let row">
+                <div class="channel-actions">
+                  <button mat-stroked-button type="button" [disabled]="testingChannelKey === channelKey(row)" (click)="testChannel(row)">
+                    {{ testingChannelKey === channelKey(row) ? 'Testando...' : 'Testar canal' }}
+                  </button>
+                  <button mat-stroked-button type="button" [disabled]="registeringWebhookKey === channelKey(row)" (click)="registerWebhook(row)">
+                    {{ registeringWebhookKey === channelKey(row) ? 'Registrando...' : 'Registrar webhook' }}
+                  </button>
+                  <button mat-stroked-button type="button" (click)="showChannelErrors(row)">Ver erros</button>
+                </div>
+                <div *ngIf="channelTestResults[channelKey(row)]" class="inline-result" [ngClass]="getStatusClass(channelTestResults[channelKey(row)].providerHealth || channelTestResults[channelKey(row)].status)">
+                  Teste: {{ getStatusLabel(channelTestResults[channelKey(row)].providerHealth || channelTestResults[channelKey(row)].status) }}
+                </div>
+                <div *ngIf="webhookRegisterResults[channelKey(row)]" class="inline-result" [ngClass]="getStatusClass(webhookRegisterResults[channelKey(row)].status)">
+                  Webhook: {{ getStatusLabel(webhookRegisterResults[channelKey(row)].status) }}
+                </div>
+              </td>
+            </ng-container>
             <tr mat-header-row *matHeaderRowDef="channelColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: channelColumns;"></tr>
           </table>
@@ -144,7 +164,7 @@
       </section>
     </mat-tab>
 
-    <mat-tab label="Alertas">
+    <mat-tab [label]="operationTabs[1].label">
       <section class="operation-section" aria-labelledby="alerts-heading">
         <div class="section-header">
           <div>
@@ -262,6 +282,268 @@
           [showFirstLastButtons]="true"
           (page)="changePage($event.pageIndex + 1, $event.pageSize)">
         </mat-paginator>
+      </section>
+    </mat-tab>
+
+    <mat-tab [label]="operationTabs[2].label">
+      <section class="operation-section" aria-labelledby="diagnostics-heading">
+        <div class="section-header">
+          <div>
+            <h3 id="diagnostics-heading">Diagnostico e infraestrutura</h3>
+            <span>{{ diagnosticIssueCount }} recursos com problema</span>
+          </div>
+          <div class="section-actions">
+            <button mat-stroked-button type="button" (click)="testStorage()" [disabled]="isTestingStorage">
+              <mat-icon>storage</mat-icon>
+              {{ isTestingStorage ? 'Testando storage...' : 'Testar storage' }}
+            </button>
+            <button mat-stroked-button type="button" (click)="testAlertNotification()" [disabled]="isTestingNotification">
+              <mat-icon>notifications</mat-icon>
+              {{ isTestingNotification ? 'Testando notificacao...' : 'Testar notificacao' }}
+            </button>
+          </div>
+        </div>
+
+        <div *ngIf="notificationTestResult" class="operation-state compact-state" [ngClass]="getStatusClass(notificationTestResult.status)" role="status">
+          <strong>Notificacao: {{ getStatusLabel(notificationTestResult.status) }}</strong>
+          <span>{{ notificationResultDetail(notificationTestResult) }}</span>
+        </div>
+
+        <div class="diagnostic-layout">
+          <div class="diagnostic-section">
+            <div class="subsection-header">
+              <h4>Servicos</h4>
+              <span>{{ diagnosticServices.length }}</span>
+            </div>
+            <div *ngIf="diagnosticServices.length === 0" class="operation-state" role="status">Nenhum servico no snapshot.</div>
+            <div *ngIf="diagnosticServices.length > 0" class="table-scroll">
+              <table mat-table [dataSource]="diagnosticServices" class="operation-table diagnostic-table">
+                <ng-container matColumnDef="name">
+                  <th mat-header-cell *matHeaderCellDef>Servico</th>
+                  <td mat-cell *matCellDef="let row"><strong>{{ row.name }}</strong></td>
+                </ng-container>
+                <ng-container matColumnDef="status">
+                  <th mat-header-cell *matHeaderCellDef>Status</th>
+                  <td mat-cell *matCellDef="let row"><span class="status-pill" [ngClass]="getStatusClass(row.status)">{{ getStatusLabel(row.status) }}</span></td>
+                </ng-container>
+                <ng-container matColumnDef="cause">
+                  <th mat-header-cell *matHeaderCellDef>Diagnostico</th>
+                  <td mat-cell *matCellDef="let row">{{ row.cause || '-' }}</td>
+                </ng-container>
+                <ng-container matColumnDef="checkedAt">
+                  <th mat-header-cell *matHeaderCellDef>Ultima checagem</th>
+                  <td mat-cell *matCellDef="let row">{{ formatDate(row.checkedAt) }}</td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="diagnosticColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: diagnosticColumns;"></tr>
+              </table>
+            </div>
+          </div>
+
+          <div class="diagnostic-section">
+            <div class="subsection-header">
+              <h4>Filas</h4>
+              <span>{{ diagnosticQueues.length }}</span>
+            </div>
+            <div *ngIf="diagnosticQueues.length === 0" class="operation-state" role="status">Nenhuma fila no snapshot.</div>
+            <div *ngIf="diagnosticQueues.length > 0" class="table-scroll">
+              <table mat-table [dataSource]="diagnosticQueues" class="operation-table diagnostic-table">
+                <ng-container matColumnDef="name">
+                  <th mat-header-cell *matHeaderCellDef>Fila</th>
+                  <td mat-cell *matCellDef="let row"><strong>{{ row.name }}</strong></td>
+                </ng-container>
+                <ng-container matColumnDef="status">
+                  <th mat-header-cell *matHeaderCellDef>Status</th>
+                  <td mat-cell *matCellDef="let row"><span class="status-pill" [ngClass]="getStatusClass(row.status)">{{ getStatusLabel(row.status) }}</span></td>
+                </ng-container>
+                <ng-container matColumnDef="cause">
+                  <th mat-header-cell *matHeaderCellDef>Diagnostico</th>
+                  <td mat-cell *matCellDef="let row">{{ row.cause || (isQueueIssue(row) ? 'fila requer atencao' : '-') }}</td>
+                </ng-container>
+                <ng-container matColumnDef="checkedAt">
+                  <th mat-header-cell *matHeaderCellDef>Ultima checagem</th>
+                  <td mat-cell *matCellDef="let row">{{ formatDate(row.checkedAt) }}</td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="diagnosticColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: diagnosticColumns;"></tr>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+    </mat-tab>
+
+    <mat-tab [label]="operationTabs[3].label">
+      <section class="operation-section" aria-labelledby="events-heading">
+        <div class="section-header">
+          <div>
+            <h3 id="events-heading">Eventos operacionais</h3>
+            <span>{{ events.length }} exibidos</span>
+          </div>
+          <div class="section-actions">
+            <button mat-stroked-button type="button" (click)="clearEventFilters()" [disabled]="isLoadingEvents">
+              <mat-icon>clear</mat-icon>
+              Limpar
+            </button>
+            <button mat-flat-button color="primary" type="button" (click)="loadEvents()" [disabled]="isLoadingEvents">
+              <mat-icon>filter_list</mat-icon>
+              Filtrar
+            </button>
+          </div>
+        </div>
+
+        <div class="legacy-filters" aria-label="Filtros de eventos">
+          <mat-form-field appearance="outline">
+            <mat-label>Canal</mat-label>
+            <mat-select [(ngModel)]="eventFilters.channel">
+              <mat-option value="">Todos</mat-option>
+              <mat-option value="waba">WABA</mat-option>
+              <mat-option value="casezap">CaseZap</mat-option>
+              <mat-option value="system">Sistema</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Nivel</mat-label>
+            <mat-select [(ngModel)]="eventFilters.level">
+              <mat-option value="">Todos</mat-option>
+              <mat-option value="info">Informacao</mat-option>
+              <mat-option value="warn">Aviso</mat-option>
+              <mat-option value="error">Erro</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Projeto</mat-label>
+            <input matInput type="text" [(ngModel)]="eventFilters.project_id" (keyup.enter)="loadEvents()">
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Integracao</mat-label>
+            <input matInput type="text" [(ngModel)]="eventFilters.integrationId" (keyup.enter)="loadEvents()">
+          </mat-form-field>
+        </div>
+
+        <div *ngIf="isLoadingEvents" class="operation-state" role="status">Carregando eventos...</div>
+        <div *ngIf="eventsErrorMessage && !isLoadingEvents" class="operation-state operation-state-error" role="alert">
+          <span>{{ eventsErrorMessage }}</span>
+          <button mat-stroked-button type="button" (click)="retryEvents()"><mat-icon>refresh</mat-icon>Tentar novamente</button>
+        </div>
+        <div *ngIf="!isLoadingEvents && !eventsErrorMessage && events.length === 0" class="operation-state" role="status">Nenhum evento encontrado.</div>
+        <div *ngIf="!isLoadingEvents && !eventsErrorMessage && events.length > 0" class="table-scroll">
+          <table mat-table [dataSource]="events" class="operation-table">
+            <ng-container matColumnDef="timestamp">
+              <th mat-header-cell *matHeaderCellDef>Hora</th>
+              <td mat-cell *matCellDef="let row">{{ formatDate(row.timestamp) }}</td>
+            </ng-container>
+            <ng-container matColumnDef="level">
+              <th mat-header-cell *matHeaderCellDef>Nivel</th>
+              <td mat-cell *matCellDef="let row"><span class="status-pill" [ngClass]="getStatusClass(row.level)">{{ getStatusLabel(row.level) }}</span></td>
+            </ng-container>
+            <ng-container matColumnDef="channel">
+              <th mat-header-cell *matHeaderCellDef>Canal</th>
+              <td mat-cell *matCellDef="let row">{{ row.channel || '-' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="event">
+              <th mat-header-cell *matHeaderCellDef>Evento</th>
+              <td mat-cell *matCellDef="let row"><strong>{{ row.event }}</strong><small>{{ row.integrationId || '' }}</small></td>
+            </ng-container>
+            <ng-container matColumnDef="project">
+              <th mat-header-cell *matHeaderCellDef>Projeto</th>
+              <td mat-cell *matCellDef="let row">{{ row.id_project || '-' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="error">
+              <th mat-header-cell *matHeaderCellDef>Erro</th>
+              <td mat-cell *matCellDef="let row">{{ row.errorMessage || '-' }}</td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="eventColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: eventColumns;"></tr>
+          </table>
+        </div>
+      </section>
+
+      <section class="operation-section metrics-section" aria-labelledby="metrics-heading">
+        <div class="section-header">
+          <div>
+            <h3 id="metrics-heading">Metricas operacionais</h3>
+            <span *ngIf="metrics">Atualizado em {{ formatDate(metrics.generatedAt) }}</span>
+          </div>
+          <button mat-flat-button color="primary" type="button" (click)="loadMetrics()" [disabled]="isLoadingMetrics">
+            <mat-icon>filter_list</mat-icon>
+            Filtrar
+          </button>
+        </div>
+
+        <div class="legacy-filters metric-filters" aria-label="Filtros de metricas">
+          <mat-form-field appearance="outline">
+            <mat-label>Periodo</mat-label>
+            <mat-select [(ngModel)]="metricFilters.range" (selectionChange)="onMetricRangeChange()">
+              <mat-option value="24h">Ultimas 24h</mat-option>
+              <mat-option value="7d">Ultimos 7 dias</mat-option>
+              <mat-option value="14d">Ultimos 14 dias</mat-option>
+              <mat-option value="30d">Ultimos 30 dias</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Agrupamento</mat-label>
+            <mat-select [(ngModel)]="metricFilters.bucket" (selectionChange)="loadMetrics()">
+              <mat-option value="hour">Por hora</mat-option>
+              <mat-option value="day">Por dia</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Canal</mat-label>
+            <mat-select [(ngModel)]="metricFilters.channel" (selectionChange)="loadMetrics()">
+              <mat-option value="">Todos</mat-option>
+              <mat-option value="waba">WABA</mat-option>
+              <mat-option value="casezap">CaseZap</mat-option>
+              <mat-option value="system">Sistema</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Projeto</mat-label>
+            <input matInput type="text" [(ngModel)]="metricFilters.project_id" (keyup.enter)="loadMetrics()">
+          </mat-form-field>
+        </div>
+
+        <div *ngIf="isLoadingMetrics" class="operation-state" role="status">Carregando metricas...</div>
+        <div *ngIf="metricsErrorMessage && !isLoadingMetrics" class="operation-state operation-state-error" role="alert">
+          <span>{{ metricsErrorMessage }}</span>
+          <button mat-stroked-button type="button" (click)="retryMetrics()"><mat-icon>refresh</mat-icon>Tentar novamente</button>
+        </div>
+        <div *ngIf="metrics && !isLoadingMetrics && !metricsErrorMessage">
+          <div class="metric-summary" role="list">
+            <div role="listitem"><span>Eventos</span><strong>{{ metrics.events.total }}</strong></div>
+            <div role="listitem"><span>Erros</span><strong>{{ metricCount('events', 'byLevel', 'error') }}</strong></div>
+            <div role="listitem"><span>Alertas</span><strong>{{ metrics.alerts.total }}</strong></div>
+            <div role="listitem"><span>Criticos abertos</span><strong>{{ metrics.alerts.criticalOpenCount }}</strong></div>
+          </div>
+
+          <div class="metric-breakdown">
+            <div>
+              <h4>Eventos frequentes</h4>
+              <div *ngFor="let item of eventMetricItems" class="metric-list-row"><span>{{ item.key }}</span><strong>{{ item.count }}</strong></div>
+              <div *ngIf="eventMetricItems.length === 0" class="operation-state compact-state">Sem eventos agregados.</div>
+            </div>
+            <div>
+              <h4>Alertas por tipo</h4>
+              <div *ngFor="let item of alertMetricItems" class="metric-list-row"><span>{{ item.key }}</span><strong>{{ item.count }}</strong></div>
+              <div *ngIf="alertMetricItems.length === 0" class="operation-state compact-state">Sem alertas agregados.</div>
+            </div>
+          </div>
+
+          <div class="table-scroll">
+            <table mat-table [dataSource]="metricRows" class="operation-table">
+              <ng-container matColumnDef="period"><th mat-header-cell *matHeaderCellDef>Periodo</th><td mat-cell *matCellDef="let row">{{ formatBucket(row.bucketStart) }}</td></ng-container>
+              <ng-container matColumnDef="events"><th mat-header-cell *matHeaderCellDef>Eventos</th><td mat-cell *matCellDef="let row">{{ row.events }}</td></ng-container>
+              <ng-container matColumnDef="errors"><th mat-header-cell *matHeaderCellDef>Erros</th><td mat-cell *matCellDef="let row">{{ row.errors }}</td></ng-container>
+              <ng-container matColumnDef="failed"><th mat-header-cell *matHeaderCellDef>Falhas</th><td mat-cell *matCellDef="let row">{{ row.failed }}</td></ng-container>
+              <ng-container matColumnDef="alerts"><th mat-header-cell *matHeaderCellDef>Alertas</th><td mat-cell *matCellDef="let row">{{ row.alerts }}</td></ng-container>
+              <ng-container matColumnDef="critical"><th mat-header-cell *matHeaderCellDef>Criticos</th><td mat-cell *matCellDef="let row">{{ row.criticalAlerts }}</td></ng-container>
+              <ng-container matColumnDef="open"><th mat-header-cell *matHeaderCellDef>Abertos</th><td mat-cell *matCellDef="let row">{{ row.openAlerts }}</td></ng-container>
+              <tr mat-header-row *matHeaderRowDef="metricColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: metricColumns;"></tr>
+            </table>
+          </div>
+          <div *ngIf="metricRows.length === 0" class="operation-state" role="status">Nenhum historico encontrado.</div>
+        </div>
       </section>
     </mat-tab>
   </mat-tab-group>

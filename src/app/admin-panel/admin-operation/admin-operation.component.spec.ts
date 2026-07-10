@@ -57,7 +57,12 @@ describe('AdminOperationComponent', () => {
     generatedAt: snapshotState === 'missing' ? null : '2026-07-10T12:00:00.000Z',
     expiresAt: snapshotState === 'missing' ? null : '2026-07-10T12:05:00.000Z',
     services: [],
-    queues: [],
+    queues: [{
+      name: 'jobs',
+      status: 'down',
+      cause: 'queue_backlog',
+      checkedAt: '2026-07-10T12:00:00.000Z'
+    }],
     channels: {
       count: 0,
       byStatus: { ok: 0, degraded: 0, down: 0, unknown: 0 },
@@ -79,11 +84,47 @@ describe('AdminOperationComponent', () => {
     adminService = jasmine.createSpyObj<AdminService>('AdminService', [
       'getOperationalHealthSummary',
       'getOperationalChannels',
-      'getOperationalAlerts'
+      'getOperationalAlerts',
+      'getOperationalEvents',
+      'getOperationalMetrics',
+      'testChannelConnection',
+      'registerChannelWebhook',
+      'testStorageConnection',
+      'testOperationalAlertNotification'
     ]);
     adminService.getOperationalHealthSummary.and.returnValue(of(createSummary()));
     adminService.getOperationalChannels.and.returnValue(of(channels));
     adminService.getOperationalAlerts.and.returnValue(of(alerts));
+    adminService.getOperationalEvents.and.returnValue(of({
+      data: [{
+        timestamp: '2026-07-10T12:00:00.000Z',
+        level: 'error',
+        channel: 'webhook',
+        event: 'delivery_failed',
+        id_project: 'project-1',
+        integrationId: 'integration-1',
+        errorMessage: 'timeout'
+      }]
+    }));
+    adminService.getOperationalMetrics.and.returnValue(of({
+      generatedAt: '2026-07-10T12:00:00.000Z',
+      events: {
+        total: 2,
+        byLevel: { error: 1 },
+        byEvent: { delivery_failed: 1 },
+        byBucket: [{ bucketStart: '2026-07-10T12:00:00.000Z', count: 2, errors: 1 }]
+      },
+      alerts: {
+        total: 1,
+        criticalOpenCount: 1,
+        byType: { service_health: 1 },
+        byBucket: [{ bucketStart: '2026-07-10T12:00:00.000Z', count: 1, critical: 1, open: 1 }]
+      }
+    }));
+    adminService.testChannelConnection.and.returnValue(of({ result: { providerHealth: 'ok' } }));
+    adminService.registerChannelWebhook.and.returnValue(of({ result: { status: 'registered' } }));
+    adminService.testStorageConnection.and.returnValue(of({ result: { name: 'storage', status: 'ok' } }));
+    adminService.testOperationalAlertNotification.and.returnValue(of({ result: { status: 'success', ok: true } }));
     queryParams = new BehaviorSubject<Params>({});
     router = jasmine.createSpyObj<Router>('Router', ['navigate']);
     router.navigate.and.returnValue(Promise.resolve(true));
@@ -158,6 +199,27 @@ describe('AdminOperationComponent', () => {
     expect(adminService.getOperationalAlerts).not.toHaveBeenCalled();
     expect(component.channelRows).toEqual([]);
     expect(component.summary).toBeNull();
+  });
+
+  it('faz teardown de eventos e metricas no destroy', () => {
+    const eventResponse = new Subject<any>();
+    const metricResponse = new Subject<any>();
+    adminService.getOperationalEvents.and.returnValue(eventResponse.asObservable());
+    adminService.getOperationalMetrics.and.returnValue(metricResponse.asObservable());
+    queryParams.next({ tab: 'events' });
+
+    component.ngOnInit();
+    expect(eventResponse.observers.length).toBe(1);
+    expect(metricResponse.observers.length).toBe(1);
+
+    component.ngOnDestroy();
+    expect(eventResponse.observers.length).toBe(0);
+    expect(metricResponse.observers.length).toBe(0);
+    eventResponse.next({ data: [{ event: 'stale' }] });
+    metricResponse.next({ events: {}, alerts: {} });
+
+    expect(component.events).toEqual([]);
+    expect(component.metrics).toBeNull();
   });
 
   it('mostra snapshot missing como contexto distinto do empty filtrado', () => {
@@ -306,5 +368,146 @@ describe('AdminOperationComponent', () => {
     component.retry();
     expect(component.errorMessage).toBe('');
     expect(component.isEmpty).toBe(true);
+  });
+
+  it('expoe as abas paginadas, diagnostico/infraestrutura e eventos/metricas', () => {
+    component.ngOnInit();
+
+    expect(component.operationTabs.map((tab) => tab.label)).toEqual([
+      'Canais',
+      'Alertas',
+      'Diagnostico / Infraestrutura',
+      'Eventos / Metricas'
+    ]);
+
+    component.selectTab('diagnostics');
+    expect(component.diagnosticQueues.map((queue) => queue.name)).toEqual(['jobs']);
+    expect(component.isQueueIssue(component.diagnosticQueues[0])).toBe(true);
+    expect(component.isQueueIssue({
+      name: 'healthy-jobs',
+      status: 'ok',
+      cause: null,
+      checkedAt: '2026-07-10T12:00:00.000Z'
+    })).toBe(false);
+  });
+
+  it('restaura teste de storage e teste de notificacao como acoes explicitas', () => {
+    component.ngOnInit();
+    component.selectTab('diagnostics');
+
+    component.testStorage();
+    component.testAlertNotification();
+
+    expect(adminService.testStorageConnection).toHaveBeenCalledTimes(1);
+    expect(adminService.testOperationalAlertNotification).toHaveBeenCalledTimes(1);
+    expect(component.notificationTestResult.status).toBe('success');
+  });
+
+  it('restaura teste, webhook e erros para cada canal paginado', () => {
+    component.ngOnInit();
+    const channel = component.channelRows[0];
+
+    component.testChannel(channel);
+    component.registerWebhook(channel);
+    component.showChannelErrors(channel);
+
+    expect(adminService.testChannelConnection).toHaveBeenCalledWith('webhook', 'integration-1');
+    expect(adminService.registerChannelWebhook).toHaveBeenCalledWith('webhook', 'integration-1');
+    expect(component.channelTestResults['webhook:integration-1'].providerHealth).toBe('ok');
+    expect(component.webhookRegisterResults['webhook:integration-1'].status).toBe('registered');
+    expect(component.tab).toBe('events');
+    expect(component.eventFilters).toEqual({
+      channel: 'webhook',
+      level: 'error',
+      project_id: 'project-1',
+      integrationId: 'integration-1'
+    });
+  });
+
+  it('restaura eventos e metricas com seus filtros e dados', () => {
+    component.ngOnInit();
+    adminService.getOperationalEvents.calls.reset();
+    adminService.getOperationalMetrics.calls.reset();
+
+    component.selectTab('events');
+
+    expect(adminService.getOperationalEvents).toHaveBeenCalledWith({
+      channel: '',
+      level: '',
+      project_id: '',
+      integrationId: ''
+    });
+    expect(adminService.getOperationalMetrics).toHaveBeenCalledWith({
+      range: '24h',
+      bucket: 'hour',
+      channel: '',
+      project_id: ''
+    });
+    expect(component.events[0].event).toBe('delivery_failed');
+    expect(component.metricRows[0].events).toBe(2);
+  });
+
+  it('expoe loading, erro e retry independentes para eventos e metricas', () => {
+    const eventRequest = new Subject<any>();
+    const metricRequest = new Subject<any>();
+    adminService.getOperationalEvents.and.returnValue(eventRequest.asObservable());
+    adminService.getOperationalMetrics.and.returnValue(metricRequest.asObservable());
+    component.ngOnInit();
+
+    component.selectTab('events');
+    expect(component.isLoadingEvents).toBe(true);
+    expect(component.isLoadingMetrics).toBe(true);
+
+    eventRequest.error(new Error('events unavailable'));
+    metricRequest.error(new Error('metrics unavailable'));
+    expect(component.eventsErrorMessage).toContain('Erro ao carregar eventos');
+    expect(component.metricsErrorMessage).toContain('Erro ao carregar metricas');
+
+    adminService.getOperationalEvents.and.returnValue(of({ data: [] }));
+    adminService.getOperationalMetrics.and.returnValue(of(null));
+    component.retryEvents();
+    component.retryMetrics();
+    expect(component.eventsErrorMessage).toBe('');
+    expect(component.metricsErrorMessage).toBe('');
+  });
+
+  it('cancela request paginado ao entrar em aba legada e ignora callbacks tardios', () => {
+    const channelRequest = new Subject<PagedResponse<ChannelDiagnostic>>();
+    adminService.getOperationalChannels.and.returnValue(channelRequest.asObservable());
+    component.ngOnInit();
+    expect(channelRequest.observers.length).toBe(1);
+
+    component.selectTab('diagnostics');
+    expect(channelRequest.observers.length).toBe(0);
+    channelRequest.next(channels);
+    channelRequest.error(new Error('stale error'));
+
+    expect(component.tab).toBe('diagnostics');
+    expect(component.channelRows).toEqual([]);
+    expect(component.errorMessage).toBe('');
+    expect(component.isLoading).toBe(false);
+  });
+
+  it('canonicaliza aba legada removendo paginacao e filtros incompativeis', () => {
+    queryParams.next({
+      tab: 'events',
+      page: '3',
+      limit: '50',
+      product: 'waba',
+      status: 'open',
+      resource: 'jobs',
+      resourceType: 'queue'
+    });
+    component.ngOnInit();
+
+    expect(component.tab).toBe('events');
+    expect(component.filters).toEqual({ page: 1, limit: 25 });
+    expect(component.resourceValue).toBe('');
+    expect(adminService.getOperationalChannels).not.toHaveBeenCalled();
+    expect(adminService.getOperationalAlerts).not.toHaveBeenCalled();
+    expect(router.navigate).toHaveBeenCalledWith([], jasmine.objectContaining({
+      queryParams: { tab: 'events' },
+      replaceUrl: true
+    }));
   });
 });

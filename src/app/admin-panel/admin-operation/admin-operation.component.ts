@@ -3,7 +3,7 @@ import type { OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import type { Params } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { formatChatcaseDateTime } from '../../utils/chatcase-locale';
+import { formatChatcaseDate, formatChatcaseDateTime } from '../../utils/chatcase-locale';
 import { AdminService } from '../../services/admin.service';
 import {
   OPERATIONAL_ALERT_STATUSES,
@@ -22,12 +22,19 @@ import type {
   OperationalCauseCode,
   OperationalChannel,
   OperationalProduct,
+  OperationalSnapshotItem,
   OperationalStatus,
   PagedResponse
 } from '../../services/admin.service';
+import { isOperationalIssueStatus, isOperationalQueueIssue } from '../admin-operational-status.util';
 
-type OperationTab = 'channels' | 'alerts';
+type OperationTab = 'channels' | 'alerts' | 'diagnostics' | 'events';
 type OperationResourceType = 'service' | 'queue';
+
+interface OperationTabDefinition {
+  id: OperationTab;
+  label: string;
+}
 
 export interface OperationFilters {
   page: number;
@@ -70,12 +77,21 @@ const UTC_DATE_TIME = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.(\d{
   styleUrls: ['./admin-operation.component.scss']
 })
 export class AdminOperationComponent implements OnInit, OnDestroy {
+  readonly operationTabs: OperationTabDefinition[] = [
+    { id: 'channels', label: 'Canais' },
+    { id: 'alerts', label: 'Alertas' },
+    { id: 'diagnostics', label: 'Diagnostico / Infraestrutura' },
+    { id: 'events', label: 'Eventos / Metricas' }
+  ];
   readonly pageSizeOptions = [10, 25, 50, 100];
   readonly products = OPERATIONAL_PRODUCTS;
   readonly channelStatuses = OPERATIONAL_STATUSES;
   readonly alertStatuses = OPERATIONAL_ALERT_STATUSES;
-  readonly channelColumns = ['status', 'product', 'channel', 'name', 'project', 'cause', 'checkedAt'];
+  readonly channelColumns = ['status', 'product', 'channel', 'name', 'project', 'cause', 'checkedAt', 'actions'];
   readonly alertColumns = ['severity', 'status', 'alert', 'resource', 'channel', 'project', 'occurrences', 'lastAt'];
+  readonly diagnosticColumns = ['name', 'status', 'cause', 'checkedAt'];
+  readonly eventColumns = ['timestamp', 'level', 'channel', 'event', 'project', 'error'];
+  readonly metricColumns = ['period', 'events', 'errors', 'failed', 'alerts', 'critical', 'open'];
 
   tab: OperationTab = 'channels';
   filters: OperationFilters = { page: DEFAULT_PAGE, limit: DEFAULT_LIMIT };
@@ -88,14 +104,47 @@ export class AdminOperationComponent implements OnInit, OnDestroy {
   summary: HealthSummaryV2 = null;
   isSummaryLoading = false;
   summaryErrorMessage = '';
+  metrics: any = null;
+  metricRows: any[] = [];
+  eventMetricItems: any[] = [];
+  alertMetricItems: any[] = [];
+  events: any[] = [];
+  isLoadingMetrics = false;
+  isLoadingEvents = false;
+  metricsErrorMessage = '';
+  eventsErrorMessage = '';
+  isTestingStorage = false;
+  isTestingNotification = false;
+  testingChannelKey = '';
+  registeringWebhookKey = '';
+  channelTestResults: Record<string, any> = {};
+  webhookRegisterResults: Record<string, any> = {};
+  notificationTestResult: any = null;
+  metricFilters: any = {
+    range: '24h',
+    bucket: 'hour',
+    channel: '',
+    project_id: ''
+  };
+  eventFilters: any = {
+    channel: '',
+    level: '',
+    project_id: '',
+    integrationId: ''
+  };
 
   private resource = '';
   private resourceType: OperationResourceType | undefined;
   private routeSubscription: Subscription = null;
   private detailsSubscription: Subscription = null;
   private summarySubscription: Subscription = null;
+  private eventsSubscription: Subscription = null;
+  private metricsSubscription: Subscription = null;
+  private actionSubscriptions = new Subscription();
   private detailsRequestId = 0;
   private summaryRequestId = 0;
+  private eventsRequestId = 0;
+  private metricsRequestId = 0;
   private destroyed = false;
 
   constructor(
@@ -114,9 +163,14 @@ export class AdminOperationComponent implements OnInit, OnDestroy {
     this.destroyed = true;
     this.detailsRequestId++;
     this.summaryRequestId++;
+    this.eventsRequestId++;
+    this.metricsRequestId++;
     if (this.routeSubscription) this.routeSubscription.unsubscribe();
     if (this.detailsSubscription) this.detailsSubscription.unsubscribe();
     if (this.summarySubscription) this.summarySubscription.unsubscribe();
+    if (this.eventsSubscription) this.eventsSubscription.unsubscribe();
+    if (this.metricsSubscription) this.metricsSubscription.unsubscribe();
+    this.actionSubscriptions.unsubscribe();
   }
 
   refresh(): void {
@@ -154,12 +208,26 @@ export class AdminOperationComponent implements OnInit, OnDestroy {
     const requestId = ++this.detailsRequestId;
     const requestTab = this.tab;
     if (this.detailsSubscription) this.detailsSubscription.unsubscribe();
-    this.isLoading = true;
-    this.errorMessage = '';
+    if (requestTab !== 'events') this.cancelLegacyDataRequests();
     this.hasLoaded = true;
+    this.errorMessage = '';
     this.count = 0;
-    if (requestTab === 'channels') this.alertRows = [];
-    if (requestTab === 'alerts') this.channelRows = [];
+    this.channelRows = [];
+    this.alertRows = [];
+
+    if (requestTab === 'diagnostics') {
+      this.isLoading = false;
+      return;
+    }
+
+    if (requestTab === 'events') {
+      this.isLoading = false;
+      this.loadEvents();
+      this.loadMetrics();
+      return;
+    }
+
+    this.isLoading = true;
 
     if (requestTab === 'channels') {
       this.detailsSubscription = this.adminService.getOperationalChannels(this.buildChannelRequestFilters()).subscribe(
@@ -210,10 +278,6 @@ export class AdminOperationComponent implements OnInit, OnDestroy {
     this.load();
   }
 
-  changeLimit(limit: number): void {
-    this.changePage(DEFAULT_PAGE, limit);
-  }
-
   selectTab(tab: OperationTab): void {
     if (this.tab === tab) return;
     this.applyState(this.sanitizeState(
@@ -226,6 +290,16 @@ export class AdminOperationComponent implements OnInit, OnDestroy {
     this.load();
   }
 
+  selectTabByIndex(index: number): void {
+    const selected = this.operationTabs[index];
+    if (selected) this.selectTab(selected.id);
+  }
+
+  get selectedTabIndex(): number {
+    const index = this.operationTabs.findIndex((item) => item.id === this.tab);
+    return index === -1 ? 0 : index;
+  }
+
   get isSnapshotMissing(): boolean {
     return this.summary?.snapshotState === 'missing';
   }
@@ -235,7 +309,7 @@ export class AdminOperationComponent implements OnInit, OnDestroy {
   }
 
   get isDetailsEmpty(): boolean {
-    return this.hasLoaded && !this.isLoading && !this.errorMessage && this.currentRows.length === 0;
+    return this.isPaginatedTab && this.hasLoaded && !this.isLoading && !this.errorMessage && this.currentRows.length === 0;
   }
 
   get isEmpty(): boolean {
@@ -243,7 +317,26 @@ export class AdminOperationComponent implements OnInit, OnDestroy {
   }
 
   get currentRows(): ChannelDiagnostic[] | OperationalAlert[] {
-    return this.tab === 'channels' ? this.channelRows : this.alertRows;
+    if (this.tab === 'channels') return this.channelRows;
+    if (this.tab === 'alerts') return this.alertRows;
+    return [];
+  }
+
+  get isPaginatedTab(): boolean {
+    return this.tab === 'channels' || this.tab === 'alerts';
+  }
+
+  get diagnosticServices(): OperationalSnapshotItem[] {
+    return this.summary && Array.isArray(this.summary.services) ? this.summary.services : [];
+  }
+
+  get diagnosticQueues(): OperationalSnapshotItem[] {
+    return this.summary && Array.isArray(this.summary.queues) ? this.summary.queues : [];
+  }
+
+  get diagnosticIssueCount(): number {
+    return this.diagnosticServices.filter((service) => isOperationalIssueStatus(service.status)).length +
+      this.diagnosticQueues.filter((queue) => this.isQueueIssue(queue)).length;
   }
 
   get hasActiveFilters(): boolean {
@@ -286,6 +379,266 @@ export class AdminOperationComponent implements OnInit, OnDestroy {
 
   formatDate(value: string | null): string {
     return value ? formatChatcaseDateTime(value) : 'N/A';
+  }
+
+  formatBucket(value: string): string {
+    if (!value) return 'N/A';
+    return this.metricFilters.bucket === 'day' ? formatChatcaseDate(value) : formatChatcaseDateTime(value);
+  }
+
+  channelKey(channel: ChannelDiagnostic): string {
+    return channel ? `${channel.channel}:${channel.integrationId || ''}` : '';
+  }
+
+  testChannel(channel: ChannelDiagnostic): void {
+    if (!channel || this.destroyed) return;
+    const key = this.channelKey(channel);
+    this.testingChannelKey = key;
+    this.channelTestResults[key] = null;
+    const subscription = this.adminService.testChannelConnection(channel.channel, channel.integrationId).subscribe(
+      (response) => {
+        const result = response && response.result ? response.result : response;
+        this.channelTestResults[key] = result;
+        this.testingChannelKey = '';
+        const status = result && (result.providerHealth || result.status);
+        if (OPERATIONAL_STATUSES.includes(status as OperationalStatus)) channel.status = status as OperationalStatus;
+        this.loadEvents();
+      },
+      () => {
+        this.channelTestResults[key] = { providerHealth: 'down', providerReason: 'test_failed' };
+        this.testingChannelKey = '';
+      }
+    );
+    this.actionSubscriptions.add(subscription);
+  }
+
+  registerWebhook(channel: ChannelDiagnostic): void {
+    if (!channel || this.destroyed) return;
+    const key = this.channelKey(channel);
+    this.registeringWebhookKey = key;
+    this.webhookRegisterResults[key] = null;
+    const subscription = this.adminService.registerChannelWebhook(channel.channel, channel.integrationId).subscribe(
+      (response) => {
+        this.webhookRegisterResults[key] = response && response.result ? response.result : response;
+        this.registeringWebhookKey = '';
+        this.loadEvents();
+        this.loadMetrics();
+      },
+      () => {
+        this.webhookRegisterResults[key] = { status: 'failed', providerReason: 'webhook_register_failed' };
+        this.registeringWebhookKey = '';
+      }
+    );
+    this.actionSubscriptions.add(subscription);
+  }
+
+  showChannelErrors(channel: ChannelDiagnostic): void {
+    if (!channel) return;
+    this.eventFilters = {
+      channel: channel.channel || '',
+      level: 'error',
+      project_id: channel.id_project || '',
+      integrationId: channel.integrationId || ''
+    };
+    this.selectTab('events');
+  }
+
+  clearEventFilters(): void {
+    this.eventFilters = {
+      channel: '',
+      level: '',
+      project_id: '',
+      integrationId: ''
+    };
+    this.loadEvents();
+  }
+
+  testStorage(): void {
+    if (this.isTestingStorage || this.destroyed) return;
+    this.isTestingStorage = true;
+    const subscription = this.adminService.testStorageConnection().subscribe(
+      (response) => {
+        this.mergeStorageResult(response && response.result ? response.result : response);
+        this.isTestingStorage = false;
+        this.loadSummary();
+        this.loadEvents();
+        this.loadMetrics();
+      },
+      () => {
+        this.mergeStorageResult({ name: 'storage', status: 'down', cause: 'storage_unavailable' });
+        this.isTestingStorage = false;
+      }
+    );
+    this.actionSubscriptions.add(subscription);
+  }
+
+  testAlertNotification(): void {
+    if (this.isTestingNotification || this.destroyed) return;
+    this.isTestingNotification = true;
+    this.notificationTestResult = null;
+    const subscription = this.adminService.testOperationalAlertNotification().subscribe(
+      (response) => {
+        this.notificationTestResult = response && response.result ? response.result : response;
+        this.isTestingNotification = false;
+        this.loadEvents();
+        this.loadMetrics();
+      },
+      () => {
+        this.notificationTestResult = { status: 'failed', ok: false, error: 'test_failed' };
+        this.isTestingNotification = false;
+      }
+    );
+    this.actionSubscriptions.add(subscription);
+  }
+
+  loadEvents(): void {
+    if (this.destroyed) return;
+    const requestId = ++this.eventsRequestId;
+    if (this.eventsSubscription) this.eventsSubscription.unsubscribe();
+    this.isLoadingEvents = true;
+    this.eventsErrorMessage = '';
+    this.eventsSubscription = this.adminService.getOperationalEvents(this.eventFilters).subscribe(
+      (result) => {
+        if (!this.isCurrentEventsRequest(requestId)) return;
+        this.events = result && Array.isArray(result.data) ? result.data : [];
+        this.isLoadingEvents = false;
+      },
+      () => {
+        if (!this.isCurrentEventsRequest(requestId)) return;
+        this.events = [];
+        this.eventsErrorMessage = 'Erro ao carregar eventos operacionais.';
+        this.isLoadingEvents = false;
+      }
+    );
+  }
+
+  retryEvents(): void {
+    this.loadEvents();
+  }
+
+  loadMetrics(): void {
+    if (this.destroyed) return;
+    const requestId = ++this.metricsRequestId;
+    if (this.metricsSubscription) this.metricsSubscription.unsubscribe();
+    this.isLoadingMetrics = true;
+    this.metricsErrorMessage = '';
+    this.metricsSubscription = this.adminService.getOperationalMetrics(this.metricFilters).subscribe(
+      (result) => {
+        if (!this.isCurrentMetricsRequest(requestId)) return;
+        this.metrics = result;
+        this.metricRows = this.mergeMetricRows(result);
+        this.eventMetricItems = this.buildTopMetricItems(result, 'events', 'byEvent');
+        this.alertMetricItems = this.buildTopMetricItems(result, 'alerts', 'byType');
+        this.isLoadingMetrics = false;
+      },
+      () => {
+        if (!this.isCurrentMetricsRequest(requestId)) return;
+        this.metrics = null;
+        this.metricRows = [];
+        this.eventMetricItems = [];
+        this.alertMetricItems = [];
+        this.metricsErrorMessage = 'Erro ao carregar metricas operacionais.';
+        this.isLoadingMetrics = false;
+      }
+    );
+  }
+
+  retryMetrics(): void {
+    this.loadMetrics();
+  }
+
+  onMetricRangeChange(): void {
+    if (this.metricFilters.range === '24h') {
+      this.metricFilters.bucket = 'hour';
+    } else if (!this.metricFilters.bucket) {
+      this.metricFilters.bucket = 'day';
+    }
+    this.loadMetrics();
+  }
+
+  metricCount(group: string, collection: string, key: string): number {
+    if (!this.metrics || !this.metrics[group] || !this.metrics[group][collection]) return 0;
+    return this.metrics[group][collection][key] || 0;
+  }
+
+  notificationResultDetail(result: any): string {
+    if (!result) return '';
+    const parts = [];
+    if (result.webhook && result.webhook.status) parts.push(`webhook: ${result.webhook.status}`);
+    if (result.email && result.email.status) parts.push(`email: ${result.email.status}`);
+    if (result.error) parts.push(result.error);
+    return parts.join(' | ');
+  }
+
+  isQueueIssue(queue: OperationalSnapshotItem): boolean {
+    if (!queue) return false;
+    const hasLegacyCounters = 'messagesReady' in queue || 'messagesUnacknowledged' in queue || 'consumers' in queue;
+    if (hasLegacyCounters) return isOperationalQueueIssue(queue);
+    return isOperationalIssueStatus(queue.status) || Boolean(queue.cause);
+  }
+
+  private mergeStorageResult(result: any): void {
+    if (!this.summary || !result) return;
+    const services = [...this.diagnosticServices];
+    const index = services.findIndex((service) => service.name === 'storage');
+    const current = index === -1 ? null : services[index];
+    const status = OPERATIONAL_STATUSES.includes(result.status as OperationalStatus)
+      ? result.status as OperationalStatus
+      : current ? current.status : 'unknown';
+    const storage: OperationalSnapshotItem = {
+      name: result.name || 'storage',
+      status,
+      cause: result.cause || (current && current.cause) || null,
+      checkedAt: result.checkedAt || result.providerCheckedAt || (current && current.checkedAt) || ''
+    };
+    if (index === -1) services.push(storage);
+    else services[index] = storage;
+    this.summary = { ...this.summary, services };
+  }
+
+  private mergeMetricRows(metrics: any): any[] {
+    if (!metrics) return [];
+    const alertByBucket: Record<string, any> = {};
+    const eventRows = metrics.events && Array.isArray(metrics.events.byBucket) ? metrics.events.byBucket : [];
+    const alertRows = metrics.alerts && Array.isArray(metrics.alerts.byBucket) ? metrics.alerts.byBucket : [];
+    for (const row of alertRows) alertByBucket[row.bucketStart] = row;
+    const rows = eventRows.map((row) => {
+      const alertRow = alertByBucket[row.bucketStart] || {};
+      return {
+        bucketStart: row.bucketStart,
+        events: row.count || 0,
+        errors: row.errors || 0,
+        warnings: row.warnings || 0,
+        failed: row.failed || 0,
+        alerts: alertRow.count || 0,
+        criticalAlerts: alertRow.critical || 0,
+        openAlerts: alertRow.open || 0
+      };
+    });
+    for (const row of alertRows) {
+      if (rows.some((eventRow) => eventRow.bucketStart === row.bucketStart)) continue;
+      rows.push({
+        bucketStart: row.bucketStart,
+        events: 0,
+        errors: 0,
+        warnings: 0,
+        failed: 0,
+        alerts: row.count || 0,
+        criticalAlerts: row.critical || 0,
+        openAlerts: row.open || 0
+      });
+    }
+    return rows.sort((left, right) => {
+      return new Date(right.bucketStart).getTime() - new Date(left.bucketStart).getTime();
+    }).slice(0, 10);
+  }
+
+  private buildTopMetricItems(metrics: any, group: string, collection: string): any[] {
+    if (!metrics || !metrics[group] || !metrics[group][collection]) return [];
+    return Object.keys(metrics[group][collection])
+      .map((key) => ({ key, count: metrics[group][collection][key] }))
+      .sort((left, right) => right.count - left.count)
+      .slice(0, 6);
   }
 
   private applyChannelResponse(requestId: number, result: PagedResponse<ChannelDiagnostic>): void {
@@ -333,7 +686,10 @@ export class AdminOperationComponent implements OnInit, OnDestroy {
   }
 
   private parseQueryParams(params: Params): OperationState {
-    const tab = this.normalizeString(this.queryValue(params, 'tab')) === 'alerts' ? 'alerts' : 'channels';
+    const tabValue = this.normalizeString(this.queryValue(params, 'tab'));
+    const tab = this.operationTabs.some((item) => item.id === tabValue)
+      ? tabValue as OperationTab
+      : 'channels';
     return this.sanitizeState(tab, {
       page: this.queryValue(params, 'page'),
       limit: this.queryValue(params, 'limit'),
@@ -352,6 +708,15 @@ export class AdminOperationComponent implements OnInit, OnDestroy {
     resourceInput?: unknown,
     resourceTypeInput?: unknown
   ): OperationState {
+    if (tab === 'diagnostics' || tab === 'events') {
+      return {
+        tab,
+        filters: { page: DEFAULT_PAGE, limit: DEFAULT_LIMIT },
+        resource: '',
+        resourceType: undefined
+      };
+    }
+
     const filters: OperationFilters = {
       page: this.parseInteger(input.page, DEFAULT_PAGE, Number.MAX_SAFE_INTEGER),
       limit: this.parseInteger(input.limit, DEFAULT_LIMIT, MAX_LIMIT)
@@ -445,6 +810,7 @@ export class AdminOperationComponent implements OnInit, OnDestroy {
   }
 
   private buildQueryParams(): Params {
+    if (!this.isPaginatedTab) return { tab: this.tab };
     const queryParams: Params = {
       tab: this.tab,
       page: this.filters.page,
@@ -543,5 +909,22 @@ export class AdminOperationComponent implements OnInit, OnDestroy {
 
   private isCurrentSummaryRequest(requestId: number): boolean {
     return !this.destroyed && requestId === this.summaryRequestId;
+  }
+
+  private isCurrentEventsRequest(requestId: number): boolean {
+    return !this.destroyed && requestId === this.eventsRequestId;
+  }
+
+  private isCurrentMetricsRequest(requestId: number): boolean {
+    return !this.destroyed && requestId === this.metricsRequestId;
+  }
+
+  private cancelLegacyDataRequests(): void {
+    this.eventsRequestId++;
+    this.metricsRequestId++;
+    if (this.eventsSubscription) this.eventsSubscription.unsubscribe();
+    if (this.metricsSubscription) this.metricsSubscription.unsubscribe();
+    this.isLoadingEvents = false;
+    this.isLoadingMetrics = false;
   }
 }

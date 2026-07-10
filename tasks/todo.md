@@ -85,3 +85,17 @@
 - RED confirmou a race com Subjects fora de ordem; GREEN passou no harness isolado.
 - Backend `be85d5fd` confirmado para `queue` e fim de dia inclusivo.
 - Karma permanece bloqueado somente pela dependencia local ausente.
+
+# Task 4: Restauracao dos fluxos operacionais legados
+
+- [x] Inventariar chamadas publicas da tela em `122039881` e comparar com a versao atual.
+- [x] Escrever specs RED para as oito capacidades removidas e cancelamento entre abas.
+- [x] Integrar Diagnostico/Infraestrutura e Eventos/Metricas sem alterar Canais/Alertas.
+- [x] Validar specs focais, `ngc`, build e diff.
+- [x] Atualizar o relatorio e criar o commit corretivo separado.
+
+## Review
+
+- Os seis metodos legados continuam usados, com `getOperationalHealthSummary` substituindo apenas a chamada direta ao mesmo summary.
+- Canais e Alertas mantem os fixes aprovados; abas legadas canonicalizam para `tab` sem vazar filtros.
+- Karma focal ficou bloqueado no builder, mas `ngc`, specs compilados, harness isolado e build production passaram.
