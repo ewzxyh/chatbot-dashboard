@@ -1213,3 +1213,15 @@ p.member:hover {
 .no-agent>span>svg>g>path {
   fill: var(--svg-icon-gray) // #8796af 
 }
+.export-to-csv-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.export-to-csv-btn .material-icons {
+  font-size: 18px;
+  line-height: 18px;
+}

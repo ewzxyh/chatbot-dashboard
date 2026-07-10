@@ -188,7 +188,7 @@
                 matTooltipHideDelay="100">
               <button class="btn pull-right export-to-csv-btn btn-outlined" (click)="exportRequestsToCSV()"
                 [disabled]="(has_searched && (requestsCount === 0 || !requestList?.length))">
-                <span class="material-icons" style="vertical-align: middle; margin-bottom: 0px; margin-top: 0px;">
+                <span class="material-icons" aria-hidden="true">
                   save_alt
                 </span>
                 {{ 'ExportToCSV' | translate }}
