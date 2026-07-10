@@ -47,3 +47,20 @@ Base de trabalho: `6a2caf1a5`.
 - PASS: `git diff --check`.
 - BLOCKED: `npx ng test --watch=false --browsers=ChromeHeadless` iniciou o Karma, mas executou `0 specs`; houve `404 /_karma_webpack_/main.js` e falhas de compilação em specs legados de Analytics/RxJS (`analytics.service`, `@angular/http/testing`, `rxjs-compat`). Nenhuma assertion do escopo admin foi executada.
 - Nenhum servidor de desenvolvimento foi iniciado.
+
+## Terceiro ciclo: contratos renderizados
+
+Base de trabalho: `d78e52717`.
+
+- O spec de Projects carrega o `AdminPanelComponent` real para aplicar o SCSS global e valida por `getComputedStyle` o `min-width`, a largura contida, `max-width: 100%` e `overflow-x: auto` do wrapper em um host de 360px.
+- O mesmo spec confirma que a tabela excede a largura interna do wrapper sem ampliar o wrapper, abre um select admin e verifica as cores computadas do estado selecionado.
+- O modal Uso agora clica em `Exportar CSV` e verifica `exportProjectUsageCsv` com o projeto esperado; `EMPTY` evita efeitos de download no teste.
+- Privacy verifica `line-height`, margens e altura renderizada dos quatro inputs alinhados.
+
+### Checks do terceiro ciclo
+
+- PASS: `npx tsc -p src/tsconfig.spec-admin.json --noEmit`.
+- PASS: `npx ngc -p src/tsconfig.app.json`.
+- PASS: `git diff --check`.
+- NOT RUN: Karma, conforme restrição deste ciclo; a infraestrutura legada permanece documentada como bloqueada.
+- NOT RUN: build de produção, pois somente specs e este relatório foram alterados.

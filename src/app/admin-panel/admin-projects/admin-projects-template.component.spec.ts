@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+import { RouterTestingModule } from '@angular/router/testing';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -12,9 +13,10 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSelect, MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { of } from 'rxjs';
+import { EMPTY, of } from 'rxjs';
 import { AuthService } from '../../core/auth.service';
 import { AdminService } from '../../services/admin.service';
+import { AdminPanelComponent } from '../admin-panel.component';
 import { AdminProjectsComponent } from './admin-projects.component';
 
 const project = {
@@ -72,6 +74,7 @@ describe('AdminProjectsComponent responsive contracts', () => {
       'getProjectUsage',
       'getProjectUsageSnapshots',
       'saveProjectUsageSnapshot',
+      'exportProjectUsageCsv',
       'getProjectBillingLifecycle',
       'applyProjectBillingAction'
     ]);
@@ -83,6 +86,7 @@ describe('AdminProjectsComponent responsive contracts', () => {
     adminService.getProjectUsage.and.returnValue(of(usageSnapshot));
     adminService.getProjectUsageSnapshots.and.returnValue(of({ data: [] }));
     adminService.saveProjectUsageSnapshot.and.returnValue(of({}));
+    adminService.exportProjectUsageCsv.and.returnValue(EMPTY);
     adminService.getProjectBillingLifecycle.and.returnValue(of({
       summary: { status: 'active', plan: 'pro', type: 'payment' },
       events: []
@@ -90,7 +94,7 @@ describe('AdminProjectsComponent responsive contracts', () => {
     adminService.applyProjectBillingAction.and.returnValue(of({}));
 
     await TestBed.configureTestingModule({
-      declarations: [AdminProjectsComponent],
+      declarations: [AdminPanelComponent, AdminProjectsComponent],
       imports: [
         CommonModule,
         FormsModule,
@@ -103,13 +107,16 @@ describe('AdminProjectsComponent responsive contracts', () => {
         MatPaginatorModule,
         MatSelectModule,
         MatTableModule,
-        NoopAnimationsModule
+        NoopAnimationsModule,
+        RouterTestingModule
       ],
       providers: [
         { provide: AdminService, useValue: adminService },
         { provide: AuthService, useValue: jasmine.createSpyObj<AuthService>('AuthService', ['impersonate']) }
       ]
     }).compileComponents();
+
+    TestBed.createComponent(AdminPanelComponent).detectChanges();
   });
 
   afterEach(() => TestBed.inject(MatDialog).closeAll());
@@ -122,16 +129,42 @@ describe('AdminProjectsComponent responsive contracts', () => {
 
   it('mantém a tabela principal no wrapper horizontal e os selects no painel azul', () => {
     const fixture = createFixture();
+    const host = fixture.nativeElement as HTMLElement;
+    host.style.display = 'block';
+    host.style.width = '360px';
+    fixture.detectChanges();
     const wrapper = fixture.nativeElement.querySelector('.admin-projects-table-wrap') as HTMLElement;
     const table = fixture.nativeElement.querySelector('.admin-table-wide') as HTMLTableElement;
     const selects = fixture.debugElement.queryAll(By.directive(MatSelect));
+    const wrapperStyle = getComputedStyle(wrapper);
 
     expect(wrapper).not.toBeNull();
     expect(table.parentElement).toBe(wrapper);
+    expect(wrapperStyle.minWidth).toBe('0px');
+    expect(wrapperStyle.width).toBe(getComputedStyle(host).width);
+    expect(wrapperStyle.maxWidth).toBe('100%');
+    expect(wrapperStyle.overflowX).toBe('auto');
+    expect(wrapper.scrollWidth).toBeGreaterThan(wrapper.clientWidth);
     expect(selects.length).toBe(2);
     for (const select of selects) {
       expect((select.componentInstance as MatSelect).panelClass).toBe('admin-select-panel');
     }
+
+    const filterSelect = selects[0].componentInstance as MatSelect;
+    filterSelect.open();
+    fixture.detectChanges();
+    const selectedOption = document.querySelector('.admin-select-panel .mat-option.mat-selected') as HTMLElement;
+
+    expect(selectedOption).not.toBeNull();
+    if (!selectedOption) {
+      filterSelect.close();
+      return;
+    }
+    const selectedOptionStyle = getComputedStyle(selectedOption);
+    expect(selectedOptionStyle.backgroundColor).toBe('rgb(227, 242, 253)');
+    expect(selectedOptionStyle.color).toBe('rgb(21, 101, 192)');
+    filterSelect.close();
+    fixture.detectChanges();
   });
 
   it('abre Plano responsivo e preserva a troca de plano', () => {
@@ -189,8 +222,10 @@ describe('AdminProjectsComponent responsive contracts', () => {
     expect(adminService.getProjectUsageSnapshots).toHaveBeenCalledWith(project._id);
     expect(panel.querySelector('.admin-dialog-content-wide')).not.toBeNull();
     expect(panel.querySelectorAll('.admin-dialog-table-wrap').length).toBeGreaterThan(0);
-    expect(findButton(panel, 'Exportar CSV')).not.toBeNull();
     expect(findButton(panel, 'Fechar')).not.toBeNull();
+    findButton(panel, 'Exportar CSV').click();
+
+    expect(adminService.exportProjectUsageCsv).toHaveBeenCalledWith(project._id);
     findButton(panel, 'Salvar snapshot').click();
 
     expect(adminService.saveProjectUsageSnapshot).toHaveBeenCalledWith(project._id, true);

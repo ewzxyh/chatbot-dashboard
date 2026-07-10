@@ -46,8 +46,16 @@ describe('AdminPrivacyComponent input contracts', () => {
 
     expect(inputs.length).toBe(4);
     for (const input of inputs) {
+      const inputStyle = getComputedStyle(input);
+
       expect(input.classList.contains('privacy-aligned-input')).toBe(true);
       expect(input.closest('.mat-form-field-appearance-outline')).not.toBeNull();
+      expect(inputStyle.lineHeight).toBe('24px');
+      expect(inputStyle.marginTop).toBe('0px');
+      expect(inputStyle.marginRight).toBe('0px');
+      expect(inputStyle.marginBottom).toBe('0px');
+      expect(inputStyle.marginLeft).toBe('0px');
+      expect(input.getBoundingClientRect().height).toBeGreaterThanOrEqual(24);
     }
   });
 });
