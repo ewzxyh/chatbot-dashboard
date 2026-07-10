@@ -29,13 +29,29 @@ function findNavLink(links: HTMLAnchorElement[], label: string): HTMLAnchorEleme
   return links.find((link) => link.textContent.trim() === label);
 }
 
+interface CssRuleContainer {
+  readonly cssRules: CSSRuleList;
+}
+
+function getCssRules(container: CssRuleContainer): CSSRule[] {
+  try {
+    return Array.from(container.cssRules).flatMap((rule) =>
+      'cssRules' in rule ? getCssRules(rule as CSSRule & CssRuleContainer) : [rule]
+    );
+  } catch {
+    return [];
+  }
+}
+
 function getAdminStyleSelectors(): string[] {
-  const styleSheets = Array.from(document.styleSheets).filter((styleSheet) =>
-    Array.from(styleSheet.cssRules).some((rule) => rule instanceof CSSStyleRule && rule.selectorText.includes('.admin-container'))
+  const styleSheetRules = Array.from(document.styleSheets)
+    .map((styleSheet) => getCssRules(styleSheet))
+    .filter((rules) =>
+      rules.some((rule) => rule instanceof CSSStyleRule && rule.selectorText.includes('.admin-container'))
   );
 
-  return styleSheets.flatMap((styleSheet) =>
-    Array.from(styleSheet.cssRules)
+  return styleSheetRules.flatMap((rules) =>
+    rules
       .filter((rule): rule is CSSStyleRule => rule instanceof CSSStyleRule)
       .flatMap((rule) => rule.selectorText.split(',').map((selector) => selector.trim()))
   );
@@ -150,6 +166,11 @@ describe('AdminPanelComponent', () => {
     expect(selectors).toContain('.admin-container tbody tr');
     expect(selectors).toContain('.admin-container tbody tr:hover');
     expect(selectors).toContain('.admin-dialog-panel table');
+    expect(selectors).toContain('.admin-dialog-panel thead tr');
+    expect(selectors).toContain('.admin-dialog-panel th');
+    expect(selectors).toContain('.admin-dialog-panel td');
+    expect(selectors).toContain('.admin-dialog-panel tbody tr');
+    expect(selectors).toContain('.admin-dialog-panel tbody tr:hover');
     expect(selectors).toContain('.admin-select-panel .mat-option:hover');
     expect(selectors).not.toContain('table');
     expect(selectors).not.toContain('thead tr');
