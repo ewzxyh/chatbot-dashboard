@@ -69,4 +69,19 @@
 ## Review
 
 - Karma e Ultracite permaneceram bloqueados pelo setup local; os checks focais, `ngc`, build e diff passaram.
-- O backend precisa aceitar o filtro `queue` antes do uso operacional dos links de filas.
+- O backend passou a aceitar `queue` no commit `be85d5fd`.
+
+# Task 4: Correcoes da auditoria frontend
+
+- [x] Cancelar callbacks stale e fazer teardown no destroy.
+- [x] Carregar summary com estados missing/stale e retry de erro.
+- [x] Sanitizar filtros por aba e canonicalizar a URL.
+- [x] Remover links de alerta para recursos saudaveis.
+- [x] Remover imports Node do spec do Dashboard.
+- [x] Validar specs focais, `ngc`, build e diff.
+
+## Review
+
+- RED confirmou a race com Subjects fora de ordem; GREEN passou no harness isolado.
+- Backend `be85d5fd` confirmado para `queue` e fim de dia inclusivo.
+- Karma permanece bloqueado somente pela dependencia local ausente.

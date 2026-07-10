@@ -22,6 +22,7 @@ export interface OperationLinkFilters {
 }
 
 type AlertOperationLinkFilters = Pick<OperationLinkFilters, 'product' | 'channel' | 'cause'>;
+export const ADMIN_OPERATION_ROUTE = '/admin/operation';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -29,6 +30,7 @@ type AlertOperationLinkFilters = Pick<OperationLinkFilters, 'product' | 'channel
   styleUrls: ['./admin-dashboard.component.scss']
 })
 export class AdminDashboardComponent implements OnInit {
+  readonly operationRoute = ADMIN_OPERATION_ROUTE;
   summary: HealthSummaryV2 = null;
   isLoading = true;
   errorMessage = '';
@@ -140,7 +142,15 @@ export class AdminDashboardComponent implements OnInit {
     });
   }
 
-  buildResourceOperationQueryParams(resource: OperationalSnapshotItem, resourceType?: 'service' | 'queue'): Params {
+  isResourceActionable(resource: OperationalSnapshotItem): boolean {
+    return Boolean(resource && (resource.status !== 'ok' || resource.cause));
+  }
+
+  buildResourceOperationQueryParams(
+    resource: OperationalSnapshotItem,
+    resourceType: 'service' | 'queue'
+  ): Params | null {
+    if (!this.isResourceActionable(resource)) return null;
     return this.buildOperationQueryParams({
       tab: 'alerts',
       status: 'open',

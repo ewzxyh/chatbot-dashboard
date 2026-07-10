@@ -106,7 +106,12 @@ describe('AdminService operational endpoints', () => {
   });
 
   it('envia filtros de alerta validos e preserva encoding sem vazar extras', () => {
-    const filters: OperationalAlertFilters & { token: string } = {
+    const filters: OperationalAlertFilters & {
+      tab: string;
+      resource: string;
+      resourceType: string;
+      token: string;
+    } = {
       page: 3,
       limit: 10,
       product: 'waba',
@@ -120,6 +125,9 @@ describe('AdminService operational endpoints', () => {
       project_id: 'project A&B',
       from: '2026-07-10T10:00:00.000Z',
       to: '2026-07-10T12:00:00.000Z',
+      tab: 'alerts',
+      resource: 'jobs',
+      resourceType: 'queue',
       token: 'must-not-leak'
     };
 
@@ -133,6 +141,9 @@ describe('AdminService operational endpoints', () => {
     expect(options.params.get('service')).toBe('rabbitmq');
     expect(options.params.get('queue')).toBe('jobs');
     expect(options.params.get('project_id')).toBe('project A&B');
+    expect(options.params.get('tab')).toBeNull();
+    expect(options.params.get('resource')).toBeNull();
+    expect(options.params.get('resourceType')).toBeNull();
     expect(options.params.get('token')).toBeNull();
     expect(options.params.toString()).toContain('project_id=project%20A%26B');
   });

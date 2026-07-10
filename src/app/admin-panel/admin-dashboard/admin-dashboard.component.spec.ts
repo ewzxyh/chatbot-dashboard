@@ -1,8 +1,6 @@
-import { readFileSync } from 'fs';
-import { join } from 'path';
 import { Subject, of, throwError } from 'rxjs';
 import type { AdminService, HealthSummaryV2 } from '../../services/admin.service';
-import { AdminDashboardComponent } from './admin-dashboard.component';
+import { ADMIN_OPERATION_ROUTE, AdminDashboardComponent } from './admin-dashboard.component';
 
 describe('AdminDashboardComponent', () => {
   let adminService: jasmine.SpyObj<AdminService>;
@@ -163,7 +161,7 @@ describe('AdminDashboardComponent', () => {
     expect(component.buildAlertOperationQueryParams('ok')).toEqual({ tab: 'alerts', status: 'resolved' });
   });
 
-  it('abre servicos e filas como alertas ativos com recurso, tipo e causa validos', () => {
+  it('gera deep-link somente para servicos e filas acionaveis', () => {
     expect(component.buildResourceOperationQueryParams({
       name: 'mongo',
       status: 'down',
@@ -176,33 +174,20 @@ describe('AdminDashboardComponent', () => {
       resource: 'mongo',
       resourceType: 'service'
     });
-    expect(component.buildResourceOperationQueryParams({
+    const healthyQueue = {
       name: 'messages',
       status: 'ok',
       cause: null,
       checkedAt: '2026-07-10T11:59:57.000Z'
-    }, 'queue')).toEqual({
-      tab: 'alerts',
-      status: 'open',
-      resource: 'messages',
-      resourceType: 'queue'
-    });
+    } as const;
+
+    expect(component.isResourceActionable(healthyQueue)).toBe(false);
+    expect(component.buildResourceOperationQueryParams(healthyQueue, 'queue')).toBeNull();
+    expect(component.isResourceActionable({ ...healthyQueue, cause: 'queue_backlog' })).toBe(true);
   });
 
-  it('usa routerLink absoluto com queryParams sem UrlTree ou href no template', () => {
-    const componentPath = join(process.cwd(), 'src/app/admin-panel/admin-dashboard');
-    const template = readFileSync(join(componentPath, 'admin-dashboard.component.html'), 'utf8');
-    const source = readFileSync(join(componentPath, 'admin-dashboard.component.ts'), 'utf8');
-    const operationLinks = template.match(/<a\b[^>]*>/g) || [];
-
-    expect(operationLinks.length).toBe(7);
-    for (const link of operationLinks) {
-      expect(link).toContain('routerLink="/admin/operation"');
-      expect(link).toContain('[queryParams]');
-    }
-    expect(template).not.toContain('../operation');
-    expect(template).not.toContain('href=');
-    expect(source).not.toContain('UrlTree');
-    expect(source).not.toContain('private router: Router');
+  it('expoe rota Angular absoluta sem depender de APIs Node', () => {
+    expect(ADMIN_OPERATION_ROUTE).toBe('/admin/operation');
+    expect(component.operationRoute).toBe(ADMIN_OPERATION_ROUTE);
   });
 });

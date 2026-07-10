@@ -26,6 +26,33 @@
   display: block;
 }
 
+.operation-summary-state {
+  align-items: center;
+  background: #f4f7f8;
+  border-left: 3px solid #78909c;
+  color: #455a64;
+  display: flex;
+  font-size: 12px;
+  gap: 12px;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  min-height: 40px;
+  padding: 8px 12px;
+}
+
+.operation-summary-error {
+  background: #ffebee;
+  border-left-color: #b71c1c;
+  color: #b71c1c;
+}
+
+.operation-summary-missing,
+.operation-summary-stale {
+  background: #fff8e1;
+  border-left-color: #9a6a00;
+  color: #6d4c00;
+}
+
 .operation-section {
   border-top: 1px solid #dfe5e8;
   padding-top: 16px;

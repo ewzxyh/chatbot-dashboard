@@ -4,11 +4,28 @@
       <h2>Operacao</h2>
       <p>Diagnosticos persistidos de canais e alertas.</p>
     </div>
-    <button mat-stroked-button type="button" (click)="retry()" [disabled]="isLoading">
+    <button mat-stroked-button type="button" (click)="refresh()" [disabled]="isLoading || isSummaryLoading">
       <mat-icon>refresh</mat-icon>
       Atualizar
     </button>
   </header>
+
+  <div *ngIf="isSummaryLoading && !summary" class="operation-summary-state" role="status">
+    Carregando contexto do snapshot...
+  </div>
+  <div *ngIf="summaryErrorMessage && !isSummaryLoading" class="operation-summary-state operation-summary-error" role="alert">
+    <span>{{ summaryErrorMessage }}</span>
+    <button mat-stroked-button type="button" (click)="retrySummary()">
+      <mat-icon>refresh</mat-icon>
+      Tentar novamente
+    </button>
+  </div>
+  <div *ngIf="isSnapshotMissing" class="operation-summary-state operation-summary-missing" role="status">
+    Snapshot operacional ausente. Os detalhes continuam sendo consultados nas fontes persistidas.
+  </div>
+  <div *ngIf="isSnapshotStale" class="operation-summary-state operation-summary-stale" role="status">
+    Snapshot desatualizado. Os detalhes abaixo continuam disponiveis.
+  </div>
 
   <mat-tab-group [selectedIndex]="tab === 'alerts' ? 1 : 0" (selectedTabChange)="selectTab($event.index === 1 ? 'alerts' : 'channels')" class="operation-tabs">
     <mat-tab label="Canais">
@@ -71,11 +88,14 @@
             Tentar novamente
           </button>
         </div>
-        <div *ngIf="isEmpty && !isLoading && !errorMessage" class="operation-state" role="status">
+        <div *ngIf="isSnapshotMissing && isDetailsEmpty" class="operation-state" role="status">
+          Sem snapshot atual; os detalhes persistidos de canais ainda nao estao disponiveis.
+        </div>
+        <div *ngIf="isEmpty" class="operation-state" role="status">
           {{ hasActiveFilters ? 'Nenhum canal corresponde aos filtros.' : 'Nenhum canal encontrado.' }}
         </div>
 
-        <div *ngIf="!isLoading && !errorMessage && !isEmpty" class="table-scroll">
+        <div *ngIf="!isLoading && !errorMessage && channelRows.length > 0" class="table-scroll">
           <table mat-table [dataSource]="channelRows" class="operation-table">
             <ng-container matColumnDef="status">
               <th mat-header-cell *matHeaderCellDef>Status</th>
@@ -185,11 +205,14 @@
             Tentar novamente
           </button>
         </div>
-        <div *ngIf="isEmpty && !isLoading && !errorMessage" class="operation-state" role="status">
+        <div *ngIf="isSnapshotMissing && isDetailsEmpty" class="operation-state" role="status">
+          Sem snapshot atual; os detalhes persistidos de alertas ainda nao estao disponiveis.
+        </div>
+        <div *ngIf="isEmpty" class="operation-state" role="status">
           {{ hasActiveFilters ? 'Nenhum alerta corresponde aos filtros.' : 'Nenhum alerta encontrado.' }}
         </div>
 
-        <div *ngIf="!isLoading && !errorMessage && !isEmpty" class="table-scroll">
+        <div *ngIf="!isLoading && !errorMessage && alertRows.length > 0" class="table-scroll">
           <table mat-table [dataSource]="alertRows" class="operation-table">
             <ng-container matColumnDef="severity">
               <th mat-header-cell *matHeaderCellDef>Severidade</th>

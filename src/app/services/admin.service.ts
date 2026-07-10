@@ -93,6 +93,10 @@ export const OPERATIONAL_CAUSE_CODES: OperationalCauseCode[] = [
   'unsupported_channel',
   'webhook_failure'
 ];
+export const OPERATIONAL_PRODUCTS: ReadonlyArray<OperationalProduct> = ['casezap', 'waba', 'unknown'];
+export const OPERATIONAL_CHANNELS: ReadonlyArray<OperationalChannel> = ['casezap', 'waba', 'webhook'];
+export const OPERATIONAL_STATUSES: ReadonlyArray<OperationalStatus> = ['ok', 'degraded', 'down', 'unknown'];
+export const OPERATIONAL_ALERT_STATUSES: ReadonlyArray<AlertStatus> = ['open', 'resolved'];
 
 export interface OperationalStatusCounts {
   ok: number;
