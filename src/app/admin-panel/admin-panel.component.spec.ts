@@ -33,11 +33,20 @@ interface CssRuleContainer {
   readonly cssRules: CSSRuleList;
 }
 
+interface CssSelectorRule extends CSSRule {
+  readonly selectorText: string;
+}
+
+function hasSelectorText(rule: CSSRule): rule is CssSelectorRule {
+  return 'selectorText' in rule;
+}
+
 function getCssRules(container: CssRuleContainer): CSSRule[] {
   try {
-    return Array.from(container.cssRules).flatMap((rule) =>
-      'cssRules' in rule ? getCssRules(rule as CSSRule & CssRuleContainer) : [rule]
-    );
+    return Array.from(container.cssRules).flatMap((rule) => {
+      if (hasSelectorText(rule)) return [rule];
+      return 'cssRules' in rule ? getCssRules(rule as CSSRule & CssRuleContainer) : [rule];
+    });
   } catch {
     return [];
   }
@@ -47,12 +56,12 @@ function getAdminStyleSelectors(): string[] {
   const styleSheetRules = Array.from(document.styleSheets)
     .map((styleSheet) => getCssRules(styleSheet))
     .filter((rules) =>
-      rules.some((rule) => rule instanceof CSSStyleRule && rule.selectorText.includes('.admin-container'))
+      rules.some((rule) => hasSelectorText(rule) && rule.selectorText.includes('.admin-container'))
   );
 
   return styleSheetRules.flatMap((rules) =>
     rules
-      .filter((rule): rule is CSSStyleRule => rule instanceof CSSStyleRule)
+      .filter(hasSelectorText)
       .flatMap((rule) => rule.selectorText.split(',').map((selector) => selector.trim()))
   );
 }
