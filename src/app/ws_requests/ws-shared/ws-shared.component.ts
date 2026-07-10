@@ -525,7 +525,7 @@ export class WsSharedComponent implements OnInit {
   checkImageExists(imageUrl, callBack) {
     var imageData = new Image();
     imageData.onload = function () {
-      callBack(true);
+      callBack(imageData.naturalWidth > 1 || imageData.naturalHeight > 1);
     };
     imageData.onerror = function () {
       callBack(false);

@@ -1335,7 +1335,7 @@ searchalsoforemaildoamin_filterUsers(users: any[], searchTerm: string): any[] {
   checkImageExists(imageUrl, callBack) {
     var imageData = new Image()
     imageData.onload = function () {
-      callBack(true)
+      callBack(imageData.naturalWidth > 1 || imageData.naturalHeight > 1)
     }
     imageData.onerror = function () {
       callBack(false)
