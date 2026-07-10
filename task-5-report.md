@@ -24,18 +24,17 @@ Base: `master` em `a9fc2016f1be321dd0ea3c0bae156a1b5db9d525`.
 | Privacidade | configuração, retenção, exportação e anonimização | mesmos controles + loading/retry/empty | Mantida |
 | Shell global | sidebar, navbar e `/home` | sem diff nesses arquivos | Mantida |
 
-## Verificação
+## Verificacao
 
-- PASS: `npx ngc -p src/tsconfig.app.json`.
-- PASS: harness Karma/ChromeHeadless focal, `13/13 SUCCESS`, cobrindo query params, `aria-current`, foco/teclado, concorrência, teardown e estados de erro.
-- PASS: `npm run build -- --configuration production`, exit 0, 57,9s.
+- PASS: `npx ngc -p src/tsconfig.app.json`, exit 0.
+- PASS: `npm run build -- --configuration production`, exit 0.
 - PASS: `git diff --check`.
-- PASS: auditoria automática de capacidades e arquivos globais.
-- PASS: `karma.conf.js` carrega o reporter de coverage somente quando `codeCoverage` está habilitado; coverage não foi ocultado e nenhuma dependência foi adicionada.
-- BLOCKED: `npx ng test --watch=false --browsers=ChromeHeadless`, exit 1 no bundle da suite legada por imports ausentes de `analytics-service`, `@angular/http/testing` e `rxjs-compat`, antes dos specs globais.
-- NOT RUN: `ultracite`, indisponível em `node_modules/.bin`.
+- BLOCKED: `npx ng test --watch=false --browsers=ChromeHeadless --main=src/test-admin.ts --ts-config=src/tsconfig.spec-admin.json`, primeiras duas tentativas terminaram com exit 1 apos `ChromeHeadless` desconectar por `no message in 30000 ms`, com zero specs reportadas.
+- BLOCKED: o mesmo comando com `browserNoActivityTimeout: 180000` ficou sem reportar specs ate o timeout externo de 180s e terminou com exit 124; nenhum spec foi executado.
+- PASS: `karma.conf.js` nao contem configuracao nem reporter de coverage; nenhum coverage foi executado ou alegado e nenhuma dependencia foi adicionada.
+- NOT RUN: `ultracite`, indisponivel em `node_modules/.bin`.
 
-## Preocupações
+## Preocupacoes
 
-- A suite Karma completa continua dependente dos módulos legados ausentes; o harness focal da Task 5 passa de forma independente.
-- Não foi iniciado servidor local nem feita validação visual; a instrução do projeto exige usar o servidor já existente em `localhost:3000`.
+- Os asserts de Space e `.audit-detail` permanecem em `admin-audit-template.component.spec.ts`, mas o runner ChromeHeadless nao chegou a executar specs neste ambiente.
+- Nao foi iniciado servidor local nem feita validacao visual; a instrucao do projeto exige usar o servidor ja existente em `localhost:3000`.

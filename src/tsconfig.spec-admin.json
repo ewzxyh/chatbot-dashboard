@@ -1,0 +1,15 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../out-tsc/spec-admin",
+    "baseUrl": "",
+    "types": [
+      "jasmine",
+      "node"
+    ]
+  },
+  "files": [
+    "test-admin.ts",
+    "polyfills.ts"
+  ]
+}

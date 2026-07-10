@@ -65,6 +65,14 @@ describe('AdminAuditComponent template', () => {
     button.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
     fixture.detectChanges();
     expect(fixture.componentInstance.selectedEvent).toBe(currentEvent);
+    expect(fixture.nativeElement.querySelector('.audit-detail')).not.toBeNull();
+
+    fixture.componentInstance.clearSelection();
+    fixture.detectChanges();
+    button.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', code: 'Space', bubbles: true }));
+    fixture.detectChanges();
+    expect(fixture.componentInstance.selectedEvent).toBe(currentEvent);
+    expect(fixture.nativeElement.querySelector('.audit-detail')).not.toBeNull();
   });
 
   it('não exibe empty, tabela ou paginador no erro inicial', () => {

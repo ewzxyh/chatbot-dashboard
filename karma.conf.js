@@ -8,9 +8,6 @@ module.exports = function (config) {
     require('karma-jasmine-html-reporter'),
     require('@angular-devkit/build-angular/plugins/karma')
   ];
-  if (config.angularCli && config.angularCli.codeCoverage) {
-    plugins.splice(3, 0, require('karma-coverage-istanbul-reporter'));
-  }
 
   config.set({
     basePath: '',
@@ -28,15 +25,9 @@ module.exports = function (config) {
     mime: {
       'text/x-typescript': ['ts','tsx']
     },
-    coverageIstanbulReporter: {
-      dir: require('path').join(__dirname, 'coverage'), reports: [ 'html', 'lcovonly' ],
-      fixWebpackSourcePaths: true
-    },
-    
-    reporters: config.angularCli && config.angularCli.codeCoverage
-              ? ['progress', 'coverage-istanbul']
-              : ['progress', 'kjhtml'],
+    reporters: ['progress', 'kjhtml'],
     port: 9876,
+    browserNoActivityTimeout: 180000,
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
