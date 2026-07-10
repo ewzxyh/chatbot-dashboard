@@ -675,6 +675,7 @@ export class NavbarComponent extends PricingBaseComponent implements OnInit, Aft
       '/group/create',
       '/email',
       '/hours',
+      '/automations',
       '/integrations',
       '/app-store',
       '/knowledge-bases-pre',
