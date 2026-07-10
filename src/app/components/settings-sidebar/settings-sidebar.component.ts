@@ -1364,7 +1364,7 @@ export class SettingsSidebarComponent implements OnInit {
       this.logger.log('[SETTING-SIDEBAR] - KNOWLEDGE_BASES_ROUTE_IS_ACTIVE ', this.KNOWLEDGE_BASES_ROUTE_IS_ACTIVE)
     }
 
-    if (this.route.indexOf('/automations') !== -1) {
+    if (this.route.indexOf('/automations') !== -1 || this.route.indexOf('/new-broadcast') !== -1) {
       this.AUTOMATIONS_ROUTE_IS_ACTIVE = true
       this.logger.log('[SETTING-SIDEBAR] - AUTOMATIONS_ROUTE_IS_ACTIVE ', this.AUTOMATIONS_ROUTE_IS_ACTIVE)
     } else {
