@@ -436,11 +436,18 @@
   line-height: 1;
 }
 
-table { width: 100%; border-collapse: collapse; font-size: 14px; }
-thead tr { border-bottom: 2px solid #e0e0e0; text-align: left; }
-th, td { padding: 14px 16px; }
-tbody tr { border-bottom: 1px solid #f0f0f0; }
-tbody tr:hover { background: #f8fbff; }
+.admin-container table,
+.admin-dialog-panel table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.admin-container thead tr,
+.admin-dialog-panel thead tr { border-bottom: 2px solid #e0e0e0; text-align: left; }
+.admin-container th,
+.admin-container td,
+.admin-dialog-panel th,
+.admin-dialog-panel td { padding: 14px 16px; }
+.admin-container tbody tr,
+.admin-dialog-panel tbody tr { border-bottom: 1px solid #f0f0f0; }
+.admin-container tbody tr:hover,
+.admin-dialog-panel tbody tr:hover { background: #f8fbff; }
 
 .admin-table {
   width: 100%;

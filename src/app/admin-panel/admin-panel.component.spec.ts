@@ -29,6 +29,18 @@ function findNavLink(links: HTMLAnchorElement[], label: string): HTMLAnchorEleme
   return links.find((link) => link.textContent.trim() === label);
 }
 
+function getAdminStyleSelectors(): string[] {
+  const styleSheets = Array.from(document.styleSheets).filter((styleSheet) =>
+    Array.from(styleSheet.cssRules).some((rule) => rule instanceof CSSStyleRule && rule.selectorText.includes('.admin-container'))
+  );
+
+  return styleSheets.flatMap((styleSheet) =>
+    Array.from(styleSheet.cssRules)
+      .filter((rule): rule is CSSStyleRule => rule instanceof CSSStyleRule)
+      .flatMap((rule) => rule.selectorText.split(',').map((selector) => selector.trim()))
+  );
+}
+
 describe('AdminPanelComponent', () => {
   let router: Router;
 
@@ -125,4 +137,25 @@ describe('AdminPanelComponent', () => {
     expect(fixture.nativeElement.querySelector('.mat-tab-header-pagination-end')).toBeNull();
     flush();
   }));
+
+  it('escopa estilos de tabela no admin e preserva o overlay fora do container', () => {
+    const fixture = TestBed.createComponent(AdminPanelComponent);
+    fixture.detectChanges();
+
+    const selectors = getAdminStyleSelectors();
+    expect(selectors).toContain('.admin-container table');
+    expect(selectors).toContain('.admin-container thead tr');
+    expect(selectors).toContain('.admin-container th');
+    expect(selectors).toContain('.admin-container td');
+    expect(selectors).toContain('.admin-container tbody tr');
+    expect(selectors).toContain('.admin-container tbody tr:hover');
+    expect(selectors).toContain('.admin-dialog-panel table');
+    expect(selectors).toContain('.admin-select-panel .mat-option:hover');
+    expect(selectors).not.toContain('table');
+    expect(selectors).not.toContain('thead tr');
+    expect(selectors).not.toContain('th');
+    expect(selectors).not.toContain('td');
+    expect(selectors).not.toContain('tbody tr');
+    expect(selectors).not.toContain('tbody tr:hover');
+  });
 });
