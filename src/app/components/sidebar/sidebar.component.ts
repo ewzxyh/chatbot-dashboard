@@ -417,28 +417,40 @@ export class SidebarComponent implements OnInit, AfterViewInit {
     }
 
     const storedLastProject = localStorage.getItem('last_project');
-    if (!storedLastProject) {
-      return;
-    }
-
-    try {
-      const projectUser = JSON.parse(storedLastProject);
-      const storedProject = projectUser && projectUser.id_project;
-      const projectId = storedProject && (storedProject._id || storedProject.id);
-
-      if (!projectId) {
-        return;
+    if (storedLastProject) {
+      try {
+        if (this.setAdminSidebarProject(JSON.parse(storedLastProject))) {
+          return;
+        }
+      } catch (error) {
+        this.logger.error('[SIDEBAR] - RESTORE PROJECT FOR ADMIN ROUTE ERROR ', error);
       }
-
-      this.currentProjectUser = projectUser;
-      this.project = Object.assign({}, storedProject, { _id: projectId });
-      this.projectId = projectId;
-      this.USER_ROLE = projectUser.role || 'admin';
-      this.ROLE = this.USER_ROLE;
-      this.enableAllProjectMenus();
-    } catch (error) {
-      this.logger.error('[SIDEBAR] - RESTORE PROJECT FOR ADMIN ROUTE ERROR ', error);
     }
+
+    this.projectService.getProjects().subscribe((projects: any) => {
+      const projectUser = projects && projects.find(item => item && item.id_project);
+      if (this.setAdminSidebarProject(projectUser)) {
+        localStorage.setItem('last_project', JSON.stringify(projectUser));
+      }
+    });
+  }
+
+  setAdminSidebarProject(projectUser: any) {
+    const storedProject = projectUser && (projectUser.id_project || projectUser);
+    const projectId = typeof storedProject === 'string'
+      ? storedProject
+      : storedProject && (storedProject._id || storedProject.id);
+    if (!projectId) {
+      return false;
+    }
+
+    this.currentProjectUser = projectUser.id_project ? projectUser : null;
+    this.project = Object.assign({}, typeof storedProject === 'object' ? storedProject : {}, { _id: projectId });
+    this.projectId = projectId;
+    this.USER_ROLE = projectUser.role || 'admin';
+    this.ROLE = this.USER_ROLE;
+    this.enableAllProjectMenus();
+    return true;
   }
 
   enableAllProjectMenus() {
