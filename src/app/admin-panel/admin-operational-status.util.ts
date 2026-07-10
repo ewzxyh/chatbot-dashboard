@@ -17,25 +17,9 @@ const ISSUE_STATUSES = [
   'red'
 ];
 
-const ERROR_STATUSES = [
-  'down',
-  'error',
-  'failed',
-  'disconnected',
-  'banned',
-  'bannedm',
-  'disabled',
-  'red'
-];
-
 export function isOperationalIssueStatus(status: string): boolean {
   const normalized = status ? String(status).toLowerCase() : '';
   return ISSUE_STATUSES.indexOf(normalized) !== -1;
-}
-
-export function isOperationalErrorStatus(status: string): boolean {
-  const normalized = status ? String(status).toLowerCase() : '';
-  return ERROR_STATUSES.indexOf(normalized) !== -1;
 }
 
 export function isOperationalQueueIssue(queue: any): boolean {

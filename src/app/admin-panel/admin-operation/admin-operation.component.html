@@ -132,11 +132,11 @@
               <th mat-header-cell *matHeaderCellDef>Acoes</th>
               <td mat-cell *matCellDef="let row">
                 <div class="channel-actions">
-                  <button mat-stroked-button type="button" [disabled]="testingChannelKey === channelKey(row)" (click)="testChannel(row)">
-                    {{ testingChannelKey === channelKey(row) ? 'Testando...' : 'Testar canal' }}
+                  <button mat-stroked-button type="button" [disabled]="isTestingChannel(channelKey(row))" (click)="testChannel(row)">
+                    {{ isTestingChannel(channelKey(row)) ? 'Testando...' : 'Testar canal' }}
                   </button>
-                  <button mat-stroked-button type="button" [disabled]="registeringWebhookKey === channelKey(row)" (click)="registerWebhook(row)">
-                    {{ registeringWebhookKey === channelKey(row) ? 'Registrando...' : 'Registrar webhook' }}
+                  <button mat-stroked-button type="button" [disabled]="isRegisteringWebhook(channelKey(row))" (click)="registerWebhook(row)">
+                    {{ isRegisteringWebhook(channelKey(row)) ? 'Registrando...' : 'Registrar webhook' }}
                   </button>
                   <button mat-stroked-button type="button" (click)="showChannelErrors(row)">Ver erros</button>
                 </div>

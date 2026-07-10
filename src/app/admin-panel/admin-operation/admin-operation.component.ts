@@ -115,8 +115,6 @@ export class AdminOperationComponent implements OnInit, OnDestroy {
   eventsErrorMessage = '';
   isTestingStorage = false;
   isTestingNotification = false;
-  testingChannelKey = '';
-  registeringWebhookKey = '';
   channelTestResults: Record<string, any> = {};
   webhookRegisterResults: Record<string, any> = {};
   notificationTestResult: any = null;
@@ -145,6 +143,8 @@ export class AdminOperationComponent implements OnInit, OnDestroy {
   private summaryRequestId = 0;
   private eventsRequestId = 0;
   private metricsRequestId = 0;
+  private testingChannelKeys = new Set<string>();
+  private registeringWebhookKeys = new Set<string>();
   private destroyed = false;
 
   constructor(
@@ -390,23 +390,32 @@ export class AdminOperationComponent implements OnInit, OnDestroy {
     return channel ? `${channel.channel}:${channel.integrationId || ''}` : '';
   }
 
+  isTestingChannel(key: string): boolean {
+    return this.testingChannelKeys.has(key);
+  }
+
+  isRegisteringWebhook(key: string): boolean {
+    return this.registeringWebhookKeys.has(key);
+  }
+
   testChannel(channel: ChannelDiagnostic): void {
     if (!channel || this.destroyed) return;
     const key = this.channelKey(channel);
-    this.testingChannelKey = key;
+    if (this.isTestingChannel(key)) return;
+    this.testingChannelKeys.add(key);
     this.channelTestResults[key] = null;
     const subscription = this.adminService.testChannelConnection(channel.channel, channel.integrationId).subscribe(
       (response) => {
         const result = response && response.result ? response.result : response;
         this.channelTestResults[key] = result;
-        this.testingChannelKey = '';
+        this.testingChannelKeys.delete(key);
         const status = result && (result.providerHealth || result.status);
         if (OPERATIONAL_STATUSES.includes(status as OperationalStatus)) channel.status = status as OperationalStatus;
         this.loadEvents();
       },
       () => {
         this.channelTestResults[key] = { providerHealth: 'down', providerReason: 'test_failed' };
-        this.testingChannelKey = '';
+        this.testingChannelKeys.delete(key);
       }
     );
     this.actionSubscriptions.add(subscription);
@@ -415,18 +424,19 @@ export class AdminOperationComponent implements OnInit, OnDestroy {
   registerWebhook(channel: ChannelDiagnostic): void {
     if (!channel || this.destroyed) return;
     const key = this.channelKey(channel);
-    this.registeringWebhookKey = key;
+    if (this.isRegisteringWebhook(key)) return;
+    this.registeringWebhookKeys.add(key);
     this.webhookRegisterResults[key] = null;
     const subscription = this.adminService.registerChannelWebhook(channel.channel, channel.integrationId).subscribe(
       (response) => {
         this.webhookRegisterResults[key] = response && response.result ? response.result : response;
-        this.registeringWebhookKey = '';
+        this.registeringWebhookKeys.delete(key);
         this.loadEvents();
         this.loadMetrics();
       },
       () => {
         this.webhookRegisterResults[key] = { status: 'failed', providerReason: 'webhook_register_failed' };
-        this.registeringWebhookKey = '';
+        this.registeringWebhookKeys.delete(key);
       }
     );
     this.actionSubscriptions.add(subscription);
@@ -608,7 +618,6 @@ export class AdminOperationComponent implements OnInit, OnDestroy {
         bucketStart: row.bucketStart,
         events: row.count || 0,
         errors: row.errors || 0,
-        warnings: row.warnings || 0,
         failed: row.failed || 0,
         alerts: alertRow.count || 0,
         criticalAlerts: alertRow.critical || 0,
@@ -621,7 +630,6 @@ export class AdminOperationComponent implements OnInit, OnDestroy {
         bucketStart: row.bucketStart,
         events: 0,
         errors: 0,
-        warnings: 0,
         failed: 0,
         alerts: row.count || 0,
         criticalAlerts: row.critical || 0,

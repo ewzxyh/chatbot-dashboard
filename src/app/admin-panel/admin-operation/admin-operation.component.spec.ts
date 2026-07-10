@@ -424,6 +424,63 @@ describe('AdminOperationComponent', () => {
     });
   });
 
+  it('mantem testes de canais concorrentes isolados por integracao', () => {
+    const requestA = new Subject<any>();
+    const requestB = new Subject<any>();
+    const channelA = channels.data[0];
+    const channelB = { ...channelA, id: 'channel-2', integrationId: 'integration-2' };
+    adminService.testChannelConnection.and.returnValues(requestA.asObservable(), requestB.asObservable());
+    component.ngOnInit();
+
+    component.testChannel(channelA);
+    component.testChannel(channelB);
+    component.testChannel(channelB);
+
+    expect(component.isTestingChannel('webhook:integration-1')).toBe(true);
+    expect(component.isTestingChannel('webhook:integration-2')).toBe(true);
+    expect(adminService.testChannelConnection).toHaveBeenCalledTimes(2);
+
+    requestA.next({ result: { providerHealth: 'ok' } });
+    expect(component.isTestingChannel('webhook:integration-1')).toBe(false);
+    expect(component.isTestingChannel('webhook:integration-2')).toBe(true);
+
+    requestB.error(new Error('channel B failed'));
+    expect(component.isTestingChannel('webhook:integration-2')).toBe(false);
+  });
+
+  it('mantem registros de webhook concorrentes e nao reabilita no teardown', () => {
+    const requestA = new Subject<any>();
+    const requestB = new Subject<any>();
+    const requestC = new Subject<any>();
+    const channelA = channels.data[0];
+    const channelB = { ...channelA, id: 'channel-2', integrationId: 'integration-2' };
+    const channelC = { ...channelA, id: 'channel-3', integrationId: 'integration-3' };
+    adminService.registerChannelWebhook.and.returnValues(requestA.asObservable(), requestB.asObservable());
+    component.ngOnInit();
+
+    component.registerWebhook(channelA);
+    component.registerWebhook(channelB);
+    component.registerWebhook(channelB);
+
+    expect(component.isRegisteringWebhook('webhook:integration-1')).toBe(true);
+    expect(component.isRegisteringWebhook('webhook:integration-2')).toBe(true);
+    expect(adminService.registerChannelWebhook).toHaveBeenCalledTimes(2);
+
+    requestA.next({ result: { status: 'registered' } });
+    expect(component.isRegisteringWebhook('webhook:integration-1')).toBe(false);
+    expect(component.isRegisteringWebhook('webhook:integration-2')).toBe(true);
+
+    requestB.error(new Error('webhook B failed'));
+    expect(component.isRegisteringWebhook('webhook:integration-2')).toBe(false);
+
+    adminService.registerChannelWebhook.and.returnValue(requestC.asObservable());
+    component.registerWebhook(channelC);
+    component.ngOnDestroy();
+    expect(component.isRegisteringWebhook('webhook:integration-3')).toBe(true);
+    requestC.error(new Error('ignored after teardown'));
+    expect(component.isRegisteringWebhook('webhook:integration-3')).toBe(true);
+  });
+
   it('restaura eventos e metricas com seus filtros e dados', () => {
     component.ngOnInit();
     adminService.getOperationalEvents.calls.reset();

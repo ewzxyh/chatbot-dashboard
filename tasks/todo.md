@@ -99,3 +99,17 @@
 - Os seis metodos legados continuam usados, com `getOperationalHealthSummary` substituindo apenas a chamada direta ao mesmo summary.
 - Canais e Alertas mantem os fixes aprovados; abas legadas canonicalizam para `tab` sem vazar filtros.
 - Karma focal ficou bloqueado no builder, mas `ngc`, specs compilados, harness isolado e build production passaram.
+
+# Task 4: Concorrencia das acoes por integracao
+
+- [x] Escrever RED com canais A+B, duplicata, sucesso seletivo, erro e teardown.
+- [x] Substituir estados escalares por Sets e helpers usados no template.
+- [x] Remover utilitario sem consumidor e metrica nao exibida.
+- [x] Rodar `ngc`, harness funcional/concorrente, build e diff com timeout.
+- [x] Atualizar report e criar commit separado.
+
+## Review
+
+- Cada integracao bloqueia apenas sua propria acao; testes e webhooks distintos podem rodar em paralelo.
+- Duplicata da mesma chave nao cria request e cada callback remove somente sua chave.
+- `ngc`, harness e build retornaram dentro dos timeouts definidos; nenhum runner ficou ativo.
