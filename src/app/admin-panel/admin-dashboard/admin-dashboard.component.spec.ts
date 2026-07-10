@@ -1,12 +1,12 @@
-import type { Router, UrlTree } from '@angular/router';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 import { Subject, of, throwError } from 'rxjs';
 import type { AdminService, HealthSummaryV2 } from '../../services/admin.service';
-import { ADMIN_OPERATION_ROUTE, AdminDashboardComponent } from './admin-dashboard.component';
+import { AdminDashboardComponent } from './admin-dashboard.component';
 
 describe('AdminDashboardComponent', () => {
   let adminService: jasmine.SpyObj<AdminService>;
   let component: AdminDashboardComponent;
-  let createUrlTreeSpy: jasmine.Spy;
 
   const createSummary = (snapshotState: 'fresh' | 'stale' | 'missing' = 'fresh'): HealthSummaryV2 => ({
     version: 2,
@@ -43,16 +43,7 @@ describe('AdminDashboardComponent', () => {
 
   beforeEach(() => {
     adminService = jasmine.createSpyObj<AdminService>('AdminService', ['getOperationalHealthSummary']);
-    createUrlTreeSpy = jasmine.createSpy('createUrlTree').and.callFake((commands: unknown[], extras: {
-      queryParams?: Record<string, string>;
-    }) => {
-      const query = new URLSearchParams(extras.queryParams || {}).toString();
-      return {
-        toString: () => String(commands[0]) + (query ? '?' + query : '')
-      } as unknown as UrlTree;
-    });
-    const router = { createUrlTree: createUrlTreeSpy } as unknown as Router;
-    component = new AdminDashboardComponent(adminService, router);
+    component = new AdminDashboardComponent(adminService);
   });
 
   it('agrega CaseZap e WABA por status sem listar integracoes', () => {
@@ -124,46 +115,88 @@ describe('AdminDashboardComponent', () => {
   });
 
   it('mantem os quatro filtros no link para Operacao', () => {
-    expect(component.buildOperationLink({
+    expect(component.buildOperationQueryParams({
       product: 'waba',
       channel: 'webhook',
       status: 'degraded',
       cause: 'upstream_timeout'
-    }).toString()).toContain('product=waba&channel=webhook&status=degraded&cause=upstream_timeout');
+    })).toEqual({
+      product: 'waba',
+      channel: 'webhook',
+      status: 'degraded',
+      cause: 'upstream_timeout'
+    });
   });
 
-  it('usa a rota Angular absoluta e preserva a query string', () => {
+  it('mantem somente query params allowlisted para Operacao', () => {
     const queryParams = {
       tab: 'alerts' as const,
       product: 'waba' as const,
       channel: 'webhook',
       status: 'open' as const,
-      cause: 'upstream_timeout' as const
+      cause: 'upstream_timeout' as const,
+      resource: 'worker A&B'
     };
-    const link = component.buildOperationLink(queryParams).toString();
+    const filters = Object.assign({ ignored: 'must-not-leak' }, queryParams);
 
-    expect(ADMIN_OPERATION_ROUTE).toBe('/admin/operation');
-    expect(link).toBe('/admin/operation?tab=alerts&product=waba&channel=webhook&status=open&cause=upstream_timeout');
-    expect(link).not.toContain('../operation');
-    expect(createUrlTreeSpy).toHaveBeenCalledWith([ADMIN_OPERATION_ROUTE], { queryParams });
+    expect(component.buildOperationQueryParams(filters)).toEqual(queryParams);
   });
 
   it('usa status open e a aba de alertas para um alerta critico', () => {
-    const link = component.buildAlertOperationLink('down', {
+    const queryParams = component.buildAlertOperationQueryParams('down', {
       product: 'waba',
       channel: 'webhook',
       cause: 'upstream_timeout'
-    }).toString();
+    });
 
-    expect(link).toContain('tab=alerts');
-    expect(link).toContain('product=waba');
-    expect(link).toContain('channel=webhook');
-    expect(link).toContain('status=open');
-    expect(link).toContain('cause=upstream_timeout');
-    expect(link).not.toContain('status=down');
+    expect(queryParams).toEqual({
+      tab: 'alerts',
+      product: 'waba',
+      channel: 'webhook',
+      status: 'open',
+      cause: 'upstream_timeout'
+    });
+    expect(queryParams.status).not.toBe('down');
   });
 
   it('usa status resolved ao abrir alertas sem problema ativo', () => {
-    expect(component.buildAlertOperationLink('ok').toString()).toContain('tab=alerts&status=resolved');
+    expect(component.buildAlertOperationQueryParams('ok')).toEqual({ tab: 'alerts', status: 'resolved' });
+  });
+
+  it('abre servicos e filas como alertas ativos com recurso e causa validos', () => {
+    expect(component.buildResourceOperationQueryParams({
+      name: 'mongo',
+      status: 'down',
+      cause: 'mongo_unavailable',
+      checkedAt: '2026-07-10T11:59:58.000Z'
+    })).toEqual({
+      tab: 'alerts',
+      status: 'open',
+      cause: 'mongo_unavailable',
+      resource: 'mongo'
+    });
+    expect(component.buildResourceOperationQueryParams({
+      name: 'messages',
+      status: 'ok',
+      cause: null,
+      checkedAt: '2026-07-10T11:59:57.000Z'
+    })).toEqual({ tab: 'alerts', status: 'open', resource: 'messages' });
+  });
+
+  it('usa routerLink absoluto com queryParams sem UrlTree ou href no template', () => {
+    const componentPath = join(process.cwd(), 'src/app/admin-panel/admin-dashboard');
+    const template = readFileSync(join(componentPath, 'admin-dashboard.component.html'), 'utf8');
+    const source = readFileSync(join(componentPath, 'admin-dashboard.component.ts'), 'utf8');
+    const operationLinks = template.match(/<a\b[^>]*>/g) || [];
+
+    expect(operationLinks.length).toBe(7);
+    for (const link of operationLinks) {
+      expect(link).toContain('routerLink="/admin/operation"');
+      expect(link).toContain('[queryParams]');
+    }
+    expect(template).not.toContain('../operation');
+    expect(template).not.toContain('href=');
+    expect(source).not.toContain('UrlTree');
+    expect(source).not.toContain('private router: Router');
   });
 });

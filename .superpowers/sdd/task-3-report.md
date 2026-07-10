@@ -37,7 +37,7 @@ O `--no-progress` nao existe na versao Jasmine 2.8 instalada; foi usado `--no-co
 
 ## Correcao final de navegacao
 
-- Todos os deep-links usam `Router.createUrlTree(['/admin/operation'], { queryParams })` e `routerLink`, compativeis com o `HashLocationStrategy` do app.
+- O commit `d3df7d25a` introduziu deep-links com `Router.createUrlTree(['/admin/operation'], { queryParams })`; essa abordagem foi substituida pela correcao de compatibilidade Angular 14 abaixo.
 - O Dashboard nao usa mais `href` nem `../operation`; a navegacao preserva `tab`, `product`, `channel`, `status` e `cause` sem recarregar a pagina.
 - O SCSS permaneceu inalterado.
 
@@ -51,3 +51,21 @@ O `--no-progress` nao existe na versao Jasmine 2.8 instalada; foi usado `--no-co
 - PASS: busca estatica em producao sem `../operation`, `[href]` ou `href=`.
 - PASS: `git diff --check`.
 - BLOQUEADO: Karma/TestBed oficial permanece sem execucao pelo reporter ausente documentado acima.
+
+## Correcao de compatibilidade Angular 14
+
+- As sete ancoras do Dashboard usam `routerLink="/admin/operation"` com `[queryParams]`; nao ha `href`, `../operation` ou `UrlTree`.
+- `buildOperationQueryParams()` retorna somente `tab`, `product`, `channel`, `status`, `cause` e `resource` quando informados.
+- Links de servicos e filas usam `tab=alerts`, `status=open`, `resource=<name>` e `cause` quando existente; nenhum status de saude e enviado nesse contrato.
+- `Router` deixou de ser dependencia do componente. O SCSS e as outras tabs permaneceram inalterados.
+
+### TDD e validacao Angular 14
+
+- RED: typecheck focal falhou pela injecao antiga de `Router` e pelos novos metodos de query params ainda ausentes.
+- RED: runner alternativo executou 13 specs com 6 falhas esperadas nos metodos e no template antigos.
+- PASS: runner Jasmine alternativo: `13 specs, 0 failures`.
+- PASS: typecheck focal dos dois specs.
+- PASS: `npx ngc -p src/tsconfig.app.json`.
+- PASS: teste estatico confirmou as sete ancoras absolutas com `[queryParams]` e ausencia de `UrlTree`, `href` e `../operation`.
+- PASS: `git diff --check`.
+- BLOQUEADO: Karma/TestBed oficial permanece sem execucao pelo `karma-coverage-istanbul-reporter` ausente.

@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import type { UrlTree } from '@angular/router';
+import type { Params } from '@angular/router';
 import { AdminService } from '../../services/admin.service';
 import type {
   AlertStatus,
@@ -18,10 +17,10 @@ export interface OperationLinkFilters {
   channel?: string;
   status?: OperationalStatus | AlertStatus;
   cause?: OperationalCause['cause'];
+  resource?: string;
 }
 
 type AlertOperationLinkFilters = Pick<OperationLinkFilters, 'product' | 'channel' | 'cause'>;
-export const ADMIN_OPERATION_ROUTE = '/admin/operation';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -40,7 +39,7 @@ export class AdminDashboardComponent implements OnInit {
     unknown: 'Desconhecido'
   };
 
-  constructor(private adminService: AdminService, private router: Router) { }
+  constructor(private adminService: AdminService) { }
 
   ngOnInit(): void {
     this.load();
@@ -118,32 +117,34 @@ export class AdminDashboardComponent implements OnInit {
     return 'admin-status-muted';
   }
 
-  buildOperationLink(filters: OperationLinkFilters): UrlTree {
-    const keys: Array<keyof OperationLinkFilters> = ['tab', 'product', 'channel', 'status', 'cause'];
-    const queryParams: OperationLinkFilters = {};
+  buildOperationQueryParams(filters: OperationLinkFilters): Params {
+    const keys: Array<keyof OperationLinkFilters> = ['tab', 'product', 'channel', 'status', 'cause', 'resource'];
+    const queryParams: Params = {};
     for (const key of keys) {
       const value = filters[key];
-      if (value) Object.assign(queryParams, { [key]: value });
+      if (value) queryParams[key] = value;
     }
 
-    return this.router.createUrlTree([ADMIN_OPERATION_ROUTE], { queryParams });
+    return queryParams;
   }
 
-  buildAlertOperationLink(
+  buildAlertOperationQueryParams(
     healthStatus: OperationalStatus,
     filters: AlertOperationLinkFilters = {}
-  ): UrlTree {
-    return this.buildOperationLink({
+  ): Params {
+    return this.buildOperationQueryParams({
       tab: 'alerts',
       ...filters,
       status: healthStatus === 'ok' ? 'resolved' : 'open'
     });
   }
 
-  resourceLink(resource: OperationalSnapshotItem): UrlTree {
-    return this.buildOperationLink({
-      status: resource.status,
-      cause: resource.cause || undefined
+  buildResourceOperationQueryParams(resource: OperationalSnapshotItem): Params {
+    return this.buildOperationQueryParams({
+      tab: 'alerts',
+      status: 'open',
+      cause: resource.cause || undefined,
+      resource: resource.name
     });
   }
 }
