@@ -1,9 +1,93 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AuthService } from '../core/auth.service';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { AppConfigService } from '../services/app-config.service';
 import { LoggerService } from '../services/logger/logger.service';
+
+export type OperationalStatus = 'ok' | 'degraded' | 'down' | 'unknown';
+export type SnapshotState = 'fresh' | 'stale' | 'missing';
+export type OperationalProduct = 'casezap' | 'waba' | 'unknown';
+
+export interface OperationalStatusCounts {
+  ok: number;
+  degraded: number;
+  down: number;
+  unknown: number;
+}
+
+export interface OperationalCause {
+  cause: string;
+  count: number;
+}
+
+export interface OperationalSnapshotItem {
+  name: string;
+  status: OperationalStatus;
+  cause: string | null;
+  checkedAt: string;
+}
+
+export interface HealthSummaryV2 {
+  version: 2;
+  overallStatus: OperationalStatus;
+  snapshotState: SnapshotState;
+  generatedAt: string | null;
+  expiresAt: string | null;
+  services: OperationalSnapshotItem[];
+  queues: OperationalSnapshotItem[];
+  channels: {
+    count: number;
+    byStatus: OperationalStatusCounts;
+    byProduct: Record<OperationalProduct, OperationalStatusCounts>;
+    topCauses: OperationalCause[];
+  };
+  alerts: {
+    count: number;
+    byStatus: OperationalStatusCounts;
+    topCauses: OperationalCause[];
+  };
+}
+
+export interface OperationalFilters {
+  page?: number;
+  limit?: number;
+  product?: OperationalProduct;
+  channel?: string;
+  status?: OperationalStatus;
+  cause?: string;
+  from?: string;
+  to?: string;
+}
+
+export interface PagedResponse<T> {
+  data: T[];
+  count: number;
+  page: number;
+  limit: number;
+}
+
+export interface ChannelDiagnostic {
+  id?: string;
+  product?: OperationalProduct;
+  channel?: string;
+  status?: OperationalStatus;
+  cause?: string | null;
+  checkedAt?: string | null;
+}
+
+export interface OperationalAlert {
+  id?: string;
+  product?: OperationalProduct | null;
+  channel?: string | null;
+  status?: string;
+  cause?: string | null;
+  lastAt?: string | null;
+}
+
+const OPERATIONAL_FILTER_KEYS: Array<keyof OperationalFilters> = [
+  'page', 'limit', 'product', 'channel', 'status', 'cause', 'from', 'to'
+];
 
 @Injectable()
 export class AdminService {
@@ -283,7 +367,7 @@ export class AdminService {
       .post<any>(url, options || {}, httpOptions);
   }
 
-  public getHealthSummary(): Observable<any> {
+  public getHealthSummary(): Observable<HealthSummaryV2> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Accept': 'application/json',
@@ -295,7 +379,46 @@ export class AdminService {
     this.logger.log('[ADMIN-SERV] - GET HEALTH SUMMARY - URL', url);
 
     return this._httpclient
-      .get<any>(url, httpOptions);
+      .get<HealthSummaryV2>(url, httpOptions);
+  }
+
+  public getOperationalHealthSummary(): Observable<HealthSummaryV2> {
+    return this.getHealthSummary();
+  }
+
+  public getOperationalChannels(filters: OperationalFilters = {}): Observable<PagedResponse<ChannelDiagnostic>> {
+    return this.getOperationalPage<ChannelDiagnostic>('sadmin/health/channels', filters);
+  }
+
+  public getOperationalAlerts(filters: OperationalFilters = {}): Observable<PagedResponse<OperationalAlert>> {
+    return this.getOperationalPage<OperationalAlert>('sadmin/operational-alerts', filters);
+  }
+
+  private getOperationalPage<T>(path: string, filters: OperationalFilters): Observable<PagedResponse<T>> {
+    const url = this.SERVER_BASE_PATH + path;
+    this.logger.log('[ADMIN-SERV] - GET OPERATIONAL PAGE - URL', url);
+
+    return this._httpclient.get<PagedResponse<T>>(url, {
+      headers: this.getOperationalHeaders(),
+      params: this.buildOperationalParams(filters)
+    });
+  }
+
+  private getOperationalHeaders(): HttpHeaders {
+    return new HttpHeaders({
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Authorization': this.TOKEN
+    });
+  }
+
+  private buildOperationalParams(filters: OperationalFilters): HttpParams {
+    let params = new HttpParams();
+    for (const key of OPERATIONAL_FILTER_KEYS) {
+      const value = filters[key];
+      if (value !== undefined && value !== '') params = params.set(key, String(value));
+    }
+    return params;
   }
 
   public testChannelConnection(channel: string, integrationId: string): Observable<any> {

@@ -1,0 +1,19 @@
+# Task 3 report
+
+## Implementacao
+
+- `AdminService` agora expoe `getOperationalHealthSummary()`, `getOperationalChannels(filters)` e `getOperationalAlerts(filters)` com contratos tipados e filtros paginados.
+- O Dashboard chama somente `GET /sadmin/health/summary` para o snapshot operacional.
+- A UI mostra `fresh`, `stale` e `missing`, erro com retry, status geral, CaseZap/WABA por status, top causes limitadas a cinco, servicos/filas limitados a 50 e alertas agregados.
+- Os links para Operacao preservam `product`, `channel`, `status` e `cause` quando informados.
+- Nenhuma outra tab foi alterada. O teste forcado e qualquer probe continuam fora do Dashboard.
+
+## Validacao
+
+- PASS: `npx ngc -p src/tsconfig.app.json`.
+- PASS: Jasmine focal alternativo com o runner instalado e stub minimo de Angular DI: `6 specs, 0 failures`.
+- PASS: `git diff --check`.
+- BLOQUEADO: `npx ng test --watch=false --browsers=ChromeHeadless --include=src/app/admin-panel/admin-dashboard/admin-dashboard.component.spec.ts --progress=false` falha antes do bundle porque `karma.conf.js` exige `karma-coverage-istanbul-reporter`, ausente em `node_modules` e no lockfile.
+- BLOQUEADO: tentativas de Karma isolado com ChromeHeadless conectaram o navegador, mas ele desconectou apos o timeout sem executar specs. Nao ha processo Karma/ChromeHeadless nem listener em `9876`/`9877` ao finalizar.
+
+O `--no-progress` nao existe na versao Jasmine 2.8 instalada; foi usado `--no-color`/`--stop-on-failure=true` com timeout de 120s no runner alternativo.

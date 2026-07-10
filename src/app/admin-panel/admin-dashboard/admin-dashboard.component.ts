@@ -1,147 +1,130 @@
 import { Component, OnInit } from '@angular/core';
-import { forkJoin } from 'rxjs';
 import { AdminService } from '../../services/admin.service';
-import { isOperationalIssueStatus, isOperationalQueueIssue } from '../admin-operational-status.util';
+import type {
+  HealthSummaryV2,
+  OperationalCause,
+  OperationalProduct,
+  OperationalSnapshotItem,
+  OperationalStatus,
+  SnapshotState
+} from '../../services/admin.service';
 
-interface AdminStats {
-  totalProjects: number;
-  totalUsers: number;
-  monthlyRevenue: number;
-  planDistribution: Record<string, number>;
-}
-
-interface OperationalOverview {
-  status: string;
-  statusLabel: string;
-  servicesOk: number;
-  servicesTotal: number;
-  channelsOk: number;
-  channelsTotal: number;
-  queuesOk: number;
-  queuesTotal: number;
-  failures24h: number;
-  errors24h: number;
-  webhookFailures24h: number;
-  alerts: any[];
-  criticalAlerts: number;
+export interface OperationLinkFilters {
+  product?: string;
+  channel?: string;
+  status?: string;
+  cause?: string;
 }
 
 @Component({
   selector: 'app-admin-dashboard',
-  templateUrl: './admin-dashboard.component.html'
+  templateUrl: './admin-dashboard.component.html',
+  styleUrls: ['./admin-dashboard.component.scss']
 })
 export class AdminDashboardComponent implements OnInit {
-  stats: AdminStats = null;
+  summary: HealthSummaryV2 = null;
   isLoading = true;
   errorMessage = '';
-  lastUpdated: Date = null;
-  operationalOverview: OperationalOverview = null;
-  operationalLoading = true;
-  operationalUnavailable = false;
-  planDisplayNames: Record<string, string> = { free: 'Iniciante', starter: 'Standard', pro: 'Pro', business: 'Enterprise', custom: 'Custom', other: 'Outros' };
+  readonly products: OperationalProduct[] = ['casezap', 'waba'];
+  readonly statuses: OperationalStatus[] = ['ok', 'degraded', 'down', 'unknown'];
+  readonly productLabels: Record<OperationalProduct, string> = {
+    casezap: 'CaseZap',
+    waba: 'WABA',
+    unknown: 'Desconhecido'
+  };
 
   constructor(private adminService: AdminService) { }
 
-  ngOnInit() { this.loadStats(); }
-
-  loadStats() {
-    this.isLoading = true;
-    this.errorMessage = '';
-    this.loadOperationalOverview();
-    this.adminService.getStats().subscribe(
-      (data) => { this.stats = data; this.lastUpdated = new Date(); this.isLoading = false; },
-      () => { this.errorMessage = 'Erro ao carregar estatísticas'; this.isLoading = false; }
-    );
+  ngOnInit(): void {
+    this.load();
   }
 
-  loadOperationalOverview() {
-    this.operationalLoading = true;
-    this.operationalUnavailable = false;
-    forkJoin([
-      this.adminService.getHealthSummary(),
-      this.adminService.getOperationalMetrics({ range: '24h', bucket: 'hour' })
-    ]).subscribe(
-      (result) => {
-        this.operationalOverview = this.buildOperationalOverview(result[0], result[1]);
-        this.operationalLoading = false;
+  load(): void {
+    this.isLoading = true;
+    this.errorMessage = '';
+    this.summary = null;
+    this.adminService.getOperationalHealthSummary().subscribe(
+      (data) => {
+        this.summary = data;
+        this.isLoading = false;
       },
       () => {
-        this.operationalOverview = null;
-        this.operationalUnavailable = true;
-        this.operationalLoading = false;
+        this.errorMessage = 'Erro ao carregar o resumo operacional.';
+        this.isLoading = false;
       }
     );
   }
 
-  buildOperationalOverview(summary: any, metrics: any): OperationalOverview {
-    if (!summary) return null;
-    const services = Array.isArray(summary.services) ? summary.services : [];
-    const channels = Array.isArray(summary.channels) ? summary.channels : [];
-    const queues = summary.queues && summary.queues.details && Array.isArray(summary.queues.details.queues)
-      ? summary.queues.details.queues
-      : [];
-    const alerts = Array.isArray(summary.alerts) ? summary.alerts : [];
-
-    return {
-      status: summary.overallStatus || 'unknown',
-      statusLabel: this.getOperationalStatusLabel(summary.overallStatus),
-      servicesOk: services.filter((service) => !isOperationalIssueStatus(service.status)).length,
-      servicesTotal: services.length,
-      channelsOk: channels.filter((channel) => {
-        return !isOperationalIssueStatus(channel.status) &&
-          !isOperationalIssueStatus(channel.providerHealth) &&
-          !isOperationalIssueStatus(channel.providerStatus);
-      }).length,
-      channelsTotal: channels.length,
-      queuesOk: queues.filter((queue) => !isOperationalQueueIssue(queue)).length,
-      queuesTotal: queues.length,
-      failures24h: metrics && metrics.events && metrics.events.byStatus ? metrics.events.byStatus.failed || 0 : null,
-      errors24h: metrics && metrics.events && metrics.events.byLevel ? metrics.events.byLevel.error || 0 : null,
-      webhookFailures24h: metrics && metrics.alerts && metrics.alerts.byType ? metrics.alerts.byType.webhook_failure || 0 : null,
-      alerts: alerts.slice(0, 4),
-      criticalAlerts: alerts.filter((alert) => alert.severity === 'critical').length
-    };
+  retry(): void {
+    this.load();
   }
 
-  getOperationalStatusLabel(status: string): string {
-    const labels: Record<string, string> = {
-      ok: 'Operação normal',
-      degraded: 'Requer atenção',
-      down: 'Indisponível',
-      unknown: 'Sem diagnóstico'
-    };
-    return labels[status] || 'Sem diagnóstico';
+  getProductStatusCount(product: OperationalProduct, status: OperationalStatus): number {
+    return this.summary?.channels?.byProduct?.[product]?.[status] || 0;
   }
 
-  getOperationalStatusClass(status: string): string {
+  getProductCount(product: OperationalProduct): number {
+    return this.statuses.reduce((total, status) => total + this.getProductStatusCount(product, status), 0);
+  }
+
+  getChannelCount(): number {
+    return this.summary?.channels?.count || 0;
+  }
+
+  getStatusCount(scope: 'channels' | 'alerts', status: OperationalStatus): number {
+    return this.summary?.[scope]?.byStatus?.[status] || 0;
+  }
+
+  getTopCauses(scope: 'channels' | 'alerts'): OperationalCause[] {
+    return this.summary?.[scope]?.topCauses?.slice(0, 5) || [];
+  }
+
+  getSnapshotStateLabel(state: SnapshotState): string {
+    if (state === 'fresh') return 'Snapshot atual';
+    if (state === 'stale') return 'Snapshot desatualizado';
+    return 'Snapshot ausente';
+  }
+
+  getSnapshotStateMessage(state: SnapshotState): string {
+    if (state === 'fresh') return 'Dados dentro da validade.';
+    if (state === 'stale') return 'O ultimo snapshot expirou; os dados podem estar desatualizados.';
+    return 'Nenhum snapshot foi gerado ainda.';
+  }
+
+  getSnapshotStateClass(state: SnapshotState): string {
+    if (state === 'fresh') return 'admin-status-success';
+    if (state === 'stale') return 'admin-status-warning';
+    return 'admin-status-muted';
+  }
+
+  getOperationalStatusLabel(status: OperationalStatus): string {
+    if (status === 'ok') return 'Normal';
+    if (status === 'degraded') return 'Atencao';
+    if (status === 'down') return 'Indisponivel';
+    return 'Sem diagnostico';
+  }
+
+  getOperationalStatusClass(status: OperationalStatus): string {
     if (status === 'ok') return 'admin-status-success';
     if (status === 'degraded') return 'admin-status-warning';
     if (status === 'down') return 'admin-status-danger';
     return 'admin-status-muted';
   }
 
-  getPlanKeys(): string[] {
-    if (!this.stats) return [];
-    return Object.keys(this.stats.planDistribution);
+  buildOperationLink(filters: OperationLinkFilters): string {
+    const keys: Array<keyof OperationLinkFilters> = ['product', 'channel', 'status', 'cause'];
+    const query = keys
+      .filter((key) => Boolean(filters[key]))
+      .map((key) => key + '=' + encodeURIComponent(filters[key]))
+      .join('&');
+
+    return '../operation' + (query ? '?' + query : '');
   }
 
-  getUsersPerProject(): number {
-    if (!this.stats || !this.stats.totalProjects) return 0;
-    return this.stats.totalUsers / this.stats.totalProjects;
-  }
-
-  getActivePlanCount(): number {
-    return this.getPlanKeys().filter((key) => this.stats.planDistribution[key] > 0).length;
-  }
-
-  getPlanPercentage(key: string): number {
-    if (!this.stats || !this.stats.totalProjects) return 0;
-    return (this.stats.planDistribution[key] / this.stats.totalProjects) * 100;
-  }
-
-  getLargestPlanKey(): string {
-    return this.getPlanKeys().reduce((largest, key) => {
-      return this.stats.planDistribution[key] > (this.stats.planDistribution[largest] || 0) ? key : largest;
-    }, '');
+  resourceLink(resource: OperationalSnapshotItem): string {
+    return this.buildOperationLink({
+      status: resource.status,
+      cause: resource.cause || undefined
+    });
   }
 }

@@ -1,163 +1,148 @@
-<div *ngIf="errorMessage" class="admin-error-state" role="alert">{{ errorMessage }}</div>
-
 <div class="admin-dashboard-heading admin-page-heading">
   <div>
-    <h2>Visão operacional</h2>
-    <p>Acompanhe a base de projetos, usuários e planos.</p>
+    <h2>Dashboard operacional</h2>
+    <p>Snapshot agregado de canais, servicos, filas e alertas.</p>
   </div>
   <div class="admin-dashboard-refresh">
-    <span *ngIf="lastUpdated">Atualizado às {{ lastUpdated | date:'HH:mm' }}</span>
-    <button mat-stroked-button type="button" (click)="loadStats()" [disabled]="isLoading">
+    <span *ngIf="summary?.generatedAt">Atualizado as {{ summary.generatedAt | date:'HH:mm' }}</span>
+    <button mat-stroked-button type="button" (click)="retry()" [disabled]="isLoading">
       <mat-icon>refresh</mat-icon>
       Atualizar
     </button>
   </div>
 </div>
 
-<div *ngIf="isLoading" class="admin-loading-state" role="status">Carregando...</div>
+<div *ngIf="isLoading" class="admin-loading-state" role="status">Carregando resumo operacional...</div>
 
-<div class="admin-dashboard-content">
-  <div *ngIf="stats && !isLoading" class="stats-grid">
-    <mat-card class="stat-card">
-      <div class="stat-card-heading"><mat-icon>business</mat-icon><span>Projetos</span></div>
-      <div class="stat-value">{{ stats.totalProjects }}</div>
-      <div class="stat-label">Total de espaços de trabalho</div>
-    </mat-card>
-    <mat-card class="stat-card">
-      <div class="stat-card-heading"><mat-icon>group</mat-icon><span>Usuários ativos</span></div>
-      <div class="stat-value">{{ stats.totalUsers }}</div>
-      <div class="stat-label">Contas com acesso ativo</div>
-    </mat-card>
-    <mat-card class="stat-card">
-      <div class="stat-card-heading"><mat-icon>people_outline</mat-icon><span>Média por projeto</span></div>
-      <div class="stat-value">{{ getUsersPerProject() | number:'1.1-1' }}</div>
-      <div class="stat-label">Usuários ativos por projeto</div>
-    </mat-card>
-    <mat-card class="stat-card">
-      <div class="stat-card-heading"><mat-icon>attach_money</mat-icon><span>Receita estimada</span></div>
-      <div class="stat-value">R$ {{ stats.monthlyRevenue | number:'1.2-2' }}</div>
-      <div class="stat-label">Valor recorrente mensal</div>
-    </mat-card>
-  </div>
+<div *ngIf="errorMessage && !isLoading" class="admin-feedback admin-feedback-error operational-error" role="alert">
+  <mat-icon>error_outline</mat-icon>
+  <span>{{ errorMessage }}</span>
+  <button mat-stroked-button type="button" (click)="retry()">Tentar novamente</button>
+</div>
 
-  <section class="admin-section admin-operational-section">
-    <div class="admin-section-heading">
-      <div>
-        <h3 class="admin-section-title">Resumo operacional</h3>
-        <p>Status atual da infraestrutura, canais, filas e webhooks.</p>
-      </div>
-      <button mat-stroked-button type="button" routerLink="../operation">
-        Abrir operação
-        <mat-icon>arrow_forward</mat-icon>
-      </button>
+<ng-container *ngIf="summary && !isLoading">
+  <section class="operational-snapshot" [ngClass]="getSnapshotStateClass(summary.snapshotState)" role="status">
+    <div>
+      <span class="operational-snapshot-label">Snapshot</span>
+      <strong>{{ getSnapshotStateLabel(summary.snapshotState) }}</strong>
+      <p>{{ getSnapshotStateMessage(summary.snapshotState) }}</p>
     </div>
-
-    <div *ngIf="operationalLoading" class="admin-loading-state admin-operational-loading" role="status">Carregando resumo operacional...</div>
-
-    <div *ngIf="!operationalLoading && operationalUnavailable" class="admin-feedback admin-feedback-warning" role="alert">
-      Parte dos indicadores operacionais não pôde ser carregada. Consulte a aba Operação para atualizar o diagnóstico.
+    <span *ngIf="summary.generatedAt" class="operational-snapshot-date">
+      Gerado em {{ summary.generatedAt | date:'dd/MM HH:mm' }}
+    </span>
+    <div class="operational-snapshot-overall">
+      <span class="operational-snapshot-label">Status geral</span>
+      <strong class="admin-status-pill" [ngClass]="getOperationalStatusClass(summary.overallStatus)">
+        {{ getOperationalStatusLabel(summary.overallStatus) }}
+      </strong>
     </div>
-
-    <ng-container *ngIf="operationalOverview && !operationalLoading">
-    <div class="admin-operational-grid">
-      <mat-card class="admin-operational-card">
-        <span>Status geral</span>
-        <strong class="admin-status-pill" [ngClass]="getOperationalStatusClass(operationalOverview.status)">
-          {{ operationalOverview.statusLabel }}
-        </strong>
-        <small>{{ operationalOverview.criticalAlerts }} alertas críticos</small>
-      </mat-card>
-      <mat-card class="admin-operational-card">
-        <span>Serviços sem alerta</span>
-        <strong>{{ operationalOverview.servicesOk }}/{{ operationalOverview.servicesTotal }}</strong>
-        <small>do total monitorado</small>
-      </mat-card>
-      <mat-card class="admin-operational-card">
-        <span>Canais sem alerta</span>
-        <strong>{{ operationalOverview.channelsOk }}/{{ operationalOverview.channelsTotal }}</strong>
-        <small>do total monitorado</small>
-      </mat-card>
-      <mat-card class="admin-operational-card">
-        <span>Filas sem risco</span>
-        <strong>{{ operationalOverview.queuesOk }}/{{ operationalOverview.queuesTotal }}</strong>
-        <small>do total monitorado</small>
-      </mat-card>
-      <mat-card class="admin-operational-card">
-        <span>Falhas em 24h</span>
-        <strong>{{ operationalOverview.failures24h === null ? '—' : operationalOverview.failures24h }}</strong>
-        <small>{{ operationalOverview.errors24h === null ? 'Sem métricas' : operationalOverview.errors24h + ' eventos de erro' }}</small>
-      </mat-card>
-      <mat-card class="admin-operational-card">
-        <span>Webhooks em 24h</span>
-        <strong>{{ operationalOverview.webhookFailures24h === null ? '—' : operationalOverview.webhookFailures24h }}</strong>
-        <small>alertas de falha registrados</small>
-      </mat-card>
-    </div>
-
-    <div *ngIf="operationalOverview.alerts.length > 0; else noOperationalAlerts" class="admin-alert-list" role="list">
-      <div *ngFor="let alert of operationalOverview.alerts" class="admin-alert-item" [class.is-critical]="alert.severity === 'critical'" role="listitem">
-        <mat-icon>{{ alert.severity === 'critical' ? 'error_outline' : 'warning' }}</mat-icon>
-        <div>
-          <strong>{{ alert.title || alert.type }}</strong>
-          <p>{{ alert.message }}</p>
-          <small>{{ alert.channel || alert.service || alert.queue || 'Sistema' }}<span *ngIf="alert.lastAt"> · {{ alert.lastAt | date:'dd/MM HH:mm' }}</span></small>
-        </div>
-      </div>
-    </div>
-
-    <ng-template #noOperationalAlerts>
-      <div class="admin-feedback admin-feedback-success">
-        <mat-icon>check_circle</mat-icon>
-        Nenhum alerta operacional aberto.
-      </div>
-    </ng-template>
-    </ng-container>
   </section>
 
-  <div *ngIf="stats && !isLoading" class="admin-dashboard-grid">
-    <section class="admin-section admin-dashboard-panel">
+  <div *ngIf="summary.snapshotState === 'missing'" class="admin-feedback admin-feedback-warning operational-context" role="status">
+    <mat-icon>info_outline</mat-icon>
+    <span>Os detalhes serao preenchidos depois da primeira execucao do monitor.</span>
+  </div>
+
+  <section class="admin-section operational-section">
+    <div class="admin-section-heading">
+      <div>
+        <h3 class="admin-section-title">Canais</h3>
+        <p>{{ getChannelCount() }} integracoes agregadas por produto e status.</p>
+      </div>
+      <a mat-stroked-button href="../operation">Abrir Operacao<mat-icon>arrow_forward</mat-icon></a>
+    </div>
+
+    <div class="operational-product-grid">
+      <article *ngFor="let product of products" class="operational-product">
+        <div class="operational-product-heading">
+          <h4>{{ productLabels[product] }}</h4>
+          <strong>{{ getProductCount(product) }}</strong>
+        </div>
+        <div class="operational-status-grid">
+          <a *ngFor="let status of statuses" class="operational-status-link" [href]="buildOperationLink({ product: product, status: status })">
+            <span>{{ getOperationalStatusLabel(status) }}</span>
+            <strong>{{ getProductStatusCount(product, status) }}</strong>
+          </a>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <div class="operational-detail-grid">
+    <section class="admin-section operational-section operational-detail-block">
       <div class="admin-section-heading">
         <div>
-          <h3 class="admin-section-title">Distribuição por plano</h3>
-          <p>Participação de cada plano na base de projetos.</p>
-        </div>
-        <span>{{ stats.totalProjects }} projetos</span>
-      </div>
-
-      <div class="plan-distribution">
-        <div *ngFor="let key of getPlanKeys()" class="plan-dist-item">
-          <div class="plan-dist-heading">
-            <span class="plan-dist-name">{{ planDisplayNames[key] || key }}</span>
-            <strong>{{ stats.planDistribution[key] }}</strong>
-          </div>
-          <div class="plan-dist-track" aria-hidden="true">
-            <span [style.width.%]="getPlanPercentage(key)"></span>
-          </div>
-          <span class="plan-dist-percentage">{{ getPlanPercentage(key) | number:'1.0-1' }}% da base</span>
+          <h3 class="admin-section-title">Top causas de canais</h3>
+          <p>Somente as cinco causas mais frequentes.</p>
         </div>
       </div>
+      <div *ngIf="getTopCauses('channels').length > 0; else noChannelCauses" class="operational-cause-list" role="list">
+        <a *ngFor="let item of getTopCauses('channels')" [href]="buildOperationLink({ cause: item.cause })" class="operational-cause-link" role="listitem">
+          <span>{{ item.cause }}</span>
+          <strong>{{ item.count }}</strong>
+        </a>
+      </div>
+      <ng-template #noChannelCauses><div class="operational-empty">Nenhuma causa agregada.</div></ng-template>
     </section>
 
-    <section class="admin-section admin-dashboard-panel admin-summary-panel">
-      <h3 class="admin-section-title">Resumo da base</h3>
-      <div class="admin-summary-list">
+    <section class="admin-section operational-section operational-detail-block">
+      <div class="admin-section-heading">
         <div>
-          <span>Planos em uso</span>
-          <strong>{{ getActivePlanCount() }}</strong>
+          <h3 class="admin-section-title">Alertas</h3>
+          <p>{{ summary.alerts.count }} ocorrencias agregadas.</p>
         </div>
-        <div>
-          <span>Plano com maior base</span>
-          <strong>{{ planDisplayNames[getLargestPlanKey()] || '—' }}</strong>
-        </div>
-        <div>
-          <span>Projetos no maior plano</span>
-          <strong>{{ stats.planDistribution[getLargestPlanKey()] || 0 }}</strong>
-        </div>
-        <div>
-          <span>Usuários por projeto</span>
-          <strong>{{ getUsersPerProject() | number:'1.1-1' }}</strong>
-        </div>
+      </div>
+      <div class="operational-alert-status-list">
+        <a *ngFor="let status of statuses" [href]="buildOperationLink({ status: status })" class="operational-status-link">
+          <span>{{ getOperationalStatusLabel(status) }}</span>
+          <strong>{{ getStatusCount('alerts', status) }}</strong>
+        </a>
+      </div>
+      <div *ngIf="getTopCauses('alerts').length > 0" class="operational-alert-causes">
+        <span class="operational-subtitle">Causas</span>
+        <a *ngFor="let item of getTopCauses('alerts')" [href]="buildOperationLink({ cause: item.cause })" class="operational-cause-link">
+          <span>{{ item.cause }}</span>
+          <strong>{{ item.count }}</strong>
+        </a>
       </div>
     </section>
   </div>
-</div>
+
+  <div class="operational-detail-grid">
+    <section class="admin-section operational-section operational-detail-block">
+      <div class="admin-section-heading">
+        <div>
+          <h3 class="admin-section-title">Servicos</h3>
+          <p>Componentes monitorados no snapshot.</p>
+        </div>
+      </div>
+      <div class="operational-resource-list" role="list">
+        <div *ngFor="let resource of summary.services | slice:0:50" class="operational-resource-row" role="listitem">
+          <span>{{ resource.name }}</span>
+          <a [href]="resourceLink(resource)" class="admin-status-pill" [ngClass]="getOperationalStatusClass(resource.status)">
+            {{ getOperationalStatusLabel(resource.status) }}
+          </a>
+        </div>
+        <div *ngIf="summary.services.length === 0" class="operational-empty">Nenhum servico no snapshot.</div>
+      </div>
+    </section>
+
+    <section class="admin-section operational-section operational-detail-block">
+      <div class="admin-section-heading">
+        <div>
+          <h3 class="admin-section-title">Filas</h3>
+          <p>Filas monitoradas no snapshot.</p>
+        </div>
+      </div>
+      <div class="operational-resource-list" role="list">
+        <div *ngFor="let resource of summary.queues | slice:0:50" class="operational-resource-row" role="listitem">
+          <span>{{ resource.name }}</span>
+          <a [href]="resourceLink(resource)" class="admin-status-pill" [ngClass]="getOperationalStatusClass(resource.status)">
+            {{ getOperationalStatusLabel(resource.status) }}
+          </a>
+        </div>
+        <div *ngIf="summary.queues.length === 0" class="operational-empty">Nenhuma fila no snapshot.</div>
+      </div>
+    </section>
+  </div>
+</ng-container>

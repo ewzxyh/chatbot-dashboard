@@ -1,0 +1,197 @@
+:host {
+  display: block;
+}
+
+.operational-snapshot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border: 1px solid #dfe5ef;
+  border-left-width: 4px;
+  border-radius: 6px;
+  padding: 14px 16px;
+  background: #fff;
+}
+
+.operational-snapshot.admin-status-success { border-left-color: #2e7d32; }
+.operational-snapshot.admin-status-warning { border-left-color: #b77900; }
+.operational-snapshot.admin-status-muted { border-left-color: #78909c; }
+
+.operational-snapshot-label,
+.operational-snapshot-date {
+  display: block;
+  color: #60708f;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.operational-snapshot-overall {
+  display: grid;
+  justify-items: end;
+  gap: 4px;
+}
+
+.operational-snapshot strong {
+  display: block;
+  margin-top: 3px;
+  font-size: 16px;
+}
+
+.operational-snapshot p {
+  margin: 4px 0 0;
+  color: #718096;
+  font-size: 13px;
+}
+
+.operational-context,
+.operational-error {
+  justify-content: flex-start;
+}
+
+.operational-error button {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.operational-section {
+  margin-top: 24px;
+}
+
+.operational-product-grid,
+.operational-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.operational-product,
+.operational-detail-block {
+  min-width: 0;
+  border: 1px solid #e3e9f1;
+  border-radius: 6px;
+  padding: 18px;
+  background: #fff;
+}
+
+.operational-product-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.operational-product-heading h4 {
+  margin: 0;
+  color: #263238;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.operational-product-heading strong {
+  color: #263238;
+  font-size: 18px;
+  font-variant-numeric: tabular-nums;
+}
+
+.operational-status-grid,
+.operational-alert-status-list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.operational-status-link,
+.operational-cause-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+  color: #455a64;
+  text-decoration: none;
+}
+
+.operational-status-link {
+  border: 1px solid #edf1f5;
+  border-radius: 5px;
+  padding: 9px 10px;
+  font-size: 12px;
+}
+
+.operational-status-link:hover,
+.operational-status-link:focus-visible,
+.operational-cause-link:hover,
+.operational-cause-link:focus-visible {
+  border-color: #1e88e5;
+  color: #1565c0;
+  outline: none;
+}
+
+.operational-status-link span,
+.operational-cause-link span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.operational-status-link strong,
+.operational-cause-link strong {
+  flex-shrink: 0;
+  color: #263238;
+  font-variant-numeric: tabular-nums;
+}
+
+.operational-cause-list,
+.operational-resource-list,
+.operational-alert-causes {
+  display: grid;
+  gap: 8px;
+}
+
+.operational-cause-link {
+  border-bottom: 1px solid #edf1f5;
+  padding: 8px 0;
+  font-size: 13px;
+}
+
+.operational-cause-link:last-child { border-bottom: 0; }
+
+.operational-alert-causes {
+  margin-top: 18px;
+  border-top: 1px solid #edf1f5;
+  padding-top: 12px;
+}
+
+.operational-subtitle {
+  color: #60708f;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.operational-resource-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 34px;
+  border-bottom: 1px solid #edf1f5;
+  color: #455a64;
+  font-size: 13px;
+}
+
+.operational-resource-row:last-child { border-bottom: 0; }
+.operational-resource-row > span { min-width: 0; overflow-wrap: anywhere; }
+.operational-empty { color: #718096; font-size: 13px; }
+
+@media (max-width: 768px) {
+  .operational-snapshot,
+  .operational-error { align-items: flex-start; flex-direction: column; }
+  .operational-snapshot-overall { justify-items: start; }
+  .operational-error button { margin-left: 0; }
+  .operational-product-grid,
+  .operational-detail-grid { grid-template-columns: 1fr; }
+  .operational-status-grid,
+  .operational-alert-status-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
