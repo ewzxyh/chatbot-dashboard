@@ -26,15 +26,8 @@ Base: `master` em `a9fc2016f1be321dd0ea3c0bae156a1b5db9d525`.
 
 ## Verificacao
 
+- PASS: `npx tsc -p src/tsconfig.spec-admin.json --noEmit`, exit 0.
 - PASS: `npx ngc -p src/tsconfig.app.json`, exit 0.
 - PASS: `npm run build -- --configuration production`, exit 0.
 - PASS: `git diff --check`.
-- BLOCKED: `npx ng test --watch=false --browsers=ChromeHeadless --main=src/test-admin.ts --ts-config=src/tsconfig.spec-admin.json`, primeiras duas tentativas terminaram com exit 1 apos `ChromeHeadless` desconectar por `no message in 30000 ms`, com zero specs reportadas.
-- BLOCKED: o mesmo comando com `browserNoActivityTimeout: 180000` ficou sem reportar specs ate o timeout externo de 180s e terminou com exit 124; nenhum spec foi executado.
-- PASS: `karma.conf.js` nao contem configuracao nem reporter de coverage; nenhum coverage foi executado ou alegado e nenhuma dependencia foi adicionada.
-- NOT RUN: `ultracite`, indisponivel em `node_modules/.bin`.
-
-## Preocupacoes
-
-- Os asserts de Space e `.audit-detail` permanecem em `admin-audit-template.component.spec.ts`, mas o runner ChromeHeadless nao chegou a executar specs neste ambiente.
-- Nao foi iniciado servidor local nem feita validacao visual; a instrucao do projeto exige usar o servidor ja existente em `localhost:3000`.
+- KNOWN GAP: Karma legado permanece fora desta validação e continua com 0 specs; não há alegação de execução focal.
