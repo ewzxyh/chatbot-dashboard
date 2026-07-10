@@ -13,8 +13,16 @@
 
 <div class="main-content" style="padding-top:0px; padding-left: 0px;padding-right: 5px;">
 
+    <div class="page-title--sidebar-settings"
+        [ngClass]="{'page-title--sidebar-settings_opened':IS_OPEN_SETTINGS_SIDEBAR, 'page-title--sidebar-settings_closed':!IS_OPEN_SETTINGS_SIDEBAR }">
+        {{ 'NewBroadcast' | translate }}
+    </div>
 
-    <div class="container-fluid" style="padding-right: 5px;padding-left: 25px;">
+    <div class="container-fluid" style="padding-right: 5px;padding-left: 10px;">
+        <div class="content-wpr" style="display: flex;">
+            <appdashboard-settings-sidebar></appdashboard-settings-sidebar>
+
+            <div class="teplate-content" style="flex: 1 1 auto; margin: 0 20px;">
 
         <div *ngIf="hideHelpLink" class="kb-link-to-docs-wpr" style="margin-left: 5px;">
             <span>
@@ -529,6 +537,8 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
             </div>
         </div>
     </div>

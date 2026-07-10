@@ -505,10 +505,6 @@ export class NavbarComponent extends PricingBaseComponent implements OnInit, Aft
       this.currentTitle = 'ConversationLogs';
       this.currentIcon = this.getSanitizedKeyboardArrowLeft();
     }
-    else if (cleanUrl.indexOf('/new-broadcast') !== -1 ) {
-      this.currentTitle = 'NewBroadcast';
-      this.currentIcon = this.getSanitizedKeyboardArrowLeft();
-    }
     else if (cleanUrl.indexOf('/automations') !== -1 && automationId && automationId.startsWith('automation-request-')) {
       // Dettaglio dell'automazione (con query parameter id)
       this.currentTitle = 'BroadcastDetails';
@@ -672,6 +668,7 @@ export class NavbarComponent extends PricingBaseComponent implements OnInit, Aft
       '/email',
       '/hours',
       '/automations',
+      '/new-broadcast',
       '/integrations',
       '/app-store',
       '/knowledge-bases-pre',
