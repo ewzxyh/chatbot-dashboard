@@ -58,3 +58,15 @@
 - Backup `active` e o ultimo sinal da troca e inclui usuario/token efetivos e expiracao.
 - Bootstrap restaura `starting`, valida profundamente `active` e usa `failClosed` antes de publicar estado invalido.
 - Build Angular e `git diff --check` concluidos; artefato temporario removido.
+
+# Task 4: Operacao paginada
+
+- [x] Escrever spec focal para filtros, paginacao, estados e deep-link.
+- [x] Implementar abas Canais e Alertas com URL sincronizada.
+- [x] Validar com `ngc`, specs focais alternativas e build.
+- [x] Fazer auto-revisao, escrever `task-4-report.md` e criar commit.
+
+## Review
+
+- Karma e Ultracite permaneceram bloqueados pelo setup local; os checks focais, `ngc`, build e diff passaram.
+- O backend precisa aceitar o filtro `queue` antes do uso operacional dos links de filas.

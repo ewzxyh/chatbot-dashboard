@@ -18,6 +18,7 @@ export interface OperationLinkFilters {
   status?: OperationalStatus | AlertStatus;
   cause?: OperationalCause['cause'];
   resource?: string;
+  resourceType?: 'service' | 'queue';
 }
 
 type AlertOperationLinkFilters = Pick<OperationLinkFilters, 'product' | 'channel' | 'cause'>;
@@ -118,7 +119,7 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   buildOperationQueryParams(filters: OperationLinkFilters): Params {
-    const keys: Array<keyof OperationLinkFilters> = ['tab', 'product', 'channel', 'status', 'cause', 'resource'];
+    const keys: Array<keyof OperationLinkFilters> = ['tab', 'product', 'channel', 'status', 'cause', 'resource', 'resourceType'];
     const queryParams: Params = {};
     for (const key of keys) {
       const value = filters[key];
@@ -139,12 +140,13 @@ export class AdminDashboardComponent implements OnInit {
     });
   }
 
-  buildResourceOperationQueryParams(resource: OperationalSnapshotItem): Params {
+  buildResourceOperationQueryParams(resource: OperationalSnapshotItem, resourceType?: 'service' | 'queue'): Params {
     return this.buildOperationQueryParams({
       tab: 'alerts',
       status: 'open',
       cause: resource.cause || undefined,
-      resource: resource.name
+      resource: resource.name,
+      resourceType
     });
   }
 }

@@ -52,6 +52,48 @@ export type OperationalCauseCode =
   | 'unsupported_channel'
   | 'webhook_failure';
 
+export const OPERATIONAL_CAUSE_CODES: OperationalCauseCode[] = [
+  'provider_check_failed',
+  'disabled',
+  'not_configured',
+  'not_ready',
+  'mongo_not_ready',
+  'mongo_unavailable',
+  'redis_unavailable',
+  'rabbitmq_unavailable',
+  'storage_unavailable',
+  'storage_read_verification_failed',
+  'queue_backlog',
+  'queue_unacked',
+  'queue_no_consumers',
+  'upstream_timeout',
+  'provider_timeout',
+  'provider_unreachable',
+  'provider_status_unknown',
+  'provider_status_ok',
+  'provider_status_active',
+  'provider_status_connected',
+  'provider_status_open',
+  'provider_status_pending',
+  'provider_status_disconnected',
+  'provider_status_banned',
+  'provider_status_restricted',
+  'provider_not_connected',
+  'provider_not_logged_in',
+  'provider_cannot_send_new_messages',
+  'provider_message_capping_unavailable',
+  'provider_reachout_timelock',
+  'provider_quality_red',
+  'provider_quality_yellow',
+  'missing_casezap_domain',
+  'missing_casezap_token',
+  'missing_waba_id',
+  'missing_waba_phone_number_id',
+  'missing_waba_token',
+  'unsupported_channel',
+  'webhook_failure'
+];
+
 export interface OperationalStatusCounts {
   ok: number;
   degraded: number;
@@ -112,6 +154,7 @@ export interface OperationalAlertFilters extends OperationalPageFilters {
   severity?: AlertSeverity;
   type?: string;
   service?: string;
+  queue?: string;
   project_id?: string;
 }
 
@@ -159,7 +202,7 @@ const CHANNEL_FILTER_KEYS: Array<keyof ChannelDiagnosticFilters> = [
 ];
 const ALERT_FILTER_KEYS: Array<keyof OperationalAlertFilters> = [
   'page', 'limit', 'product', 'channel', 'status', 'cause', 'from', 'to',
-  'type', 'severity', 'service', 'project_id'
+  'type', 'severity', 'service', 'queue', 'project_id'
 ];
 
 @Injectable()

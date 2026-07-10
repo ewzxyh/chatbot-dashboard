@@ -1,7 +1,44 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import type { Params } from '@angular/router';
+import { Observable } from 'rxjs';
+import { formatChatcaseDateTime } from '../../utils/chatcase-locale';
 import { AdminService } from '../../services/admin.service';
-import { formatChatcaseDate, formatChatcaseDateTime } from '../../utils/chatcase-locale';
-import { isOperationalErrorStatus, isOperationalIssueStatus, isOperationalQueueIssue } from '../admin-operational-status.util';
+import type {
+  AlertStatus,
+  ChannelDiagnostic,
+  ChannelDiagnosticFilters,
+  OperationalAlert,
+  OperationalAlertFilters,
+  OperationalCauseCode,
+  OperationalProduct,
+  OperationalStatus,
+  PagedResponse
+} from '../../services/admin.service';
+import { OPERATIONAL_CAUSE_CODES } from '../../services/admin.service';
+
+type OperationTab = 'channels' | 'alerts';
+type OperationResourceType = 'service' | 'queue';
+
+export interface OperationFilters {
+  page: number;
+  limit: number;
+  product?: OperationalProduct;
+  channel?: string;
+  status?: OperationalStatus | AlertStatus;
+  cause?: OperationalCauseCode;
+  from?: string;
+  to?: string;
+}
+
+const DEFAULT_PAGE = 1;
+const DEFAULT_LIMIT = 25;
+const MAX_LIMIT = 200;
+const CHANNEL_STATUSES: OperationalStatus[] = ['ok', 'degraded', 'down', 'unknown'];
+const ALERT_STATUSES: AlertStatus[] = ['open', 'resolved'];
+const CHANNEL_FILTERS = ['casezap', 'waba', 'webhook'];
+const DATE_ONLY = /^(\d{4})-(\d{2})-(\d{2})$/;
+const UTC_DATE_TIME = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.(\d{3}))?Z$/;
 
 @Component({
   selector: 'app-admin-operation',
@@ -9,549 +46,317 @@ import { isOperationalErrorStatus, isOperationalIssueStatus, isOperationalQueueI
   styleUrls: ['./admin-operation.component.scss']
 })
 export class AdminOperationComponent implements OnInit {
-  summary: any = null;
-  metrics: any = null;
-  metricRows: any[] = [];
-  eventMetricItems: any[] = [];
-  alertMetricItems: any[] = [];
-  statusCards: any[] = [];
-  affectedItems: any[] = [];
-  alertRows: any[] = [];
-  queueRows: any[] = [];
-  channelRows: any[] = [];
-  events: any[] = [];
-  affectedColumns = ['type', 'name', 'status', 'detail', 'lastAt'];
-  alertColumns = ['severity', 'alert', 'occurrences', 'channel', 'lastAt'];
-  queueColumns = ['name', 'status', 'ready', 'unacknowledged', 'total', 'consumers', 'source'];
-  metricColumns = ['period', 'events', 'errors', 'failed', 'alerts', 'critical', 'open'];
-  channelColumns = ['status', 'channel', 'name', 'provider', 'project', 'lastWebhook', 'lastError', 'actions'];
-  eventColumns = ['timestamp', 'level', 'channel', 'event', 'project', 'error'];
-  isLoading = true;
-  isLoadingMetrics = false;
-  isLoadingEvents = false;
-  isTestingStorage = false;
-  isTestingNotification = false;
-  testingChannelKey = '';
-  registeringWebhookKey = '';
-  channelTestResults: any = {};
-  webhookRegisterResults: any = {};
-  notificationTestResult: any = null;
+  readonly pageSizeOptions = [10, 25, 50, 100];
+  readonly products: OperationalProduct[] = ['casezap', 'waba', 'unknown'];
+  readonly channelStatuses = CHANNEL_STATUSES;
+  readonly alertStatuses = ALERT_STATUSES;
+  readonly channelColumns = ['status', 'product', 'channel', 'name', 'project', 'cause', 'checkedAt'];
+  readonly alertColumns = ['severity', 'status', 'alert', 'resource', 'channel', 'project', 'occurrences', 'lastAt'];
+
+  tab: OperationTab = 'channels';
+  filters: OperationFilters = { page: DEFAULT_PAGE, limit: DEFAULT_LIMIT };
+  channelRows: ChannelDiagnostic[] = [];
+  alertRows: OperationalAlert[] = [];
+  count = 0;
+  isLoading = false;
   errorMessage = '';
-  metricFilters: any = {
-    range: '24h',
-    bucket: 'hour',
-    channel: '',
-    project_id: ''
-  };
-  eventFilters: any = {
-    channel: '',
-    level: '',
-    project_id: '',
-    integrationId: ''
-  };
+  hasLoaded = false;
 
-  constructor(private adminService: AdminService) { }
+  private resource = '';
+  private resourceType: OperationResourceType | undefined;
 
-  ngOnInit() {
-    this.refresh();
+  constructor(
+    private adminService: AdminService,
+    private route: ActivatedRoute,
+    private router: Router
+  ) { }
+
+  ngOnInit(): void {
+    this.route.queryParams.subscribe((params) => this.applyQueryParams(params));
   }
 
-  refresh() {
-    this.loadSummary();
-    this.loadMetrics();
-    this.loadEvents();
-  }
-
-  loadSummary() {
+  load(): void {
     this.isLoading = true;
     this.errorMessage = '';
-    this.adminService.getHealthSummary().subscribe(
-      (data) => {
-        this.applySummary(data);
+    this.hasLoaded = true;
+
+    const request$: Observable<PagedResponse<ChannelDiagnostic> | PagedResponse<OperationalAlert>> = this.tab === 'channels'
+      ? this.adminService.getOperationalChannels(this.buildChannelRequestFilters())
+      : this.adminService.getOperationalAlerts(this.buildAlertRequestFilters());
+
+    request$.subscribe(
+      (result) => {
+        const data = result && Array.isArray(result.data) ? result.data : [];
+        this.count = result && Number.isFinite(result.count) ? result.count : 0;
+        this.filters = {
+          ...this.filters,
+          page: this.validPage(result && result.page) ? result.page : this.filters.page,
+          limit: this.validLimit(result && result.limit) ? result.limit : this.filters.limit
+        };
+        if (this.tab === 'channels') {
+          this.channelRows = data as ChannelDiagnostic[];
+          this.alertRows = [];
+        } else {
+          this.alertRows = data as OperationalAlert[];
+          this.channelRows = [];
+        }
         this.isLoading = false;
       },
       () => {
-        this.errorMessage = 'Erro ao carregar status operacional';
+        this.channelRows = [];
+        this.alertRows = [];
+        this.count = 0;
+        this.errorMessage = 'Erro ao carregar a operacao.';
         this.isLoading = false;
       }
     );
   }
 
-  applySummary(data: any) {
-    this.summary = data;
-    this.rebuildStatusPage();
+  retry(): void {
+    this.load();
   }
 
-  loadEvents() {
-    this.isLoadingEvents = true;
-    this.adminService.getOperationalEvents(this.eventFilters).subscribe(
-      (result) => {
-        this.events = result && result.data ? result.data : [];
-        this.isLoadingEvents = false;
-      },
-      () => {
-        this.events = [];
-        this.isLoadingEvents = false;
-      }
-    );
+  applyFilters(): void {
+    this.filters.page = DEFAULT_PAGE;
+    this.syncUrl();
+    this.load();
   }
 
-  loadMetrics() {
-    this.isLoadingMetrics = true;
-    this.adminService.getOperationalMetrics(this.metricFilters).subscribe(
-      (result) => {
-        this.metrics = result;
-        this.metricRows = this.mergeMetricRows(result);
-        this.eventMetricItems = this.buildTopMetricItems(result, 'events', 'byEvent');
-        this.alertMetricItems = this.buildTopMetricItems(result, 'alerts', 'byType');
-        this.isLoadingMetrics = false;
-      },
-      () => {
-        this.metrics = null;
-        this.metricRows = [];
-        this.eventMetricItems = [];
-        this.alertMetricItems = [];
-        this.isLoadingMetrics = false;
-      }
-    );
+  clearFilters(): void {
+    this.filters = { page: DEFAULT_PAGE, limit: this.filters.limit };
+    this.resource = '';
+    this.resourceType = undefined;
+    this.syncUrl();
+    this.load();
   }
 
-  onMetricRangeChange() {
-    if (this.metricFilters.range === '24h') {
-      this.metricFilters.bucket = 'hour';
-    } else if (!this.metricFilters.bucket) {
-      this.metricFilters.bucket = 'day';
+  changePage(page: number, limit = this.filters.limit): void {
+    if (!this.validPage(page)) return;
+    if (!this.validLimit(limit)) return;
+    this.filters = { ...this.filters, page, limit };
+    this.syncUrl();
+    this.load();
+  }
+
+  changeLimit(limit: number): void {
+    if (!this.validLimit(limit)) return;
+    this.filters = { ...this.filters, page: DEFAULT_PAGE, limit };
+    this.syncUrl();
+    this.load();
+  }
+
+  selectTab(tab: OperationTab): void {
+    if (this.tab === tab) return;
+    this.tab = tab;
+    if (!this.isStatusCompatible(this.filters.status, tab)) delete this.filters.status;
+    this.filters.page = DEFAULT_PAGE;
+    if (tab === 'channels') {
+      this.resource = '';
+      this.resourceType = undefined;
     }
-    this.loadMetrics();
+    this.syncUrl();
+    this.load();
   }
 
-  mergeMetricRows(metrics: any): any[] {
-    if (!metrics) return [];
-    const alertByBucket = {};
-    const eventRows = metrics.events && metrics.events.byBucket ? metrics.events.byBucket : [];
-    const alertRows = metrics.alerts && metrics.alerts.byBucket ? metrics.alerts.byBucket : [];
-
-    alertRows.forEach((row) => {
-      alertByBucket[row.bucketStart] = row;
-    });
-
-    const rows = eventRows.map((row) => {
-      const alertRow = alertByBucket[row.bucketStart] || {};
-      return {
-        bucketStart: row.bucketStart,
-        events: row.count || 0,
-        errors: row.errors || 0,
-        warnings: row.warnings || 0,
-        failed: row.failed || 0,
-        alerts: alertRow.count || 0,
-        criticalAlerts: alertRow.critical || 0,
-        openAlerts: alertRow.open || 0
-      };
-    });
-
-    alertRows.forEach((row) => {
-      const exists = rows.some((eventRow) => eventRow.bucketStart === row.bucketStart);
-      if (!exists) {
-        rows.push({
-          bucketStart: row.bucketStart,
-          events: 0,
-          errors: 0,
-          warnings: 0,
-          failed: 0,
-          alerts: row.count || 0,
-          criticalAlerts: row.critical || 0,
-          openAlerts: row.open || 0
-        });
-      }
-    });
-
-    return rows.sort((a, b) => {
-      return new Date(b.bucketStart).getTime() - new Date(a.bucketStart).getTime();
-    }).slice(0, 10);
+  get isEmpty(): boolean {
+    return this.hasLoaded && !this.isLoading && !this.errorMessage && this.currentRows.length === 0;
   }
 
-  channelKey(channel: any): string {
-    if (!channel) return '';
-    return channel.channel + ':' + (channel.integrationDocId || channel.integrationId || '');
+  get currentRows(): ChannelDiagnostic[] | OperationalAlert[] {
+    return this.tab === 'channels' ? this.channelRows : this.alertRows;
   }
 
-  testChannel(channel: any) {
-    if (!channel) return;
-    const integrationId = channel.integrationDocId || channel.integrationId;
-    const key = this.channelKey(channel);
-    this.testingChannelKey = key;
-    this.channelTestResults[key] = null;
-
-    this.adminService.testChannelConnection(channel.channel, integrationId).subscribe(
-      (response) => {
-        const result = response && response.result ? response.result : response;
-        this.channelTestResults[key] = result;
-        this.testingChannelKey = '';
-        this.mergeChannelDiagnostic(channel, result);
-        this.loadEvents();
-      },
-      () => {
-        this.channelTestResults[key] = {
-          providerHealth: 'down',
-          providerReason: 'test_failed'
-        };
-        this.testingChannelKey = '';
-      }
+  get hasActiveFilters(): boolean {
+    return Boolean(
+      this.filters.product || this.filters.channel || this.filters.status || this.filters.cause ||
+      this.filters.from || this.filters.to || this.resource
     );
   }
 
-  registerWebhook(channel: any) {
-    if (!channel) return;
-    const integrationId = channel.integrationDocId || channel.integrationId;
-    const key = this.channelKey(channel);
-    this.registeringWebhookKey = key;
-    this.webhookRegisterResults[key] = null;
-
-    this.adminService.registerChannelWebhook(channel.channel, integrationId).subscribe(
-      (response) => {
-        const result = response && response.result ? response.result : response;
-        this.webhookRegisterResults[key] = result;
-        this.registeringWebhookKey = '';
-        channel.lastWebhookRegistrationAt = result.providerCheckedAt || new Date().toISOString();
-        channel.lastWebhookRegistrationStatus = result.status;
-        this.loadEvents();
-        this.loadMetrics();
-      },
-      () => {
-        this.webhookRegisterResults[key] = {
-          status: 'failed',
-          providerReason: 'webhook_register_failed'
-        };
-        this.registeringWebhookKey = '';
-      }
-    );
+  get resourceLabel(): string {
+    if (!this.resource) return '';
+    return this.resourceType === 'queue' ? 'Fila' : 'Servico';
   }
 
-  showChannelErrors(channel: any) {
-    if (!channel) return;
-    this.eventFilters.channel = channel.channel || '';
-    this.eventFilters.level = 'error';
-    this.eventFilters.project_id = channel.id_project || '';
-    this.eventFilters.integrationId = channel.integrationDocId || channel.integrationId || '';
-    this.loadEvents();
-  }
-
-  clearEventFilters() {
-    this.eventFilters = {
-      channel: '',
-      level: '',
-      project_id: '',
-      integrationId: ''
-    };
-    this.loadEvents();
-  }
-
-  testStorage() {
-    if (this.isTestingStorage) return;
-    this.isTestingStorage = true;
-    this.adminService.testStorageConnection().subscribe(
-      (response) => {
-        const result = response && response.result ? response.result : response;
-        this.mergeStorageResult(result);
-        this.isTestingStorage = false;
-        this.loadSummary();
-        this.loadEvents();
-        this.loadMetrics();
-      },
-      () => {
-        this.mergeStorageResult({
-          name: 'storage',
-          label: 'Storage',
-          status: 'down',
-          details: { reason: 'test_failed' }
-        });
-        this.isTestingStorage = false;
-      }
-    );
-  }
-
-  testAlertNotification() {
-    if (this.isTestingNotification) return;
-    this.isTestingNotification = true;
-    this.notificationTestResult = null;
-
-    this.adminService.testOperationalAlertNotification().subscribe(
-      (response) => {
-        this.notificationTestResult = response && response.result ? response.result : response;
-        this.isTestingNotification = false;
-        this.loadEvents();
-        this.loadMetrics();
-      },
-      () => {
-        this.notificationTestResult = {
-          status: 'failed',
-          ok: false,
-          error: 'test_failed'
-        };
-        this.isTestingNotification = false;
-      }
-    );
-  }
-
-  mergeStorageResult(result: any) {
-    if (!this.summary || !this.summary.services || !result) return;
-    const index = this.summary.services.findIndex((service) => service.name === 'storage');
-    if (index === -1) {
-      this.summary.services.push(result);
-      this.rebuildStatusPage();
-      return;
-    }
-    this.summary.services[index] = Object.assign({}, this.summary.services[index], result);
-    this.rebuildStatusPage();
-  }
-
-  mergeChannelDiagnostic(channel: any, result: any) {
-    if (!channel || !result) return;
-    channel.status = result.providerHealth || result.status || channel.status;
-    channel.providerHealth = result.providerHealth || result.status;
-    channel.providerStatus = result.providerStatus;
-    channel.providerReason = result.providerReason;
-    channel.providerCode = result.providerCode;
-    channel.providerCheckedAt = result.providerCheckedAt;
-    channel.providerLatencyMs = result.providerLatencyMs;
-    channel.providerError = result.providerError;
-    channel.qualityRating = result.qualityRating;
-    channel.nameStatus = result.nameStatus;
-    channel.canSendNewMessages = result.canSendNewMessages;
-    this.rebuildStatusPage();
-  }
-
-  rebuildStatusPage() {
-    if (!this.summary) {
-      this.statusCards = [];
-      this.affectedItems = [];
-      this.alertRows = [];
-      this.queueRows = [];
-      this.channelRows = [];
-      return;
-    }
-
-    const services = Array.isArray(this.summary.services) ? this.summary.services : [];
-    const channels = Array.isArray(this.summary.channels) ? this.summary.channels : [];
-    const alerts = Array.isArray(this.summary.alerts) ? this.summary.alerts : [];
-    const queues = this.extractQueueRows();
-    const serviceIssues = services.filter((service) => this.isIssueStatus(service.status));
-    const channelIssues = channels.filter((channel) => {
-      return this.isIssueStatus(channel.status) ||
-        this.isIssueStatus(channel.providerHealth) ||
-        this.isIssueStatus(channel.providerStatus);
-    });
-    const queueIssues = queues.filter((queue) => this.isQueueIssue(queue));
-    const criticalAlerts = alerts.filter((alert) => String(alert.severity || '').toLowerCase() === 'critical');
-
-    this.alertRows = alerts.slice(0, 10);
-    this.queueRows = queues.slice(0, 10);
-    this.channelRows = channels.slice(0, 10);
-    this.statusCards = [
-      {
-        label: 'Status geral',
-        value: this.getStatusLabel(this.summary.overallStatus),
-        status: this.summary.overallStatus,
-        detail: this.formatDate(this.summary.generatedAt)
-      },
-      {
-        label: 'Alertas críticos',
-        value: criticalAlerts.length,
-        status: criticalAlerts.length > 0 ? 'down' : 'ok',
-        detail: alerts.length + ' alertas abertos'
-      },
-      {
-        label: 'Serviços afetados',
-        value: serviceIssues.length,
-        status: this.getCollectionStatus(serviceIssues),
-        detail: services.length + ' monitorados'
-      },
-      {
-        label: 'Canais afetados',
-        value: channelIssues.length,
-        status: this.getCollectionStatus(channelIssues),
-        detail: channels.length + ' conectores'
-      },
-      {
-        label: 'Filas com risco',
-        value: queueIssues.length,
-        status: this.getCollectionStatus(queueIssues),
-        detail: queues.length + ' monitoradas'
-      }
-    ];
-
-    this.affectedItems = this.buildAffectedItems(alerts, serviceIssues, channelIssues, queueIssues);
-  }
-
-  extractQueueRows(): any[] {
-    if (!this.summary || !this.summary.queues || !this.summary.queues.details) return [];
-    const queues = this.summary.queues.details.queues;
-    return Array.isArray(queues) ? queues : [];
-  }
-
-  buildAffectedItems(alerts: any[], services: any[], channels: any[], queues: any[]): any[] {
-    const items = [];
-
-    alerts.forEach((alert) => {
-      items.push({
-        type: 'Alerta',
-        name: alert.title || alert.key || alert.type,
-        status: alert.severity || 'warning',
-        detail: alert.message || alert.type || '',
-        lastAt: alert.lastAt
-      });
-    });
-
-    services.forEach((service) => {
-      items.push({
-        type: 'Serviço',
-        name: service.label || service.name,
-        status: service.status,
-        detail: this.serviceDetail(service),
-        lastAt: this.summary.generatedAt
-      });
-    });
-
-    channels.forEach((channel) => {
-      items.push({
-        type: 'Canal',
-        name: (channel.name || channel.integrationId || channel.channel) + ' (' + channel.channel + ')',
-        status: channel.providerHealth || channel.status || channel.providerStatus,
-        detail: channel.providerReason || channel.lastError || this.providerDetail(channel),
-        lastAt: channel.providerCheckedAt || channel.lastErrorAt || channel.lastWebhookAt
-      });
-    });
-
-    queues.forEach((queue) => {
-      items.push({
-        type: 'Fila',
-        name: queue.name,
-        status: queue.status,
-        detail: this.queueDetail(queue),
-        lastAt: this.summary.generatedAt
-      });
-    });
-
-    return items.slice(0, 10);
+  get resourceValue(): string {
+    return this.resource;
   }
 
   getStatusLabel(status: string): string {
-    const labels: any = {
-      ok: 'OK',
-      degraded: 'Degradado',
-      down: 'Indisponível',
-      unknown: 'Sem configuração',
-      skipped: 'Ignorado',
-      failed: 'Falhou',
-      error: 'Erro',
-      warn: 'Aviso',
-      info: 'Informação',
+    const labels: Record<string, string> = {
+      ok: 'Normal',
+      degraded: 'Atencao',
+      down: 'Indisponivel',
+      unknown: 'Sem diagnostico',
+      open: 'Aberto',
+      resolved: 'Resolvido',
+      info: 'Informacao',
       warning: 'Aviso',
-      critical: 'Crítico',
-      success: 'Sucesso',
-      registered: 'Registrado',
-      active: 'Ativo',
-      connected: 'Conectado',
-      disconnected: 'Desconectado',
-      restricted: 'Restrito',
-      flagged: 'Sinalizado',
-      banned: 'Banido',
-      bannedm: 'Banido',
-      disabled: 'Desabilitado'
+      critical: 'Critico'
     };
-    const key = status ? String(status).toLowerCase() : status;
-    return labels[key] || status || 'N/A';
+    return labels[status] || status || 'N/A';
   }
 
   getStatusClass(status: string): string {
-    const normalized = status ? String(status).toLowerCase() : '';
-    if (normalized === 'ok' || normalized === 'success' || normalized === 'active' || normalized === 'connected' || normalized === 'green') return 'status-ok';
-    if (normalized === 'degraded' || normalized === 'warn' || normalized === 'warning' || normalized === 'skipped' || normalized === 'restricted' || normalized === 'flagged' || normalized === 'rate_limited' || normalized === 'capped' || normalized === 'yellow') return 'status-warn';
-    if (normalized === 'down' || normalized === 'error' || normalized === 'failed' || normalized === 'critical' || normalized === 'disconnected' || normalized === 'banned' || normalized === 'bannedm' || normalized === 'disabled' || normalized === 'red') return 'status-error';
+    if (status === 'ok' || status === 'resolved' || status === 'info') return 'status-ok';
+    if (status === 'degraded' || status === 'warning') return 'status-warn';
+    if (status === 'down' || status === 'open' || status === 'critical') return 'status-error';
     return 'status-unknown';
   }
 
-  isIssueStatus(status: string): boolean {
-    return isOperationalIssueStatus(status);
+  formatDate(value: string | null): string {
+    return value ? formatChatcaseDateTime(value) : 'N/A';
   }
 
-  isErrorStatus(status: string): boolean {
-    return isOperationalErrorStatus(status);
+  private applyQueryParams(params: Params): void {
+    const parsed = this.parseQueryParams(params);
+    const changed = this.tab !== parsed.tab || !this.sameFilters(this.filters, parsed.filters) ||
+      this.resource !== parsed.resource || this.resourceType !== parsed.resourceType;
+
+    this.tab = parsed.tab;
+    this.filters = parsed.filters;
+    this.resource = parsed.resource;
+    this.resourceType = parsed.resourceType;
+
+    if (changed || !this.hasLoaded) this.load();
   }
 
-  getCollectionStatus(items: any[]): string {
-    if (!items || items.length === 0) return 'ok';
-    const hasError = items.some((item) => this.isErrorStatus(item.status || item.providerHealth || item.providerStatus));
-    return hasError ? 'down' : 'degraded';
-  }
+  private parseQueryParams(params: Params): {
+    tab: OperationTab;
+    filters: OperationFilters;
+    resource: string;
+    resourceType?: OperationResourceType;
+  } {
+    const tab = this.queryValue(params, 'tab') === 'alerts' ? 'alerts' : 'channels';
+    const filters: OperationFilters = {
+      page: this.parseInteger(this.queryValue(params, 'page'), DEFAULT_PAGE),
+      limit: this.parseInteger(this.queryValue(params, 'limit'), DEFAULT_LIMIT)
+    };
+    const product = this.queryValue(params, 'product');
+    const channel = this.queryValue(params, 'channel');
+    const status = this.queryValue(params, 'status');
+    const cause = this.queryValue(params, 'cause');
+    const from = this.queryValue(params, 'from');
+    const to = this.queryValue(params, 'to');
 
-  isQueueIssue(queue: any): boolean {
-    return isOperationalQueueIssue(queue);
-  }
-
-  formatDate(value: string): string {
-    if (!value) return 'N/A';
-    return formatChatcaseDateTime(value);
-  }
-
-  formatBucket(value: string): string {
-    if (!value) return 'N/A';
-    if (this.metricFilters.bucket === 'day') {
-      return formatChatcaseDate(value);
+    if (product && this.products.includes(product as OperationalProduct)) filters.product = product as OperationalProduct;
+    if (channel && (tab === 'channels' ? CHANNEL_FILTERS.includes(channel) : this.isSafeFilterValue(channel))) {
+      filters.channel = channel;
     }
-    return formatChatcaseDateTime(value);
+    if (status && this.isStatusCompatible(status, tab)) filters.status = status as OperationalStatus | AlertStatus;
+    if (cause && OPERATIONAL_CAUSE_CODES.includes(cause as OperationalCauseCode)) filters.cause = cause as OperationalCauseCode;
+    if (from && this.isValidOperationalDate(from)) filters.from = from;
+    if (to && this.isValidOperationalDate(to)) filters.to = to;
+    if (filters.from && filters.to && this.toTimestamp(filters.from) > this.toTimestamp(filters.to)) {
+      delete filters.from;
+      delete filters.to;
+    }
+
+    const resource = this.queryValue(params, 'resource');
+    const resourceType = this.queryValue(params, 'resourceType');
+    const validResource = resource && this.isSafeFilterValue(resource) ? resource : '';
+    const validResourceType = resourceType === 'service' || resourceType === 'queue' ? resourceType : undefined;
+
+    return {
+      tab,
+      filters,
+      resource: tab === 'alerts' && validResourceType ? validResource : '',
+      resourceType: tab === 'alerts' && validResourceType && validResource ? validResourceType : undefined
+    };
   }
 
-  metricCount(group: string, collection: string, key: string): number {
-    if (!this.metrics || !this.metrics[group] || !this.metrics[group][collection]) return 0;
-    return this.metrics[group][collection][key] || 0;
+  private buildChannelRequestFilters(): ChannelDiagnosticFilters {
+    return { ...this.filters } as ChannelDiagnosticFilters;
   }
 
-  topMetricItems(group: string, collection: string): any[] {
-    return this.buildTopMetricItems(this.metrics, group, collection);
+  private buildAlertRequestFilters(): OperationalAlertFilters {
+    const filters: OperationalAlertFilters = { ...this.filters } as OperationalAlertFilters;
+    if (this.resource && this.resourceType === 'service') filters.service = this.resource;
+    if (this.resource && this.resourceType === 'queue') filters.queue = this.resource;
+    return filters;
   }
 
-  buildTopMetricItems(metrics: any, group: string, collection: string): any[] {
-    if (!metrics || !metrics[group] || !metrics[group][collection]) return [];
-    return Object.keys(metrics[group][collection])
-      .map((key) => ({ key, count: metrics[group][collection][key] }))
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 6);
+  private syncUrl(): void {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: this.buildQueryParams(),
+      replaceUrl: true
+    });
   }
 
-  serviceDetail(service: any): string {
-    if (!service || !service.details) return '';
-    if (service.details.reason) return service.details.reason;
-    if (service.details.error) return service.details.error;
-    if (service.name === 'server') return 'ativo há ' + service.details.uptimeSeconds + 's';
-    if (service.latencyMs !== null && service.latencyMs !== undefined) return service.latencyMs + ' ms';
-    return '';
+  private buildQueryParams(): Params {
+    const queryParams: Params = {
+      tab: this.tab,
+      page: this.filters.page,
+      limit: this.filters.limit
+    };
+    const filterKeys: Array<keyof OperationFilters> = ['product', 'channel', 'status', 'cause', 'from', 'to'];
+    for (const key of filterKeys) {
+      if (this.filters[key]) queryParams[key] = this.filters[key];
+    }
+    if (this.tab === 'alerts' && this.resource && this.resourceType) {
+      queryParams.resource = this.resource;
+      queryParams.resourceType = this.resourceType;
+    }
+    return queryParams;
   }
 
-  queueDetail(queue: any): string {
-    if (!queue) return '';
-    return 'prontas ' + Number(queue.messagesReady || 0) +
-      ' | não confirmadas ' + Number(queue.messagesUnacknowledged || 0) +
-      ' | consumidores ' + Number(queue.consumers || 0);
+  private queryValue(params: Params, key: string): string | undefined {
+    const value = params[key];
+    if (Array.isArray(value)) return value.length === 1 && value[0] !== undefined ? String(value[0]) : undefined;
+    return value === undefined || value === null ? undefined : String(value);
   }
 
-  providerDetail(channel: any): string {
-    if (!channel) return '';
-    const parts = [];
-    if (channel.providerStatus) parts.push('provedor: ' + channel.providerStatus);
-    if (channel.qualityRating) parts.push('qualidade: ' + channel.qualityRating);
-    if (channel.nameStatus) parts.push('nome: ' + channel.nameStatus);
-    if (channel.canSendNewMessages === false) parts.push('envio limitado');
-    if (channel.providerLatencyMs !== null && channel.providerLatencyMs !== undefined) parts.push(channel.providerLatencyMs + ' ms');
-    return parts.join(' | ');
+  private parseInteger(value: string | undefined, fallback: number): number {
+    if (!value || !/^[1-9]\d*$/.test(value)) return fallback;
+    const parsed = Number(value);
+    return this.validLimit(parsed) || (fallback === DEFAULT_PAGE && parsed <= Number.MAX_SAFE_INTEGER) ? parsed : fallback;
   }
 
-  notificationResultDetail(result: any): string {
-    if (!result) return '';
-    const parts = [];
-    if (result.webhook && result.webhook.status) parts.push('webhook: ' + result.webhook.status);
-    if (result.email && result.email.status) parts.push('email: ' + result.email.status);
-    if (result.error) parts.push(result.error);
-    return parts.join(' | ');
+  private validPage(value: number): boolean {
+    return Number.isSafeInteger(value) && value >= DEFAULT_PAGE;
+  }
+
+  private validLimit(value: number): boolean {
+    return Number.isSafeInteger(value) && value >= 1 && value <= MAX_LIMIT;
+  }
+
+  private isStatusCompatible(status: string | undefined, tab: OperationTab): boolean {
+    if (!status) return false;
+    return tab === 'channels'
+      ? CHANNEL_STATUSES.includes(status as OperationalStatus)
+      : ALERT_STATUSES.includes(status as AlertStatus);
+  }
+
+  private isSafeFilterValue(value: string): boolean {
+    return value.trim().length > 0 && value.length <= 200;
+  }
+
+  private isValidOperationalDate(value: string): boolean {
+    const match = DATE_ONLY.exec(value) || UTC_DATE_TIME.exec(value);
+    if (!match) return false;
+    const year = Number(match[1]);
+    const month = Number(match[2]);
+    const day = Number(match[3]);
+    const hour = Number(match[4] || 0);
+    const minute = Number(match[5] || 0);
+    const second = Number(match[6] || 0);
+    const millisecond = Number(match[7] || 0);
+    const date = new Date(0);
+    date.setUTCFullYear(year, month - 1, day);
+    date.setUTCHours(hour, minute, second, millisecond);
+    return date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 &&
+      date.getUTCDate() === day && date.getUTCHours() === hour && date.getUTCMinutes() === minute &&
+      date.getUTCSeconds() === second && date.getUTCMilliseconds() === millisecond;
+  }
+
+  private toTimestamp(value: string): number {
+    return value.length === 10 ? Date.parse(value + 'T00:00:00.000Z') : Date.parse(value);
+  }
+
+  private sameFilters(left: OperationFilters, right: OperationFilters): boolean {
+    return left.page === right.page && left.limit === right.limit && left.product === right.product &&
+      left.channel === right.channel && left.status === right.status && left.cause === right.cause &&
+      left.from === right.from && left.to === right.to;
   }
 }

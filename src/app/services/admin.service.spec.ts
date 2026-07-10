@@ -116,6 +116,7 @@ describe('AdminService operational endpoints', () => {
       severity: 'critical',
       type: 'channel_health',
       service: 'rabbitmq',
+      queue: 'jobs',
       project_id: 'project A&B',
       from: '2026-07-10T10:00:00.000Z',
       to: '2026-07-10T12:00:00.000Z',
@@ -130,6 +131,7 @@ describe('AdminService operational endpoints', () => {
     expect(options.params.get('severity')).toBe('critical');
     expect(options.params.get('type')).toBe('channel_health');
     expect(options.params.get('service')).toBe('rabbitmq');
+    expect(options.params.get('queue')).toBe('jobs');
     expect(options.params.get('project_id')).toBe('project A&B');
     expect(options.params.get('token')).toBeNull();
     expect(options.params.toString()).toContain('project_id=project%20A%26B');

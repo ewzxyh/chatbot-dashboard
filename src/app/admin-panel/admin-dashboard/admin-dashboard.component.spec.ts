@@ -163,24 +163,30 @@ describe('AdminDashboardComponent', () => {
     expect(component.buildAlertOperationQueryParams('ok')).toEqual({ tab: 'alerts', status: 'resolved' });
   });
 
-  it('abre servicos e filas como alertas ativos com recurso e causa validos', () => {
+  it('abre servicos e filas como alertas ativos com recurso, tipo e causa validos', () => {
     expect(component.buildResourceOperationQueryParams({
       name: 'mongo',
       status: 'down',
       cause: 'mongo_unavailable',
       checkedAt: '2026-07-10T11:59:58.000Z'
-    })).toEqual({
+    }, 'service')).toEqual({
       tab: 'alerts',
       status: 'open',
       cause: 'mongo_unavailable',
-      resource: 'mongo'
+      resource: 'mongo',
+      resourceType: 'service'
     });
     expect(component.buildResourceOperationQueryParams({
       name: 'messages',
       status: 'ok',
       cause: null,
       checkedAt: '2026-07-10T11:59:57.000Z'
-    })).toEqual({ tab: 'alerts', status: 'open', resource: 'messages' });
+    }, 'queue')).toEqual({
+      tab: 'alerts',
+      status: 'open',
+      resource: 'messages',
+      resourceType: 'queue'
+    });
   });
 
   it('usa routerLink absoluto com queryParams sem UrlTree ou href no template', () => {
