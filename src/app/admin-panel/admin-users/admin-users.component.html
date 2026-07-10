@@ -27,7 +27,7 @@
   </div>
 <div *ngIf="impersonationError" class="admin-error-state" role="alert">{{ impersonationError }}</div>
 
-<table mat-table *ngIf="!isLoading" [dataSource]="users" class="admin-table">
+<table mat-table *ngIf="!isLoading && (!errorMessage || users.length > 0)" [dataSource]="users" class="admin-table">
   <ng-container matColumnDef="name">
     <th mat-header-cell *matHeaderCellDef>Nome</th>
     <td mat-cell *matCellDef="let u">{{ u.firstname }} {{ u.lastname }}</td>
@@ -74,10 +74,10 @@
   <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 </table>
 
-<div *ngIf="!isLoading && users.length === 0" class="admin-empty-state">Nenhum usuário encontrado.</div>
+<div *ngIf="!isLoading && !errorMessage && users.length === 0" class="admin-empty-state">Nenhum usuário encontrado.</div>
 
 <mat-paginator
-  *ngIf="!isLoading"
+  *ngIf="!isLoading && (!errorMessage || users.length > 0)"
   [length]="totalCount"
   [pageIndex]="page"
   [pageSize]="limit"

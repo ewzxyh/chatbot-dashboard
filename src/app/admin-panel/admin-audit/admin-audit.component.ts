@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subject, Subscription } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { AdminService } from '../../services/admin.service';
 
 @Component({
@@ -6,7 +8,7 @@ import { AdminService } from '../../services/admin.service';
   templateUrl: './admin-audit.component.html',
   styleUrls: ['./admin-audit.component.scss']
 })
-export class AdminAuditComponent implements OnInit {
+export class AdminAuditComponent implements OnDestroy, OnInit {
   events: any[] = [];
   displayedColumns = ['timestamp', 'action', 'method', 'status', 'actor', 'project', 'entity', 'summary'];
   summary: any = null;
@@ -18,6 +20,11 @@ export class AdminAuditComponent implements OnInit {
   page = 0;
   limit = 10;
   totalCount = 0;
+  private readonly destroy$ = new Subject<void>();
+  private summarySubscription: Subscription = null;
+  private eventsSubscription: Subscription = null;
+  private summaryRequestId = 0;
+  private eventsRequestId = 0;
   filters: any = {
     range: '24h',
     action: '',
@@ -35,7 +42,19 @@ export class AdminAuditComponent implements OnInit {
     this.refresh();
   }
 
+  get isRefreshing(): boolean {
+    return this.isLoading || this.isLoadingSummary;
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+    this.cancelSummaryRequest();
+    this.cancelEventsRequest();
+  }
+
   refresh() {
+    if (this.isRefreshing) return;
     this.loadSummary();
     this.loadEvents();
   }
@@ -44,22 +63,41 @@ export class AdminAuditComponent implements OnInit {
 
   applyFilters() {
     this.page = 0;
+    this.cancelSummaryRequest();
+    this.cancelEventsRequest();
     this.refresh();
   }
 
+  private cancelSummaryRequest() {
+    this.summaryRequestId++;
+    this.summarySubscription?.unsubscribe();
+    this.summarySubscription = null;
+    this.isLoadingSummary = false;
+  }
+
+  private cancelEventsRequest() {
+    this.eventsRequestId++;
+    this.eventsSubscription?.unsubscribe();
+    this.eventsSubscription = null;
+    this.isLoading = false;
+  }
+
   loadSummary() {
+    this.cancelSummaryRequest();
+    const requestId = ++this.summaryRequestId;
     this.isLoadingSummary = true;
     this.summaryErrorMessage = '';
-    this.adminService.getAuditSummary({
+    this.summarySubscription = this.adminService.getAuditSummary({
       range: this.filters.range,
       project_id: this.filters.project_id
-    }).subscribe(
+    }).pipe(takeUntil(this.destroy$)).subscribe(
       (res) => {
+        if (requestId !== this.summaryRequestId) return;
         this.summary = res;
         this.isLoadingSummary = false;
       },
       () => {
-        this.summary = null;
+        if (requestId !== this.summaryRequestId) return;
         this.summaryErrorMessage = 'Erro ao carregar o resumo da auditoria.';
         this.isLoadingSummary = false;
       }
@@ -67,14 +105,17 @@ export class AdminAuditComponent implements OnInit {
   }
 
   loadEvents() {
+    this.cancelEventsRequest();
+    const requestId = ++this.eventsRequestId;
     this.isLoading = true;
     this.errorMessage = '';
     const requestFilters = Object.assign({}, this.filters, {
       page: this.page,
       limit: this.limit
     });
-    this.adminService.getAuditEvents(requestFilters).subscribe(
+    this.eventsSubscription = this.adminService.getAuditEvents(requestFilters).pipe(takeUntil(this.destroy$)).subscribe(
       (res) => {
+        if (requestId !== this.eventsRequestId) return;
         this.events = res && res.data ? res.data : [];
         this.totalCount = res && res.count ? res.count : 0;
         if (this.selectedEvent) {
@@ -84,8 +125,7 @@ export class AdminAuditComponent implements OnInit {
         this.isLoading = false;
       },
       () => {
-        this.events = [];
-        this.totalCount = 0;
+        if (requestId !== this.eventsRequestId) return;
         this.errorMessage = 'Erro ao carregar auditoria';
         this.isLoading = false;
       }

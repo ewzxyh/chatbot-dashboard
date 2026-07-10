@@ -9,7 +9,7 @@
       [routerLink]="item.route"
       routerLinkActive
       #linkActive="routerLinkActive"
-      [routerLinkActiveOptions]="{ exact: true }"
+      [routerLinkActiveOptions]="{ paths: 'exact', queryParams: 'ignored', matrixParams: 'ignored', fragment: 'ignored' }"
       [active]="linkActive.isActive"
       [attr.aria-current]="linkActive.isActive ? 'page' : null"
       (isActiveChange)="onNavActiveChange(item.id, $event)"

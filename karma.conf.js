@@ -2,16 +2,20 @@
 // https://karma-runner.github.io/0.13/config/configuration-file.html
 
 module.exports = function (config) {
+  var plugins = [
+    require('karma-jasmine'),
+    require('karma-chrome-launcher'),
+    require('karma-jasmine-html-reporter'),
+    require('@angular-devkit/build-angular/plugins/karma')
+  ];
+  if (config.angularCli && config.angularCli.codeCoverage) {
+    plugins.splice(3, 0, require('karma-coverage-istanbul-reporter'));
+  }
+
   config.set({
     basePath: '',
     frameworks: ['jasmine', '@angular-devkit/build-angular'],
-    plugins: [
-      require('karma-jasmine'),
-      require('karma-chrome-launcher'),
-      require('karma-jasmine-html-reporter'),
-      require('karma-coverage-istanbul-reporter'),
-      require('@angular-devkit/build-angular/plugins/karma')
-    ],
+    plugins: plugins,
     client:{
       clearContext: false // leave Jasmine Spec Runner output visible in browser
     },

@@ -27,14 +27,15 @@ Base: `master` em `a9fc2016f1be321dd0ea3c0bae156a1b5db9d525`.
 ## Verificação
 
 - PASS: `npx ngc -p src/tsconfig.app.json`.
-- PASS: harness Karma/ChromeHeadless isolado, `2/2 SUCCESS`, com entrypoint temporário removido após a execução.
-- PASS: `npm run build -- --configuration production`, exit 0, 52,9s.
+- PASS: harness Karma/ChromeHeadless focal, `13/13 SUCCESS`, cobrindo query params, `aria-current`, foco/teclado, concorrência, teardown e estados de erro.
+- PASS: `npm run build -- --configuration production`, exit 0, 57,9s.
 - PASS: `git diff --check`.
 - PASS: auditoria automática de capacidades e arquivos globais.
-- BLOCKED: `npx ng test --watch=false --browsers=ChromeHeadless`, exit 1 antes dos specs por `Cannot find module 'karma-coverage-istanbul-reporter'`; a dependência não está instalada e não foi adicionada.
+- PASS: `karma.conf.js` carrega o reporter de coverage somente quando `codeCoverage` está habilitado; coverage não foi ocultado e nenhuma dependência foi adicionada.
+- BLOCKED: `npx ng test --watch=false --browsers=ChromeHeadless`, exit 1 no bundle da suite legada por imports ausentes de `analytics-service`, `@angular/http/testing` e `rxjs-compat`, antes dos specs globais.
 - NOT RUN: `ultracite`, indisponível em `node_modules/.bin`.
 
 ## Preocupações
 
-- A suite Karma completa continua dependente de outras falhas legadas já existentes (`rxjs-compat` e specs de analytics) quando o módulo de coverage é contornado.
-- Não foi iniciado servidor local: `localhost:3000` pertence a outro workspace; a validação visual usou o Dashboard como referência de código e o harness browser-safe focal.
+- A suite Karma completa continua dependente dos módulos legados ausentes; o harness focal da Task 5 passa de forma independente.
+- Não foi iniciado servidor local nem feita validação visual; a instrução do projeto exige usar o servidor já existente em `localhost:3000`.

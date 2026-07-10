@@ -127,3 +127,20 @@
 - Shell com sete links, estado ativo, foco/teclado e scroll horizontal; sidebar, header global e /home permanecem fora do diff.
 - Projects/Users/Payments ganharam retry e erro explicito; Audit/Privacy ganharam loading/retry/empty sem remover acoes existentes.
 - `ngc`, harness focal ChromeHeadless, build production e diff check passaram; suite Karma completa permanece bloqueada por dependencia legada ausente.
+
+# Task 5: correções da auditoria
+
+- [x] Escrever RED para nav ativo com query params e foco/teclado real.
+- [x] Escrever RED para concorrência, ordem, teardown e detalhe acessível do Audit.
+- [x] Escrever RED para estados de erro inicial sem tabela/paginador/empty.
+- [x] Implementar correções mínimas e preservar capacidades existentes.
+- [x] Rodar harness ChromeHeadless, `ngc`, build production, diff e revisão pre/post.
+- [x] Atualizar `task-5-report.md` e criar commit corretivo separado.
+
+## Review
+
+- `RouterLinkActive` ignora query params sem perder o match exato de rota; `aria-current` e roving focus foram validados no ChromeHeadless.
+- Auditoria cancela requests anteriores, rejeita callbacks stale, bloqueia refresh concorrente e encerra subscriptions no destroy.
+- Erro inicial não exibe tabela, paginação ou empty state; dados anteriores permanecem visíveis apenas como estado stale durante falha de refresh.
+- TS de Projects/Users/Payments e chamadas de impersonação/ações administrativas permaneceram inalterados.
+- Harness focal `13/13`, `ngc` e build passaram; suite completa segue bloqueada por imports legados ausentes.

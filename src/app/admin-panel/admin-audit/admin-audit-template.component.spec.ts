@@ -1,0 +1,81 @@
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { TestBed } from '@angular/core/testing';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTableModule } from '@angular/material/table';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { of, throwError } from 'rxjs';
+import { AdminService } from '../../services/admin.service';
+import { AdminAuditComponent } from './admin-audit.component';
+
+const currentEvent = {
+  _id: 'event-new',
+  timestamp: '2026-07-10T12:00:00.000Z',
+  action: 'admin.read',
+  method: 'GET',
+  success: true,
+  statusCode: 200,
+  summary: 'Evento atual'
+};
+
+describe('AdminAuditComponent template', () => {
+  let adminService: jasmine.SpyObj<AdminService>;
+
+  beforeEach(async () => {
+    adminService = jasmine.createSpyObj<AdminService>('AdminService', ['getAuditSummary', 'getAuditEvents']);
+    adminService.getAuditSummary.and.returnValue(of({ total: 1, failures: 0, byAction: [], byActor: [] }));
+    adminService.getAuditEvents.and.returnValue(of({ data: [currentEvent], count: 1 }));
+
+    await TestBed.configureTestingModule({
+      declarations: [AdminAuditComponent],
+      imports: [
+        CommonModule,
+        FormsModule,
+        MatButtonModule,
+        MatCardModule,
+        MatFormFieldModule,
+        MatIconModule,
+        MatInputModule,
+        MatPaginatorModule,
+        MatSelectModule,
+        MatTableModule,
+        NoopAnimationsModule
+      ],
+      providers: [{ provide: AdminService, useValue: adminService }]
+    }).compileComponents();
+  });
+
+  it('abre detalhes por um botão semântico focável', () => {
+    const fixture = TestBed.createComponent(AdminAuditComponent);
+    fixture.detectChanges();
+    const button = fixture.nativeElement.querySelector('.audit-detail-trigger') as HTMLButtonElement;
+
+    expect(button).not.toBeNull();
+    if (!button) return;
+    expect(button.type).toBe('button');
+    expect(button.tabIndex).toBe(0);
+    button.focus();
+    expect(document.activeElement).toBe(button);
+    button.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    fixture.detectChanges();
+    expect(fixture.componentInstance.selectedEvent).toBe(currentEvent);
+  });
+
+  it('não exibe empty, tabela ou paginador no erro inicial', () => {
+    adminService.getAuditEvents.and.returnValue(throwError(new Error('unavailable')));
+    const fixture = TestBed.createComponent(AdminAuditComponent);
+    fixture.detectChanges();
+    const root = fixture.nativeElement as HTMLElement;
+
+    expect(root.querySelector('[role="alert"]')).not.toBeNull();
+    expect(root.querySelector('table')).toBeNull();
+    expect(root.querySelector('mat-paginator')).toBeNull();
+    expect(root.querySelector('.admin-empty-state')).toBeNull();
+  });
+});
