@@ -69,40 +69,125 @@
   gap: 10px;
 }
 
+.admin-select-panel .mat-option.mat-active,
+.admin-select-panel .mat-option.mat-selected,
+.admin-select-panel .mat-option:hover,
+.admin-select-panel .mat-option:focus {
+  background: #e3f2fd !important;
+  color: #1565c0 !important;
+}
+
+.admin-dialog-panel [mat-dialog-title] {
+  margin: 0 0 20px;
+  color: #263238;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.admin-dialog-panel .mat-dialog-content {
+  max-height: calc(100vh - 180px);
+  margin: 0 -4px;
+  padding: 0 4px;
+  color: #263238;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.admin-dialog-panel .mat-form-field {
+  width: 100%;
+  font-size: 15px;
+}
+
+.admin-dialog-panel .mat-form-field-infix {
+  min-height: 40px;
+  padding-top: 0.55em;
+  padding-bottom: 0.55em;
+}
+
+.admin-dialog-panel .mat-form-field-label,
+.admin-dialog-panel .mat-input-element,
+.admin-dialog-panel .mat-select-value {
+  font-size: 15px;
+}
+
+.admin-dialog-panel .mat-input-element,
+.admin-dialog-panel .mat-select-value {
+  line-height: 24px;
+}
+
+.admin-dialog-panel .mat-dialog-actions {
+  min-height: 40px;
+  margin-bottom: 0;
+  padding: 16px 0 0;
+}
+
+.admin-dialog-panel .mat-dialog-actions button {
+  min-height: 40px;
+}
+
+.admin-dialog-panel button.mat-button-base {
+  min-height: 40px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.admin-dialog-table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.admin-dialog-table-wrap .admin-table {
+  min-width: 100%;
+}
+
+.admin-dialog-table-wrap .admin-definition-table {
+  min-width: 360px;
+}
+
+.admin-dialog-table-wrap .admin-dialog-history-table {
+  min-width: 620px;
+}
+
 .admin-header h1 { font-size: 24px; font-weight: 600; color: #263238; margin: 0 0 12px; }
 .admin-nav {
   display: flex;
   flex-wrap: nowrap;
   overflow-x: auto;
   overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-inline: contain;
   scrollbar-width: thin;
   margin-bottom: 28px;
   border-bottom: 1px solid #dfe5ef;
+  touch-action: pan-x;
 
-  .mat-tab-link {
+  > a {
+    display: flex;
+    align-items: center;
     flex: 0 0 auto;
-    min-width: 116px;
+    min-height: 48px;
+    padding: 0 22px;
     color: #455a64;
     font-weight: 500;
     opacity: 1;
+    text-decoration: none;
+    white-space: nowrap;
   }
 
-  .mat-tab-link:focus-visible {
+  > a:focus-visible {
     z-index: 1;
     outline: 2px solid #1e88e5;
     outline-offset: -2px;
   }
 
-  .mat-ink-bar {
-    background-color: #1e88e5 !important;
-  }
-
-  .mat-tab-label-active,
-  .mat-tab-link.active {
+  > a.admin-nav-link-active {
+    box-shadow: inset 0 -2px #1e88e5;
     color: #1e88e5;
   }
 }
-.admin-content { min-height: 400px; overflow-x: auto; padding-top: 4px; }
+.admin-content { min-width: 0; min-height: 400px; padding-top: 4px; }
 
 .admin-dashboard-heading,
 .admin-page-heading,
@@ -543,6 +628,7 @@ tbody tr:hover { background: #f8fbff; }
   .admin-container .admin-summary-panel { padding-left: 0; border-left: 0; }
   .admin-container { padding: 16px; }
   .admin-header h1 { font-size: 20px; }
+  .admin-dialog-panel .mat-dialog-container { padding: 18px; }
 }
 
 @media (min-width: 769px) and (max-width: 1180px) {

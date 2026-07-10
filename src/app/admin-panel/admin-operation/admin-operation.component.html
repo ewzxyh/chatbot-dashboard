@@ -50,7 +50,7 @@
         <div class="operation-filters" aria-label="Filtros de canais">
           <mat-form-field appearance="outline">
             <mat-label>Produto</mat-label>
-            <mat-select [(ngModel)]="filters.product">
+            <mat-select panelClass="admin-select-panel" [(ngModel)]="filters.product">
               <mat-option [value]="undefined">Todos</mat-option>
               <mat-option *ngFor="let product of products" [value]="product">{{ product }}</mat-option>
             </mat-select>
@@ -61,7 +61,7 @@
           </mat-form-field>
           <mat-form-field appearance="outline">
             <mat-label>Status</mat-label>
-            <mat-select [(ngModel)]="filters.status">
+            <mat-select panelClass="admin-select-panel" [(ngModel)]="filters.status">
               <mat-option [value]="undefined">Todos</mat-option>
               <mat-option *ngFor="let status of channelStatuses" [value]="status">{{ getStatusLabel(status) }}</mat-option>
             </mat-select>
@@ -187,7 +187,7 @@
         <div class="operation-filters" aria-label="Filtros de alertas">
           <mat-form-field appearance="outline">
             <mat-label>Produto</mat-label>
-            <mat-select [(ngModel)]="filters.product">
+            <mat-select panelClass="admin-select-panel" [(ngModel)]="filters.product">
               <mat-option [value]="undefined">Todos</mat-option>
               <mat-option *ngFor="let product of products" [value]="product">{{ product }}</mat-option>
             </mat-select>
@@ -198,7 +198,7 @@
           </mat-form-field>
           <mat-form-field appearance="outline">
             <mat-label>Status</mat-label>
-            <mat-select [(ngModel)]="filters.status">
+            <mat-select panelClass="admin-select-panel" [(ngModel)]="filters.status">
               <mat-option [value]="undefined">Todos</mat-option>
               <mat-option *ngFor="let status of alertStatuses" [value]="status">{{ getStatusLabel(status) }}</mat-option>
             </mat-select>
@@ -395,7 +395,7 @@
         <div class="legacy-filters" aria-label="Filtros de eventos">
           <mat-form-field appearance="outline">
             <mat-label>Canal</mat-label>
-            <mat-select [(ngModel)]="eventFilters.channel">
+            <mat-select panelClass="admin-select-panel" [(ngModel)]="eventFilters.channel">
               <mat-option value="">Todos</mat-option>
               <mat-option value="waba">WABA</mat-option>
               <mat-option value="casezap">CaseZap</mat-option>
@@ -404,7 +404,7 @@
           </mat-form-field>
           <mat-form-field appearance="outline">
             <mat-label>Nivel</mat-label>
-            <mat-select [(ngModel)]="eventFilters.level">
+            <mat-select panelClass="admin-select-panel" [(ngModel)]="eventFilters.level">
               <mat-option value="">Todos</mat-option>
               <mat-option value="info">Informacao</mat-option>
               <mat-option value="warn">Aviso</mat-option>
@@ -474,7 +474,7 @@
         <div class="legacy-filters metric-filters" aria-label="Filtros de metricas">
           <mat-form-field appearance="outline">
             <mat-label>Periodo</mat-label>
-            <mat-select [(ngModel)]="metricFilters.range" (selectionChange)="onMetricRangeChange()">
+            <mat-select panelClass="admin-select-panel" [(ngModel)]="metricFilters.range" (selectionChange)="onMetricRangeChange()">
               <mat-option value="24h">Ultimas 24h</mat-option>
               <mat-option value="7d">Ultimos 7 dias</mat-option>
               <mat-option value="14d">Ultimos 14 dias</mat-option>
@@ -483,14 +483,14 @@
           </mat-form-field>
           <mat-form-field appearance="outline">
             <mat-label>Agrupamento</mat-label>
-            <mat-select [(ngModel)]="metricFilters.bucket" (selectionChange)="loadMetrics()">
+            <mat-select panelClass="admin-select-panel" [(ngModel)]="metricFilters.bucket" (selectionChange)="loadMetrics()">
               <mat-option value="hour">Por hora</mat-option>
               <mat-option value="day">Por dia</mat-option>
             </mat-select>
           </mat-form-field>
           <mat-form-field appearance="outline">
             <mat-label>Canal</mat-label>
-            <mat-select [(ngModel)]="metricFilters.channel" (selectionChange)="loadMetrics()">
+            <mat-select panelClass="admin-select-panel" [(ngModel)]="metricFilters.channel" (selectionChange)="loadMetrics()">
               <mat-option value="">Todos</mat-option>
               <mat-option value="waba">WABA</mat-option>
               <mat-option value="casezap">CaseZap</mat-option>

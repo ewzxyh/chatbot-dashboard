@@ -86,4 +86,17 @@ describe('AdminAuditComponent template', () => {
     expect(root.querySelector('mat-paginator')).toBeNull();
     expect(root.querySelector('.admin-empty-state')).toBeNull();
   });
+
+  it('mantém tabela e paginador dentro do wrapper auditável de largura útil', () => {
+    const fixture = TestBed.createComponent(AdminAuditComponent);
+    fixture.detectChanges();
+    const wrapper = fixture.nativeElement.querySelector('.audit-table-wrap') as HTMLElement;
+    const table = fixture.nativeElement.querySelector('.audit-table') as HTMLTableElement;
+    const paginator = fixture.nativeElement.querySelector('mat-paginator') as HTMLElement;
+
+    expect(wrapper).not.toBeNull();
+    expect(table.parentElement).toBe(wrapper);
+    expect(paginator.parentElement).toBe(wrapper);
+    expect(wrapper.classList.contains('audit-table-wrap')).toBe(true);
+  });
 });

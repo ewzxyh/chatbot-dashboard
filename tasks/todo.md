@@ -61,6 +61,22 @@
 
 # Task 4: Operacao paginada
 
+# Admin UI polish
+
+- [x] Escrever specs RED para status, shell nativo, largura da auditoria e dialogs/inputs.
+- [x] Implementar ajustes visuais sem alterar fluxos administrativos.
+- [x] Validar specs compiláveis, typecheck admin, ngc, build production e diff.
+- [x] Escrever relatorio, revisar contra o base e criar o commit solicitado.
+
+## Review
+
+- Status labels usam o contrato `ok/degraded/down/unknown`; `degraded` permanece em tom de atenção.
+- Shell usa sete links nativos com overflow horizontal, `aria-current` e match exato ignorando query params.
+- Audit ocupa toda a largura útil; a tabela mantém overflow interno no mobile e o detalhe fica abaixo sem coluna ociosa.
+- Overlays de Projects usam `admin-dialog-panel`, controles de 15px/40px e wrappers horizontais para tabelas.
+- Dropdowns admin usam `admin-select-panel` azul; cores customizáveis do widget/produto não foram alteradas.
+- Karma/ChromeHeadless não inicializou os specs neste ambiente; `tsc` admin, `ngc`, build production e `git diff --check` passaram.
+
 - [x] Escrever spec focal para filtros, paginacao, estados e deep-link.
 - [x] Implementar abas Canais e Alertas com URL sincronizada.
 - [x] Validar com `ngc`, specs focais alternativas e build.

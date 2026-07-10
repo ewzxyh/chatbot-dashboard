@@ -2,24 +2,20 @@
   <header class="admin-header">
     <h1>Painel Administrativo</h1>
   </header>
-  <nav mat-tab-nav-bar [tabPanel]="adminTabPanel" class="admin-nav" aria-label="Navegação administrativa">
+  <nav class="admin-nav" aria-label="Navegação administrativa">
     <a
       *ngFor="let item of navItems"
-      mat-tab-link
       [routerLink]="item.route"
       routerLinkActive
       #linkActive="routerLinkActive"
       [routerLinkActiveOptions]="{ paths: 'exact', queryParams: 'ignored', matrixParams: 'ignored', fragment: 'ignored' }"
-      [active]="linkActive.isActive"
+      [class.admin-nav-link-active]="linkActive.isActive"
       [attr.aria-current]="linkActive.isActive ? 'page' : null"
-      (isActiveChange)="onNavActiveChange(item.id, $event)"
       (click)="setActiveTab(item.id)">
       {{ item.label }}
     </a>
   </nav>
-  <mat-tab-nav-panel #adminTabPanel>
-    <div class="admin-content">
-      <router-outlet></router-outlet>
-    </div>
-  </mat-tab-nav-panel>
+  <div class="admin-content">
+    <router-outlet></router-outlet>
+  </div>
 </div>

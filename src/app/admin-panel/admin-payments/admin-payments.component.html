@@ -15,7 +15,7 @@
 <div class="admin-filters admin-filter-bar">
   <mat-form-field appearance="outline" class="admin-filter-field">
     <mat-label>Status</mat-label>
-    <mat-select [(ngModel)]="filterStatus" (selectionChange)="onFilterChange()">
+    <mat-select panelClass="admin-select-panel" [(ngModel)]="filterStatus" (selectionChange)="onFilterChange()">
       <mat-option value="">Todos os status</mat-option>
       <mat-option value="created">Criado</mat-option>
       <mat-option value="AUTHORIZED">Autorizado</mat-option>

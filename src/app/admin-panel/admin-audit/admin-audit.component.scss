@@ -58,14 +58,24 @@
 }
 
 .audit-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 380px;
-  gap: 16px;
-  align-items: start;
+  display: block;
+  width: 100%;
 }
 
 .audit-table-wrap {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   overflow-x: auto;
+}
+
+.audit-table {
+  width: 100%;
+  min-width: 1080px;
+}
+
+.audit-table-wrap .mat-paginator {
+  width: 100%;
 }
 
 table {
@@ -115,6 +125,8 @@ td small {
 }
 
 .audit-detail {
+  width: min(100%, 720px);
+  margin-top: 16px;
   max-height: 72vh;
   overflow: auto;
 }
@@ -178,7 +190,5 @@ pre {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .audit-layout {
-    grid-template-columns: 1fr;
-  }
+  .audit-table { min-width: 960px; }
 }

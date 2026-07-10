@@ -75,6 +75,17 @@
   gap: 12px;
 }
 
+.privacy-form .mat-form-field-appearance-outline .mat-form-field-infix {
+  min-height: 40px;
+  padding-top: 0.55em !important;
+  padding-bottom: 0.55em !important;
+}
+
+.privacy-form .mat-input-element {
+  line-height: 24px;
+  margin: 0;
+}
+
 .privacy-actions {
   display: flex;
   flex-wrap: wrap;

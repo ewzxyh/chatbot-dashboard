@@ -15,7 +15,7 @@
 <div class="admin-filters admin-filter-bar">
   <mat-form-field appearance="outline" class="admin-filter-field">
     <mat-label>Tipo</mat-label>
-    <mat-select [(ngModel)]="filterPlanType" (selectionChange)="page=0; loadProjects()">
+    <mat-select panelClass="admin-select-panel" [(ngModel)]="filterPlanType" (selectionChange)="page=0; loadProjects()">
       <mat-option value="">Todos os tipos</mat-option>
       <mat-option value="free">Free</mat-option>
       <mat-option value="payment">Pagos</mat-option>
@@ -23,7 +23,7 @@
   </mat-form-field>
   <mat-form-field appearance="outline" class="admin-filter-field">
     <mat-label>Plano</mat-label>
-    <mat-select [(ngModel)]="filterPlanName" (selectionChange)="page=0; loadProjects()">
+    <mat-select panelClass="admin-select-panel" [(ngModel)]="filterPlanName" (selectionChange)="page=0; loadProjects()">
       <mat-option value="">Todos os planos</mat-option>
       <mat-option value="Free">Free</mat-option>
       <mat-option value="Starter">Starter</mat-option>
@@ -151,11 +151,11 @@
 </mat-paginator>
 
 <ng-template #planDialog>
-  <h2 mat-dialog-title>Alterar plano: {{ displayText(selectedProject?.name) }}</h2>
+  <h2 mat-dialog-title class="admin-dialog-title">Alterar plano: {{ displayText(selectedProject?.name) }}</h2>
   <mat-dialog-content class="admin-dialog-content">
-    <mat-form-field appearance="outline" class="modal-field">
+    <mat-form-field appearance="outline" class="modal-field admin-dialog-field">
       <mat-label>Plano</mat-label>
-      <mat-select [(ngModel)]="modalPlanKey">
+      <mat-select class="admin-dialog-control" panelClass="admin-select-panel" [(ngModel)]="modalPlanKey">
         <mat-option value="">Selecione...</mat-option>
         <mat-option value="free">Iniciante (Free)</mat-option>
         <mat-option value="starter">Standard (Starter)</mat-option>
@@ -172,11 +172,11 @@
 </ng-template>
 
 <ng-template #trialDialog>
-  <h2 mat-dialog-title>Estender teste: {{ displayText(selectedProject?.name) }}</h2>
+  <h2 mat-dialog-title class="admin-dialog-title">Estender teste: {{ displayText(selectedProject?.name) }}</h2>
   <mat-dialog-content class="admin-dialog-content">
-    <mat-form-field appearance="outline" class="modal-field">
+    <mat-form-field appearance="outline" class="modal-field admin-dialog-field">
       <mat-label>Dias de teste</mat-label>
-      <input matInput type="number" [(ngModel)]="modalTrialDays" min="1" max="365" />
+      <input matInput class="admin-dialog-control" type="number" [(ngModel)]="modalTrialDays" min="1" max="365" />
     </mat-form-field>
     <div *ngIf="modalMessage" class="modal-message">{{ modalMessage }}</div>
   </mat-dialog-content>
@@ -187,7 +187,7 @@
 </ng-template>
 
 <ng-template #usageDialog>
-  <h2 mat-dialog-title>Uso real: {{ displayText(selectedProject?.name) }}</h2>
+  <h2 mat-dialog-title class="admin-dialog-title">Uso real: {{ displayText(selectedProject?.name) }}</h2>
   <mat-dialog-content class="admin-dialog-content admin-dialog-content-wide">
     <div *ngIf="usageLoading" class="admin-loading-state">Carregando...</div>
     <div *ngIf="usageError" class="modal-message">{{ usageError }}</div>
@@ -196,7 +196,8 @@
       <p class="admin-dialog-subtitle">
         Período: {{ usageSnapshot.period?.start | date:'dd/MM/yyyy' }} - {{ usageSnapshot.period?.end | date:'dd/MM/yyyy' }}
       </p>
-      <table mat-table [dataSource]="usageSnapshotRowsData" class="admin-table admin-definition-table">
+      <div class="admin-dialog-table-wrap">
+        <table mat-table [dataSource]="usageSnapshotRowsData" class="admin-table admin-definition-table">
         <ng-container matColumnDef="label">
           <td mat-cell *matCellDef="let row">{{ row.label }}</td>
         </ng-container>
@@ -204,12 +205,14 @@
           <td mat-cell *matCellDef="let row">{{ row.value }}</td>
         </ng-container>
         <tr mat-row *matRowDef="let row; columns: usageSnapshotColumns;"></tr>
-      </table>
+        </table>
+      </div>
 
       <div class="admin-dialog-grid">
         <div>
           <h4 class="admin-dialog-heading">Mensagens por canal</h4>
-          <table mat-table *ngIf="usageChannelRows.length" [dataSource]="usageChannelRows" class="admin-table admin-definition-table">
+          <div class="admin-dialog-table-wrap">
+            <table mat-table *ngIf="usageChannelRows.length" [dataSource]="usageChannelRows" class="admin-table admin-definition-table">
             <ng-container matColumnDef="label">
               <td mat-cell *matCellDef="let channel">{{ channel.label }}</td>
             </ng-container>
@@ -217,13 +220,15 @@
               <td mat-cell *matCellDef="let channel">{{ channel.value }}</td>
             </ng-container>
             <tr mat-row *matRowDef="let row; columns: usageBreakdownColumns;"></tr>
-          </table>
+            </table>
+          </div>
           <div *ngIf="!usageChannelRows.length" class="admin-empty-state">Sem mensagens por canal.</div>
         </div>
 
         <div>
           <h4 class="admin-dialog-heading">Mensagens por tipo</h4>
-          <table mat-table *ngIf="usageTypeRows.length" [dataSource]="usageTypeRows" class="admin-table admin-definition-table">
+          <div class="admin-dialog-table-wrap">
+            <table mat-table *ngIf="usageTypeRows.length" [dataSource]="usageTypeRows" class="admin-table admin-definition-table">
             <ng-container matColumnDef="label">
               <td mat-cell *matCellDef="let type">{{ type.label }}</td>
             </ng-container>
@@ -231,7 +236,8 @@
               <td mat-cell *matCellDef="let type">{{ type.value }}</td>
             </ng-container>
             <tr mat-row *matRowDef="let row; columns: usageBreakdownColumns;"></tr>
-          </table>
+            </table>
+          </div>
           <div *ngIf="!usageTypeRows.length" class="admin-empty-state">Sem mensagens por tipo.</div>
         </div>
       </div>
@@ -239,7 +245,8 @@
       <h4 class="admin-dialog-section-title">Histórico mensal</h4>
       <div *ngIf="usageSnapshotMessage" class="modal-message">{{ usageSnapshotMessage }}</div>
       <div *ngIf="usageSnapshotLoading" class="admin-loading-state">Carregando histórico...</div>
-      <table mat-table *ngIf="usageSnapshots.length" [dataSource]="usageSnapshots" class="admin-table">
+      <div class="admin-dialog-table-wrap">
+        <table mat-table *ngIf="usageSnapshots.length" [dataSource]="usageSnapshots" class="admin-table admin-dialog-history-table">
         <ng-container matColumnDef="period">
           <th mat-header-cell *matHeaderCellDef>Período</th>
           <td mat-cell *matCellDef="let snapshot">{{ snapshot.periodKey }}</td>
@@ -258,7 +265,8 @@
         </ng-container>
         <tr mat-header-row *matHeaderRowDef="usageHistoryColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: usageHistoryColumns;"></tr>
-      </table>
+        </table>
+      </div>
     </div>
   </mat-dialog-content>
   <mat-dialog-actions align="end">
@@ -269,13 +277,14 @@
 </ng-template>
 
 <ng-template #billingDialog>
-  <h2 mat-dialog-title>Cobrança: {{ displayText(selectedProject?.name) }}</h2>
+  <h2 mat-dialog-title class="admin-dialog-title">Cobrança: {{ displayText(selectedProject?.name) }}</h2>
   <mat-dialog-content class="admin-dialog-content admin-dialog-content-wide">
     <div *ngIf="billingLoading" class="admin-loading-state">Carregando...</div>
     <div *ngIf="billingMessage" class="modal-message">{{ billingMessage }}</div>
 
     <div *ngIf="billingLifecycle && !billingLoading">
-      <table mat-table [dataSource]="billingSummaryRowsData" class="admin-table admin-definition-table">
+      <div class="admin-dialog-table-wrap">
+        <table mat-table [dataSource]="billingSummaryRowsData" class="admin-table admin-definition-table">
         <ng-container matColumnDef="label">
           <td mat-cell *matCellDef="let row">{{ row.label }}</td>
         </ng-container>
@@ -283,11 +292,12 @@
           <td mat-cell *matCellDef="let row">{{ row.value }}</td>
         </ng-container>
         <tr mat-row *matRowDef="let row; columns: billingSummaryColumns;"></tr>
-      </table>
+        </table>
+      </div>
 
-      <mat-form-field appearance="outline" class="modal-field">
+      <mat-form-field appearance="outline" class="modal-field admin-dialog-field">
         <mat-label>Motivo da ação</mat-label>
-        <input matInput type="text" [(ngModel)]="billingReason" placeholder="Ex.: atraso, chargeback, ajuste manual" />
+        <input matInput class="admin-dialog-control" type="text" [(ngModel)]="billingReason" placeholder="Ex.: atraso, chargeback, ajuste manual" />
       </mat-form-field>
 
       <div class="modal-actions">
@@ -298,7 +308,8 @@
       </div>
 
       <h4 class="admin-dialog-section-title">Histórico</h4>
-      <table mat-table *ngIf="billingEvents.length" [dataSource]="billingEvents" class="admin-table">
+      <div class="admin-dialog-table-wrap">
+        <table mat-table *ngIf="billingEvents.length" [dataSource]="billingEvents" class="admin-table admin-dialog-history-table">
         <ng-container matColumnDef="date">
           <th mat-header-cell *matHeaderCellDef>Data</th>
           <td mat-cell *matCellDef="let event">{{ event.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
@@ -317,7 +328,8 @@
         </ng-container>
         <tr mat-header-row *matHeaderRowDef="billingEventsColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: billingEventsColumns;"></tr>
-      </table>
+        </table>
+      </div>
       <div *ngIf="!billingEvents.length" class="admin-empty-state">Sem eventos registrados.</div>
     </div>
   </mat-dialog-content>
@@ -327,12 +339,12 @@
 </ng-template>
 
 <ng-template #quotasDialog>
-  <h2 mat-dialog-title>Substituir cotas: {{ displayText(selectedProject?.name) }}</h2>
+  <h2 mat-dialog-title class="admin-dialog-title">Substituir cotas: {{ displayText(selectedProject?.name) }}</h2>
   <mat-dialog-content class="admin-dialog-content">
     <div class="quota-fields">
-      <mat-form-field appearance="outline" class="modal-field" *ngFor="let field of ['contacts', 'platforms', 'agents', 'chatbots', 'kbs']">
+      <mat-form-field appearance="outline" class="modal-field admin-dialog-field" *ngFor="let field of ['contacts', 'platforms', 'agents', 'chatbots', 'kbs']">
         <mat-label>{{ field }}</mat-label>
-        <input matInput type="number" [(ngModel)]="modalQuotas[field]" min="0" />
+        <input matInput class="admin-dialog-control" type="number" [(ngModel)]="modalQuotas[field]" min="0" />
       </mat-form-field>
     </div>
     <div *ngIf="modalMessage" class="modal-message">{{ modalMessage }}</div>

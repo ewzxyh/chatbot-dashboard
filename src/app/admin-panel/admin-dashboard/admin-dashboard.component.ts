@@ -107,10 +107,10 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   getOperationalStatusLabel(status: OperationalStatus): string {
-    if (status === 'ok') return 'Normal';
-    if (status === 'degraded') return 'Atencao';
-    if (status === 'down') return 'Indisponivel';
-    return 'Sem diagnostico';
+    if (status === 'ok') return 'Operacional';
+    if (status === 'degraded') return 'Operacional com atenção';
+    if (status === 'down') return 'Indisponível';
+    return 'Aguardando monitoramento';
   }
 
   getOperationalStatusClass(status: OperationalStatus): string {

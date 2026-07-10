@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
 import { timeout } from 'rxjs/operators';
@@ -11,6 +11,8 @@ import { formatAdminText } from '../admin-text.util';
   templateUrl: './admin-projects.component.html'
 })
 export class AdminProjectsComponent implements OnInit {
+  @ViewChild('planDialog', { static: true }) private readonly planDialogTemplate: TemplateRef<any>;
+
   projects: any[] = [];
   displayedColumns = ['name', 'owner', 'plan', 'type', 'billing', 'contacts', 'members', 'createdAt', 'actions'];
   usageSnapshotColumns = ['label', 'value'];
@@ -93,7 +95,7 @@ export class AdminProjectsComponent implements OnInit {
 
   private openProjectDialog(template: TemplateRef<any>, width: string = '480px') {
     this.dialog.closeAll();
-    this.dialog.open(template, { width, maxWidth: '95vw', maxHeight: '90vh', autoFocus: false, panelClass: 'admin-dialog-panel' });
+    this.dialog.open(template, { width, maxWidth: 'calc(100vw - 32px)', maxHeight: '90vh', autoFocus: false, panelClass: 'admin-dialog-panel' });
   }
 
   displayText(value: any): string {
@@ -124,7 +126,7 @@ export class AdminProjectsComponent implements OnInit {
     this.billingRequestSub = null;
   }
 
-  openPlanModal(p: any, template?: TemplateRef<any>) {
+  openPlanModal(p: any, template: TemplateRef<any> = this.planDialogTemplate) {
     this.cancelProjectModalRequests();
     this.selectedProject = p; this.modalPlanKey = ''; this.modalMessage = ''; this.showPlanModal = true;
     if (template) this.openProjectDialog(template);

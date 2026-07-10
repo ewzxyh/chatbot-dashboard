@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { fakeAsync, flush, flushMicrotasks, TestBed, tick } from '@angular/core/testing';
-import { MatTabsModule } from '@angular/material/tabs';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AdminPanelComponent } from './admin-panel.component';
@@ -23,17 +22,11 @@ const childRoutes = [
 ].map((path) => ({ path, component: RoutePageComponent }));
 
 function getNavLinks(root: HTMLElement): HTMLAnchorElement[] {
-  return Array.from(root.querySelectorAll('.admin-nav .mat-tab-links > a')) as HTMLAnchorElement[];
+  return Array.from(root.querySelectorAll('.admin-nav > a')) as HTMLAnchorElement[];
 }
 
 function findNavLink(links: HTMLAnchorElement[], label: string): HTMLAnchorElement {
   return links.find((link) => link.textContent.trim() === label);
-}
-
-function pressArrowRight(element: HTMLElement): void {
-  const event = new KeyboardEvent('keydown', { key: 'ArrowRight', code: 'ArrowRight', bubbles: true });
-  Object.defineProperty(event, 'keyCode', { get: () => 39 });
-  element.dispatchEvent(event);
 }
 
 describe('AdminPanelComponent', () => {
@@ -44,7 +37,6 @@ describe('AdminPanelComponent', () => {
       declarations: [AdminPanelComponent, RouterHostComponent, RoutePageComponent],
       imports: [
         CommonModule,
-        MatTabsModule,
         RouterTestingModule.withRoutes([{
           path: 'admin',
           component: AdminPanelComponent,
@@ -109,11 +101,10 @@ describe('AdminPanelComponent', () => {
     expect(links.length).toBe(7);
     expect(activeLinks.length).toBe(1);
     expect(activeLinks[0]).toBe(operationLink);
-    expect(operationLink.getAttribute('aria-selected')).toBe('true');
     expect(dashboardLink.getAttribute('aria-current')).toBeNull();
   }));
 
-  it('mantém foco real e navegação horizontal por teclado no link ativo', fakeAsync(() => {
+  it('usa links nativos acessíveis sem setas Material', fakeAsync(() => {
     const fixture = TestBed.createComponent(RouterHostComponent);
     fixture.detectChanges();
 
@@ -125,15 +116,13 @@ describe('AdminPanelComponent', () => {
 
     const links = getNavLinks(fixture.nativeElement);
     const operationLink = findNavLink(links, 'Operação');
-    const auditLink = findNavLink(links, 'Auditoria');
 
     expect(operationLink.tabIndex).toBe(0);
     operationLink.focus();
     expect(document.activeElement).toBe(operationLink);
-
-    pressArrowRight(operationLink);
-    fixture.detectChanges();
-    expect(document.activeElement).toBe(auditLink);
+    expect(fixture.nativeElement.querySelector('[mat-tab-nav-bar]')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.mat-tab-header-pagination-start')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.mat-tab-header-pagination-end')).toBeNull();
     flush();
   }));
 });

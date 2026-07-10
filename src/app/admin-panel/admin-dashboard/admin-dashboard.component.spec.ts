@@ -79,6 +79,14 @@ describe('AdminDashboardComponent', () => {
     expect(component.getSnapshotStateClass('missing')).toBe('admin-status-muted');
   });
 
+  it('mapeia os quatro estados operacionais para os textos aprovados', () => {
+    expect(component.getOperationalStatusLabel('ok')).toBe('Operacional');
+    expect(component.getOperationalStatusLabel('degraded')).toBe('Operacional com atenção');
+    expect(component.getOperationalStatusLabel('down')).toBe('Indisponível');
+    expect(component.getOperationalStatusLabel('unknown')).toBe('Aguardando monitoramento');
+    expect(component.getOperationalStatusClass('degraded')).toBe('admin-status-warning');
+  });
+
   it('mantem loading ate o summary terminar e chama somente o summary', () => {
     const response = new Subject<ReturnType<typeof createSummary>>();
     adminService.getOperationalHealthSummary.and.returnValue(response.asObservable());

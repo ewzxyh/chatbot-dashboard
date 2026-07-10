@@ -42,7 +42,7 @@
   <div class="audit-filters admin-filter-bar">
     <mat-form-field appearance="outline" class="admin-filter-field">
       <mat-label>Período</mat-label>
-      <mat-select [(ngModel)]="filters.range" (selectionChange)="applyFilters()">
+      <mat-select panelClass="admin-select-panel" [(ngModel)]="filters.range" (selectionChange)="applyFilters()">
         <mat-option value="24h">Últimas 24h</mat-option>
         <mat-option value="7d">Últimos 7 dias</mat-option>
         <mat-option value="30d">Últimos 30 dias</mat-option>
@@ -50,7 +50,7 @@
     </mat-form-field>
     <mat-form-field appearance="outline" class="admin-filter-field">
       <mat-label>Ação</mat-label>
-      <mat-select [(ngModel)]="filters.action" (selectionChange)="applyFilters()">
+      <mat-select panelClass="admin-select-panel" [(ngModel)]="filters.action" (selectionChange)="applyFilters()">
         <mat-option value="">Todas as ações</mat-option>
         <mat-option value="api.create">Criação API</mat-option>
         <mat-option value="api.update">Atualização API</mat-option>
@@ -63,7 +63,7 @@
     </mat-form-field>
     <mat-form-field appearance="outline" class="admin-filter-field">
       <mat-label>Método</mat-label>
-      <mat-select [(ngModel)]="filters.method" (selectionChange)="applyFilters()">
+      <mat-select panelClass="admin-select-panel" [(ngModel)]="filters.method" (selectionChange)="applyFilters()">
         <mat-option value="">Todos os métodos</mat-option>
         <mat-option value="GET">GET</mat-option>
         <mat-option value="POST">POST</mat-option>
@@ -74,7 +74,7 @@
     </mat-form-field>
     <mat-form-field appearance="outline" class="admin-filter-field">
       <mat-label>Status</mat-label>
-      <mat-select [(ngModel)]="filters.success" (selectionChange)="applyFilters()">
+      <mat-select panelClass="admin-select-panel" [(ngModel)]="filters.success" (selectionChange)="applyFilters()">
         <mat-option value="">Todos os status</mat-option>
         <mat-option value="true">Sucesso</mat-option>
         <mat-option value="false">Falha</mat-option>
