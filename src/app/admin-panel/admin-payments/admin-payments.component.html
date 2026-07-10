@@ -1,4 +1,12 @@
-<div class="admin-filters">
+<div class="admin-page-heading">
+  <div>
+    <h2>Pagamentos</h2>
+    <p>Acompanhe eventos de cobrança, valores e situação das assinaturas.</p>
+  </div>
+  <span *ngIf="!isLoading && totalCount > 0" class="admin-page-meta">{{ totalCount }} registros</span>
+</div>
+
+<div class="admin-filters admin-filter-bar">
   <mat-form-field appearance="outline" class="admin-filter-field">
     <mat-label>Status</mat-label>
     <mat-select [(ngModel)]="filterStatus" (selectionChange)="onFilterChange()">

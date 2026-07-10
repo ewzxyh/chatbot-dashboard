@@ -1,5 +1,5 @@
 <div class="privacy-page">
-  <div class="privacy-toolbar">
+  <div class="privacy-toolbar admin-page-heading">
     <div>
       <h2>Privacidade e LGPD</h2>
       <p>Exportação e anonimização manual de dados pessoais por projeto.</p>
@@ -7,26 +7,26 @@
     <button mat-flat-button color="primary" type="button" (click)="loadConfig()" [disabled]="isLoadingConfig">Atualizar</button>
   </div>
 
-  <div *ngIf="errorMessage" class="privacy-error">{{ errorMessage }}</div>
-  <div *ngIf="successMessage" class="privacy-success">{{ successMessage }}</div>
+  <div *ngIf="errorMessage" class="privacy-error admin-feedback admin-feedback-error" role="alert">{{ errorMessage }}</div>
+  <div *ngIf="successMessage" class="privacy-success admin-feedback admin-feedback-success" role="status">{{ successMessage }}</div>
 
-  <div class="privacy-summary" *ngIf="config">
-    <mat-card class="privacy-card">
+  <div class="privacy-summary admin-kpi-grid" *ngIf="config">
+    <mat-card class="privacy-card admin-kpi-card">
       <span>Conversas</span>
       <strong>{{ config.conversationRetentionDays }}</strong>
       <small>dias de retenção</small>
     </mat-card>
-    <mat-card class="privacy-card">
+    <mat-card class="privacy-card admin-kpi-card">
       <span>Anexos</span>
       <strong>{{ config.attachmentRetentionDays }}</strong>
       <small>dias de retenção</small>
     </mat-card>
-    <mat-card class="privacy-card">
+    <mat-card class="privacy-card admin-kpi-card">
       <span>Leads</span>
       <strong>{{ config.leadRetentionDays }}</strong>
       <small>dias de retenção</small>
     </mat-card>
-    <mat-card class="privacy-card">
+    <mat-card class="privacy-card admin-kpi-card">
       <span>Auditoria</span>
       <strong>{{ config.auditEventRetentionDays }}</strong>
       <small>dias de retenção</small>

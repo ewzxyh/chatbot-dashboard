@@ -1,4 +1,12 @@
-<div class="admin-filters">
+<div class="admin-page-heading">
+  <div>
+    <h2>Projetos</h2>
+    <p>Gerencie planos, cotas, uso, cobrança e acesso aos projetos.</p>
+  </div>
+  <span *ngIf="!isLoading && totalCount > 0" class="admin-page-meta">{{ totalCount }} projetos</span>
+</div>
+
+<div class="admin-filters admin-filter-bar">
   <mat-form-field appearance="outline" class="admin-filter-field">
     <mat-label>Tipo</mat-label>
     <mat-select [(ngModel)]="filterPlanType" (selectionChange)="page=0; loadProjects()">

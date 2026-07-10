@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AdminService } from '../../services/admin.service';
 import { formatChatcaseDate, formatChatcaseDateTime } from '../../utils/chatcase-locale';
+import { isOperationalErrorStatus, isOperationalIssueStatus, isOperationalQueueIssue } from '../admin-operational-status.util';
 
 @Component({
   selector: 'app-admin-operation',
@@ -471,39 +472,11 @@ export class AdminOperationComponent implements OnInit {
   }
 
   isIssueStatus(status: string): boolean {
-    const normalized = status ? String(status).toLowerCase() : '';
-    return [
-      'degraded',
-      'warn',
-      'warning',
-      'restricted',
-      'flagged',
-      'rate_limited',
-      'capped',
-      'yellow',
-      'down',
-      'error',
-      'failed',
-      'disconnected',
-      'banned',
-      'bannedm',
-      'disabled',
-      'red'
-    ].indexOf(normalized) !== -1;
+    return isOperationalIssueStatus(status);
   }
 
   isErrorStatus(status: string): boolean {
-    const normalized = status ? String(status).toLowerCase() : '';
-    return [
-      'down',
-      'error',
-      'failed',
-      'disconnected',
-      'banned',
-      'bannedm',
-      'disabled',
-      'red'
-    ].indexOf(normalized) !== -1;
+    return isOperationalErrorStatus(status);
   }
 
   getCollectionStatus(items: any[]): string {
@@ -513,11 +486,7 @@ export class AdminOperationComponent implements OnInit {
   }
 
   isQueueIssue(queue: any): boolean {
-    if (!queue) return false;
-    return this.isIssueStatus(queue.status) ||
-      Number(queue.messagesReady || 0) > 0 ||
-      Number(queue.messagesUnacknowledged || 0) > 0 ||
-      Number(queue.consumers || 0) === 0;
+    return isOperationalQueueIssue(queue);
   }
 
   formatDate(value: string): string {

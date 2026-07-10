@@ -1,5 +1,5 @@
 <div class="audit-page">
-  <div class="audit-toolbar">
+  <div class="audit-toolbar admin-page-heading">
     <div>
       <h2>Auditoria</h2>
       <p>Registro de ações administrativas e mudanças por API com payload sanitizado.</p>
@@ -7,30 +7,30 @@
     <button mat-flat-button color="primary" type="button" class="btn-primary" (click)="refresh()">Atualizar</button>
   </div>
 
-  <div class="audit-summary" *ngIf="summary">
-    <mat-card class="audit-card">
+  <div class="audit-summary admin-kpi-grid" *ngIf="summary">
+    <mat-card class="audit-card admin-kpi-card">
       <span>Total</span>
       <strong>{{ summary.total || 0 }}</strong>
       <small>{{ filters.range }}</small>
     </mat-card>
-    <mat-card class="audit-card">
+    <mat-card class="audit-card admin-kpi-card">
       <span>Falhas</span>
       <strong [class.audit-danger]="summary.failures > 0">{{ summary.failures || 0 }}</strong>
       <small>status HTTP >= 400</small>
     </mat-card>
-    <mat-card class="audit-card">
+    <mat-card class="audit-card admin-kpi-card">
       <span>Ações mais comuns</span>
       <strong>{{ getTop(summary.byAction, 1)[0]?._id || '-' }}</strong>
       <small>{{ getTop(summary.byAction, 1)[0]?.count || 0 }} eventos</small>
     </mat-card>
-    <mat-card class="audit-card">
+    <mat-card class="audit-card admin-kpi-card">
       <span>Atores ativos</span>
       <strong>{{ summary.byActor?.length || 0 }}</strong>
       <small>top 10 no período</small>
     </mat-card>
   </div>
 
-  <div class="audit-filters">
+  <div class="audit-filters admin-filter-bar">
     <mat-form-field appearance="outline" class="admin-filter-field">
       <mat-label>Período</mat-label>
       <mat-select [(ngModel)]="filters.range" (selectionChange)="applyFilters()">
@@ -90,8 +90,8 @@
     <button mat-stroked-button type="button" class="btn-secondary" (click)="applyFilters()">Filtrar</button>
   </div>
 
-  <div *ngIf="errorMessage" class="audit-error">{{ errorMessage }}</div>
-  <div *ngIf="isLoading" class="audit-loading">Carregando auditoria...</div>
+  <div *ngIf="errorMessage" class="audit-error admin-error-state" role="alert">{{ errorMessage }}</div>
+  <div *ngIf="isLoading" class="audit-loading admin-loading-state" role="status">Carregando auditoria...</div>
 
   <div class="audit-layout" *ngIf="!isLoading">
     <div class="audit-table-wrap">

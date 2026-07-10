@@ -12,13 +12,13 @@
   h2 {
     margin: 0;
     font-size: 20px;
-    font-weight: 700;
+    font-weight: 600;
   }
 
   p {
     margin: 4px 0 0;
     color: #78909c;
-    font-size: 12px;
+    font-size: 14px;
   }
 }
 
@@ -40,7 +40,7 @@
   strong {
     display: block;
     margin: 8px 0 4px;
-    font-size: 22px;
+    font-size: 24px;
     overflow-wrap: anywhere;
   }
 }
@@ -52,9 +52,9 @@
 .audit-filters {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 14px;
   align-items: center;
-  margin-bottom: 14px;
+  margin-bottom: 20px;
 }
 
 .audit-layout {

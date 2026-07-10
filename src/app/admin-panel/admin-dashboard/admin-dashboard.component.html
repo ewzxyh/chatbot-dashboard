@@ -1,6 +1,6 @@
 <div *ngIf="errorMessage" class="admin-error-state" role="alert">{{ errorMessage }}</div>
 
-<div class="admin-dashboard-heading">
+<div class="admin-dashboard-heading admin-page-heading">
   <div>
     <h2>Visão operacional</h2>
     <p>Acompanhe a base de projetos, usuários e planos.</p>
@@ -16,8 +16,8 @@
 
 <div *ngIf="isLoading" class="admin-loading-state" role="status">Carregando...</div>
 
-<div *ngIf="stats && !isLoading" class="admin-dashboard-content">
-  <div class="stats-grid">
+<div class="admin-dashboard-content">
+  <div *ngIf="stats && !isLoading" class="stats-grid">
     <mat-card class="stat-card">
       <div class="stat-card-heading"><mat-icon>business</mat-icon><span>Projetos</span></div>
       <div class="stat-value">{{ stats.totalProjects }}</div>
@@ -40,7 +40,81 @@
     </mat-card>
   </div>
 
-  <div class="admin-dashboard-grid">
+  <section class="admin-section admin-operational-section">
+    <div class="admin-section-heading">
+      <div>
+        <h3 class="admin-section-title">Resumo operacional</h3>
+        <p>Status atual da infraestrutura, canais, filas e webhooks.</p>
+      </div>
+      <button mat-stroked-button type="button" routerLink="../operation">
+        Abrir operação
+        <mat-icon>arrow_forward</mat-icon>
+      </button>
+    </div>
+
+    <div *ngIf="operationalLoading" class="admin-loading-state admin-operational-loading" role="status">Carregando resumo operacional...</div>
+
+    <div *ngIf="!operationalLoading && operationalUnavailable" class="admin-feedback admin-feedback-warning" role="alert">
+      Parte dos indicadores operacionais não pôde ser carregada. Consulte a aba Operação para atualizar o diagnóstico.
+    </div>
+
+    <ng-container *ngIf="operationalOverview && !operationalLoading">
+    <div class="admin-operational-grid">
+      <mat-card class="admin-operational-card">
+        <span>Status geral</span>
+        <strong class="admin-status-pill" [ngClass]="getOperationalStatusClass(operationalOverview.status)">
+          {{ operationalOverview.statusLabel }}
+        </strong>
+        <small>{{ operationalOverview.criticalAlerts }} alertas críticos</small>
+      </mat-card>
+      <mat-card class="admin-operational-card">
+        <span>Serviços sem alerta</span>
+        <strong>{{ operationalOverview.servicesOk }}/{{ operationalOverview.servicesTotal }}</strong>
+        <small>do total monitorado</small>
+      </mat-card>
+      <mat-card class="admin-operational-card">
+        <span>Canais sem alerta</span>
+        <strong>{{ operationalOverview.channelsOk }}/{{ operationalOverview.channelsTotal }}</strong>
+        <small>do total monitorado</small>
+      </mat-card>
+      <mat-card class="admin-operational-card">
+        <span>Filas sem risco</span>
+        <strong>{{ operationalOverview.queuesOk }}/{{ operationalOverview.queuesTotal }}</strong>
+        <small>do total monitorado</small>
+      </mat-card>
+      <mat-card class="admin-operational-card">
+        <span>Falhas em 24h</span>
+        <strong>{{ operationalOverview.failures24h === null ? '—' : operationalOverview.failures24h }}</strong>
+        <small>{{ operationalOverview.errors24h === null ? 'Sem métricas' : operationalOverview.errors24h + ' eventos de erro' }}</small>
+      </mat-card>
+      <mat-card class="admin-operational-card">
+        <span>Webhooks em 24h</span>
+        <strong>{{ operationalOverview.webhookFailures24h === null ? '—' : operationalOverview.webhookFailures24h }}</strong>
+        <small>alertas de falha registrados</small>
+      </mat-card>
+    </div>
+
+    <div *ngIf="operationalOverview.alerts.length > 0; else noOperationalAlerts" class="admin-alert-list" role="list">
+      <div *ngFor="let alert of operationalOverview.alerts" class="admin-alert-item" [class.is-critical]="alert.severity === 'critical'" role="listitem">
+        <mat-icon>{{ alert.severity === 'critical' ? 'error_outline' : 'warning' }}</mat-icon>
+        <div>
+          <strong>{{ alert.title || alert.type }}</strong>
+          <p>{{ alert.message }}</p>
+          <small>{{ alert.channel || alert.service || alert.queue || 'Sistema' }}<span *ngIf="alert.lastAt"> · {{ alert.lastAt | date:'dd/MM HH:mm' }}</span></small>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #noOperationalAlerts>
+      <div class="admin-feedback admin-feedback-success">
+        <mat-icon>check_circle</mat-icon>
+        Nenhum alerta operacional aberto.
+      </div>
+    </ng-template>
+    </ng-container>
+  </section>
+
+  <div *ngIf="stats && !isLoading" class="admin-dashboard-grid">
     <section class="admin-section admin-dashboard-panel">
       <div class="admin-section-heading">
         <div>

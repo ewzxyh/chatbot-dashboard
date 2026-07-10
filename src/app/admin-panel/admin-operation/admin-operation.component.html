@@ -1,14 +1,14 @@
 <div class="operation-page">
-  <div class="operation-toolbar">
+  <div class="operation-toolbar admin-page-heading">
     <div>
       <h2>Operação</h2>
-      <p *ngIf="summary">Atualizado em {{ formatDate(summary.generatedAt) }}</p>
+      <p>Monitore serviços, filas, canais e alertas.<span *ngIf="summary"> Atualizado em {{ formatDate(summary.generatedAt) }}.</span></p>
     </div>
     <button mat-flat-button color="primary" type="button" class="btn-primary" (click)="refresh()">Atualizar</button>
   </div>
 
-  <div *ngIf="isLoading" class="loading-state">Carregando...</div>
-  <div *ngIf="errorMessage" class="error-state">{{ errorMessage }}</div>
+  <div *ngIf="isLoading" class="loading-state admin-loading-state" role="status">Carregando...</div>
+  <div *ngIf="errorMessage" class="error-state admin-error-state" role="alert">{{ errorMessage }}</div>
 
   <div *ngIf="summary && !isLoading">
     <mat-card class="status-strip" [ngClass]="getStatusClass(summary.overallStatus)">
@@ -16,8 +16,8 @@
       <strong>{{ getStatusLabel(summary.overallStatus) }}</strong>
     </mat-card>
 
-    <div class="status-board">
-      <mat-card *ngFor="let card of statusCards" class="status-card">
+    <div class="status-board admin-kpi-grid">
+      <mat-card *ngFor="let card of statusCards" class="status-card admin-kpi-card">
         <div class="status-card-title">
           <span>{{ card.label }}</span>
           <span class="status-dot" [ngClass]="getStatusClass(card.status)"></span>

@@ -1,4 +1,12 @@
-<div class="admin-filters">
+<div class="admin-page-heading">
+  <div>
+    <h2>Usuários</h2>
+    <p>Consulte contas, verificação e acesso administrativo seguro.</p>
+  </div>
+  <span *ngIf="!isLoading && totalCount > 0" class="admin-page-meta">{{ totalCount }} usuários</span>
+</div>
+
+<div class="admin-filters admin-filter-bar">
   <mat-form-field appearance="outline" class="admin-filter-field wide">
     <mat-label>Buscar</mat-label>
     <input matInput type="text" [(ngModel)]="searchText" placeholder="E-mail ou nome" (keyup.enter)="onSearch()" />
