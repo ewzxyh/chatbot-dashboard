@@ -8,6 +8,49 @@ import { LoggerService } from '../services/logger/logger.service';
 export type OperationalStatus = 'ok' | 'degraded' | 'down' | 'unknown';
 export type SnapshotState = 'fresh' | 'stale' | 'missing';
 export type OperationalProduct = 'casezap' | 'waba' | 'unknown';
+export type OperationalChannel = 'casezap' | 'waba' | 'webhook';
+export type AlertStatus = 'open' | 'resolved';
+export type AlertSeverity = 'info' | 'warning' | 'critical';
+export type OperationalCauseCode =
+  | 'provider_check_failed'
+  | 'disabled'
+  | 'not_configured'
+  | 'not_ready'
+  | 'mongo_not_ready'
+  | 'mongo_unavailable'
+  | 'redis_unavailable'
+  | 'rabbitmq_unavailable'
+  | 'storage_unavailable'
+  | 'storage_read_verification_failed'
+  | 'queue_backlog'
+  | 'queue_unacked'
+  | 'queue_no_consumers'
+  | 'upstream_timeout'
+  | 'provider_timeout'
+  | 'provider_unreachable'
+  | 'provider_status_unknown'
+  | 'provider_status_ok'
+  | 'provider_status_active'
+  | 'provider_status_connected'
+  | 'provider_status_open'
+  | 'provider_status_pending'
+  | 'provider_status_disconnected'
+  | 'provider_status_banned'
+  | 'provider_status_restricted'
+  | 'provider_not_connected'
+  | 'provider_not_logged_in'
+  | 'provider_cannot_send_new_messages'
+  | 'provider_message_capping_unavailable'
+  | 'provider_reachout_timelock'
+  | 'provider_quality_red'
+  | 'provider_quality_yellow'
+  | 'missing_casezap_domain'
+  | 'missing_casezap_token'
+  | 'missing_waba_id'
+  | 'missing_waba_phone_number_id'
+  | 'missing_waba_token'
+  | 'unsupported_channel'
+  | 'webhook_failure';
 
 export interface OperationalStatusCounts {
   ok: number;
@@ -17,14 +60,14 @@ export interface OperationalStatusCounts {
 }
 
 export interface OperationalCause {
-  cause: string;
+  cause: OperationalCauseCode;
   count: number;
 }
 
 export interface OperationalSnapshotItem {
   name: string;
   status: OperationalStatus;
-  cause: string | null;
+  cause: OperationalCauseCode | null;
   checkedAt: string;
 }
 
@@ -49,15 +92,27 @@ export interface HealthSummaryV2 {
   };
 }
 
-export interface OperationalFilters {
+interface OperationalPageFilters {
   page?: number;
   limit?: number;
   product?: OperationalProduct;
-  channel?: string;
-  status?: OperationalStatus;
-  cause?: string;
+  cause?: OperationalCauseCode;
   from?: string;
   to?: string;
+}
+
+export interface ChannelDiagnosticFilters extends OperationalPageFilters {
+  channel?: OperationalChannel;
+  status?: OperationalStatus;
+}
+
+export interface OperationalAlertFilters extends OperationalPageFilters {
+  channel?: string;
+  status?: AlertStatus;
+  severity?: AlertSeverity;
+  type?: string;
+  service?: string;
+  project_id?: string;
 }
 
 export interface PagedResponse<T> {
@@ -68,25 +123,43 @@ export interface PagedResponse<T> {
 }
 
 export interface ChannelDiagnostic {
-  id?: string;
-  product?: OperationalProduct;
-  channel?: string;
-  status?: OperationalStatus;
-  cause?: string | null;
-  checkedAt?: string | null;
+  id: string;
+  integrationId: string;
+  id_project: string;
+  name: string;
+  product: 'casezap' | 'waba';
+  channel: OperationalChannel;
+  status: OperationalStatus;
+  cause: OperationalCauseCode | null;
+  checkedAt: string | null;
 }
 
 export interface OperationalAlert {
-  id?: string;
-  product?: OperationalProduct | null;
-  channel?: string | null;
-  status?: string;
-  cause?: string | null;
-  lastAt?: string | null;
+  id: string;
+  key: string;
+  type: string;
+  product: OperationalProduct | null;
+  severity: AlertSeverity;
+  status: AlertStatus;
+  cause: OperationalCauseCode | null;
+  title?: string;
+  service?: string;
+  queue?: string;
+  channel?: string;
+  id_project?: string;
+  integrationId?: string;
+  firstAt: string | null;
+  lastAt: string | null;
+  resolvedAt: string | null;
+  occurrences: number;
 }
 
-const OPERATIONAL_FILTER_KEYS: Array<keyof OperationalFilters> = [
+const CHANNEL_FILTER_KEYS: Array<keyof ChannelDiagnosticFilters> = [
   'page', 'limit', 'product', 'channel', 'status', 'cause', 'from', 'to'
+];
+const ALERT_FILTER_KEYS: Array<keyof OperationalAlertFilters> = [
+  'page', 'limit', 'product', 'channel', 'status', 'cause', 'from', 'to',
+  'type', 'severity', 'service', 'project_id'
 ];
 
 @Injectable()
@@ -386,21 +459,29 @@ export class AdminService {
     return this.getHealthSummary();
   }
 
-  public getOperationalChannels(filters: OperationalFilters = {}): Observable<PagedResponse<ChannelDiagnostic>> {
-    return this.getOperationalPage<ChannelDiagnostic>('sadmin/health/channels', filters);
+  public getOperationalChannels(filters: ChannelDiagnosticFilters = {}): Observable<PagedResponse<ChannelDiagnostic>> {
+    return this.getOperationalPage<ChannelDiagnostic, ChannelDiagnosticFilters>(
+      'sadmin/health/channels', filters, CHANNEL_FILTER_KEYS
+    );
   }
 
-  public getOperationalAlerts(filters: OperationalFilters = {}): Observable<PagedResponse<OperationalAlert>> {
-    return this.getOperationalPage<OperationalAlert>('sadmin/operational-alerts', filters);
+  public getOperationalAlerts(filters: OperationalAlertFilters = {}): Observable<PagedResponse<OperationalAlert>> {
+    return this.getOperationalPage<OperationalAlert, OperationalAlertFilters>(
+      'sadmin/operational-alerts', filters, ALERT_FILTER_KEYS
+    );
   }
 
-  private getOperationalPage<T>(path: string, filters: OperationalFilters): Observable<PagedResponse<T>> {
+  private getOperationalPage<T, Filters extends object>(
+    path: string,
+    filters: Filters,
+    filterKeys: Array<keyof Filters>
+  ): Observable<PagedResponse<T>> {
     const url = this.SERVER_BASE_PATH + path;
     this.logger.log('[ADMIN-SERV] - GET OPERATIONAL PAGE - URL', url);
 
     return this._httpclient.get<PagedResponse<T>>(url, {
       headers: this.getOperationalHeaders(),
-      params: this.buildOperationalParams(filters)
+      params: this.buildOperationalParams(filters, filterKeys)
     });
   }
 
@@ -412,11 +493,14 @@ export class AdminService {
     });
   }
 
-  private buildOperationalParams(filters: OperationalFilters): HttpParams {
+  private buildOperationalParams<Filters extends object>(
+    filters: Filters,
+    filterKeys: Array<keyof Filters>
+  ): HttpParams {
     let params = new HttpParams();
-    for (const key of OPERATIONAL_FILTER_KEYS) {
+    for (const key of filterKeys) {
       const value = filters[key];
-      if (value !== undefined && value !== '') params = params.set(key, String(value));
+      if (value !== undefined && value !== '') params = params.set(String(key), String(value));
     }
     return params;
   }

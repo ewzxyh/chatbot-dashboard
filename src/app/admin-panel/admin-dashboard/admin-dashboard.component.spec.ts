@@ -14,7 +14,7 @@ describe('AdminDashboardComponent', () => {
     expiresAt: '2026-07-10T12:05:00.000Z',
     services: [
       { name: 'server', status: 'ok', cause: null, checkedAt: '2026-07-10T11:59:58.000Z' },
-      { name: 'mongo', status: 'down', cause: 'connection_failed', checkedAt: '2026-07-10T11:59:58.000Z' }
+      { name: 'mongo', status: 'down', cause: 'mongo_unavailable', checkedAt: '2026-07-10T11:59:58.000Z' }
     ],
     queues: [
       { name: 'messages', status: 'ok', cause: null, checkedAt: '2026-07-10T11:59:57.000Z' }
@@ -29,7 +29,7 @@ describe('AdminDashboardComponent', () => {
       },
       topCauses: [
         { cause: 'upstream_timeout', count: 2 },
-        { cause: 'provider_auth_failed', count: 1 }
+        { cause: 'provider_check_failed', count: 1 }
       ]
     },
     alerts: {
@@ -54,18 +54,29 @@ describe('AdminDashboardComponent', () => {
 
   it('mantem top causes bounded em cinco itens', () => {
     component.summary = createSummary();
-    component.summary.channels.topCauses = Array.from({ length: 6 }, (_, index) => ({
-      cause: 'cause_' + index,
-      count: index + 1
-    }));
+    component.summary.channels.topCauses = [
+      { cause: 'provider_timeout', count: 6 },
+      { cause: 'upstream_timeout', count: 5 },
+      { cause: 'provider_unreachable', count: 4 },
+      { cause: 'webhook_failure', count: 3 },
+      { cause: 'queue_backlog', count: 2 },
+      { cause: 'storage_unavailable', count: 1 }
+    ];
+    component.summary.alerts.topCauses = component.summary.channels.topCauses;
 
     expect(component.getTopCauses('channels').length).toBe(5);
+    expect(component.getTopCauses('alerts').length).toBe(5);
   });
 
   it('explica os estados fresh, stale e missing do snapshot', () => {
     expect(component.getSnapshotStateLabel('fresh')).toBe('Snapshot atual');
+    expect(component.getSnapshotStateClass('fresh')).toBe('admin-status-success');
     expect(component.getSnapshotStateLabel('stale')).toBe('Snapshot desatualizado');
+    expect(component.getSnapshotStateMessage('stale')).toContain('expirou');
+    expect(component.getSnapshotStateClass('stale')).toBe('admin-status-warning');
     expect(component.getSnapshotStateLabel('missing')).toBe('Snapshot ausente');
+    expect(component.getSnapshotStateMessage('missing')).toContain('Nenhum snapshot');
+    expect(component.getSnapshotStateClass('missing')).toBe('admin-status-muted');
   });
 
   it('mantem loading ate o summary terminar e chama somente o summary', () => {
@@ -108,5 +119,24 @@ describe('AdminDashboardComponent', () => {
       status: 'degraded',
       cause: 'upstream_timeout'
     })).toContain('product=waba&channel=webhook&status=degraded&cause=upstream_timeout');
+  });
+
+  it('usa status open e a aba de alertas para um alerta critico', () => {
+    const link = component.buildAlertOperationLink('down', {
+      product: 'waba',
+      channel: 'webhook',
+      cause: 'upstream_timeout'
+    });
+
+    expect(link).toContain('tab=alerts');
+    expect(link).toContain('product=waba');
+    expect(link).toContain('channel=webhook');
+    expect(link).toContain('status=open');
+    expect(link).toContain('cause=upstream_timeout');
+    expect(link).not.toContain('status=down');
+  });
+
+  it('usa status resolved ao abrir alertas sem problema ativo', () => {
+    expect(component.buildAlertOperationLink('ok')).toContain('tab=alerts&status=resolved');
   });
 });

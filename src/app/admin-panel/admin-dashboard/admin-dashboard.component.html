@@ -59,7 +59,7 @@
           <strong>{{ getProductCount(product) }}</strong>
         </div>
         <div class="operational-status-grid">
-          <a *ngFor="let status of statuses" class="operational-status-link" [href]="buildOperationLink({ product: product, status: status })">
+          <a *ngFor="let status of statuses" class="operational-status-link" [href]="buildOperationLink({ tab: 'channels', product: product, status: status })">
             <span>{{ getOperationalStatusLabel(status) }}</span>
             <strong>{{ getProductStatusCount(product, status) }}</strong>
           </a>
@@ -77,7 +77,7 @@
         </div>
       </div>
       <div *ngIf="getTopCauses('channels').length > 0; else noChannelCauses" class="operational-cause-list" role="list">
-        <a *ngFor="let item of getTopCauses('channels')" [href]="buildOperationLink({ cause: item.cause })" class="operational-cause-link" role="listitem">
+        <a *ngFor="let item of getTopCauses('channels')" [href]="buildOperationLink({ tab: 'channels', cause: item.cause })" class="operational-cause-link" role="listitem">
           <span>{{ item.cause }}</span>
           <strong>{{ item.count }}</strong>
         </a>
@@ -93,14 +93,14 @@
         </div>
       </div>
       <div class="operational-alert-status-list">
-        <a *ngFor="let status of statuses" [href]="buildOperationLink({ status: status })" class="operational-status-link">
+        <a *ngFor="let status of statuses" [href]="buildAlertOperationLink(status)" class="operational-status-link">
           <span>{{ getOperationalStatusLabel(status) }}</span>
           <strong>{{ getStatusCount('alerts', status) }}</strong>
         </a>
       </div>
       <div *ngIf="getTopCauses('alerts').length > 0" class="operational-alert-causes">
         <span class="operational-subtitle">Causas</span>
-        <a *ngFor="let item of getTopCauses('alerts')" [href]="buildOperationLink({ cause: item.cause })" class="operational-cause-link">
+        <a *ngFor="let item of getTopCauses('alerts')" [href]="buildAlertOperationLink('down', { cause: item.cause })" class="operational-cause-link">
           <span>{{ item.cause }}</span>
           <strong>{{ item.count }}</strong>
         </a>

@@ -17,3 +17,20 @@
 - BLOQUEADO: tentativas de Karma isolado com ChromeHeadless conectaram o navegador, mas ele desconectou apos o timeout sem executar specs. Nao ha processo Karma/ChromeHeadless nem listener em `9876`/`9877` ao finalizar.
 
 O `--no-progress` nao existe na versao Jasmine 2.8 instalada; foi usado `--no-color`/`--stop-on-failure=true` com timeout de 120s no runner alternativo.
+
+## Correcao de contratos e links
+
+- Links de canais agora incluem `tab=channels`.
+- Links de alertas incluem `tab=alerts` e convertem saude ativa para `status=open`; `ok` usa `status=resolved`. Nenhum link de alerta envia `ok`, `degraded`, `down` ou `unknown` como status do endpoint.
+- `ChannelDiagnostic`, `OperationalAlert` e `PagedResponse` refletem somente os campos allowlisted por `persistedChannelRecord()` e `alertResponse()` no server.
+- Filtros foram separados: canais aceitam status de saude; alertas aceitam `open|resolved`, `info|warning|critical` e os demais filtros allowlisted atuais.
+- O SCSS e o layout nao foram alterados nesta correcao.
+
+### TDD e validacao da correcao
+
+- RED: runner focal executou 10 specs com 3 falhas esperadas: `severity` nao era enviado e `buildAlertOperationLink()` nao existia.
+- RED: typecheck focal acusou os DTOs inexatos e unions/filtros ausentes.
+- PASS: typecheck focal dos dois specs.
+- PASS: runner Jasmine alternativo: `10 specs, 0 failures`.
+- PASS: `npx ngc -p src/tsconfig.app.json`.
+- BLOQUEADO: o TestBed/Karma focal continua falhando antes do bundle por `karma-coverage-istanbul-reporter` ausente. Nenhum teste de template foi declarado como aprovado.

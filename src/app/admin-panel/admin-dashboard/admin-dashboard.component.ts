@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AdminService } from '../../services/admin.service';
 import type {
+  AlertStatus,
   HealthSummaryV2,
   OperationalCause,
   OperationalProduct,
@@ -10,11 +11,14 @@ import type {
 } from '../../services/admin.service';
 
 export interface OperationLinkFilters {
-  product?: string;
+  tab?: 'channels' | 'alerts';
+  product?: OperationalProduct;
   channel?: string;
-  status?: string;
-  cause?: string;
+  status?: OperationalStatus | AlertStatus;
+  cause?: OperationalCause['cause'];
 }
+
+type AlertOperationLinkFilters = Pick<OperationLinkFilters, 'product' | 'channel' | 'cause'>;
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -112,13 +116,24 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   buildOperationLink(filters: OperationLinkFilters): string {
-    const keys: Array<keyof OperationLinkFilters> = ['product', 'channel', 'status', 'cause'];
+    const keys: Array<keyof OperationLinkFilters> = ['tab', 'product', 'channel', 'status', 'cause'];
     const query = keys
       .filter((key) => Boolean(filters[key]))
       .map((key) => key + '=' + encodeURIComponent(filters[key]))
       .join('&');
 
     return '../operation' + (query ? '?' + query : '');
+  }
+
+  buildAlertOperationLink(
+    healthStatus: OperationalStatus,
+    filters: AlertOperationLinkFilters = {}
+  ): string {
+    return this.buildOperationLink({
+      tab: 'alerts',
+      ...filters,
+      status: healthStatus === 'ok' ? 'resolved' : 'open'
+    });
   }
 
   resourceLink(resource: OperationalSnapshotItem): string {
