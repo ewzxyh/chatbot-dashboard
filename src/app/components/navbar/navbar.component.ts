@@ -518,10 +518,6 @@ export class NavbarComponent extends PricingBaseComponent implements OnInit, Aft
       this.currentTitle = 'WhatsAppBroadcasts';
       this.currentIcon = this.getSanitizedKeyboardArrowLeft();
     }
-    else if (cleanUrl.indexOf('/automations') !== -1) {
-      this.currentTitle = 'WhatsAppBroadcasts';
-      this.currentIcon = null;
-    }
     else if (cleanUrl.indexOf('/contacts-demo') !== -1) {
       this.currentTitle = 'Contacts';
       this.currentIcon = this.getSanitizedKeyboardArrowLeft();
