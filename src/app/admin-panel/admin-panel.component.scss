@@ -468,6 +468,15 @@ tbody tr:hover { background: #f8fbff; }
   min-width: 1120px;
 }
 
+.admin-projects-table-wrap {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-inline: contain;
+}
+
 .admin-actions-cell {
   min-width: 320px;
 }

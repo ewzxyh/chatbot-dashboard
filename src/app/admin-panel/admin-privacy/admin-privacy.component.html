@@ -45,15 +45,15 @@
       <div class="privacy-form">
         <mat-form-field appearance="outline">
           <mat-label>Projeto</mat-label>
-          <input matInput type="text" [(ngModel)]="projectId" placeholder="ID do projeto">
+          <input matInput class="privacy-aligned-input" type="text" [(ngModel)]="projectId" placeholder="ID do projeto">
         </mat-form-field>
         <mat-form-field appearance="outline">
           <mat-label>Identificador</mat-label>
-          <input matInput type="text" [(ngModel)]="identifier" placeholder="E-mail, telefone, lead_id ou _id">
+          <input matInput class="privacy-aligned-input" type="text" [(ngModel)]="identifier" placeholder="E-mail, telefone, lead_id ou _id">
         </mat-form-field>
         <mat-form-field appearance="outline">
           <mat-label>Motivo da anonimização</mat-label>
-          <input matInput type="text" [(ngModel)]="reason" placeholder="Ex.: solicitação LGPD do titular">
+          <input matInput class="privacy-aligned-input" type="text" [(ngModel)]="reason" placeholder="Ex.: solicitação LGPD do titular">
         </mat-form-field>
       </div>
       </mat-card-content>
@@ -74,7 +74,7 @@
       <div class="privacy-form">
         <mat-form-field appearance="outline">
           <mat-label>Projeto opcional</mat-label>
-          <input matInput type="text" [(ngModel)]="retentionProjectId" placeholder="Vazio executa globalmente">
+          <input matInput class="privacy-aligned-input" type="text" [(ngModel)]="retentionProjectId" placeholder="Vazio executa globalmente">
         </mat-form-field>
       </div>
       <div *ngIf="!retentionStatus && !isLoadingRetention && !errorMessage" class="admin-empty-state">Nenhum status de retenção carregado.</div>

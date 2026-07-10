@@ -1,13 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatSelectModule } from '@angular/material/select';
+import { MatSelect, MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { of, throwError } from 'rxjs';
@@ -98,5 +99,19 @@ describe('AdminAuditComponent template', () => {
     expect(table.parentElement).toBe(wrapper);
     expect(paginator.parentElement).toBe(wrapper);
     expect(wrapper.classList.contains('audit-table-wrap')).toBe(true);
+    expect(getComputedStyle(wrapper).maxWidth).toBe('100%');
+    expect(getComputedStyle(wrapper).minWidth).toBe('0px');
+    expect(getComputedStyle(wrapper).overflowX).toBe('auto');
+  });
+
+  it('mantém os selects da auditoria no painel azul do admin', () => {
+    const fixture = TestBed.createComponent(AdminAuditComponent);
+    fixture.detectChanges();
+    const selects = fixture.debugElement.queryAll(By.directive(MatSelect));
+
+    expect(selects.length).toBe(4);
+    for (const select of selects) {
+      expect((select.componentInstance as MatSelect).panelClass).toBe('admin-select-panel');
+    }
   });
 });

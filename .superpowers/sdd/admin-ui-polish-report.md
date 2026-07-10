@@ -29,3 +29,21 @@ Adicionados/ajustados specs browser-safe para labels de status, shell sem markup
 ## Observacoes
 
 O build preserva warnings existentes de CommonJS (`chart.js`) e regras CSS legadas. Nenhuma dependência foi adicionada.
+
+## Finalização do fix parcial
+
+Base de trabalho: `6a2caf1a5`.
+
+- Projects recebeu o wrapper específico `.admin-projects-table-wrap`, com largura contida, `min-width: 0` e `overflow-x: auto`, mantendo o scroll horizontal dentro da tabela no mobile.
+- Projects agora cobre Plano, Teste, Cotas, Uso e Cobrança, incluindo larguras/max-width dos dialogs, controles, tabelas internas e ações de persistência/lifecycle.
+- Audit verifica wrapper, `max-width`, `min-width`, `overflow-x` e `admin-select-panel`; Privacy verifica os quatro inputs alinhados por classe de contrato.
+- O spec de Privacy foi incluído em `src/tsconfig.spec-admin.json`.
+
+## Validação final
+
+- PASS: `npx tsc -p src/tsconfig.spec-admin.json --noEmit`.
+- PASS: `npx ngc -p src/tsconfig.app.json`.
+- PASS: `npm run build -- --configuration production`.
+- PASS: `git diff --check`.
+- BLOCKED: `npx ng test --watch=false --browsers=ChromeHeadless` iniciou o Karma, mas executou `0 specs`; houve `404 /_karma_webpack_/main.js` e falhas de compilação em specs legados de Analytics/RxJS (`analytics.service`, `@angular/http/testing`, `rxjs-compat`). Nenhuma assertion do escopo admin foi executada.
+- Nenhum servidor de desenvolvimento foi iniciado.

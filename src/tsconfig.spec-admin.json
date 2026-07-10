@@ -13,6 +13,7 @@
     "app/admin-panel/admin-audit/admin-audit.component.spec.ts",
     "app/admin-panel/admin-audit/admin-audit-template.component.spec.ts",
     "app/admin-panel/admin-projects/admin-projects-template.component.spec.ts",
+    "app/admin-panel/admin-privacy/admin-privacy-template.component.spec.ts",
     "app/admin-panel/admin-page-states.component.spec.ts"
   ]
 }

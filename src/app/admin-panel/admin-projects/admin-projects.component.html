@@ -68,7 +68,8 @@
 </div>
 <div *ngIf="impersonationError" class="admin-error-state" role="alert">{{ impersonationError }}</div>
 
-<table mat-table *ngIf="!isLoading && (!errorMessage || projects.length > 0)" [dataSource]="projects" class="admin-table admin-table-wide">
+<div class="admin-projects-table-wrap" *ngIf="!isLoading && (!errorMessage || projects.length > 0)">
+<table mat-table [dataSource]="projects" class="admin-table admin-table-wide">
   <ng-container matColumnDef="name">
     <th mat-header-cell *matHeaderCellDef>Nome</th>
     <td mat-cell *matCellDef="let p">{{ displayText(p.name) }}</td>
@@ -137,6 +138,7 @@
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
   <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 </table>
+</div>
 
 <div *ngIf="!isLoading && !errorMessage && projects.length === 0" class="admin-empty-state">Nenhum projeto encontrado.</div>
 
