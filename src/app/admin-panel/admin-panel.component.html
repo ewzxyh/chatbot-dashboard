@@ -1,15 +1,21 @@
 <div class="admin-container">
-  <div class="admin-header">
+  <header class="admin-header">
     <h1>Painel Administrativo</h1>
-  </div>
-  <nav mat-tab-nav-bar [tabPanel]="adminTabPanel" class="admin-nav">
-    <a mat-tab-link routerLink="dashboard" routerLinkActive #dashboardLink="routerLinkActive" [active]="dashboardLink.isActive">Dashboard</a>
-    <a mat-tab-link routerLink="projects" routerLinkActive #projectsLink="routerLinkActive" [active]="projectsLink.isActive">Projetos</a>
-    <a mat-tab-link routerLink="users" routerLinkActive #usersLink="routerLinkActive" [active]="usersLink.isActive">Usuários</a>
-    <a mat-tab-link routerLink="payments" routerLinkActive #paymentsLink="routerLinkActive" [active]="paymentsLink.isActive">Pagamentos</a>
-    <a mat-tab-link routerLink="operation" routerLinkActive #operationLink="routerLinkActive" [active]="operationLink.isActive">Operação</a>
-    <a mat-tab-link routerLink="audit" routerLinkActive #auditLink="routerLinkActive" [active]="auditLink.isActive">Auditoria</a>
-    <a mat-tab-link routerLink="privacy" routerLinkActive #privacyLink="routerLinkActive" [active]="privacyLink.isActive">Privacidade</a>
+  </header>
+  <nav mat-tab-nav-bar [tabPanel]="adminTabPanel" class="admin-nav" aria-label="Navegação administrativa">
+    <a
+      *ngFor="let item of navItems"
+      mat-tab-link
+      [routerLink]="item.route"
+      routerLinkActive
+      #linkActive="routerLinkActive"
+      [routerLinkActiveOptions]="{ exact: true }"
+      [active]="linkActive.isActive"
+      [attr.aria-current]="linkActive.isActive ? 'page' : null"
+      (isActiveChange)="onNavActiveChange(item.id, $event)"
+      (click)="setActiveTab(item.id)">
+      {{ item.label }}
+    </a>
   </nav>
   <mat-tab-nav-panel #adminTabPanel>
     <div class="admin-content">

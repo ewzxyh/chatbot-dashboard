@@ -113,3 +113,17 @@
 - Cada integracao bloqueia apenas sua propria acao; testes e webhooks distintos podem rodar em paralelo.
 - Duplicata da mesma chave nao cria request e cada callback remove somente sua chave.
 - `ngc`, harness e build retornaram dentro dos timeouts definidos; nenhum runner ficou ativo.
+
+# Task 5: shell e estados das tabs admin
+
+- [x] Escrever spec RED focal para os sete links, estado ativo, teclado e retorno ao Dashboard.
+- [x] Confirmar a falha do spec antes da implementacao.
+- [x] Implementar shell responsivo e estados loading/error/retry/empty sem alterar rotas, servicos ou acoes.
+- [x] Validar ngc, specs focais/harness browser-safe, build production e diff pre/post.
+- [x] Escrever `task-5-report.md` e criar o commit solicitado.
+
+## Review
+
+- Shell com sete links, estado ativo, foco/teclado e scroll horizontal; sidebar, header global e /home permanecem fora do diff.
+- Projects/Users/Payments ganharam retry e erro explicito; Audit/Privacy ganharam loading/retry/empty sem remover acoes existentes.
+- `ngc`, harness focal ChromeHeadless, build production e diff check passaram; suite Karma completa permanece bloqueada por dependencia legada ausente.

@@ -31,6 +31,12 @@ export class AdminPrivacyComponent implements OnInit {
     this.loadRetentionStatus();
   }
 
+  retry() {
+    this.errorMessage = '';
+    this.loadConfig();
+    this.loadRetentionStatus();
+  }
+
   loadConfig() {
     this.isLoadingConfig = true;
     this.adminService.getPrivacyConfig().subscribe(

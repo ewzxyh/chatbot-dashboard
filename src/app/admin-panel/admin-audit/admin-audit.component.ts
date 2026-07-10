@@ -14,6 +14,7 @@ export class AdminAuditComponent implements OnInit {
   isLoading = false;
   isLoadingSummary = false;
   errorMessage = '';
+  summaryErrorMessage = '';
   page = 0;
   limit = 10;
   totalCount = 0;
@@ -39,6 +40,8 @@ export class AdminAuditComponent implements OnInit {
     this.loadEvents();
   }
 
+  retry() { this.refresh(); }
+
   applyFilters() {
     this.page = 0;
     this.refresh();
@@ -46,6 +49,7 @@ export class AdminAuditComponent implements OnInit {
 
   loadSummary() {
     this.isLoadingSummary = true;
+    this.summaryErrorMessage = '';
     this.adminService.getAuditSummary({
       range: this.filters.range,
       project_id: this.filters.project_id
@@ -56,6 +60,7 @@ export class AdminAuditComponent implements OnInit {
       },
       () => {
         this.summary = null;
+        this.summaryErrorMessage = 'Erro ao carregar o resumo da auditoria.';
         this.isLoadingSummary = false;
       }
     );

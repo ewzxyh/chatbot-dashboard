@@ -51,6 +51,7 @@
   display: grid;
   grid-template-columns: minmax(320px, 420px) 1fr;
   gap: 18px;
+  align-items: start;
 }
 
 .privacy-section {
@@ -79,6 +80,14 @@
   flex-wrap: wrap;
   gap: 10px;
   margin-top: 16px;
+}
+
+.privacy-section mat-card-title {
+  display: block;
+  margin-bottom: 14px;
+  color: #26384f;
+  font-size: 16px;
+  font-weight: 700;
 }
 
 .privacy-counts {
@@ -129,6 +138,11 @@
   border-radius: 6px;
   padding: 12px 14px;
   font-weight: 600;
+}
+
+.privacy-error button {
+  margin-left: auto;
+  flex-shrink: 0;
 }
 
 .privacy-error {

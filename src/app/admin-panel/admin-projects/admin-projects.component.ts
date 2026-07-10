@@ -22,6 +22,7 @@ export class AdminProjectsComponent implements OnInit {
   page = 0;
   limit = 10;
   isLoading = true;
+  errorMessage = '';
   filterPlanName = '';
   filterPlanType = '';
   showPlanModal = false;
@@ -70,14 +71,21 @@ export class AdminProjectsComponent implements OnInit {
 
   loadProjects() {
     this.isLoading = true;
+    this.errorMessage = '';
     const filters: any = {};
     if (this.filterPlanName) filters.planName = this.filterPlanName;
     if (this.filterPlanType) filters.planType = this.filterPlanType;
     this.adminService.getProjects(this.page, this.limit, 'createdAt', -1, filters).subscribe(
       (res) => { this.projects = res.data; this.totalCount = res.count; this.isLoading = false; },
-      (err) => { console.error('[ADMIN-PROJECTS] loadProjects error', err); this.isLoading = false; }
+      (err) => {
+        console.error('[ADMIN-PROJECTS] loadProjects error', err);
+        this.errorMessage = 'Erro ao carregar projetos.';
+        this.isLoading = false;
+      }
     );
   }
+
+  retry() { this.loadProjects(); }
 
   nextPage() { if ((this.page + 1) * this.limit < this.totalCount) { this.page++; this.loadProjects(); } }
   prevPage() { if (this.page > 0) { this.page--; this.loadProjects(); } }

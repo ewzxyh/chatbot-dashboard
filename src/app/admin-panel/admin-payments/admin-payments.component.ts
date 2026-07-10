@@ -13,6 +13,7 @@ export class AdminPaymentsComponent implements OnInit {
   page = 0;
   limit = 10;
   isLoading = true;
+  errorMessage = '';
   filterStatus = '';
 
   constructor(private adminService: AdminService) { }
@@ -20,13 +21,20 @@ export class AdminPaymentsComponent implements OnInit {
 
   loadPayments() {
     this.isLoading = true;
+    this.errorMessage = '';
     const filters: any = {};
     if (this.filterStatus) filters.status = this.filterStatus;
     this.adminService.getPayments(this.page, this.limit, filters).subscribe(
       (res) => { this.payments = res.data; this.totalCount = res.count; this.isLoading = false; },
-      (err) => { console.error('[ADMIN-PAYMENTS] loadPayments error', err); this.isLoading = false; }
+      (err) => {
+        console.error('[ADMIN-PAYMENTS] loadPayments error', err);
+        this.errorMessage = 'Erro ao carregar pagamentos.';
+        this.isLoading = false;
+      }
     );
   }
+
+  retry() { this.loadPayments(); }
 
   onFilterChange() { this.page = 0; this.loadPayments(); }
   onPageChange(event: any) { this.page = event.pageIndex; this.limit = event.pageSize; this.loadPayments(); }

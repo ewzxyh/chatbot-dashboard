@@ -3,7 +3,13 @@
     <h2>Projetos</h2>
     <p>Gerencie planos, cotas, uso, cobrança e acesso aos projetos.</p>
   </div>
-  <span *ngIf="!isLoading && totalCount > 0" class="admin-page-meta">{{ totalCount }} projetos</span>
+  <div class="admin-actions-row">
+    <span *ngIf="!isLoading && totalCount > 0" class="admin-page-meta">{{ totalCount }} projetos</span>
+    <button mat-stroked-button type="button" (click)="retry()" [disabled]="isLoading">
+      <mat-icon aria-hidden="true">refresh</mat-icon>
+      Atualizar
+    </button>
+  </div>
 </div>
 
 <div class="admin-filters admin-filter-bar">
@@ -55,7 +61,11 @@
   </div>
 </mat-card>
 
-<div *ngIf="isLoading" class="admin-loading-state">Carregando...</div>
+<div *ngIf="isLoading" class="admin-loading-state" role="status">Carregando...</div>
+<div *ngIf="errorMessage" class="admin-feedback admin-feedback-error" role="alert">
+  <span>{{ errorMessage }}</span>
+  <button mat-stroked-button type="button" (click)="retry()" [disabled]="isLoading">Tentar novamente</button>
+</div>
 <div *ngIf="impersonationError" class="admin-error-state" role="alert">{{ impersonationError }}</div>
 
 <table mat-table *ngIf="!isLoading" [dataSource]="projects" class="admin-table admin-table-wide">

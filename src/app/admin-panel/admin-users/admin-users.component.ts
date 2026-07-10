@@ -13,6 +13,7 @@ export class AdminUsersComponent implements OnInit {
   page = 0;
   limit = 10;
   isLoading = true;
+  errorMessage = '';
   searchText = '';
   impersonatingTargetId: string = null;
   impersonationError = '';
@@ -22,11 +23,18 @@ export class AdminUsersComponent implements OnInit {
 
   loadUsers() {
     this.isLoading = true;
+    this.errorMessage = '';
     this.adminService.getUsers(this.page, this.limit, this.searchText).subscribe(
       (res) => { this.users = res.data; this.totalCount = res.count; this.isLoading = false; },
-      (err) => { console.error('[ADMIN-USERS] loadUsers error', err); this.isLoading = false; }
+      (err) => {
+        console.error('[ADMIN-USERS] loadUsers error', err);
+        this.errorMessage = 'Erro ao carregar usuários.';
+        this.isLoading = false;
+      }
     );
   }
+
+  retry() { this.loadUsers(); }
 
   onSearch() { this.page = 0; this.loadUsers(); }
   onPageChange(event: any) { this.page = event.pageIndex; this.limit = event.pageSize; this.loadUsers(); }

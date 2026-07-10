@@ -4,7 +4,16 @@
       <h2>Auditoria</h2>
       <p>Registro de ações administrativas e mudanças por API com payload sanitizado.</p>
     </div>
-    <button mat-flat-button color="primary" type="button" class="btn-primary" (click)="refresh()">Atualizar</button>
+    <button mat-flat-button color="primary" type="button" class="btn-primary" (click)="refresh()" [disabled]="isLoading || isLoadingSummary">
+      <mat-icon aria-hidden="true">refresh</mat-icon>
+      Atualizar
+    </button>
+  </div>
+
+  <div *ngIf="isLoadingSummary" class="admin-loading-state" role="status">Carregando resumo da auditoria...</div>
+  <div *ngIf="summaryErrorMessage" class="admin-feedback admin-feedback-error" role="alert">
+    <span>{{ summaryErrorMessage }}</span>
+    <button mat-stroked-button type="button" (click)="retry()" [disabled]="isLoadingSummary">Tentar novamente</button>
   </div>
 
   <div class="audit-summary admin-kpi-grid" *ngIf="summary">
@@ -90,7 +99,10 @@
     <button mat-stroked-button type="button" class="btn-secondary" (click)="applyFilters()">Filtrar</button>
   </div>
 
-  <div *ngIf="errorMessage" class="audit-error admin-error-state" role="alert">{{ errorMessage }}</div>
+  <div *ngIf="errorMessage" class="audit-error admin-feedback admin-feedback-error" role="alert">
+    <span>{{ errorMessage }}</span>
+    <button mat-stroked-button type="button" (click)="retry()" [disabled]="isLoading">Tentar novamente</button>
+  </div>
   <div *ngIf="isLoading" class="audit-loading admin-loading-state" role="status">Carregando auditoria...</div>
 
   <div class="audit-layout" *ngIf="!isLoading">

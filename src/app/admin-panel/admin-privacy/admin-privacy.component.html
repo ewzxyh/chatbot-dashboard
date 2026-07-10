@@ -7,7 +7,11 @@
     <button mat-flat-button color="primary" type="button" (click)="loadConfig()" [disabled]="isLoadingConfig">Atualizar</button>
   </div>
 
-  <div *ngIf="errorMessage" class="privacy-error admin-feedback admin-feedback-error" role="alert">{{ errorMessage }}</div>
+  <div *ngIf="isLoadingConfig || isLoadingRetention" class="admin-loading-state" role="status">Carregando privacidade...</div>
+  <div *ngIf="errorMessage" class="privacy-error admin-feedback admin-feedback-error" role="alert">
+    <span>{{ errorMessage }}</span>
+    <button mat-stroked-button type="button" (click)="retry()" [disabled]="isLoadingConfig || isLoadingRetention">Tentar novamente</button>
+  </div>
   <div *ngIf="successMessage" class="privacy-success admin-feedback admin-feedback-success" role="status">{{ successMessage }}</div>
 
   <div class="privacy-summary admin-kpi-grid" *ngIf="config">
@@ -32,6 +36,7 @@
       <small>dias de retenção</small>
     </mat-card>
   </div>
+  <div *ngIf="!config && !isLoadingConfig && !errorMessage" class="admin-empty-state">Nenhuma configuração carregada.</div>
 
   <div class="privacy-layout">
     <mat-card class="privacy-section">
@@ -72,6 +77,7 @@
           <input matInput type="text" [(ngModel)]="retentionProjectId" placeholder="Vazio executa globalmente">
         </mat-form-field>
       </div>
+      <div *ngIf="!retentionStatus && !isLoadingRetention && !errorMessage" class="admin-empty-state">Nenhum status de retenção carregado.</div>
       <div class="privacy-retention-grid" *ngIf="retentionStatus">
         <div>
           <span>Conversas antigas</span>
