@@ -1,29 +1,89 @@
-<div *ngIf="isLoading" class="admin-loading-state">Carregando...</div>
-<div *ngIf="errorMessage" class="admin-error-state">{{ errorMessage }}</div>
+<div *ngIf="errorMessage" class="admin-error-state" role="alert">{{ errorMessage }}</div>
 
-<div *ngIf="stats && !isLoading">
+<div class="admin-dashboard-heading">
+  <div>
+    <h2>Visão operacional</h2>
+    <p>Acompanhe a base de projetos, usuários e planos.</p>
+  </div>
+  <div class="admin-dashboard-refresh">
+    <span *ngIf="lastUpdated">Atualizado às {{ lastUpdated | date:'HH:mm' }}</span>
+    <button mat-stroked-button type="button" (click)="loadStats()" [disabled]="isLoading">
+      <mat-icon>refresh</mat-icon>
+      Atualizar
+    </button>
+  </div>
+</div>
+
+<div *ngIf="isLoading" class="admin-loading-state" role="status">Carregando...</div>
+
+<div *ngIf="stats && !isLoading" class="admin-dashboard-content">
   <div class="stats-grid">
     <mat-card class="stat-card">
+      <div class="stat-card-heading"><mat-icon>business</mat-icon><span>Projetos</span></div>
       <div class="stat-value">{{ stats.totalProjects }}</div>
-      <div class="stat-label">Projetos</div>
+      <div class="stat-label">Total de espaços de trabalho</div>
     </mat-card>
     <mat-card class="stat-card">
+      <div class="stat-card-heading"><mat-icon>group</mat-icon><span>Usuários ativos</span></div>
       <div class="stat-value">{{ stats.totalUsers }}</div>
-      <div class="stat-label">Usuários</div>
+      <div class="stat-label">Contas com acesso ativo</div>
     </mat-card>
     <mat-card class="stat-card">
+      <div class="stat-card-heading"><mat-icon>people_outline</mat-icon><span>Média por projeto</span></div>
+      <div class="stat-value">{{ getUsersPerProject() | number:'1.1-1' }}</div>
+      <div class="stat-label">Usuários ativos por projeto</div>
+    </mat-card>
+    <mat-card class="stat-card">
+      <div class="stat-card-heading"><mat-icon>attach_money</mat-icon><span>Receita estimada</span></div>
       <div class="stat-value">R$ {{ stats.monthlyRevenue | number:'1.2-2' }}</div>
-      <div class="stat-label">Receita mensal estimada</div>
+      <div class="stat-label">Valor recorrente mensal</div>
     </mat-card>
   </div>
 
-  <div class="admin-section">
-    <h3 class="admin-section-title">Distribuição por plano</h3>
-    <div class="plan-distribution">
-      <mat-card *ngFor="let key of getPlanKeys()" class="plan-dist-item">
-        <span class="plan-dist-name">{{ planDisplayNames[key] || key }}</span>
-        <span class="plan-dist-count">{{ stats.planDistribution[key] }}</span>
-      </mat-card>
-    </div>
+  <div class="admin-dashboard-grid">
+    <section class="admin-section admin-dashboard-panel">
+      <div class="admin-section-heading">
+        <div>
+          <h3 class="admin-section-title">Distribuição por plano</h3>
+          <p>Participação de cada plano na base de projetos.</p>
+        </div>
+        <span>{{ stats.totalProjects }} projetos</span>
+      </div>
+
+      <div class="plan-distribution">
+        <div *ngFor="let key of getPlanKeys()" class="plan-dist-item">
+          <div class="plan-dist-heading">
+            <span class="plan-dist-name">{{ planDisplayNames[key] || key }}</span>
+            <strong>{{ stats.planDistribution[key] }}</strong>
+          </div>
+          <div class="plan-dist-track" aria-hidden="true">
+            <span [style.width.%]="getPlanPercentage(key)"></span>
+          </div>
+          <span class="plan-dist-percentage">{{ getPlanPercentage(key) | number:'1.0-1' }}% da base</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="admin-section admin-dashboard-panel admin-summary-panel">
+      <h3 class="admin-section-title">Resumo da base</h3>
+      <div class="admin-summary-list">
+        <div>
+          <span>Planos em uso</span>
+          <strong>{{ getActivePlanCount() }}</strong>
+        </div>
+        <div>
+          <span>Plano com maior base</span>
+          <strong>{{ planDisplayNames[getLargestPlanKey()] || '—' }}</strong>
+        </div>
+        <div>
+          <span>Projetos no maior plano</span>
+          <strong>{{ stats.planDistribution[getLargestPlanKey()] || 0 }}</strong>
+        </div>
+        <div>
+          <span>Usuários por projeto</span>
+          <strong>{{ getUsersPerProject() | number:'1.1-1' }}</strong>
+        </div>
+      </div>
+    </section>
   </div>
 </div>

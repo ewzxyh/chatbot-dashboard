@@ -22,8 +22,8 @@
 
 <mat-card class="admin-toolbar-card">
   <div class="admin-toolbar-row">
-    <div>
-      <strong>Cobrança automática</strong>
+    <div class="admin-toolbar-heading">
+      <strong class="admin-toolbar-title">Cobrança automática</strong>
       <span class="admin-toolbar-meta">
         Tarefa: {{ billingJobStatus?.started ? 'ativa' : 'inativa' }}
         <span *ngIf="billingJobStatus?.lastStatus">| último status: {{ billingJobStatus?.lastStatus }}</span>
