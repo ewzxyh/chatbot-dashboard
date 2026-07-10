@@ -930,6 +930,7 @@ export class UsersComponent extends PricingBaseComponent implements OnInit, Afte
               // this.logger.log('[USERS] - PROJECT USERS imgUrl (usecase native)', imgUrl);
             }
 
+            projectuser.hasImage = false
             this.checkImageExists(imgUrl, (existsImage) => {
               if (existsImage == true) {
                 this.logger.log('[USERS] - IMAGE EXIST X PROJECT USERS', projectuser)

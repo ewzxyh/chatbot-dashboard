@@ -155,7 +155,7 @@
                       <button *ngIf="hasClickedTrashed === false" class="btn btn-outlined export-to-csv-btn"
                         [disabled]="PERMISSION_TO_EXPORT_LEADS === false" (click)="exportContactsToCsv()">
                         {{ 'ExportToCSV' | translate }}
-                        <span class="material-icons" style="vertical-align: middle; margin-left: 4px;">
+                        <span class="material-icons" aria-hidden="true">
                           save_alt
                         </span>
                       </button>
@@ -266,26 +266,18 @@
               <div class="card-content"
                 style="padding-top: 0px;padding-bottom: 0px;padding-left: 0px;padding-right: 0px;">
 
-                <ul style="padding-left: 0px;    list-style: none;">
+                <ul class="contacts-nav-list">
                   <li class="nav-contacts-li" [ngClass]="{'nav-contacts-li-active' : hasClickedTrashed === false}"
                     (click)="closeTrashContacts()">
-
-                    <i style="vertical-align: middle; color:rgba(32, 33, 36, 0.54); padding-left: 10px;"
-                      class="material-icons">contacts</i>
-                    <span style="padding-left: 8px;vertical-align: middle;">{{'Contacts'| translate}} </span>
-
-                    <span style="float: right; margin-right: 20px;"> {{ countOfActiveContacts }}</span>
+                    <i class="material-icons" aria-hidden="true">contacts</i>
+                    <span>{{'Contacts'| translate}}</span>
+                    <span class="contacts-nav-count">{{ countOfActiveContacts }}</span>
                   </li>
                   <li class="nav-contacts-li" [ngClass]="{'nav-contacts-li-active' : hasClickedTrashed === true}"
                     (click)="openTrashedContact()">
-                    <span>
-                      <i style="vertical-align: middle; color:rgba(32, 33, 36, 0.54); padding-left: 8px;"
-                        class="material-icons">delete</i>
-                      <!-- <span class="notification_on_trash">{{ trashedContanctCount }}</span> -->
-                      <span style="padding-left: 1px;vertical-align: middle;"> {{'TrashContacts' | translate}}</span>
-
-                      <span style="float: right; margin-right: 20px;"> {{ trashedContanctCount }}</span>
-                    </span>
+                    <i class="material-icons" aria-hidden="true">delete</i>
+                    <span>{{'TrashContacts' | translate}}</span>
+                    <span class="contacts-nav-count">{{ trashedContanctCount }}</span>
                   </li>
 
                   <!--

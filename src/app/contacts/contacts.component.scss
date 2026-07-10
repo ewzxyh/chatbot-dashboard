@@ -424,19 +424,33 @@ input:-webkit-autofill:active {
 
 .nav-contacts-li {
     height: 40px;
-    // border-radius: 999px;
-    margin-right: 4px;
-    // margin: 4px;
-    line-height: 39px;
+    display: grid;
+    grid-template-columns: 20px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px;
+    padding: 0 12px;
     font-weight: 400;
     cursor: pointer;
-    border-top-right-radius: 9999px;
-    border-bottom-right-radius: 9999px;
+    border-radius: 6px;
     font-family: var(--header-font-family);
 }
 
 .nav-contacts-li > i { 
-    font-size: 20px;
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+    line-height: 18px;
+    color: rgba(32, 33, 36, 0.54);
+}
+
+.contacts-nav-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.contacts-nav-count {
+    text-align: right;
 }
 
 .nav-contacts-li:hover {
@@ -484,8 +498,21 @@ input:-webkit-autofill:active {
 #contacts-sideBar>.nav-card {
     margin-bottom: 0px;
     margin-top: 0px;
-    padding: 15px 0px;
+    padding: 12px;
     border-radius: 12px;
+}
+
+.export-to-csv-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.export-to-csv-btn .material-icons {
+    font-size: 18px;
+    line-height: 18px;
 }
 
 #contacts-content {
