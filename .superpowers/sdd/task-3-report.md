@@ -34,3 +34,20 @@ O `--no-progress` nao existe na versao Jasmine 2.8 instalada; foi usado `--no-co
 - PASS: runner Jasmine alternativo: `10 specs, 0 failures`.
 - PASS: `npx ngc -p src/tsconfig.app.json`.
 - BLOQUEADO: o TestBed/Karma focal continua falhando antes do bundle por `karma-coverage-istanbul-reporter` ausente. Nenhum teste de template foi declarado como aprovado.
+
+## Correcao final de navegacao
+
+- Todos os deep-links usam `Router.createUrlTree(['/admin/operation'], { queryParams })` e `routerLink`, compativeis com o `HashLocationStrategy` do app.
+- O Dashboard nao usa mais `href` nem `../operation`; a navegacao preserva `tab`, `product`, `channel`, `status` e `cause` sem recarregar a pagina.
+- O SCSS permaneceu inalterado.
+
+### TDD e validacao final
+
+- RED: typecheck focal falhou porque `ADMIN_OPERATION_ROUTE` e a injecao de `Router` ainda nao existiam.
+- RED: runner alternativo executou 11 specs com 1 falha esperada para o destino absoluto ausente.
+- PASS: runner Jasmine alternativo: `11 specs, 0 failures`.
+- PASS: typecheck focal dos dois specs.
+- PASS: `npx ngc -p src/tsconfig.app.json`.
+- PASS: busca estatica em producao sem `../operation`, `[href]` ou `href=`.
+- PASS: `git diff --check`.
+- BLOQUEADO: Karma/TestBed oficial permanece sem execucao pelo reporter ausente documentado acima.

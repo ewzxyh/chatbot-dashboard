@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import type { UrlTree } from '@angular/router';
 import { AdminService } from '../../services/admin.service';
 import type {
   AlertStatus,
@@ -19,6 +21,7 @@ export interface OperationLinkFilters {
 }
 
 type AlertOperationLinkFilters = Pick<OperationLinkFilters, 'product' | 'channel' | 'cause'>;
+export const ADMIN_OPERATION_ROUTE = '/admin/operation';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -37,7 +40,7 @@ export class AdminDashboardComponent implements OnInit {
     unknown: 'Desconhecido'
   };
 
-  constructor(private adminService: AdminService) { }
+  constructor(private adminService: AdminService, private router: Router) { }
 
   ngOnInit(): void {
     this.load();
@@ -115,20 +118,21 @@ export class AdminDashboardComponent implements OnInit {
     return 'admin-status-muted';
   }
 
-  buildOperationLink(filters: OperationLinkFilters): string {
+  buildOperationLink(filters: OperationLinkFilters): UrlTree {
     const keys: Array<keyof OperationLinkFilters> = ['tab', 'product', 'channel', 'status', 'cause'];
-    const query = keys
-      .filter((key) => Boolean(filters[key]))
-      .map((key) => key + '=' + encodeURIComponent(filters[key]))
-      .join('&');
+    const queryParams: OperationLinkFilters = {};
+    for (const key of keys) {
+      const value = filters[key];
+      if (value) Object.assign(queryParams, { [key]: value });
+    }
 
-    return '../operation' + (query ? '?' + query : '');
+    return this.router.createUrlTree([ADMIN_OPERATION_ROUTE], { queryParams });
   }
 
   buildAlertOperationLink(
     healthStatus: OperationalStatus,
     filters: AlertOperationLinkFilters = {}
-  ): string {
+  ): UrlTree {
     return this.buildOperationLink({
       tab: 'alerts',
       ...filters,
@@ -136,7 +140,7 @@ export class AdminDashboardComponent implements OnInit {
     });
   }
 
-  resourceLink(resource: OperationalSnapshotItem): string {
+  resourceLink(resource: OperationalSnapshotItem): UrlTree {
     return this.buildOperationLink({
       status: resource.status,
       cause: resource.cause || undefined

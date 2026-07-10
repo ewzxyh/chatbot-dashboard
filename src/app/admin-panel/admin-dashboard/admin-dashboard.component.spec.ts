@@ -1,10 +1,12 @@
+import type { Router, UrlTree } from '@angular/router';
 import { Subject, of, throwError } from 'rxjs';
 import type { AdminService, HealthSummaryV2 } from '../../services/admin.service';
-import { AdminDashboardComponent } from './admin-dashboard.component';
+import { ADMIN_OPERATION_ROUTE, AdminDashboardComponent } from './admin-dashboard.component';
 
 describe('AdminDashboardComponent', () => {
   let adminService: jasmine.SpyObj<AdminService>;
   let component: AdminDashboardComponent;
+  let createUrlTreeSpy: jasmine.Spy;
 
   const createSummary = (snapshotState: 'fresh' | 'stale' | 'missing' = 'fresh'): HealthSummaryV2 => ({
     version: 2,
@@ -41,7 +43,16 @@ describe('AdminDashboardComponent', () => {
 
   beforeEach(() => {
     adminService = jasmine.createSpyObj<AdminService>('AdminService', ['getOperationalHealthSummary']);
-    component = new AdminDashboardComponent(adminService);
+    createUrlTreeSpy = jasmine.createSpy('createUrlTree').and.callFake((commands: unknown[], extras: {
+      queryParams?: Record<string, string>;
+    }) => {
+      const query = new URLSearchParams(extras.queryParams || {}).toString();
+      return {
+        toString: () => String(commands[0]) + (query ? '?' + query : '')
+      } as unknown as UrlTree;
+    });
+    const router = { createUrlTree: createUrlTreeSpy } as unknown as Router;
+    component = new AdminDashboardComponent(adminService, router);
   });
 
   it('agrega CaseZap e WABA por status sem listar integracoes', () => {
@@ -118,7 +129,23 @@ describe('AdminDashboardComponent', () => {
       channel: 'webhook',
       status: 'degraded',
       cause: 'upstream_timeout'
-    })).toContain('product=waba&channel=webhook&status=degraded&cause=upstream_timeout');
+    }).toString()).toContain('product=waba&channel=webhook&status=degraded&cause=upstream_timeout');
+  });
+
+  it('usa a rota Angular absoluta e preserva a query string', () => {
+    const queryParams = {
+      tab: 'alerts' as const,
+      product: 'waba' as const,
+      channel: 'webhook',
+      status: 'open' as const,
+      cause: 'upstream_timeout' as const
+    };
+    const link = component.buildOperationLink(queryParams).toString();
+
+    expect(ADMIN_OPERATION_ROUTE).toBe('/admin/operation');
+    expect(link).toBe('/admin/operation?tab=alerts&product=waba&channel=webhook&status=open&cause=upstream_timeout');
+    expect(link).not.toContain('../operation');
+    expect(createUrlTreeSpy).toHaveBeenCalledWith([ADMIN_OPERATION_ROUTE], { queryParams });
   });
 
   it('usa status open e a aba de alertas para um alerta critico', () => {
@@ -126,7 +153,7 @@ describe('AdminDashboardComponent', () => {
       product: 'waba',
       channel: 'webhook',
       cause: 'upstream_timeout'
-    });
+    }).toString();
 
     expect(link).toContain('tab=alerts');
     expect(link).toContain('product=waba');
@@ -137,6 +164,6 @@ describe('AdminDashboardComponent', () => {
   });
 
   it('usa status resolved ao abrir alertas sem problema ativo', () => {
-    expect(component.buildAlertOperationLink('ok')).toContain('tab=alerts&status=resolved');
+    expect(component.buildAlertOperationLink('ok').toString()).toContain('tab=alerts&status=resolved');
   });
 });
