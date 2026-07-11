@@ -138,6 +138,7 @@ describe('AdminOperationComponent template', () => {
     };
 
     expectFilterBar('Filtros de canais', 6, 2);
+    expect(root.querySelector('.operation-filters .mat-select-value-text')?.textContent.trim()).toBe('Todos');
 
     fixture.componentInstance.selectTabByIndex(1);
     fixture.detectChanges();

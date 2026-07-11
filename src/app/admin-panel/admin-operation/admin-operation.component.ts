@@ -40,9 +40,9 @@ interface OperationTabDefinition {
 export interface OperationFilters {
   page: number;
   limit: number;
-  product?: OperationalProduct;
+  product?: OperationalProduct | '';
   channel?: string;
-  status?: OperationalStatus | AlertStatus;
+  status?: OperationalStatus | AlertStatus | '';
   cause?: OperationalCauseCode;
   from?: string;
   to?: string;
@@ -738,7 +738,9 @@ export class AdminOperationComponent implements OnInit, OnDestroy {
 
     const filters: OperationFilters = {
       page: this.parseInteger(input.page, DEFAULT_PAGE, Number.MAX_SAFE_INTEGER),
-      limit: this.parseInteger(input.limit, DEFAULT_LIMIT, MAX_LIMIT)
+      limit: this.parseInteger(input.limit, DEFAULT_LIMIT, MAX_LIMIT),
+      product: '',
+      status: ''
     };
     const product = this.normalizeString(input.product);
     const channel = this.normalizeString(input.channel);

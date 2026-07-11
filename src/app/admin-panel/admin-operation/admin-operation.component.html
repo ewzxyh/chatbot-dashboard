@@ -50,8 +50,8 @@
         <div class="operation-filters admin-filter-bar" aria-label="Filtros de canais">
           <mat-form-field appearance="outline" class="admin-filter-field">
             <mat-label>Produto</mat-label>
-            <mat-select panelClass="admin-select-panel" placeholder="Todos" [(ngModel)]="filters.product">
-              <mat-option [value]="undefined">Todos</mat-option>
+            <mat-select panelClass="admin-select-panel" [(ngModel)]="filters.product">
+              <mat-option value="">Todos</mat-option>
               <mat-option *ngFor="let product of products" [value]="product">{{ product }}</mat-option>
             </mat-select>
           </mat-form-field>
@@ -61,8 +61,8 @@
           </mat-form-field>
           <mat-form-field appearance="outline" class="admin-filter-field">
             <mat-label>Status</mat-label>
-            <mat-select panelClass="admin-select-panel" placeholder="Todos" [(ngModel)]="filters.status">
-              <mat-option [value]="undefined">Todos</mat-option>
+            <mat-select panelClass="admin-select-panel" [(ngModel)]="filters.status">
+              <mat-option value="">Todos</mat-option>
               <mat-option *ngFor="let status of channelStatuses" [value]="status">{{ getStatusLabel(status) }}</mat-option>
             </mat-select>
           </mat-form-field>
@@ -187,8 +187,8 @@
         <div class="operation-filters admin-filter-bar" aria-label="Filtros de alertas">
           <mat-form-field appearance="outline" class="admin-filter-field">
             <mat-label>Produto</mat-label>
-            <mat-select panelClass="admin-select-panel" placeholder="Todos" [(ngModel)]="filters.product">
-              <mat-option [value]="undefined">Todos</mat-option>
+            <mat-select panelClass="admin-select-panel" [(ngModel)]="filters.product">
+              <mat-option value="">Todos</mat-option>
               <mat-option *ngFor="let product of products" [value]="product">{{ product }}</mat-option>
             </mat-select>
           </mat-form-field>
@@ -198,8 +198,8 @@
           </mat-form-field>
           <mat-form-field appearance="outline" class="admin-filter-field">
             <mat-label>Status</mat-label>
-            <mat-select panelClass="admin-select-panel" placeholder="Todos" [(ngModel)]="filters.status">
-              <mat-option [value]="undefined">Todos</mat-option>
+            <mat-select panelClass="admin-select-panel" [(ngModel)]="filters.status">
+              <mat-option value="">Todos</mat-option>
               <mat-option *ngFor="let status of alertStatuses" [value]="status">{{ getStatusLabel(status) }}</mat-option>
             </mat-select>
           </mat-form-field>
