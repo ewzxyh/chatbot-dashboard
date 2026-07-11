@@ -180,7 +180,7 @@
 - [x] Orientar a ativacao para uma conversa de teste com copy para publico leigo.
 - [x] Colocar ativacao antes das cotas e remover representacoes redundantes de progresso.
 - [x] Exibir expansao somente no contexto de uso, instrumentar o funil minimo e corrigir acessibilidade.
-- [ ] Validar desktop/mobile, auditar o diff, commitar, enviar e aplicar na VPS DEV.
+- [x] Validar desktop/mobile, auditar o diff, commitar, enviar e aplicar na VPS DEV.
 
 ## Criterios de aceite
 
@@ -190,3 +190,10 @@
 - Projetos nao ativados veem uma unica proxima acao antes das cotas.
 - Projetos ativados veem um resumo compacto; upgrade aparece apenas com uso relevante e permissao.
 - A tela funciona sem overflow em 320px e possui controles acessiveis por teclado.
+
+## Review
+
+- Auditoria Luna bloqueou permissionamento assincrono, status CaseZap aninhado, analytics e cor de atencao; todos foram corrigidos e a reauditoria aprovou.
+- `tsc` focal, `ngc`, `git diff --check` e build production passaram; o Karma legado continua bloqueado antes das assertions por imports ausentes ja conhecidos.
+- Sessao limpa na VPS DEV exibiu a ativacao antes das cotas, sem skeleton e sem erro de console; o CTA abriu CaseZap e nao houve overflow em 1440px, 390px ou 320px.
+- O `AuthGuard` agora publica o projeto antes de aquecer caches e ignora callbacks obsoletos apos troca rapida de projeto.
