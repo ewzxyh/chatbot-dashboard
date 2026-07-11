@@ -138,7 +138,10 @@ describe('AdminOperationComponent template', () => {
       if (dateCount > 0) {
         const textField = filterBar.querySelector('input[type="text"]')?.closest('mat-form-field') as HTMLElement;
         const dateField = filterBar.querySelector('input[type="date"]')?.closest('mat-form-field') as HTMLElement;
+        const textInput = textField.querySelector('input') as HTMLInputElement;
+        const dateInput = dateField.querySelector('input') as HTMLInputElement;
         expect(dateField.getBoundingClientRect().height).toBe(textField.getBoundingClientRect().height);
+        expect(dateInput.getBoundingClientRect().height).toBeGreaterThan(textInput.getBoundingClientRect().height);
       }
     };
 
