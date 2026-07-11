@@ -340,3 +340,256 @@ input#intent-name {
   background: #d3e0ef;
   box-shadow: unset !important;
 }
+
+.faq-editor-header {
+  align-items: center;
+  background: #fff;
+  border-bottom: 1px solid #e5effe;
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding: 8px 0 16px;
+}
+
+.faq-editor-heading {
+  align-items: flex-start;
+  display: flex;
+  gap: 12px;
+  min-width: 0;
+}
+
+.faq-editor-heading h1 {
+  color: #23354d;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.25;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.faq-eyebrow {
+  color: #54708f;
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0 0 4px;
+  text-transform: uppercase;
+}
+
+.faq-editor-subtitle {
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.45;
+  margin: 4px 0 0;
+}
+
+.faq-editor-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.faq-icon-button,
+.faq-text-action,
+.faq-secondary-action,
+.faq-primary-action {
+  align-items: center;
+  border-radius: 6px !important;
+  display: inline-flex;
+  font-size: 14px;
+  gap: 6px;
+  justify-content: center;
+  min-height: 36px;
+  white-space: nowrap;
+}
+
+.faq-icon-button {
+  background: #fff;
+  border: 1px solid #d9e5f2;
+  color: #45617e;
+  flex: 0 0 36px;
+  padding: 0;
+}
+
+.faq-secondary-action {
+  background: #fff;
+  border: 1px solid #b9d3f5;
+  color: #0f62ff;
+  padding: 8px 12px;
+}
+
+.faq-primary-action {
+  background: #0f62ff !important;
+  border: 1px solid #0f62ff !important;
+  color: #fff !important;
+  padding: 8px 16px;
+}
+
+.faq-icon-button:hover,
+.faq-secondary-action:hover {
+  background: #f3f8ff;
+}
+
+.faq-editor-tabs {
+  border-bottom: 1px solid #dbe7f3;
+  display: flex;
+  gap: 4px;
+  margin-bottom: 18px;
+}
+
+.faq-editor-tabs button {
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 600;
+  min-height: 40px;
+  padding: 8px 14px;
+}
+
+.faq-editor-tabs button.is-active {
+  border-bottom-color: #0f62ff;
+  color: #0f62ff;
+}
+
+.faq-state {
+  align-items: center;
+  border: 1px solid #d9e5f2;
+  border-radius: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  margin-bottom: 16px;
+  padding: 14px 16px;
+}
+
+.faq-state span {
+  color: #52667d;
+  font-size: 14px;
+}
+
+.faq-state-error {
+  background: #fff8f8;
+  border-color: #f0caca;
+}
+
+.faq-state-error .faq-secondary-action {
+  margin-left: auto;
+}
+
+.faq-action-feedback {
+  color: #a33a3a;
+  font-size: 13px;
+  line-height: 1.4;
+  margin: 0 0 10px;
+}
+
+.faq-primary-action:disabled,
+.faq-secondary-action:disabled {
+  cursor: not-allowed;
+  opacity: .6;
+}
+
+.faq-edit-add .box-content,
+.faq-edit-add .card {
+  border: 1px solid #e3ebf5;
+  border-radius: 6px;
+  box-shadow: 0 1px 4px rgba(24, 63, 103, .08);
+}
+
+input#intent-name {
+  background-image: none;
+  background-color: #fff !important;
+  border: 1px solid #d9e5f2 !important;
+  border-radius: 6px;
+}
+
+.faq-edit-add button:focus-visible,
+.faq-edit-add input:focus-visible,
+.faq-edit-add textarea:focus-visible,
+.faq-edit-add select:focus-visible,
+.faq-edit-add a:focus-visible,
+.faq-edit-add [tabindex]:focus-visible {
+  outline: 2px solid #0f62ff !important;
+  outline-offset: 2px;
+}
+
+.faq-modal-backdrop {
+  align-items: center;
+  background: rgba(21, 40, 63, .48);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 16px;
+  position: fixed;
+  z-index: 1050;
+}
+
+.faq-delete-dialog {
+  background: #fff;
+  border: 1px solid #e3ebf5;
+  border-radius: 8px;
+  box-shadow: 0 12px 32px rgba(21, 40, 63, .2);
+  max-width: 460px;
+  padding: 20px;
+  width: 100%;
+}
+
+.faq-delete-dialog-header {
+  align-items: center;
+  color: #a33a3a;
+  display: flex;
+  gap: 8px;
+}
+
+.faq-delete-dialog-header h2 {
+  color: #23354d;
+  font-size: 18px;
+  line-height: 1.3;
+  margin: 0;
+}
+
+.faq-delete-dialog > p {
+  color: #52667d;
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 14px 0;
+}
+
+.faq-delete-dialog-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+@media (max-width: 767px) {
+  .faq-editor-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .faq-editor-header > .faq-secondary-action {
+    align-self: flex-start;
+  }
+}
+
+@media (max-width: 360px) {
+  .faq-editor-heading h1 {
+    font-size: 20px;
+  }
+
+  .faq-editor-subtitle {
+    font-size: 13px;
+  }
+
+  .faq-delete-dialog-actions {
+    flex-direction: column-reverse;
+  }
+
+  .faq-delete-dialog-actions button {
+    width: 100%;
+  }
+}

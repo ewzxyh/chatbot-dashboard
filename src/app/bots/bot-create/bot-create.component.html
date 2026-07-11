@@ -8,7 +8,7 @@
 </div> -->
 
 
-<div class="row" *ngIf="botType === 'tilebot'" class="bot-create-bottom-nav-wpr" style="margin-top: 60px;">
+<div class="row" *ngIf="false" class="bot-create-bottom-nav-wpr" style="margin-top: 60px;">
 
   <div class="col-md-12">
 
@@ -165,8 +165,10 @@
                   </span>
                 </h3> -->
 
-                    <div class="create-tilebot-sub-header">
-                      Start by entering the name of the chatbot
+                    <div class="create-tilebot-sub-header bot-create-header-copy">
+                      <p class="bot-create-eyebrow">Novo bot</p>
+                      <h1 class="bot-create-title">Crie seu bot</h1>
+                      <p class="bot-create-description">Escolha um nome para comecar.</p>
                     </div>
                   </div>
 
@@ -198,26 +200,51 @@
                 </mat-form-field> -->
 
                   <!-- <div class="form-group label-floating"> -->
-                  <label class="col-sm-12 label-left-align">
-                    {{'ChatbotName' | translate}}
+                  <label class="col-sm-12 label-left-align bot-create-label" for="tilebot--name">
+                    Nome do bot
                   </label>
                   <div class="col-sm-12">
                     <input [(ngModel)]="faqKbName" (ngModelChange)="botNameChanged($event)" id="tilebot--name"
-                      style="max-width: 350px;" type="text">
+                      class="bot-create-name-input" type="text" autocomplete="off"
+                      [attr.aria-invalid]="tilebotNameHasError">
+                    <span class="bot-create-help">Voce podera alterar depois.</span>
+                    <span *ngIf="tilebotNameHasError" class="bot-create-inline-error" role="alert">
+                      Digite pelo menos 2 caracteres.
+                    </span>
                     <!-- </div> -->
                   </div>
 
-                  <ng-container *ngIf="botSubtypeAreEnabled && botSubtypeItems.length > 1">
-                    <label class="col-sm-12 label-left-align">
-                      {{'ChatbotType' | translate}}
-                    </label>
-                    <div class="col-sm-12">
-                      <ng-select id="bot-subtype" [clearable]="false" [searchable]=false [(ngModel)]="botSubtype"
-                        [items]="botSubtypeItems" bindLabel="name" bindValue="value" placeholder="Choose chatbot type"
-                        (change)="onSelectBotSubType(botSubtype)" style="max-width: 350px;">
-                      </ng-select>
+                  <details class="bot-create-advanced">
+                    <summary>Opcoes avancadas</summary>
+                    <div class="bot-create-advanced-content">
+                      <ng-container *ngIf="botSubtypeAreEnabled && botSubtypeItems.length > 1">
+                        <label class="bot-create-label" for="bot-subtype">Tipo de bot</label>
+                        <ng-select id="bot-subtype" [clearable]="false" [searchable]="false" [(ngModel)]="botSubtype"
+                          [items]="botSubtypeItems" bindLabel="name" bindValue="value" placeholder="Escolha o tipo de bot"
+                          (change)="onSelectBotSubType(botSubtype)">
+                        </ng-select>
+                      </ng-container>
+
+                      <div class="bot-create-import">
+                        <div>
+                          <strong>Importar um bot existente</strong>
+                          <p>Use um arquivo JSON para trazer um bot para este projeto.</p>
+                        </div>
+                        <input name="upload-chatbot-from-json-advanced" id="upload-chatbot-from-json-advanced"
+                          class="inputfile" type="file" (change)="fileChangeUploadChatbotFromJSON($event)"
+                          accept=".json,application/json" />
+                        <label class="btn btn-tdblu-no-boxshadow bot-create-secondary-action"
+                          for="upload-chatbot-from-json-advanced">
+                          <span *ngIf="!showUploadingSpinner" class="material-icons" aria-hidden="true">cloud_upload</span>
+                          <i *ngIf="showUploadingSpinner" class="fa fa-spinner fa-spin" aria-hidden="true"></i>
+                          Importar JSON
+                        </label>
+                        <span *ngIf="showUploadingSpinner" class="bot-create-inline-status" role="status" aria-live="polite">
+                          Importando seu bot...
+                        </span>
+                      </div>
                     </div>
-                  </ng-container>
+                  </details>
 
                 </div>
 
@@ -228,10 +255,17 @@
 
                   <div class="col-sm-12">
                     <span class="span-24"></span>
-                    <button [disabled]="faqKbName?.length < 2" class="btn  btn-tdblu-no-boxshadow "
-                      (click)="createBlankTilebot()">
-                      Create chatbot
+                    <button type="button" [disabled]="!isTilebotNameValid || isCreatingTilebot"
+                      class="btn btn-tdblu-no-boxshadow bot-create-primary-action" (click)="createBlankTilebot()">
+                      <span *ngIf="!isCreatingTilebot">Criar e testar</span>
+                      <span *ngIf="isCreatingTilebot">Criando seu bot...</span>
                     </button>
+                    <p *ngIf="isCreatingTilebot" class="bot-create-inline-status" role="status" aria-live="polite">
+                      Seu bot esta sendo preparado.
+                    </p>
+                    <p *ngIf="tilebotCreateError" class="bot-create-inline-error" role="alert">
+                      Nao foi possivel criar seu bot. Tente novamente.
+                    </p>
                   </div>
                 </div>
 
@@ -297,16 +331,14 @@
                 <!-- ------------------------------------------------------ -->
                 <!-- External bot - external bot url -->
                 <!-- ------------------------------------------------------ -->
-                <section *ngIf="botType === 'external'">
-                  <div class="row" style="margin-top: 8px;">
-                    <label class="col-sm-2 custom-label">Endpoint Url</label>
-                    <div class="col-12 col-sm-8 col-md-8 col-lg-8">
-                      <textarea [(ngModel)]="faqKbUrl" class="input" type="text" rows="2"
-                        placeholder="{{ 'BotsPage.EnterExternalBotUrl' | translate }}">
-                </textarea>
-                    </div>
+                <details class="bot-create-advanced bot-create-external-advanced" *ngIf="botType === 'external'">
+                  <summary>Configuracoes avancadas</summary>
+                  <div class="bot-create-advanced-content">
+                    <label class="bot-create-label" for="external-bot-endpoint">Endpoint URL</label>
+                    <textarea id="external-bot-endpoint" [(ngModel)]="faqKbUrl" class="input" type="text" rows="2"
+                      placeholder="{{ 'BotsPage.EnterExternalBotUrl' | translate }}"></textarea>
                   </div>
-                </section>
+                </details>
 
 
                 <!-- ------------------------------------------------------  -->

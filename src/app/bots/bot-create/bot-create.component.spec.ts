@@ -1,25 +1,26 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { BotCreateComponent } from './bot-create.component';
 
-describe('FaqKbEditAddComponent', () => {
-  let component: BotCreateComponent;
-  let fixture: ComponentFixture<BotCreateComponent>;
+describe('BotCreateComponent', () => {
+  const createComponent = (name: string): BotCreateComponent => {
+    const component = Object.create(BotCreateComponent.prototype) as BotCreateComponent;
+    component.botType = 'tilebot';
+    component.faqKbName = name;
+    return component;
+  };
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ BotCreateComponent ]
-    })
-    .compileComponents();
-  }));
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(BotCreateComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+  it('requires at least two non-space characters for a tilebot name', () => {
+    expect(createComponent(' A ').isTilebotNameValid).toBeFalsy();
+    expect(createComponent(' Atendimento ').isTilebotNameValid).toBeTruthy();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('marks an invalid tilebot name inline while typing', () => {
+    const component = createComponent('A');
+
+    component.botNameChanged('A');
+    expect(component.tilebotNameHasError).toBeTruthy();
+
+    component.faqKbName = 'Atendimento';
+    component.botNameChanged('Atendimento');
+    expect(component.tilebotNameHasError).toBeFalsy();
   });
 });

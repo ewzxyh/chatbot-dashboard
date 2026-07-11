@@ -45,6 +45,7 @@ const swal = require('sweetalert');
 })
 export class FaqComponent extends BotsBaseComponent implements OnInit {
   @ViewChild('editbotbtn', { static: false }) elementRef: ElementRef;
+  private deleteModalTrigger: HTMLElement;
 
   faq: Faq[];
   question: string;
@@ -86,6 +87,10 @@ export class FaqComponent extends BotsBaseComponent implements OnInit {
   faq_lenght: number;
   showSpinner = true;
   showSpinnerInUpdateBotCard = true;
+  botDetailsLoadError = false;
+  isSavingBot = false;
+  isDeletingFaq = false;
+  editorMode: 'essential' | 'advanced' = 'essential';
   // is_external_bot: boolean;
   is_external_bot = true;
 
@@ -988,6 +993,7 @@ export class FaqComponent extends BotsBaseComponent implements OnInit {
    * AND THE FAQ-KB ID, ID AND REMOTE ID IN THE 'BOT ATTRIBUTE' SECTION
    */
   getFaqKbById() {
+    this.botDetailsLoadError = false;
     this.showSpinnerInUpdateBotCard = true
 
     this.faqKbService.getFaqKbById(this.id_faq_kb).subscribe((faqkb: any) => {
@@ -1058,7 +1064,8 @@ export class FaqComponent extends BotsBaseComponent implements OnInit {
 
     }, (error) => {
       this.logger.error('[FAQ-COMP] GET FAQ-KB BY ID (SUBSTITUTE BOT) - ERROR ', error);
-      this.showSpinnerInUpdateBotCard = false
+      this.showSpinnerInUpdateBotCard = false;
+      this.botDetailsLoadError = true;
     }, () => {
       this.logger.log('[FAQ-COMP] GET FAQ-KB ID (SUBSTITUTE BOT) - COMPLETE ');
       this.showSpinnerInUpdateBotCard = false
@@ -1094,6 +1101,7 @@ export class FaqComponent extends BotsBaseComponent implements OnInit {
    * *** EDIT BOT ***
    * HAS BEEN MOVED in this COMPONENT FROM faq-kb-edit-add.component  */
   editBot() {
+    this.isSavingBot = true;
     // RESOLVE THE BUG 'edit button remains focused after clicking'
     this.elementRef.nativeElement.blur();
 
@@ -1114,6 +1122,7 @@ export class FaqComponent extends BotsBaseComponent implements OnInit {
         this.logger.log('[FAQ-COMP] EDIT BOT - FAQ KB UPDATED ', faqKb);
       }, (error) => {
         this.logger.error('[FAQ-COMP] EDIT BOT -  ERROR ', error);
+        this.isSavingBot = false;
 
         if (this.botType !== 'dialogflow') {
           // =========== NOTIFY ERROR ===========
@@ -1121,6 +1130,7 @@ export class FaqComponent extends BotsBaseComponent implements OnInit {
         }
       }, () => {
         this.logger.log('[FAQ-COMP] EDIT BOT - * COMPLETE *');
+        this.isSavingBot = false;
         if (this.botType !== 'dialogflow' && this.botType !== 'rasa') {
           // =========== NOTIFY SUCCESS===========
           this.notify.showWidgetStyleUpdateNotification(this.translationsMap.get('UpdateBotSuccess'), 2, 'done');
@@ -1220,6 +1230,14 @@ export class FaqComponent extends BotsBaseComponent implements OnInit {
     // if (this.faq_kb_remoteKey) {
     this.router.navigate(['project/' + this.project._id + '/faq/test', this.id_faq_kb]);
     // }
+  }
+
+  setEditorMode(mode: 'essential' | 'advanced') {
+    this.editorMode = mode;
+  }
+
+  retryBotDetails() {
+    this.getFaqKbById();
   }
 
   goToRoutingAndDepts() {
@@ -1529,8 +1547,10 @@ export class FaqComponent extends BotsBaseComponent implements OnInit {
   // deptName: string,
   openDeleteModal(id: string) {
     this.logger.log('[FAQ-COMP] ON OPEN MODAL TO DELETE FAQ -> FAQ ID ', id);
+    this.deleteModalTrigger = document.activeElement as HTMLElement;
     this.displayDeleteFaqModal = 'block';
     this.id_toDelete = id;
+    setTimeout(() => document.getElementById('faq-delete-cancel')?.focus());
     // this.faq_toDelete = deptName;
   }
 
@@ -1538,9 +1558,11 @@ export class FaqComponent extends BotsBaseComponent implements OnInit {
    * DELETE FAQ (WHEN THE 'CONFIRM' BUTTON IN MODAL IS CLICKED)  */
   onCloseDeleteModalHandled() {
     this.displayDeleteFaqModal = 'none';
+    this.isDeletingFaq = true;
 
     this.faqService.deleteFaq(this.id_toDelete).subscribe((data) => {
       this.logger.log('[FAQ-COMP] DELETE FAQ ', data);
+      this.isDeletingFaq = false;
 
 
       this.ngOnInit();
@@ -1561,6 +1583,7 @@ export class FaqComponent extends BotsBaseComponent implements OnInit {
       // });
     }, (error) => {
       this.logger.error('[FAQ-COMP] DELETE FAQ ERROR ', error);
+      this.isDeletingFaq = false;
       // =========== NOTIFY ERROR ===========
       this.notify.showNotification(this.translationsMap.get('FaqPage.AnErrorOccurredWhilDeletingTheAnswer'), 4, 'report_problem');
     }, () => {
@@ -1573,12 +1596,39 @@ export class FaqComponent extends BotsBaseComponent implements OnInit {
 
   // CLOSE MODAL WITHOUT SAVE THE UPDATES OR WITHOUT CONFIRM THE DELETION
   onCloseModal() {
+    const deleteModalWasOpen = this.displayDeleteFaqModal !== 'none';
     this.displayDeleteFaqModal = 'none';
     this.displayInfoModal = 'none';
     this.displayImportModal = 'none';
+    if (deleteModalWasOpen) setTimeout(() => this.deleteModalTrigger?.focus());
+  }
+
+  onDeleteModalKeydown(event: KeyboardEvent) {
+    if (event.key === 'Escape' && !this.isDeletingFaq) {
+      event.preventDefault();
+      this.onCloseModal();
+      return;
+    }
+
+    if (event.key !== 'Tab') return;
+    const dialog = event.currentTarget as HTMLElement;
+    const controls = Array.from(dialog.querySelectorAll<HTMLElement>('button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'));
+    if (!controls.length) return;
+    const first = controls[0];
+    const last = controls[controls.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
   }
 
   openImportModal() {
+    this.parse_done = false;
+    this.parse_err = false;
+    this.modalChoosefileDisabled = false;
     this.displayImportModal = 'block';
   }
 

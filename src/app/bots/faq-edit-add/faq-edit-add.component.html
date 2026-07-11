@@ -1,23 +1,44 @@
-<!-- NEW FOR THIS TEMPLATE -->
-<!-- margin-top:6px; -->
-<div class="navbar-brand" style="z-index: 1050;position: relative; padding-left:30px" [ngStyle]="{'margin-top':isChromeVerGreaterThan100 === true ? '-64px' : '6px' }">
-  <!-- goBack() -->
-  <!-- goBackToFaqList() -->
-  <i class="material-icons" style="vertical-align: middle !important; cursor: pointer;" (click)="goBack()">
-    keyboard_arrow_left
-  </i>
-  <span *ngIf="CREATE_VIEW">
-    <!-- Aggiungi FAQ -->
-    {{ "AddIntent" | translate }}
-  </span>
-  <span *ngIf="EDIT_VIEW">
-    <!-- Modifica FAQ -->
-    {{ "EditIntent" | translate }}
-  </span>
-</div>
-
-<div class="main-content" style="padding-top:0px">
+<div class="main-content faq-edit-add" style="padding-top:0px">
   <div class="container-fluid">
+
+    <header class="faq-editor-header">
+      <div class="faq-editor-heading">
+        <button type="button" class="faq-icon-button" aria-label="Voltar" (click)="goBack()">
+          <i class="material-icons" aria-hidden="true">arrow_back</i>
+        </button>
+        <div>
+          <p class="faq-eyebrow" *ngIf="CREATE_VIEW">{{ "AddIntent" | translate }}</p>
+          <p class="faq-eyebrow" *ngIf="EDIT_VIEW">{{ "EditIntent" | translate }}</p>
+          <h1 *ngIf="CREATE_VIEW">Crie uma resposta clara</h1>
+          <h1 *ngIf="EDIT_VIEW">Ajuste esta resposta</h1>
+          <p class="faq-editor-subtitle">Defina o que o bot deve entender e responder.</p>
+        </div>
+      </div>
+      <button type="button" class="faq-secondary-action" (click)="openTestSiteInPopupWindow()">
+        <i class="material-icons" aria-hidden="true">play_arrow</i>
+        Testar
+      </button>
+    </header>
+
+    <nav class="faq-editor-tabs" role="tablist" aria-label="Nível de configuração">
+      <button type="button" role="tab" [attr.aria-selected]="editorMode === 'essential'"
+        [class.is-active]="editorMode === 'essential'" (click)="setEditorMode('essential')">
+        Essencial
+      </button>
+      <button type="button" role="tab" [attr.aria-selected]="editorMode === 'advanced'"
+        [class.is-active]="editorMode === 'advanced'" (click)="setEditorMode('advanced')">
+        Avançado
+      </button>
+    </nav>
+
+    <div class="faq-state faq-state-error" *ngIf="faqLoadError" role="alert">
+      <strong>Não foi possível carregar esta resposta.</strong>
+      <span>Verifique sua conexão e tente novamente.</span>
+      <button type="button" class="faq-secondary-action" (click)="retryLoad()">
+        <i class="material-icons" aria-hidden="true">refresh</i>
+        Tentar novamente
+      </button>
+    </div>
 
     <div class="row">
       <!-- ---------------------------------------------- -->
@@ -26,13 +47,13 @@
       <div class="col-md-7" *ngIf="CREATE_VIEW">
         <div class="card card--no-border" style="margin-top:0px; padding-bottom:5px; margin-bottom: 5px;">
           <loading-spinner *ngIf="showSpinner"></loading-spinner>
-          <div *ngIf="!showSpinner" class="card-content">
+          <div *ngIf="!showSpinner && !faqLoadError" class="card-content">
 
             <!-- START Intent -->
             <div>
               <div class="row">
                 <div class="col-md-12 form-group label-floating" style="margin-bottom: 30px;">
-                  <label class="control-label intentTitle">
+                  <label class="control-label intentTitle" for="intent-name">
                     {{ 'EnterIntentName' | translate}}
                   </label>
                   <input 
@@ -67,13 +88,16 @@
               </div> 
               
               <div class="form-group label-floating">
-                <label class="control-label">
+                  <label class="control-label" for="create-question">
                   {{ 'TypeAddYourQuestionHere' | translate}}
                 </label>
                 <textarea 
+                  id="create-question"
+                  name="create-question"
                   [(ngModel)]="question" 
                   class="textarea form-control" 
                   rows="3" 
+                  aria-required="true"
                   style="resize: vertical; border-radius:5px"  
                   placeholder=''>
                 </textarea>
@@ -84,7 +108,7 @@
 
 
             <!-- START Form -->    
-            <div class="box-content">
+            <div class="box-content" *ngIf="editorMode === 'advanced'">
               <div class="row">
                 <div class="col-sm-12 col-md-12">
                   <h3 class="card_title__underlined">
@@ -129,13 +153,16 @@
               </div>
 
               <div class="form-group label-floating">
-                <label class="control-label">
+                  <label class="control-label" for="create-answer">
                   {{ "FaqEditAddPage.InfoAnswer" | translate }}
                 </label>
                 <textarea 
+                  id="create-answer"
+                  name="create-answer"
                   [(ngModel)]="answer" 
                   class="textarea form-control" 
                   rows="3" 
+                  aria-required="true"
                   style="resize: vertical; border-radius:5px"
                   placeholder=''>
                 </textarea>
@@ -146,7 +173,7 @@
 
 
             <!-- START Webhook -->   
-            <div class="box-content">
+            <div class="box-content" *ngIf="editorMode === 'advanced'">
               <div class="row">
                 <div class="col-sm-12 col-md-12">
                   <h3 class="card_title__underlined">
@@ -168,6 +195,7 @@
                       name="webhook-createfaq-switch"
                       class="nw-onoffswitch-checkbox" 
                       id="webhook-createfaq-switch"
+                      aria-label="Ativar webhook para esta resposta"
                       [checked]="faq_webhook_is_enabled === true"
                     >
                     <label class="nw-onoffswitch-label" for="webhook-createfaq-switch"></label>
@@ -187,10 +215,15 @@
 
             <!-- START buttons -->
             <div class="col-sm-12">
-              <button class="btn btn-primary pull-right create-answer-btn"
-                [disabled]="question?.length < 2 || answer?.length < 2 || intent_name?.length < 1" (click)="create()">
+              <div class="faq-action-feedback" *ngIf="saveError" role="alert">
+                Não foi possível salvar. Revise os campos e tente novamente.
+              </div>
+              <button type="button" class="faq-primary-action btn btn-primary pull-right create-answer-btn"
+                [disabled]="isSaving || question?.length < 2 || answer?.length < 2 || intent_name?.length < 1"
+                [attr.aria-busy]="isSaving" (click)="create()">
                 <!-- Crea FAQ  -->
-                {{ "AddIntent" | translate }}
+                <span *ngIf="!isSaving">{{ "AddIntent" | translate }}</span>
+                <span *ngIf="isSaving">Salvando...</span>
               </button>
             </div>
             <!-- END buttons -->
@@ -205,7 +238,7 @@
       <div class="col-md-7" *ngIf="EDIT_VIEW">
         <div class="card  card--no-border" style="margin-top:0px; padding-bottom:5px; margin-bottom: 5px;">
           <loading-spinner *ngIf="showSpinner"></loading-spinner>
-          <div *ngIf="!showSpinner" class="card-content">
+          <div *ngIf="!showSpinner && !faqLoadError" class="card-content">
 
             <!-- START Intent -->
             <div>
@@ -265,13 +298,16 @@
               </div> 
               
               <div class="form-group label-floating">
-                <label class="control-label">
+                  <label class="control-label" for="edit-question">
                   {{ 'TypeAddYourQuestionHere' | translate}}
                 </label>
                 <textarea 
+                  id="edit-question"
+                  name="edit-question"
                   [(ngModel)]="question_toUpdate" 
                   class="textarea form-control" 
                   rows="3" 
+                  aria-required="true"
                   style="resize: vertical; border-radius:5px"  
                   placeholder=''>
                 </textarea>
@@ -313,7 +349,7 @@
 
             <!-- START Form -->    
             <!-- <div class="col-sm-12" class="div-spacer" style="height:15px"></div> -->
-            <div class="box-content">
+            <div class="box-content" *ngIf="editorMode === 'advanced'">
               <div class="row">
                 <div class="col-sm-12 col-md-12">
                   <h3 class="card_title__underlined">
@@ -351,13 +387,16 @@
               </div>
 
               <div class="form-group label-floating">
-                <label class="control-label">
+                  <label class="control-label" for="edit-answer">
                   {{ "FaqEditAddPage.InfoAnswer" | translate }}
                 </label>
                 <textarea 
+                  id="edit-answer"
+                  name="edit-answer"
                   [(ngModel)]="answer_toUpdate" 
                   class="textarea form-control" 
                   rows="3" 
+                  aria-required="true"
                   style="resize: vertical; border-radius:5px"
                   placeholder=''>
                 </textarea>
@@ -396,7 +435,7 @@
           
 
             <!-- START Webhook -->
-            <div class="box-content">
+            <div class="box-content" *ngIf="editorMode === 'advanced'">
 
               <div class="row">
                 <div class="col-sm-12 col-md-12">
@@ -419,6 +458,7 @@
                       name="webhook-editfaq-switch"
                       class="nw-onoffswitch-checkbox" 
                       id="webhook-editfaq-switch"
+                      aria-label="Ativar webhook para esta resposta"
                       [checked]="faq_webhook_is_enabled === true"
                     >
                     <label class="nw-onoffswitch-label" for="webhook-editfaq-switch"></label>
@@ -480,12 +520,17 @@
 
             <!-- START buttons -->
             <div class="col-sm-12">
-              <button class="btn btn-primary pull-right update-answer-btn" (click)="edit()"
-                [disabled]="question_toUpdate?.length < 2 || answer_toUpdate?.length < 2 || intent_name?.length < 1">
-                {{ "UpdateIntent" | translate }}
+              <div class="faq-action-feedback" *ngIf="saveError" role="alert">
+                Não foi possível salvar. Revise os campos e tente novamente.
+              </div>
+              <button type="button" class="faq-primary-action btn btn-primary pull-right update-answer-btn" (click)="edit()"
+                [disabled]="isSaving || question_toUpdate?.length < 2 || answer_toUpdate?.length < 2 || intent_name?.length < 1"
+                [attr.aria-busy]="isSaving">
+                <span *ngIf="!isSaving">{{ "UpdateIntent" | translate }}</span>
+                <span *ngIf="isSaving">Salvando...</span>
               </button>
-              <button class="btn btn-danger pull-right delete-answer-btn" (click)='presentSwalModalDeleteFaq()'
-                style="margin-right: 8px;">
+              <button type="button" class="btn btn-danger pull-right delete-answer-btn" (click)='presentSwalModalDeleteFaq()'
+                style="margin-right: 8px;" [disabled]="isSaving">
                 {{ 'DeleteIntent' | translate }}
               </button>
             </div>
@@ -798,6 +843,32 @@
       </div> <!-- ./ RIGHT SIDEBAR  col-md-5 -->
 
     </div> <!-- ./ row -->
+
+    <div *ngIf="deleteModalOpen" class="faq-modal-backdrop" role="alertdialog" aria-modal="true"
+      aria-labelledby="faq-edit-delete-title" aria-describedby="faq-edit-delete-description"
+      (keydown)="onDeleteModalKeydown($event)">
+      <section class="faq-delete-dialog" tabindex="-1">
+        <div class="faq-delete-dialog-header">
+          <i class="material-icons" aria-hidden="true">warning</i>
+          <h2 id="faq-edit-delete-title">Excluir resposta?</h2>
+        </div>
+        <p id="faq-edit-delete-description">
+          Esta resposta será removida do bot e não poderá ser recuperada.
+        </p>
+        <p *ngIf="deleteError" class="faq-action-feedback" role="alert">
+          Não foi possível excluir. Tente novamente.
+        </p>
+        <div class="faq-delete-dialog-actions">
+          <button #deleteCancelButton type="button" class="btn btn-white" (click)="closeDeleteModal()"
+            [disabled]="isDeleting">Cancelar</button>
+          <button type="button" class="btn btn-danger" (click)="confirmDeleteFaq()" [disabled]="isDeleting"
+            [attr.aria-busy]="isDeleting">
+            <span *ngIf="!isDeleting">Excluir</span>
+            <span *ngIf="isDeleting">Excluindo...</span>
+          </button>
+        </div>
+      </section>
+    </div>
 
   </div> <!-- /. container-fluid -->
 

@@ -1096,3 +1096,240 @@ input[type="text"]:disabled::placeholder {
 .delete-bot-image-btn>span>svg {
   fill: var(--red-btn-color);
 }
+
+.faq-editor-header {
+  align-items: center;
+  background: #fff;
+  border-bottom: 1px solid #e5effe;
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding: 8px 0 16px;
+}
+
+.faq-editor-heading {
+  align-items: flex-start;
+  display: flex;
+  gap: 12px;
+  min-width: 0;
+}
+
+.faq-editor-heading h1 {
+  color: #23354d;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.25;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.faq-eyebrow {
+  color: #54708f;
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0 0 4px;
+  text-transform: uppercase;
+}
+
+.faq-editor-subtitle {
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.45;
+  margin: 4px 0 0;
+}
+
+.faq-editor-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.faq-icon-button,
+.faq-text-action,
+.faq-secondary-action,
+.faq-primary-action {
+  align-items: center;
+  border-radius: 6px !important;
+  display: inline-flex;
+  font-size: 14px;
+  gap: 6px;
+  justify-content: center;
+  min-height: 36px;
+  white-space: nowrap;
+}
+
+.faq-icon-button {
+  background: #fff;
+  border: 1px solid #d9e5f2;
+  color: #45617e;
+  flex: 0 0 36px;
+  padding: 0;
+}
+
+.faq-text-action {
+  background: transparent;
+  border: 0;
+  color: #0f62ff;
+  padding: 8px 6px;
+}
+
+.faq-secondary-action {
+  background: #fff;
+  border: 1px solid #b9d3f5;
+  color: #0f62ff;
+  padding: 8px 12px;
+}
+
+.faq-primary-action {
+  background: #0f62ff !important;
+  border: 1px solid #0f62ff !important;
+  color: #fff !important;
+  padding: 8px 16px;
+}
+
+.faq-icon-button:hover,
+.faq-secondary-action:hover {
+  background: #f3f8ff;
+}
+
+.faq-text-action:hover {
+  background: #f3f8ff;
+}
+
+.faq-editor-tabs {
+  border-bottom: 1px solid #dbe7f3;
+  display: flex;
+  gap: 4px;
+  margin-bottom: 18px;
+}
+
+.faq-editor-tabs button {
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 600;
+  min-height: 40px;
+  padding: 8px 14px;
+}
+
+.faq-editor-tabs button.is-active {
+  border-bottom-color: #0f62ff;
+  color: #0f62ff;
+}
+
+.faq-state {
+  align-items: center;
+  border: 1px solid #d9e5f2;
+  border-radius: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  margin-bottom: 16px;
+  padding: 14px 16px;
+}
+
+.faq-state span {
+  color: #52667d;
+  font-size: 14px;
+}
+
+.faq-state-error {
+  background: #fff8f8;
+  border-color: #f0caca;
+}
+
+.faq-state-error .faq-secondary-action {
+  margin-left: auto;
+}
+
+.faq-primary-action:disabled,
+.faq-secondary-action:disabled,
+.faq-text-action:disabled {
+  cursor: not-allowed;
+  opacity: .6;
+}
+
+.faq-comp .card,
+.faq-comp .modal-content {
+  border-radius: 6px !important;
+  box-shadow: 0 1px 4px rgba(24, 63, 103, .08);
+}
+
+.faq-comp input,
+.faq-comp textarea,
+.faq-comp select {
+  font-size: 14px;
+}
+
+.faq-comp button:focus-visible,
+.faq-comp input:focus-visible,
+.faq-comp textarea:focus-visible,
+.faq-comp select:focus-visible,
+.faq-comp a:focus-visible,
+.faq-comp [tabindex]:focus-visible {
+  outline: 2px solid #0f62ff !important;
+  outline-offset: 2px;
+}
+
+.faq-comp *:focus {
+  outline: none;
+}
+
+.faq-comp *:focus-visible {
+  outline: 2px solid #0f62ff;
+  outline-offset: 2px;
+}
+
+@media (max-width: 767px) {
+  .faq-editor-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .faq-editor-actions {
+    justify-content: flex-start;
+    width: 100%;
+  }
+
+  .faq-editor-actions .faq-secondary-action {
+    margin-left: auto;
+  }
+}
+
+@media (max-width: 360px) {
+  .faq-editor-heading h1 {
+    font-size: 20px;
+  }
+
+  .faq-editor-subtitle {
+    font-size: 13px;
+  }
+
+  .faq-editor-actions {
+    align-items: stretch;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .faq-editor-actions .faq-secondary-action {
+    grid-column: 1 / -1;
+    margin-left: 0;
+  }
+
+  .faq-text-action,
+  .faq-secondary-action {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+
+  .faq-state-error .faq-secondary-action {
+    margin-left: 0;
+    width: 100%;
+  }
+}

@@ -147,6 +147,9 @@ export class BotCreateComponent extends PricingBaseComponent implements OnInit, 
 
   botSubtype: any;
   botSubtypeAreEnabled: boolean;
+  isCreatingTilebot = false;
+  tilebotCreateError = false;
+  tilebotNameHasError = false;
 
   botSubtypeItems: Array<any> = [
     { name: "Chatbot", value: 'chatbot' },
@@ -213,6 +216,10 @@ export class BotCreateComponent extends PricingBaseComponent implements OnInit, 
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
     this.backSub?.unsubscribe();
+  }
+
+  get isTilebotNameValid(): boolean {
+    return (this.faqKbName || '').trim().length >= 2;
   }
 
    listenToGoBack() {
@@ -794,6 +801,10 @@ export class BotCreateComponent extends PricingBaseComponent implements OnInit, 
   botNameChanged($event) {
     // this.logger.log('»» »» BOT-CREATE-COMP - bot Name Changed ', $event);
     this.botNameLength = $event.length
+    if (this.botType === 'tilebot') {
+      this.tilebotNameHasError = !this.isTilebotNameValid;
+      this.tilebotCreateError = false;
+    }
     if (this.botType !== 'dialogflow') {
       if ($event.length > 1) {
         this.btn_create_bot_is_disabled = false;
@@ -821,6 +832,12 @@ export class BotCreateComponent extends PricingBaseComponent implements OnInit, 
 
   createBlankTilebot() {
     this.logger.log('[BOTS-CREATE] createBlankTilebot chatBotCount ', this.chatBotCount, ' chatBotLimit ', this.chatBotLimit)
+    if (!this.isTilebotNameValid || this.isCreatingTilebot) {
+      this.tilebotNameHasError = true;
+      return;
+    }
+
+    this.tilebotNameHasError = false;
     if (this.USER_ROLE !== 'agent') {
       if (this.chatBotLimit || this.chatBotLimit === 0) {
         if (this.chatBotCount < this.chatBotLimit) {
@@ -840,6 +857,9 @@ export class BotCreateComponent extends PricingBaseComponent implements OnInit, 
   }
 
   createTilebotBotFromScratch() {
+    this.faqKbName = this.faqKbName.trim();
+    this.isCreatingTilebot = true;
+    this.tilebotCreateError = false;
     this.language = this.botDefaultSelectedLangCode;
     this.faqKbService.createChatbotFromScratch(this.faqKbName, 'tilebot', this.botSubtype, this.language).subscribe((faqKb) => {
       this.logger.log('[BOT-CREATE] createTilebotBotFromScratch - RES ', faqKb);
@@ -863,10 +883,13 @@ export class BotCreateComponent extends PricingBaseComponent implements OnInit, 
     }, (error) => {
 
       this.logger.error('[BOT-CREATE] CREATE FAQKB - POST REQUEST ERROR ', error);
+      this.isCreatingTilebot = false;
+      this.tilebotCreateError = true;
 
 
     }, () => {
       this.logger.log('[BOT-CREATE] CREATE FAQKB - POST REQUEST * COMPLETE *');
+      this.isCreatingTilebot = false;
       this.faqKbName = null;
       this.getFaqKbByProjectId();
       // this.router.navigate(['project/' + this.project._id + '/cds/', this.newBot_Id, 'intent', '0']);

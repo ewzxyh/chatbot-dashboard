@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 import { FaqService } from '../../services/faq.service';
@@ -38,6 +38,13 @@ export class FaqEditAddComponent implements OnInit {
   EDIT_VIEW = false;
 
   showSpinner = true;
+  faqLoadError = false;
+  isSaving = false;
+  isDeleting = false;
+  saveError = false;
+  deleteModalOpen = false;
+  deleteError = false;
+  editorMode: 'essential' | 'advanced' = 'essential';
 
   id_faq_kb: string;
   id_faq: string;
@@ -65,6 +72,8 @@ export class FaqEditAddComponent implements OnInit {
   isChromeVerGreaterThan100: boolean;
   public TESTSITE_BASE_URL: string;
   public defaultDepartmentId: string;
+  @ViewChild('deleteCancelButton', { static: false }) deleteCancelButton: ElementRef<HTMLButtonElement>;
+  private deleteModalTrigger: HTMLElement;
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -263,35 +272,56 @@ export class FaqEditAddComponent implements OnInit {
   }
 
   presentSwalModalDeleteFaq() {
-    swal({
-      title: this.areYouSureMsg,
-      text: this.answerWillBeDeletedMsg,
-      icon: "warning",
-      buttons: ["Cancel", "Delete"],
-      dangerMode: true,
-    })
-      .then((WillDelete) => {
-        if (WillDelete) {
-          this.logger.log('[FAQ-EDIT-ADD] presentSwalModalDeleteFaq swal WillDelete', WillDelete)
-          this.faqService.deleteFaq(this.id_faq).subscribe((data) => {
-            this.logger.log('[FAQ-EDIT-ADD] presentSwalModalDeleteFaq swal DELETE FAQ RES ', data)
-          }, (error) => {
-            swal(this.errorDeletingAnswerMsg, {
-              icon: "error",
-            });
-            this.logger.error('[FAQ-EDIT-ADD] DELETE FAQ ERROR ', error);
-          }, () => {
-            this.logger.log('[FAQ-EDIT-ADD] DELETE FAQ * COMPLETE *');
-            swal(this.done_msg + "!", this.answerSuccessfullyDeleted, {
-              icon: "success",
-            }).then((okpressed) => {
-              this.location.back();
-            });
-          });
-        } else {
-          this.logger.log('[FAQ-EDIT-ADD] WS-REQUESTS-LIST swal WillDelete (else)')
-        }
-      });
+    this.deleteError = false;
+    this.deleteModalTrigger = document.activeElement as HTMLElement;
+    this.deleteModalOpen = true;
+    setTimeout(() => this.deleteCancelButton?.nativeElement.focus());
+  }
+
+  closeDeleteModal() {
+    if (!this.isDeleting) {
+      this.deleteModalOpen = false;
+      setTimeout(() => this.deleteModalTrigger?.focus());
+    }
+  }
+
+  onDeleteModalKeydown(event: KeyboardEvent) {
+    if (event.key === 'Escape' && !this.isDeleting) {
+      event.preventDefault();
+      this.closeDeleteModal();
+      return;
+    }
+
+    if (event.key !== 'Tab') return;
+    const dialog = event.currentTarget as HTMLElement;
+    const controls = Array.from(dialog.querySelectorAll<HTMLElement>('button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'));
+    if (!controls.length) return;
+    const first = controls[0];
+    const last = controls[controls.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+
+  confirmDeleteFaq() {
+    this.isDeleting = true;
+    this.deleteError = false;
+    this.faqService.deleteFaq(this.id_faq).subscribe((data) => {
+      this.logger.log('[FAQ-EDIT-ADD] DELETE FAQ RES ', data);
+    }, (error) => {
+      this.isDeleting = false;
+      this.deleteError = true;
+      this.logger.error('[FAQ-EDIT-ADD] DELETE FAQ ERROR ', error);
+    }, () => {
+      this.logger.log('[FAQ-EDIT-ADD] DELETE FAQ * COMPLETE *');
+      this.isDeleting = false;
+      this.deleteModalOpen = false;
+      this.location.back();
+    });
   }
 
   /**
@@ -299,6 +329,8 @@ export class FaqEditAddComponent implements OnInit {
   * USED TO SHOW IN THE TEXAREA THE QUESTION AND THE ANSWER THAT USER WANT UPDATE
   */
   getFaqById() {
+    this.faqLoadError = false;
+    this.showSpinner = true;
     this.faqService.getFaqById(this.id_faq).subscribe((faq: any) => {
       this.logger.log('[FAQ-EDIT-ADD] - FAQ GET BY ID RES', faq);
       if (faq) {
@@ -315,6 +347,7 @@ export class FaqEditAddComponent implements OnInit {
     }, (error) => {
       this.logger.error('[FAQ-EDIT-ADD] - FAQ GET BY ID - ERROR ', error);
       this.showSpinner = false;
+      this.faqLoadError = true;
     }, () => {
       this.logger.log('[FAQ-EDIT-ADD] - FAQ GET BY ID - COMPLETE ');
       this.showSpinner = false;
@@ -345,11 +378,27 @@ export class FaqEditAddComponent implements OnInit {
     this.faq_webhook_is_enabled = $event.target.checked
   }
 
+  setEditorMode(mode: 'essential' | 'advanced') {
+    this.editorMode = mode;
+  }
+
+  retryLoad() {
+    if (this.EDIT_VIEW && this.id_faq) {
+      this.getFaqById();
+      return;
+    }
+
+    this.faqLoadError = false;
+    this.showSpinner = false;
+  }
+
 
   /**
    * *** ADD FAQ ***
    */
   create() {
+    this.isSaving = true;
+    this.saveError = false;
     const create_answer_btn = <HTMLElement>document.querySelector('.create-answer-btn');
     create_answer_btn.blur();
 
@@ -364,6 +413,8 @@ export class FaqEditAddComponent implements OnInit {
         // this.getDepartments();
         // this.ngOnInit();
       }, (error) => {
+        this.isSaving = false;
+        this.saveError = true;
 
         this.logger.error('[FAQ-EDIT-ADD] CREATED FAQ - ERROR ', error);
 
@@ -380,6 +431,7 @@ export class FaqEditAddComponent implements OnInit {
         // this.notify.showNotification('An error occurred while creating the FAQ', 4, 'report_problem');
         this.notify.showWidgetStyleUpdateNotification(this.createFaqErrorNoticationMsg, 4, 'report_problem');
       }, () => {
+        this.isSaving = false;
         this.logger.log('[FAQ-EDIT-ADD] CREATED FAQ * COMPLETE *');
         // =========== NOTIFY SUCCESS===========
         // this.notify.showNotification('FAQ successfully created', 2, 'done');
@@ -396,6 +448,8 @@ export class FaqEditAddComponent implements OnInit {
    * *** EDIT FAQ ***
    */
   edit() {
+    this.isSaving = true;
+    this.saveError = false;
     const updated_answer_btn = <HTMLElement>document.querySelector('.update-answer-btn');
     updated_answer_btn.blur();
 
@@ -409,6 +463,8 @@ export class FaqEditAddComponent implements OnInit {
         // RE-RUN TO UPDATE THE TABLE
         // this.ngOnInit();
       }, (error) => {
+        this.isSaving = false;
+        this.saveError = true;
         this.logger.error('[FAQ-EDIT-ADD] UPDATE FAQ - ERROR ', error);
         // =========== NOTIFY ERROR ===========
         // this.notify.showNotification('An error occurred while updating the FAQ', 4, 'report_problem');
@@ -425,6 +481,7 @@ export class FaqEditAddComponent implements OnInit {
         }
 
       }, () => {
+        this.isSaving = false;
         this.logger.log('[FAQ-EDIT-ADD] UPDATE FAQ * COMPLETE *');
         // =========== NOTIFY SUCCESS===========
         // this.notify.showNotification('FAQ successfully updated', 2, 'done');
