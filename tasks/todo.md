@@ -197,3 +197,29 @@
 - `tsc` focal, `ngc`, `git diff --check` e build production passaram; o Karma legado continua bloqueado antes das assertions por imports ausentes ja conhecidos.
 - Sessao limpa na VPS DEV exibiu a ativacao antes das cotas, sem skeleton e sem erro de console; o CTA abriu CaseZap e nao houve overflow em 1440px, 390px ou 320px.
 - O `AuthGuard` agora publica o projeto antes de aquecer caches e ignora callbacks obsoletos apos troca rapida de projeto.
+
+# Bots orientados a primeira resposta
+
+- [x] Canonicalizar rotas, corrigir CTA da Home e alinhar o estado de prontidao.
+- [x] Tornar o shell lateral semantico, navegavel por teclado e responsivo.
+- [x] Redesenhar a lista com proxima acao, erro/retry e empty state leigo.
+- [x] Redesenhar modelos e detalhes com CTA sempre visivel e recuperacao de erro.
+- [x] Simplificar criacao, edicao e modais sem esconder capacidades avancadas.
+- [x] Auditar integrado, validar 320/390/1440, commitar, enviar e aplicar na VPS DEV.
+
+## Criterios de aceite
+
+- `/bots` e aliases chegam a uma rota canonica funcional.
+- Lista, modelos e editor distinguem loading, erro, vazio, sem permissao e conteudo.
+- A acao principal permanece visivel em touch, teclado e desktop.
+- A jornada usa linguagem leiga e conduz a criar, testar e acompanhar uma resposta automatica.
+- Nenhuma pagina `/bots/` cria overflow horizontal em 320px, 390px ou 1440px.
+- Modais e acoes destrutivas possuem controles nativos, labels e foco visivel.
+
+## Review
+
+- Auditorias funcionais e de UI bloquearam corrida na importacao, foco de dialogs, contraste e semantica dos dropdowns; a reauditoria aprovou todas as correcoes.
+- A validacao live encontrou e corrigiu uma rota guard-only invalida, a inicializacao nao deterministica de `FAQKB_URL` e a ordenacao de bots legados sem nome.
+- O fluxo normal de login e selecao de projeto exibiu 1 bot e 6 modelos, abriu o detalhe acessivel e canonicalizou `/bots` sem erros de console ou rede.
+- `ngc`, `tsc` focal, `git diff --check` e build production passaram; 1440px, 390px e 320px ficaram sem overflow horizontal.
+- O dashboard foi publicado na VPS DEV e o container `chatcase-dashboard` permaneceu ativo apos o rebuild.
