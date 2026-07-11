@@ -85,7 +85,7 @@ describe('AdminPanelComponent', () => {
     router = TestBed.inject(Router);
   });
 
-  it('expõe exatamente as sete tabs aprovadas', () => {
+  it('expõe exatamente as seis tabs visíveis', () => {
     const fixture = TestBed.createComponent(AdminPanelComponent);
     const component = fixture.componentInstance;
 
@@ -96,7 +96,6 @@ describe('AdminPanelComponent', () => {
       'Pagamentos',
       'Operação',
       'Auditoria',
-      'Privacidade'
     ]);
     expect(component.navItems.map((item) => item.route)).toEqual([
       'dashboard',
@@ -105,7 +104,6 @@ describe('AdminPanelComponent', () => {
       'payments',
       'operation',
       'audit',
-      'privacy'
     ]);
   });
 
@@ -135,7 +133,8 @@ describe('AdminPanelComponent', () => {
     const dashboardLink = findNavLink(links, 'Dashboard');
     const operationLink = findNavLink(links, 'Operação');
 
-    expect(links.length).toBe(7);
+    expect(links.length).toBe(6);
+    expect(findNavLink(links, 'Privacidade')).toBeUndefined();
     expect(activeLinks.length).toBe(1);
     expect(activeLinks[0]).toBe(operationLink);
     expect(dashboardLink.getAttribute('aria-current')).toBeNull();
@@ -155,6 +154,10 @@ describe('AdminPanelComponent', () => {
     const operationLink = findNavLink(links, 'Operação');
 
     expect(operationLink.tabIndex).toBe(0);
+    const nav = fixture.nativeElement.querySelector('.admin-nav') as HTMLElement;
+    expect(getComputedStyle(nav).overflowX).toBe('auto');
+    expect(getComputedStyle(operationLink).fontSize).toBe('14px');
+    expect(getComputedStyle(operationLink).height).toBe('48px');
     operationLink.focus();
     expect(document.activeElement).toBe(operationLink);
     expect(fixture.nativeElement.querySelector('[mat-tab-nav-bar]')).toBeNull();

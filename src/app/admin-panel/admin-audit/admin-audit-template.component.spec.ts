@@ -94,14 +94,18 @@ describe('AdminAuditComponent template', () => {
     const wrapper = fixture.nativeElement.querySelector('.audit-table-wrap') as HTMLElement;
     const table = fixture.nativeElement.querySelector('.audit-table') as HTMLTableElement;
     const paginator = fixture.nativeElement.querySelector('mat-paginator') as HTMLElement;
+    const summaryCell = fixture.nativeElement.querySelector('.audit-summary-cell') as HTMLElement;
 
     expect(wrapper).not.toBeNull();
     expect(table.parentElement).toBe(wrapper);
-    expect(paginator.parentElement).toBe(wrapper);
+    expect(paginator.parentElement).toBe(fixture.nativeElement.querySelector('.audit-layout'));
     expect(wrapper.classList.contains('audit-table-wrap')).toBe(true);
     expect(getComputedStyle(wrapper).maxWidth).toBe('100%');
     expect(getComputedStyle(wrapper).minWidth).toBe('0px');
     expect(getComputedStyle(wrapper).overflowX).toBe('auto');
+    expect(getComputedStyle(wrapper).overflowY).toBe('hidden');
+    expect(getComputedStyle(table).minWidth).toBe('1080px');
+    expect(getComputedStyle(summaryCell).whiteSpace).toBe('normal');
   });
 
   it('mantém os selects da auditoria no painel azul do admin', () => {

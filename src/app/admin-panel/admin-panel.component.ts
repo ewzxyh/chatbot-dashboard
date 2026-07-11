@@ -15,7 +15,6 @@ export const ADMIN_NAV_ITEMS: readonly AdminNavItem[] = [
   { id: 'payments', label: 'Pagamentos', route: 'payments' },
   { id: 'operation', label: 'Operação', route: 'operation' },
   { id: 'audit', label: 'Auditoria', route: 'audit' },
-  { id: 'privacy', label: 'Privacidade', route: 'privacy' }
 ];
 
 @Component({

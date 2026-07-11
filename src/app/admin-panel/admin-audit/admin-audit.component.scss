@@ -5,9 +5,6 @@
 .audit-toolbar {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 18px;
 
   h2 {
     margin: 0;
@@ -17,7 +14,7 @@
 
   p {
     margin: 4px 0 0;
-    color: #78909c;
+    color: #607d8b;
     font-size: 14px;
   }
 }
@@ -67,6 +64,8 @@
   max-width: 100%;
   min-width: 0;
   overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 .audit-table {
@@ -74,7 +73,7 @@
   min-width: 1080px;
 }
 
-.audit-table-wrap .mat-paginator {
+.audit-paginator {
   width: 100%;
 }
 
@@ -110,18 +109,28 @@ tbody tr.selected {
 }
 
 .audit-summary-cell {
-  max-width: 280px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  min-width: 280px;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 td small {
   display: block;
-  color: #78909c;
-  max-width: 170px;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  color: #607d8b;
+  max-width: none;
+  overflow-wrap: anywhere;
+}
+
+.audit-detail-trigger {
+  height: auto;
+  justify-content: flex-start;
+  line-height: 1.4;
+  min-height: 36px;
+  overflow-wrap: anywhere;
+  padding: 8px 0;
+  text-align: left;
+  white-space: normal;
+  width: 100%;
 }
 
 .audit-detail {
@@ -152,7 +161,7 @@ dl {
 }
 
 dt {
-  color: #78909c;
+  color: #607d8b;
 }
 
 dd {
