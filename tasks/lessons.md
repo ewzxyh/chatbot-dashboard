@@ -8,3 +8,4 @@
 - Em telas administrativas densas, nao considerar 10-12px aceitavel para tabs, filtros, tabelas ou acoes; validar no bundle live fonte computada de pelo menos 14px, alinhamento vertical e overflow horizontal realmente manipulavel.
 - Para padronizar filtros admin, reutilizar `admin-filter-bar` e `admin-filter-field`; nao recriar altura/linha em CSS local nem misturar datas nativas fora de `mat-form-field`.
 - Novos itens do sidebar devem reutilizar `sb-mat-tooltip` e o mesmo delay dos menus existentes; `matTooltip` sozinho cai no estilo Material padrao.
+- Em `input[type='date']`, alinhar o `mat-form-field` nao garante o alinhamento visual do valor; validar tambem o `::-webkit-datetime-edit` com data preenchida e vazia no Chromium.
