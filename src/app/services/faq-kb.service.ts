@@ -40,8 +40,8 @@ export class FaqKbService {
       this.user = user;
       this.checkIfExistUserAndGetToken()
     });
-    this.getCurrentProject();
     this.getAppConfig();
+    this.getCurrentProject();
   }
 
   getAppConfig() {
