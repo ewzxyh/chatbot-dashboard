@@ -52,6 +52,36 @@ describe('HomeValueOnboardingComponent', () => {
     );
   });
 
+  it('opens the chatbot list when a response exists and templates otherwise', () => {
+    const empty = createComponent(of([]), of([]), of(0));
+    empty.component.ngOnInit();
+    empty.component.runStep(empty.component.steps[1]);
+
+    expect(empty.router.navigate).toHaveBeenCalledWith(['project/project-1/bots/templates/all']);
+
+    const withResponse = createComponent(of([]), of([]), of(0));
+    withResponse.component.chatbots = [{ _id: 'flow-1' }];
+    withResponse.component.ngOnInit();
+    withResponse.component.runStep(withResponse.component.steps[1]);
+
+    expect(withResponse.router.navigate).toHaveBeenCalledWith(['project/project-1/bots/my-chatbots/all']);
+  });
+
+  it('does not count draft or inactive responses as ready', () => {
+    const { component } = createComponent(of([]), of([]), of(0));
+    component.chatbots = [
+      { _id: 'draft', draft: true },
+      { _id: 'inactive', status: 'inactive' },
+      { _id: 'disabled', active: false },
+      { _id: 'ready', status: 'active' },
+      { _id: 'unknown-status', status: 'pending' }
+    ];
+
+    component.ngOnInit();
+
+    expect(component.flowCount).toBe(1);
+  });
+
   it('does not count disconnected providers as active', () => {
     const { component } = createComponent(of([{ value: { status: 'disconnected' } }]), of([]), of(0));
 

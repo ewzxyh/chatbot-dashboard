@@ -156,7 +156,8 @@ export class HomeValueOnboardingComponent implements OnInit, OnChanges {
       this.router.navigate(['project/' + this.projectId + '/integrations'], { queryParams: { name: this.activeChannel } });
     }
     if (step.key === 'flow') {
-      this.router.navigate(['project/' + this.projectId + '/bots/templates/all']);
+      const target = this.flowCount > 0 ? 'my-chatbots/all' : 'templates/all';
+      this.router.navigate(['project/' + this.projectId + '/bots/' + target]);
     }
     if (step.key === 'conversation') {
       const chatBaseUrl = this.appConfigService.getConfig().CHAT_BASE_URL;
@@ -239,7 +240,14 @@ export class HomeValueOnboardingComponent implements OnInit, OnChanges {
 
   private getFlowCount(chatbots: any[]): number {
     if (!Array.isArray(chatbots)) return 0;
-    return chatbots.filter(bot => bot && bot.type !== 'identity').length;
+    return chatbots.filter(bot => {
+      if (!bot || bot.type === 'identity' || bot.trashed === true || bot.draft === true) return false;
+      if (bot.active === false || bot.isActive === false || bot.enabled === false || bot.published === false) return false;
+
+      const status = String(bot.status ?? bot.state ?? '').trim().toLowerCase();
+      if (!status) return true;
+      return ['active', 'enabled', 'connected', 'published', 'ready', 'online'].includes(status);
+    }).length;
   }
 
   private countActiveInstances(instances: any): number {

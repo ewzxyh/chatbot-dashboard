@@ -1,9 +1,9 @@
 import { OnboardingWidgetComponent } from './create-project-wizard/onboarding-widget/onboarding-widget.component';
 // import { MapRequestComponent } from './map-request/map-request.component'; // now lazy
-import { NgModule } from '@angular/core';
+import { Injectable, NgModule } from '@angular/core';
 import { CommonModule, } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
-import { Routes, RouterModule } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivate, Router, RouterModule, RouterStateSnapshot, Routes, UrlTree } from '@angular/router';
 
 import { UserProfileComponent } from './user-profile/user-profile.component';
 
@@ -162,6 +162,19 @@ import { MaintenancePageComponent } from './auth/maintenance-page/maintenance-pa
 // import { KnowledgeBasesPreviousComponent } from './knowledge-bases-previous/knowledge-bases-previous.component'; // now lazy
 // import { IntegrationsComponent } from './integrations/integrations.component'; // now lazy
 
+
+@Injectable({ providedIn: 'root' })
+class LegacyBotsListRedirectGuard implements CanActivate {
+  constructor(
+    private roleGuard: RoleGuard,
+    private router: Router
+  ) { }
+
+  async canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean | UrlTree> {
+    if (!await this.roleGuard.canActivate(next, state)) return false;
+    return this.router.createUrlTree(['project', next.params.projectid, 'bots', 'my-chatbots', 'all']);
+  }
+}
 
 
 const routes: Routes = [
@@ -1323,11 +1336,11 @@ const routes: Routes = [
 
   {
     path: 'project/:projectid/bots',
-    loadChildren: () => import('app/bots/bots-list/bots-list.module').then(m => m.BotsListModule),
-    canActivate: [AuthGuard, RoleGuard],
+    canActivate: [AuthGuard, LegacyBotsListRedirectGuard],
+    pathMatch: 'full',
     data: [{ roles: ['owner', 'admin'] }]
   },
-  // { path: 'project/:projectid/bots', component: BotListComponent, canActivate: [AuthGuard] }, // now lazy
+  // { path: 'project/:projectid/bots', component: BotListComponent, canActivate: [AuthGuard] }, // now canonicalized
 
 
 
@@ -1344,6 +1357,12 @@ const routes: Routes = [
     path: 'project/:projectid/bots/my-chatbots/all',
     loadChildren: () => import('app/bots/bots-list/bots-list.module').then(m => m.BotsListModule),
     canActivate: [AuthGuard]
+  },
+
+  {
+    path: 'project/:projectid/bots/my-chatbots',
+    redirectTo: 'project/:projectid/bots/my-chatbots/all',
+    pathMatch: 'full'
   },
 
   // Check moved in RoleService
