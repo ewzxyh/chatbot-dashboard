@@ -681,7 +681,10 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
             if (this.initializedProjectId !== this.projectId) {
               this.initializedProjectId = this.projectId;
               this.getProjectUser();
-              this.usersService.getBotsByProjectIdAndSaveInStorage();
+              if (localStorage.getItem(this.projectId)) {
+                this.usersService.getAllUsersOfCurrentProjectAndSaveInStorage();
+                this.usersService.getBotsByProjectIdAndSaveInStorage();
+              }
             }
 
             this.displayQuotaSkeleton = true
@@ -2122,11 +2125,6 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
               }
             }
           }
-
-          // !!!! NO MORE USED - MOVED IN USER SERVICE
-          // this.getAllUsersOfCurrentProject();
-          this.logger.log('[HOME] CALL -> getAllUsersOfCurrentProjectAndSaveInStorage')
-          this.usersService.getAllUsersOfCurrentProjectAndSaveInStorage();
 
         }
       });

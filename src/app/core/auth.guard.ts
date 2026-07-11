@@ -190,23 +190,23 @@ export class AuthGuard implements CanActivate {
       if (project) {
         this.logger.log('[AUTH-GUARD] - PROJECT FROM REMOTE CALLBACK project', project);
 
-        this.getUserRole(this.user, this.nav_project_id).then(userRole => { 
-          this.logger.log('[AUTH-GUARD] getUserRole ', userRole);
-          project['role'] = userRole
+        const selectProject = (userRole?: string) => {
+          if (this.nav_project_id !== navigationProjectId) return;
+          if (userRole) project['role'] = userRole;
           this.auth.projectSelected(project, 'auth-guard');
-          localStorage.setItem(this.nav_project_id, JSON.stringify(project))
+          localStorage.setItem(navigationProjectId, JSON.stringify(project));
+          this.usersService.getAllUsersOfCurrentProjectAndSaveInStorage();
+          this.usersService.getBotsByProjectIdAndSaveInStorage();
+          this.getProjectsAndSaveLastProject(navigationProjectId);
+        };
+
+        this.getUserRole(this.user, navigationProjectId).then(userRole => {
+          this.logger.log('[AUTH-GUARD] getUserRole ', userRole);
+          selectProject(userRole);
          }, (error) => {
           this.logger.error('[AUTH-GUARD] getUserRole ', error);
-          this.auth.projectSelected(project, 'auth-guard');
-          localStorage.setItem(this.nav_project_id, JSON.stringify(project));
+          selectProject();
         });
-        
-        this.getProjectsAndSaveLastProject(navigationProjectId)
-        // GET AND SAVE ALL USERS OF CURRENT PROJECT IN LOCAL STORAGE
-        this.usersService.getAllUsersOfCurrentProjectAndSaveInStorage();
-
-        // GET AND SAVE ALL BOTS OF CURRENT PROJECT IN LOCAL STORAGE
-        this.usersService.getBotsByProjectIdAndSaveInStorage();
 
       } else {
         this.logger.log('[AUTH-GUARD] - PROJECT OBJCT FILTERED FOR PROJECT ID !! NOT FOUND - GO TO UNAUTHORIZED PAGE ');
