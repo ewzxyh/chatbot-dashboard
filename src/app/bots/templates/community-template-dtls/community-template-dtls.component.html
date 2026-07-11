@@ -1,125 +1,125 @@
-<div class="navbar-brand" style="z-index: 1050;position: relative;padding-left:30px"
-    [ngStyle]="{'margin-top':isChromeVerGreaterThan100 === true ? '-64px' : '6px' }">
-    <i class="material-icons" style="vertical-align: middle !important; cursor: pointer;" (click)="goBack()">
-        keyboard_arrow_left
-    </i>
-    Detalhes do modelo
-</div>
-
-
-
-<div class="main-content" style="padding-top:0px;padding-left:0px; padding-right:0px">
-    <div class="container-fluid" style="padding-left: 5px;padding-right: 5px;">
-
-        <div class="button-row">
-            <div></div>
-            <button type="button" class="btn btn-new btn-size-l btn--primary" (click)="openTestSiteInPopupWindow()"
-                style="margin-right: 6px;">
-                <span>Testar</span>
+<div class="main-content community-template-detail-page">
+    <div class="container-fluid community-template-detail-container">
+        <div class="community-detail-toolbar">
+            <button type="button" class="community-detail-back" (click)="goBack()">
+                <mat-icon aria-hidden="true">arrow_back</mat-icon>
+                <span>Voltar</span>
             </button>
-            <button type="button" class="btn btn-new btn-size-l btn--primary" (click)="importTemplate()" [disabled]="isAutoImporting || selectedChannelUnsupported || isTemplateLoading">
-                <span>{{ isAutoImporting ? 'Importando...' : 'Importar modelo' }}</span>
+            <div class="community-detail-actions">
+                <button type="button"
+                    class="community-detail-secondary"
+                    (click)="openTestSiteInPopupWindow()"
+                    [disabled]="!template || isTemplateLoading">
+                    <mat-icon aria-hidden="true">play_circle_outline</mat-icon>
+                    <span>Testar modelo</span>
+                </button>
+                <button type="button"
+                    class="community-detail-primary"
+                    (click)="importTemplate()"
+                    [disabled]="isAutoImporting || selectedChannelUnsupported || isTemplateLoading || !!templateLoadError">
+                    <mat-icon aria-hidden="true">add_circle_outline</mat-icon>
+                    <span>{{ isAutoImporting ? 'Criando fluxo...' : 'Criar fluxo' }}</span>
+                </button>
+            </div>
+        </div>
+
+        <div *ngIf="templateLoadError" class="community-detail-error" role="alert">
+            <mat-icon aria-hidden="true">error_outline</mat-icon>
+            <div>
+                <strong>Não foi possível carregar este modelo.</strong>
+                <p>{{ templateLoadError }}</p>
+            </div>
+            <button type="button" (click)="retryTemplateDetails()">
+                <mat-icon aria-hidden="true">refresh</mat-icon>
+                <span>Tentar novamente</span>
             </button>
         </div>
-        <div *ngIf="selectedChannelUnsupported" class="template-channel-warning">
-            Este modelo não oferece uma visualização compatível com {{ getChannelLabel(selectedChannel) }}. Escolha outro canal para revisar o modelo.
+
+        <div *ngIf="importError" class="community-detail-error community-detail-error--action" role="alert">
+            <mat-icon aria-hidden="true">error_outline</mat-icon>
+            <div>
+                <strong>Não foi possível criar o fluxo.</strong>
+                <p>{{ importError }}</p>
+            </div>
+            <button type="button" (click)="importTemplate()">Tentar novamente</button>
         </div>
-        <div *ngIf="autoInstallRequested && !autoImportStarted" class="auto-import-notice">
-            A importacao deste modelo sera iniciada automaticamente.
+
+        <div *ngIf="selectedChannelUnsupported" class="community-detail-warning" role="status">
+            <mat-icon aria-hidden="true">info_outline</mat-icon>
+            <span>Este modelo não oferece uma visualização para {{ getChannelLabel(selectedChannel) }}. Escolha outro canal para revisar o fluxo.</span>
         </div>
-        <div class="template-dtls-page-content">
-            <div class="template-dtls-icon-and-title">
 
-                <div class="template-dtls-icon">
+        <div *ngIf="autoInstallRequested && !autoImportStarted" class="community-detail-notice" role="status">
+            A criação deste fluxo será iniciada automaticamente.
+        </div>
 
-                    <span *ngIf="!template?.bigImage">
-                        <img *ngIf="UPLOAD_ENGINE_IS_FIREBASE" class="cmnty-chatbot-dtls-img"
-                            src="https://firebasestorage.googleapis.com/v0/b/{{storageBucket}}/o/profiles%2F{{template?._id}}%2Fphoto.jpg?alt=media"
-                            onerror="this.src='assets/img/avatar_bot_chatcase.svg'" />
+        <div *ngIf="isTemplateLoading" class="community-detail-loading" aria-live="polite">
+            <loading-spinner></loading-spinner>
+            <span>Carregando modelo...</span>
+        </div>
 
-                        <img *ngIf="!UPLOAD_ENGINE_IS_FIREBASE" class="cmnty-chatbot-dtls-img"
-                            src="{{baseUrl}}files?path=uploads%2Fusers%2F{{template?._id}}%2Fimages%2Fthumbnails_200_200-photo.jpg"
-                            onerror="this.src='assets/img/avatar_bot_chatcase.svg'" />
-                    </span>
-                    <span *ngIf="template?.bigImage">
-                        <img class="cmnty-chatbot-dtls-img" src="{{template.bigImage}}">
-                    </span>
+        <section *ngIf="template && !isTemplateLoading" class="community-template-detail">
+            <header class="community-detail-header">
+                <div class="community-detail-image">
+                    <img *ngIf="template?.bigImage"
+                        [src]="template.bigImage"
+                        [alt]="template.name">
+                    <ng-container *ngIf="!template?.bigImage">
+                        <img *ngIf="UPLOAD_ENGINE_IS_FIREBASE"
+                            [src]="'https://firebasestorage.googleapis.com/v0/b/' + storageBucket + '/o/profiles%2F' + template?._id + '%2Fphoto.jpg?alt=media'"
+                            [alt]="template.name"
+                            onerror="this.src='assets/img/avatar_bot_chatcase.svg'">
+                        <img *ngIf="!UPLOAD_ENGINE_IS_FIREBASE"
+                            [src]="baseUrl + 'files?path=uploads%2Fusers%2F' + template?._id + '%2Fimages%2Fthumbnails_200_200-photo.jpg'"
+                            [alt]="template.name"
+                            onerror="this.src='assets/img/avatar_bot_chatcase.svg'">
+                    </ng-container>
                 </div>
-
-                <div class="template-dtls-title">
-                    {{ template?.name}}
-                </div>
-                <!--  -->
-                <div *ngIf="template?.certified === true" style="height: 24px;margin-left: 6px;z-index: 2;"
-                    matTooltipClass="custom-mat-tooltip" matTooltip="ChatCase verificado" #tooltip="matTooltip"
-                    matTooltipPosition='below' matTooltipHideDelay="100">
-                    <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
-                        xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 24 24"
-                        style="enable-background:new 0 0 24 24;" xml:space="preserve" style="width: 35px;height:auto;">
-                        <style type="text/css">
-                            .certified_st0 {
-                                fill: none;
-                            }
-
-                            .certified_st1 {
-                                fill: #2B95E9;
-                            }
-                        </style>
-                        <path class="certified_st0" d="M0,0h24v24H0V0z" />
-                        <g>
-                            <path class="certified_st0" d="M0,0h24v24H0V0z" />
-                        </g>
-                        <path class="certified_st1"
-                            d="M23,12l-2.4-2.8l0.3-3.7l-3.6-0.8l-1.9-3.2L12,3L8.6,1.5L6.7,4.7L3.1,5.5l0.3,3.7L1,12l2.4,2.8l-0.3,3.7
-                                                                                l3.6,0.8l1.9,3.2L12,21l3.4,1.5l1.9-3.2l3.6-0.8l-0.3-3.7L23,12z M11,15.5L7.4,12l1.4-1.4l2.1,2.1l4.2-4.2l1.4,1.4L11,15.5z" />
-                    </svg>
-                </div>
-
-            </div>
-
-            <div class="cmnty-chatbot-dtls-author-and-publication-date-wpr">
-                <div class="cmnty-chatbot-dtls-author">
-                    <!-- --------------------------------------------------- -->
-                    <!-- USECASE uploadEngine Firebase -->
-                    <!-- --------------------------------------------------- -->
-                    <img *ngIf="UPLOAD_ENGINE_IS_FIREBASE" class="cmnty-chatbot-dtls-author"
-                        src="https://firebasestorage.googleapis.com/v0/b/{{storageBucket}}/o/profiles%2F{{template?.createdBy}}%2Fphoto.jpg?alt=media"
-                        onerror="this.src='assets/img/no_image_user.png'" decoding="async" data-nimg="intrinsic">
-
-
-                    <!----------------------------------------------------- -->
-                    <!-- USECASE uploadEngine Native -->
-                    <!-- --------------------------------------------------- -->
-                    <img *ngIf="!UPLOAD_ENGINE_IS_FIREBASE" class="cmnty-chatbot-dtls-author"
-                        src="{{baseUrl}}files?path=uploads%2Fusers%2F{{template?.createdBy}}%2Fimages%2Fthumbnails_200_200-photo.jpg"
-                        onerror="this.src='assets/img/no_image_user.png'" decoding="async" data-nimg="intrinsic">
-                </div>
-
-                <div class="cmnty-chatbot-publication-date">
-                    Publicado em {{ template?.createdAt | date: 'dd/MM/yyyy'}} - Atualizado em
-                    {{ template?.updatedAt | date: 'dd/MM/yyyy'}}
-                </div>
-
-            </div>
-
-            <div class="template-dtls-description"  [innerHTML]="template?.description | marked ">
-                <!-- {{ template?.description}} -->
-            </div>
-
-            <div class="template-dtls-tags-wpr" *ngIf="template?.tags">
-                <div class="template-dtls-tag" *ngFor="let tag of template?.tags">
-                    #{{tag }}
-                </div>
-            </div>
-
-            <div class="template-channel-selector" *ngIf="previewChannels?.length">
-                <div>
-                    <div class="template-channel-selector-title">Compatibilidade do modelo</div>
-                    <div class="template-channel-selector-subtitle">
-                        O fluxo sera importado como multicanal. Use os filtros abaixo apenas para visualizar recursos especificos de cada canal.
+                <div class="community-detail-heading">
+                    <p class="community-detail-eyebrow">Modelo da comunidade</p>
+                    <div class="community-detail-title-row">
+                        <h1>{{ template?.name }}</h1>
+                        <span *ngIf="template?.certified === true" class="community-detail-verified">
+                            <mat-icon aria-hidden="true">verified</mat-icon>
+                            Verificado
+                        </span>
+                    </div>
+                    <div class="community-detail-badges">
+                        <span>{{ template?.mainCategory || 'Automatizar atendimento' }}</span>
+                        <span>Canal: {{ getChannelLabel(selectedChannel) }}</span>
                     </div>
                 </div>
-                <div class="template-channel-selector-actions">
+            </header>
+
+            <div class="community-detail-author">
+                <div class="community-detail-author-image">
+                    <img *ngIf="UPLOAD_ENGINE_IS_FIREBASE"
+                        [src]="'https://firebasestorage.googleapis.com/v0/b/' + storageBucket + '/o/profiles%2F' + template?.createdBy + '%2Fphoto.jpg?alt=media'"
+                        alt=""
+                        onerror="this.src='assets/img/no_image_user.png'">
+                    <img *ngIf="!UPLOAD_ENGINE_IS_FIREBASE"
+                        [src]="baseUrl + 'files?path=uploads%2Fusers%2F' + template?.createdBy + '%2Fimages%2Fthumbnails_200_200-photo.jpg'"
+                        alt=""
+                        onerror="this.src='assets/img/no_image_user.png'">
+                </div>
+                <span>Publicado em {{ template?.createdAt | date: 'dd/MM/yyyy' }} · Atualizado em {{ template?.updatedAt | date: 'dd/MM/yyyy' }}</span>
+            </div>
+
+            <div class="community-detail-description" *ngIf="template?.description" [innerHTML]="template.description | marked"></div>
+
+            <div class="community-detail-tags" *ngIf="template?.tags?.length">
+                <span *ngFor="let tag of template.tags">#{{ tag }}</span>
+            </div>
+
+            <section class="community-detail-section" *ngIf="previewChannels?.length">
+                <div class="community-detail-section-heading">
+                    <div>
+                        <h2>Veja por canal</h2>
+                        <p>O fluxo será importado como multicanal. Use os filtros para conferir os recursos de cada canal.</p>
+                    </div>
+                    <span class="community-detail-channel-current">Canal: {{ getChannelLabel(selectedChannel) }}</span>
+                </div>
+                <div class="community-detail-channel-options">
                     <button type="button"
                         *ngFor="let channel of previewChannels"
                         [class.is-active]="selectedChannel === channel"
@@ -127,208 +127,166 @@
                         {{ getChannelLabel(channel) }}
                     </button>
                 </div>
-            </div>
+            </section>
 
-            <div class="template-flow-preview" *ngIf="previewMessages?.length">
-                <div class="template-flow-preview-header">
+            <section class="community-detail-section community-flow-preview" *ngIf="previewMessages?.length">
+                <div class="community-detail-section-heading">
                     <div>
-                        <div class="template-flow-preview-title">Preview do fluxo</div>
-                        <div class="template-flow-preview-subtitle">
-                            Confira as mensagens e atalhos que serao importados antes de publicar no atendimento.
-                        </div>
+                        <h2>Prévia do fluxo</h2>
+                        <p>Confira as mensagens e atalhos que serão importados antes de ativar o atendimento.</p>
                     </div>
-                    <div class="template-flow-preview-meta">
+                    <div class="community-flow-summary">
                         <span>{{ template?.intentsCount || template?.intents?.length || previewBlocks?.length }} blocos</span>
                         <span *ngIf="previewChannels?.length">{{ previewChannels.length }} canais</span>
                     </div>
                 </div>
 
-                <div class="template-flow-preview-grid">
-                    <div class="template-chat-preview" aria-label="Preview de conversa do template">
-                        <div class="template-chat-preview-topbar">
-                            <span class="template-chat-preview-dot"></span>
+                <div class="community-flow-grid">
+                    <div class="community-chat-preview" aria-label="Prévia de conversa do modelo">
+                        <div class="community-chat-preview-topbar">
+                            <span class="community-chat-preview-dot"></span>
                             <span>{{ template?.title || template?.name }}</span>
                         </div>
-                        <div class="template-chat-preview-body">
-                            <div class="template-chat-bubble" *ngFor="let message of previewMessages">
-                                <div class="template-chat-bubble-label">{{ message.title }}</div>
-                                <div class="template-chat-bubble-question" *ngIf="message.question">{{ message.question }}</div>
-                                <div class="template-chat-bubble-text">{{ message.text }}</div>
-                                <div class="template-chat-buttons" *ngIf="message.buttons?.length">
+                        <div class="community-chat-preview-body">
+                            <div class="community-chat-message" *ngFor="let message of previewMessages">
+                                <strong>{{ message.title }}</strong>
+                                <span *ngIf="message.question">{{ message.question }}</span>
+                                <p>{{ message.text }}</p>
+                                <div class="community-chat-buttons" *ngIf="message.buttons?.length">
                                     <button type="button" *ngFor="let button of message.buttons">{{ button }}</button>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="template-flow-map" aria-label="Blocos importados pelo template">
-                        <div class="template-flow-map-section">
-                            <div class="template-flow-map-title">Blocos importados</div>
-                            <div class="template-flow-block" *ngFor="let block of previewBlocks">
-                                <div>
-                                    <strong>{{ block.name }}</strong>
-                                    <span *ngIf="block.question">{{ block.question }}</span>
-                                </div>
-                                <small *ngIf="block.aliases?.length">{{ block.aliases.join(', ') }}</small>
-                            </div>
+                    <div class="community-flow-map" aria-label="Blocos importados pelo modelo">
+                        <h3>Blocos importados</h3>
+                        <div class="community-flow-block" *ngFor="let block of previewBlocks">
+                            <strong>{{ block.name }}</strong>
+                            <span *ngIf="block.question">{{ block.question }}</span>
+                            <small *ngIf="block.aliases?.length">{{ block.aliases.join(', ') }}</small>
                         </div>
-
-                        <div class="template-flow-map-section" *ngIf="previewChannels?.length">
-                            <div class="template-flow-map-title">Canais compatíveis</div>
-                            <div class="template-flow-channel-list">
-                                <span *ngFor="let channel of previewChannels">{{ getChannelLabel(channel) }}</span>
-                            </div>
+                        <div class="community-flow-channels" *ngIf="previewChannels?.length">
+                            <strong>Canais compatíveis</strong>
+                            <span *ngFor="let channel of previewChannels">{{ getChannelLabel(channel) }}</span>
                         </div>
                     </div>
                 </div>
-            </div>
+            </section>
 
-            <div class="template-publication-panel"
+            <section class="community-detail-section community-publication"
                 *ngIf="publicationReadiness?.length || wabaTemplateSuggestions?.length || publicationChecklist?.length">
-                <div class="template-publication-header">
+                <div class="community-detail-section-heading">
                     <div>
-                        <div class="template-publication-title">Publicação em canais</div>
-                        <div class="template-publication-subtitle">
-                            {{ isSelectedWabaChannel() ? 'Use esta checagem para preparar o template Meta aprovado antes de iniciar conversas WABA.' : 'Este resumo mostra somente o que se aplica ao canal selecionado.' }}
-                        </div>
+                        <h2>Publicação em canais</h2>
+                        <p>{{ isSelectedWabaChannel() ? 'Prepare o template Meta aprovado antes de iniciar conversas WABA.' : 'Confira o que se aplica ao canal selecionado.' }}</p>
                     </div>
-                    <button type="button" class="template-publication-sync-btn"
+                    <button type="button"
+                        class="community-detail-secondary"
                         *ngIf="wabaTemplateSuggestions?.length"
                         (click)="syncWabaPublicationStatus()"
                         [disabled]="isSyncingWabaStatus">
-                        {{ isSyncingWabaStatus ? 'Sincronizando...' : 'Sincronizar status Meta' }}
+                        <mat-icon aria-hidden="true">sync</mat-icon>
+                        <span>{{ isSyncingWabaStatus ? 'Sincronizando...' : 'Sincronizar status Meta' }}</span>
                     </button>
                 </div>
 
-                <div class="template-publication-grid">
-                    <div class="template-publication-card" *ngIf="publicationReadiness?.length">
-                        <div class="template-publication-card-title">Prontidão por canal</div>
-                        <div class="publication-readiness-item" *ngFor="let item of publicationReadiness">
+                <div class="community-publication-grid">
+                    <div class="community-publication-column" *ngIf="publicationReadiness?.length">
+                        <h3>Prontidão por canal</h3>
+                        <div class="community-readiness-item" *ngFor="let item of publicationReadiness">
                             <div>
                                 <strong>{{ item.title }}</strong>
                                 <p>{{ item.description }}</p>
                             </div>
-                            <span [ngClass]="getPublicationStatusClass(item.status)">
-                                {{ getPublicationStatusLabel(item.status) }}
-                            </span>
+                            <span [ngClass]="getPublicationStatusClass(item.status)">{{ getPublicationStatusLabel(item.status) }}</span>
                         </div>
                     </div>
 
-                    <div class="template-publication-card" *ngIf="wabaTemplateSuggestions?.length">
-                        <div class="template-publication-card-title">Templates WABA sugeridos</div>
-                        <div class="waba-template-card" *ngFor="let wabaTemplate of wabaTemplateSuggestions">
-                            <div class="waba-template-card-header">
-                                <strong>{{ wabaTemplate.name }}</strong>
-                                <span>{{ wabaTemplate.category }} - {{ wabaTemplate.language }}</span>
-                            </div>
-                            <div class="waba-template-context" *ngIf="wabaTemplate.purpose || wabaTemplate.whenToUse">
-                                <strong *ngIf="wabaTemplate.purpose">{{ wabaTemplate.purpose }}</strong>
-                                <small *ngIf="wabaTemplate.whenToUse">{{ wabaTemplate.whenToUse }}</small>
-                            </div>
-                            <p>{{ wabaTemplate.body }}</p>
-                            <div class="waba-template-buttons" *ngIf="wabaTemplate.buttons?.length">
-                                <span *ngFor="let button of wabaTemplate.buttons">{{ button }}</span>
-                            </div>
-                            <div class="waba-template-status" *ngIf="getWabaTemplateStatus(wabaTemplate.name)">
-                                <span [ngClass]="getWabaTemplateStateClass(getWabaTemplateStatus(wabaTemplate.name).state)">
-                                    {{ getWabaTemplateStateLabel(getWabaTemplateStatus(wabaTemplate.name).state) }}
-                                </span>
-                                <small *ngIf="getWabaTemplateStatus(wabaTemplate.name).meta?.status">
-                                    Meta: {{ getWabaTemplateStatus(wabaTemplate.name).meta.status }}
-                                </small>
-                                <small *ngIf="getWabaTemplateStatus(wabaTemplate.name).meta?.rejectedReason">
-                                    {{ getWabaTemplateStatus(wabaTemplate.name).meta.rejectedReason }}
-                                </small>
-                            </div>
-                            <div class="waba-template-actions">
-                                <button type="button"
-                                    (click)="prepareWabaPublication(wabaTemplate.name, false)"
-                                    [disabled]="isPreparingWabaPublication || isPublishingWabaTemplate">
-                                    {{ isPreparingWabaPublication && activeWabaPublicationName === wabaTemplate.name ? 'Validando...' : 'Validar payload' }}
-                                </button>
-                                <button type="button"
-                                    class="waba-template-action-primary"
-                                    (click)="prepareWabaPublication(wabaTemplate.name, true)"
-                                    [disabled]="isPreparingWabaPublication || isPublishingWabaTemplate">
-                                    {{ isPublishingWabaTemplate && activeWabaPublicationName === wabaTemplate.name ? 'Enviando...' : 'Enviar para Meta' }}
-                                </button>
-                                <button type="button"
-                                    class="waba-template-action-primary"
-                                    *ngIf="isWabaTemplateApproved(wabaTemplate.name)"
-                                    (click)="bindWabaTemplateToBot(wabaTemplate.name, false)"
-                                    [disabled]="!botid || isBindingWabaTemplate">
-                                    {{ isBindingWabaTemplate && activeWabaBindingName === wabaTemplate.name ? 'Vinculando...' : 'Vincular ao fluxo' }}
-                                </button>
-                            </div>
-
-                            <div class="waba-publication-result"
-                                *ngIf="wabaPublicationResult && activeWabaPublicationName === wabaTemplate.name">
-                                <div class="waba-publication-result-header">
-                                    <div>
-                                        <strong>{{ wabaPublicationResult.dryRun ? 'Payload validado' : 'Template enviado' }}</strong>
-                                        <span>{{ wabaPublicationResult.message || wabaPublicationResult.status }}</span>
-                                    </div>
-                                    <button type="button" (click)="copyWabaPayload()">Copiar JSON</button>
-                                </div>
-                                <div class="waba-publication-status-row">
-                                    <span [ngClass]="wabaPublicationResult.canPublish ? 'is-ready' : 'requires-approval'">
-                                        {{ wabaPublicationResult.canPublish ? 'WABA configurada' : 'Falta credencial WABA' }}
-                                    </span>
-                                    <small>{{ wabaPublicationResult.metaEndpoint }}</small>
-                                </div>
-                                <pre>{{ getWabaPayloadJson() }}</pre>
-                            </div>
-
-                            <div class="waba-publication-error"
-                                *ngIf="wabaPublicationError && activeWabaPublicationName === wabaTemplate.name">
-                                {{ wabaPublicationError }}
-                            </div>
-
-                            <div class="waba-binding-result"
-                                *ngIf="wabaBindingResult && activeWabaBindingName === wabaTemplate.name">
-                                <strong>Template vinculado ao fluxo</strong>
-                                <span>{{ wabaBindingResult.binding?.providerTemplateName || wabaBindingResult.binding?.suggestionName }}</span>
-                            </div>
-
-                            <div class="waba-publication-error"
-                                *ngIf="wabaBindingError && activeWabaBindingName === wabaTemplate.name">
-                                {{ wabaBindingError }}
-                            </div>
-                        </div>
-
-                        <div class="waba-publication-error"
-                            *ngIf="wabaStatusSyncError">
-                            {{ wabaStatusSyncError }}
-                        </div>
-                    </div>
-
-                    <div class="template-publication-card" *ngIf="publicationChecklist?.length">
-                        <div class="template-publication-card-title">Checklist antes de ativar</div>
-                        <ol class="publication-checklist">
+                    <div class="community-publication-column" *ngIf="publicationChecklist?.length">
+                        <h3>Antes de ativar</h3>
+                        <ol>
                             <li *ngFor="let item of publicationChecklist">{{ item }}</li>
                         </ol>
                     </div>
                 </div>
-            </div>
 
-            <div class="template-dtls-template-features-title"
-                *ngIf="template?.templateFeatures && template?.templateFeatures.length > 0">
-                Recursos do modelo
-            </div>
+                <div class="community-publication-column community-waba-column" *ngIf="wabaTemplateSuggestions?.length">
+                    <h3>Templates WABA sugeridos</h3>
+                    <div class="community-waba-template" *ngFor="let wabaTemplate of wabaTemplateSuggestions">
+                        <div class="community-waba-header">
+                            <strong>{{ wabaTemplate.name }}</strong>
+                            <span>{{ wabaTemplate.category }} · {{ wabaTemplate.language }}</span>
+                        </div>
+                        <div class="community-waba-context" *ngIf="wabaTemplate.purpose || wabaTemplate.whenToUse">
+                            <strong *ngIf="wabaTemplate.purpose">{{ wabaTemplate.purpose }}</strong>
+                            <small *ngIf="wabaTemplate.whenToUse">{{ wabaTemplate.whenToUse }}</small>
+                        </div>
+                        <p>{{ wabaTemplate.body }}</p>
+                        <div class="community-waba-buttons" *ngIf="wabaTemplate.buttons?.length">
+                            <span *ngFor="let button of wabaTemplate.buttons">{{ button }}</span>
+                        </div>
+                        <div class="community-waba-status" *ngIf="getWabaTemplateStatus(wabaTemplate.name)">
+                            <span [ngClass]="getWabaTemplateStateClass(getWabaTemplateStatus(wabaTemplate.name).state)">
+                                {{ getWabaTemplateStateLabel(getWabaTemplateStatus(wabaTemplate.name).state) }}
+                            </span>
+                            <small *ngIf="getWabaTemplateStatus(wabaTemplate.name).meta?.status">Meta: {{ getWabaTemplateStatus(wabaTemplate.name).meta.status }}</small>
+                            <small *ngIf="getWabaTemplateStatus(wabaTemplate.name).meta?.rejectedReason">{{ getWabaTemplateStatus(wabaTemplate.name).meta.rejectedReason }}</small>
+                        </div>
+                        <div class="community-waba-actions">
+                            <button type="button"
+                                (click)="prepareWabaPublication(wabaTemplate.name, false)"
+                                [disabled]="isPreparingWabaPublication || isPublishingWabaTemplate">
+                                {{ isPreparingWabaPublication && activeWabaPublicationName === wabaTemplate.name ? 'Validando...' : 'Validar payload' }}
+                            </button>
+                            <button type="button"
+                                class="community-detail-primary"
+                                (click)="prepareWabaPublication(wabaTemplate.name, true)"
+                                [disabled]="isPreparingWabaPublication || isPublishingWabaTemplate">
+                                {{ isPublishingWabaTemplate && activeWabaPublicationName === wabaTemplate.name ? 'Enviando...' : 'Enviar para Meta' }}
+                            </button>
+                            <button type="button"
+                                class="community-detail-primary"
+                                *ngIf="isWabaTemplateApproved(wabaTemplate.name)"
+                                (click)="bindWabaTemplateToBot(wabaTemplate.name, false)"
+                                [disabled]="!botid || isBindingWabaTemplate">
+                                {{ isBindingWabaTemplate && activeWabaBindingName === wabaTemplate.name ? 'Vinculando...' : 'Vincular ao fluxo' }}
+                            </button>
+                        </div>
 
-            <div class="template-dtls-template-features-list"
-                *ngIf="template?.templateFeatures && template?.templateFeatures.length > 0">
+                        <div class="community-waba-result" *ngIf="wabaPublicationResult && activeWabaPublicationName === wabaTemplate.name">
+                            <div class="community-waba-result-heading">
+                                <div>
+                                    <strong>{{ wabaPublicationResult.dryRun ? 'Payload validado' : 'Template enviado' }}</strong>
+                                    <span>{{ wabaPublicationResult.message || wabaPublicationResult.status }}</span>
+                                </div>
+                                <button type="button" (click)="copyWabaPayload()">Copiar JSON</button>
+                            </div>
+                            <div class="community-waba-result-status">
+                                <span [ngClass]="wabaPublicationResult.canPublish ? 'is-ready' : 'requires-approval'">
+                                    {{ wabaPublicationResult.canPublish ? 'WABA configurada' : 'Falta credencial WABA' }}
+                                </span>
+                                <small>{{ wabaPublicationResult.metaEndpoint }}</small>
+                            </div>
+                            <pre>{{ getWabaPayloadJson() }}</pre>
+                        </div>
+                        <div class="community-waba-error" *ngIf="wabaPublicationError && activeWabaPublicationName === wabaTemplate.name">{{ wabaPublicationError }}</div>
+                        <div class="community-waba-success" *ngIf="wabaBindingResult && activeWabaBindingName === wabaTemplate.name">
+                            <strong>Template vinculado ao fluxo</strong>
+                            <span>{{ wabaBindingResult.binding?.providerTemplateName || wabaBindingResult.binding?.suggestionName }}</span>
+                        </div>
+                        <div class="community-waba-error" *ngIf="wabaBindingError && activeWabaBindingName === wabaTemplate.name">{{ wabaBindingError }}</div>
+                    </div>
+                    <div class="community-waba-error" *ngIf="wabaStatusSyncError">{{ wabaStatusSyncError }}</div>
+                </div>
+            </section>
 
-                <ul style="padding-left: 20px;">
-                    <li class="template-dtls-feature" *ngFor="let feature of template?.templateFeatures">
-                        {{feature}}
-                    </li>
+            <section class="community-detail-section" *ngIf="template?.templateFeatures?.length">
+                <h2>O que este modelo já traz</h2>
+                <ul class="community-feature-list">
+                    <li *ngFor="let feature of template.templateFeatures">{{ feature }}</li>
                 </ul>
-
-            </div>
-        </div>
-
-
-
+            </section>
+        </section>
     </div>
 </div>

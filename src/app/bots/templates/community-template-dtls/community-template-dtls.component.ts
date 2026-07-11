@@ -90,6 +90,8 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
   public isSyncingWabaStatus = false;
   public isBindingWabaTemplate = false;
   public isTemplateLoading = false;
+  public templateLoadError: string;
+  public importError: string;
   public selectedChannel: string = 'all';
   public selectedChannelUnsupported = false;
   public channelOptions = [
@@ -265,6 +267,7 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
   getCommunityTemplateDetails(templateId) {
     const requestedChannel = this.selectedChannel;
     this.isTemplateLoading = true;
+    this.templateLoadError = undefined;
     this.faqKbService.getCommunityTemplateDetail(templateId, this.selectedChannel)
       .subscribe((_template: any) => {
         if (requestedChannel !== this.selectedChannel) {
@@ -294,6 +297,7 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
           }, () => {
             if (requestedChannel === this.selectedChannel) {
               this.isTemplateLoading = false;
+              this.templateLoadError = 'Não foi possível carregar este modelo.';
             }
           }, () => {
             if (requestedChannel === this.selectedChannel) {
@@ -729,6 +733,9 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
       return;
     }
 
+    this.importError = undefined;
+    this.isAutoImporting = true;
+
     // this.faqKbService.installTemplate(this.templateId, this.projectId, true, this.projectId).subscribe((res: any) => {
     //   this.logger.log('[COMMUNITY-TEMPLATE-DTLS] - FORK TEMPLATE RES', res);
     //   this.botid = res.bot_id
@@ -766,6 +773,9 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
       return;
     }
 
+    this.importError = undefined;
+    this.isAutoImporting = true;
+
       this.faqKbService.installTemplate(this.templateId, this.projectId, true, this.projectId, 'all').subscribe((res: any) => {
       this.logger.log('[COMMUNITY-TEMPLATE-DTLS] - FORK TEMPLATE RES', res);
       this.botid = res.bot_id
@@ -773,6 +783,7 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
     }, (error) => {
       this.logger.error('[COMMUNITY-TEMPLATE-DTLS] FORK TEMPLATE - ERROR ', error);
       this.isAutoImporting = false;
+      this.importError = 'Não foi possível criar o fluxo agora. Tente novamente.';
 
     }, () => {
       this.logger.log('[COMMUNITY-TEMPLATE-DTLS] FORK TEMPLATE COMPLETE');
@@ -819,6 +830,12 @@ export class CommunityTemplateDtlsComponent extends PricingBaseComponent impleme
       attributes: {}
     }
     goToCDSVersion(this.router, faqkb, this.project._id, this.appConfigService.getConfig().cdsBaseUrl)
+  }
+
+  retryTemplateDetails() {
+    if (this.templateId) {
+      this.getCommunityTemplateDetails(this.templateId);
+    }
   }
 
   getCurrentProject() {

@@ -64,6 +64,7 @@ export class TemplatesComponent extends PricingBaseComponent implements OnInit {
   projectId: string
   route: string
   showSpinner: boolean
+  templatesLoadError = false;
   myChatbotOtherCount: number;
   automationsCount: number;
   flowWebhooksCount: number;
@@ -425,6 +426,7 @@ export class TemplatesComponent extends PricingBaseComponent implements OnInit {
     }
     this.logger.log('openDialog TemplateDetailComponent')
     const dialogRef = this.dialog.open(TemplateDetailComponent, {
+      ariaLabel: `Detalhes do modelo ${template.name}`,
       data: {
         template: template,
         projectId: this.projectId,
@@ -603,6 +605,7 @@ export class TemplatesComponent extends PricingBaseComponent implements OnInit {
 
   getTemplates() {
     this.showSpinner = true;
+    this.templatesLoadError = false;
     this.route = this.router.url
     const requestedChannel = this.selectedTemplateChannel;
     this.logger.log('[BOTS-TEMPLATES] - GET ALL TEMPLATES route', this.route);
@@ -632,6 +635,7 @@ export class TemplatesComponent extends PricingBaseComponent implements OnInit {
       }
       this.logger.error('[BOTS-TEMPLATES] GET TEMPLATES ERROR ', error);
       this.showSpinner = false;
+      this.templatesLoadError = true;
     }, () => {
       if (requestedChannel !== this.selectedTemplateChannel) {
         return;
@@ -651,6 +655,10 @@ export class TemplatesComponent extends PricingBaseComponent implements OnInit {
         template['shortDescription'] = template['description'].substring(0, stripHere) + '...';
       }
     });
+  }
+
+  retryTemplates() {
+    this.getTemplates();
   }
 
   setTemplateChannel(channel: string) {
@@ -731,6 +739,27 @@ export class TemplatesComponent extends PricingBaseComponent implements OnInit {
 
   getSelectedTemplateChannelLabel(): string {
     return this.getTemplateChannelLabel(this.selectedTemplateChannel);
+  }
+
+  getTemplateChannelSummary(template: any): string {
+    const channels = this.getTemplateChannels(template);
+    if (!channels.length) {
+      return this.getSelectedTemplateChannelLabel();
+    }
+
+    return channels.map((channel) => this.getTemplateChannelLabel(channel)).join(', ');
+  }
+
+  getTemplateObjective(template: any): string {
+    if (template?.mainCategory === 'Increase Sales') {
+      return 'Aumentar vendas';
+    }
+
+    if (template?.mainCategory === 'Customer Satisfaction') {
+      return 'Atender melhor';
+    }
+
+    return template?.certifiedTags?.[0]?.name || 'Automatizar atendimento';
   }
 
 

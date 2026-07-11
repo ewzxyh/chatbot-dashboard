@@ -61,6 +61,8 @@ export class TemplateDetailComponent extends PricingBaseComponent implements OnI
   public trial_expired: any;
   public chatBotLimit: any;
   public chatBotCount: any;
+  public isImporting = false;
+  public importError: string;
   learnMoreAboutDefaultRoles: string;
   agentsCannotManageChatbots: string;
   // public depts_length: number;
@@ -263,6 +265,8 @@ export class TemplateDetailComponent extends PricingBaseComponent implements OnI
 
 
   importTempalte() {
+    this.importError = undefined;
+    this.isImporting = true;
     this.logger.log('[TEMPLATE DETAIL] importTempalte chatBotCount ',this.chatBotCount ,' chatBotLimit ', this.chatBotLimit, ' USER_ROLE ', this.USER_ROLE) 
     // if (this.chatBotCount < this.chatBotLimit) {
     //   this.forkTemplate()
@@ -287,8 +291,12 @@ export class TemplateDetailComponent extends PricingBaseComponent implements OnI
       } else if (this.chatBotLimit === null) {
         this.logger.log('[INSTALL-TEMPLATE] USECASE  NO chatBotLimit: RUN FORK')
         this.forkTemplate()
+      } else {
+        this.isImporting = false;
+        this.importError = 'Aguarde o carregamento do seu plano e tente novamente.';
       }
     } if (this.USER_ROLE === 'agent') {
+      this.isImporting = false;
       this.presentModalAgentCannotManageChatbot()
     }
   }
@@ -298,6 +306,7 @@ export class TemplateDetailComponent extends PricingBaseComponent implements OnI
   }
 
   presentDialogReachedChatbotLimit() {
+    this.isImporting = false;
     this.closeDialog()
     this.logger.log('[TEMPLATE DETAIL] openDialog presentDialogReachedChatbotLimit prjct_profile_name ', this.prjct_profile_name)
     const dialogRef = this.dialog.open(ChatbotModalComponent, {
@@ -325,6 +334,8 @@ export class TemplateDetailComponent extends PricingBaseComponent implements OnI
 
     }, (error) => {
       this.logger.error('[TEMPLATE DETAIL] FORK TEMPLATE - ERROR ', error);
+      this.isImporting = false;
+      this.importError = 'Não foi possível criar o fluxo agora. Tente novamente.';
 
     }, () => {
       this.logger.log('[TEMPLATE DETAIL] FORK TEMPLATE COMPLETE');
