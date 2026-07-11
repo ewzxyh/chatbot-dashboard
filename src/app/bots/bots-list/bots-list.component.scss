@@ -1364,7 +1364,11 @@ input[type="checkbox"]:disabled {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  left: auto;
+  margin-left: 238px;
   padding: 18px 0 12px;
+  position: static;
+  top: auto;
   color: #25364d;
 }
 
@@ -1843,6 +1847,11 @@ input[type="checkbox"]:disabled {
 @media (max-width: 767px) {
   .bots-list-main {
     padding: 0 8px !important;
+  }
+
+  .bots-list-main .page-title--sidebar-settings {
+    margin-left: 0;
+    padding: 14px 10px 8px;
   }
 
   .bots-list-layout {

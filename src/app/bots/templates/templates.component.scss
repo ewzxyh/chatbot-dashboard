@@ -108,8 +108,10 @@
 }
 
 .templates-categories mat-icon {
+    flex: 0 0 19px;
     font-size: 19px;
     height: 19px;
+    overflow: hidden;
     width: 19px;
 }
 
@@ -442,6 +444,10 @@
 }
 
 @media (max-width: 900px) {
+    .content-wpr {
+        flex-direction: column;
+    }
+
     .templates-content {
         padding: 22px 18px 32px;
     }

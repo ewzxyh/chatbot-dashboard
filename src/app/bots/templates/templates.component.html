@@ -53,7 +53,7 @@
                         *ngIf="displayTemplatesCategory"
                         [class.is-active]="BOTS_CUSTOMER_SATISFACTION_TEMPALTES_ROUTE_IS_ACTIVE"
                         (click)="goToBotCustomerSatisfactionTemplates()">
-                        <mat-icon aria-hidden="true">sentiment_satisfied</mat-icon>
+                        <mat-icon aria-hidden="true">mood</mat-icon>
                         <span>{{ 'CustomerSatisfaction' | translate }}</span>
                     </button>
                     <button type="button"
@@ -137,7 +137,7 @@
                                     {{ getTemplateChannelSummary(template) }}
                                 </span>
                                 <span *ngIf="template?.certified === true" class="template-card-verified">
-                                    <mat-icon aria-hidden="true">verified</mat-icon>
+                                    <mat-icon aria-hidden="true">check_circle</mat-icon>
                                     Verificado
                                 </span>
                             </div>
