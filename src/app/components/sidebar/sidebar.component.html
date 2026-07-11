@@ -389,8 +389,9 @@
     </ng-container>
 
     <!-- Admin Panel -->
-    <div *ngIf="isSuperAdmin" matTooltip="Admin" #tooltip="matTooltip" matTooltipPosition='right'
-      class="sidebar-item-container" routerLinkActive="item-active">
+    <div *ngIf="isSuperAdmin" matTooltipClass="sb-mat-tooltip" matTooltip="Admin" #tooltip="matTooltip"
+      matTooltipPosition='right' matTooltipHideDelay="100" class="sidebar-item-container"
+      routerLinkActive="item-active">
       <a routerLink="/admin" routerLinkActive="item-active">
         <mat-icon svgIcon="td-shield-cog" class="nav-sidebar-icon sidebar-item-icon"></mat-icon>
       </a>
