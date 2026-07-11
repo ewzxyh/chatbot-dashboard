@@ -230,7 +230,7 @@
 - [x] Remover a segunda coluna fixa das paginas modernizadas e preservar Webhooks legados.
 - [x] Aplicar largura integral, bordas retas e navegacao horizontal responsiva.
 - [x] Corrigir o icone de verificacao que renderizava texto sobre o card.
-- [ ] Validar o bundle na VPS DEV, auditar screenshots e confirmar ausencia de overflow.
+- [x] Validar o bundle na VPS DEV, auditar screenshots e confirmar ausencia de overflow.
 
 ## Criterios de aceite
 
@@ -238,3 +238,11 @@
 - Navegacao interna permanece acessivel por scroll horizontal em telas estreitas.
 - Cards e faixas seguem a identidade plana da Home, sem sombras ou cantos decorativos.
 - Textos, icones e acoes nao se sobrepoem em 1440px, 390px ou 320px.
+
+## Review
+
+- A navegacao secundaria virou uma faixa horizontal apenas na lista e nos modelos; Webhooks legados continuam com o shell anterior.
+- Lista e modelos usam toda a largura util, com faixas e cards retos, sem sombras decorativas.
+- O primeiro teste live revelou o card mobile em linha; a causa foi corrigida restaurando `flex-direction: column` no breakpoint de 900px.
+- A VPS DEV ficou sem overflow em 1440px, 390px e 320px nas duas rotas, sem erros de console, rede ou HTTP.
+- O card de modelo em 320px manteve selo, canais, tags e CTA sem sobreposicao.
