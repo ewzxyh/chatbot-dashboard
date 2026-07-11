@@ -1,9 +1,9 @@
 import { OnboardingWidgetComponent } from './create-project-wizard/onboarding-widget/onboarding-widget.component';
 // import { MapRequestComponent } from './map-request/map-request.component'; // now lazy
-import { Injectable, NgModule } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { CommonModule, } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
-import { ActivatedRouteSnapshot, CanActivate, Router, RouterModule, RouterStateSnapshot, Routes, UrlTree } from '@angular/router';
+import { Routes, RouterModule } from '@angular/router';
 
 import { UserProfileComponent } from './user-profile/user-profile.component';
 
@@ -161,20 +161,6 @@ import { MaintenancePageComponent } from './auth/maintenance-page/maintenance-pa
 
 // import { KnowledgeBasesPreviousComponent } from './knowledge-bases-previous/knowledge-bases-previous.component'; // now lazy
 // import { IntegrationsComponent } from './integrations/integrations.component'; // now lazy
-
-
-@Injectable({ providedIn: 'root' })
-class LegacyBotsListRedirectGuard implements CanActivate {
-  constructor(
-    private roleGuard: RoleGuard,
-    private router: Router
-  ) { }
-
-  async canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean | UrlTree> {
-    if (!await this.roleGuard.canActivate(next, state)) return false;
-    return this.router.createUrlTree(['project', next.params.projectid, 'bots', 'my-chatbots', 'all']);
-  }
-}
 
 
 const routes: Routes = [
@@ -1336,9 +1322,8 @@ const routes: Routes = [
 
   {
     path: 'project/:projectid/bots',
-    canActivate: [AuthGuard, LegacyBotsListRedirectGuard],
+    redirectTo: 'project/:projectid/bots/my-chatbots/all',
     pathMatch: 'full',
-    data: [{ roles: ['owner', 'admin'] }]
   },
   // { path: 'project/:projectid/bots', component: BotListComponent, canActivate: [AuthGuard] }, // now canonicalized
 
