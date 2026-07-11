@@ -104,7 +104,7 @@ describe('AdminAuditComponent template', () => {
     expect(getComputedStyle(wrapper).minWidth).toBe('0px');
     expect(getComputedStyle(wrapper).overflowX).toBe('auto');
     expect(getComputedStyle(wrapper).overflowY).toBe('hidden');
-    expect(getComputedStyle(table).minWidth).toBe('1080px');
+    expect(getComputedStyle(table).minWidth).toBe('1440px');
     expect(getComputedStyle(summaryCell).whiteSpace).toBe('normal');
   });
 
