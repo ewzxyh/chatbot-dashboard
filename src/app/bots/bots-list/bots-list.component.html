@@ -35,15 +35,15 @@
 
 
 
-<div class="main-content" style="padding-top:0px; padding-left: 5px;padding-right: 5px;">
+<div class="main-content bots-list-main" style="padding-top:0px; padding-left: 5px;padding-right: 5px;">
   <div class="page-title--sidebar-settings"
     [ngClass]="{'page-title--sidebar-settings_opened':IS_OPEN_SETTINGS_SIDEBAR, 'page-title--sidebar-settings_closed':!IS_OPEN_SETTINGS_SIDEBAR }">
-
-    {{ pageName | translate}}
+    <span class="bots-page-eyebrow">{{'Flows' | translate}}</span>
+    <h1>{{ pageName | translate}}</h1>
   </div>
-  <div class="container-fluid" style="padding-left: 5px;padding-right: 5px;">
+  <div class="container-fluid bots-list-container" style="padding-left: 5px;padding-right: 5px;">
 
-    <div class="content-wpr" style="display: flex;">
+    <div class="content-wpr bots-list-layout" style="display: flex;">
       <!-- [kbCount]="kbCount" -->
       <appdashboard-bots-sidebar 
         [allTemplatesCount]="allTemplatesCount"
@@ -57,7 +57,7 @@
         [customerSatisfactionBotsCount]="customerSatisfactionBotsCount"
         [increaseSalesBotsCount]="increaseSalesBotsCount">
       </appdashboard-bots-sidebar>
-      <div class="teplate-content" style="flex: 1 1 auto; margin-left: 15px; ">
+      <div class="teplate-content bots-list-content" style="flex: 1 1 auto; margin-left: 15px; ">
 
         <!-- -------------------------------------------------------------------- -->
         <!-- Alert displayed when the number of chatbot exceed the chatbot limit -->
@@ -67,13 +67,13 @@
           <appdashboard-chatbot-alert *ngIf="chatBotCount > chatBotLimit && isVisiblePAY"></appdashboard-chatbot-alert>
         </ng-container>
 
-        <div class="row">
-          <div class="col-xs-12">
+        <div class="row bots-list-toolbar-row">
+          <div class="col-xs-12 bots-list-toolbar">
             <!-- createBlankTilebot() -->
-            <button *ngIf="isChatbotRoute !== 'all'" class="btn btn-tdblu-no-boxshadow pull-right"
+            <button *ngIf="isChatbotRoute !== 'all'" class="btn btn-tdblu-no-boxshadow bots-list-primary-action"
               [class.disabled]="!PERMISSION_TO_ADD_FLOWS"
               [disabled]="!PERMISSION_TO_ADD_FLOWS"
-              (click)="PERMISSION_TO_ADD_FLOWS && presentDialogCreateFlows(isChatbotRoute)" style="margin-right: 25px">
+              (click)="PERMISSION_TO_ADD_FLOWS && presentDialogCreateFlows(isChatbotRoute)">
               <!-- Create from scratch -->
               <!-- {{'isChatbotRoute' | translate}} -->
 
@@ -88,10 +88,9 @@
             </button>
       
 
-            <div class="dropdown pull-right" *ngIf="isChatbotRoute === 'all'">
-              <a  class="btn dropdown-toggle select-flow-btn" 
+            <div class="dropdown bots-list-new-flow" *ngIf="isChatbotRoute === 'all'">
+              <button type="button" class="btn dropdown-toggle select-flow-btn"
                 id="selectFlowDropdown" 
-                role="button" 
                 data-bs-toggle="dropdown" 
                 aria-expanded="false"
                 [class.disabled]="!PERMISSION_TO_ADD_FLOWS"
@@ -99,7 +98,7 @@
                 {{'NewFlow' | translate}}
                   <b class="caret" style="position: relative; left: 8px;">
                   </b>
-              </a>
+              </button>
               <ul *ngIf="PERMISSION_TO_ADD_FLOWS" class="dropdown-menu dropdown-menu-custom">
                 <li>
                   <a class="dropdown-item" (click)="presentDialogCreateFlows(true)">
@@ -115,7 +114,7 @@
             </div>
 
 
-            <button *ngIf="PERMISSION_TO_ADD_FLOWS" class="btn btn-outlined pull-right" (click)="goToBotAllTemplates()" style="margin-right: 16px">
+            <button *ngIf="PERMISSION_TO_ADD_FLOWS" class="btn btn-outlined bots-list-template-action" (click)="goToBotAllTemplates()">
               <!-- Add from template -->
               {{'AddFromTemplate' | translate}}
 
@@ -134,7 +133,16 @@
               <!-- ------------------------------------------------------------------ -->
               <loading-spinner *ngIf="showSpinner"></loading-spinner>
               
-              <div *ngIf="!showSpinner" class="main--wrapper">
+              <div *ngIf="!showSpinner && loadError" class="state-panel state-panel-error" role="alert">
+                <mat-icon aria-hidden="true">error_outline</mat-icon>
+                <h2>{{'Error' | translate}}</h2>
+                <p>{{'PleaseTryAgain' | translate}}</p>
+                <button type="button" class="btn btn-tdblu-no-boxshadow state-panel-action" (click)="getFaqKbByProjectId()">
+                  {{'PleaseTryAgain' | translate}}
+                </button>
+              </div>
+
+              <div *ngIf="!showSpinner && !loadError" class="main--wrapper">
                 <div class="page-title--wrapper">
                   <div class="title--header">
                     <!-- {{ pageName }} -->
@@ -179,108 +187,15 @@
                 </div>
                 <!-- isChatbotRoute {{isChatbotRoute}} -->
 
-                <!-- ----------------------------- -->
-                <!-- All Flows -->
-                <!-- ----------------------------- -->
-                <div *ngIf="isChatbotRoute === 'all' && faqkbList?.length === 0" class="no-bot-tr-msg-wpr">
-                  <p class="no-bot-msg">
-                    <span style="display: block;">
-
-                      {{ 'YouDoNotHaveFlows' | translate}}.
-                    </span>
-                  </p>
-                  <span class="span-8"> </span>
-                  <div class="flow-section-title">
-                    {{'WhatTypeOfFlowDoYouWantToStart' | translate}}
-                  </div>
-
-                  <span class="span-32"> </span>
-
-                 <!-- PERMISSION_TO_ADD_FLOWS -> {{ PERMISSION_TO_ADD_FLOWS }} -->
-                  <div class="add---content-cards-wpr">
-                    <div class="add---content-card-wpr" (click)="PERMISSION_TO_ADD_FLOWS && presentDialogCreateFlows(true)" 
-                      matRipple 
-                      [matRippleDisabled]="!PERMISSION_TO_ADD_FLOWS"
-                      [ngClass]="{'add---content-card-wpr-disabled': !PERMISSION_TO_ADD_FLOWS}"
-                      matTooltipClass="custom-mat-tooltip"
-                      #tooltip="matTooltip"
-                      matTooltipPosition='above'
-                      matTooltipHideDelay="100"
-                      [matTooltip]="!PERMISSION_TO_ADD_FLOWS ? ('YouDoNotHavePermissions' | translate) : ''"
-                      [matTooltipDisabled]="PERMISSION_TO_ADD_FLOWS">
-                      <div class="add---content-card-content aiagents">
-                        <div class="add-content-card-content-icon-wpr">
-                          <span>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                              stroke-linejoin="round" class="svg-stroke">
-                              <path d="M12 8V4H8"></path>
-                              <rect width="16" height="12" x="4" y="8" rx="2"></rect>
-                              <path d="M2 14h2"></path>
-                              <path d="M20 14h2"></path>
-                              <path d="M15 13v2"></path>
-                              <path d="M9 13v2"></path>
-                            </svg>
-                          </span>
-                        </div>
-                        <span class="span-6"> </span>
-                        <p class="add-content-card-content-title">
-                          {{'AIAgents' | translate}}
-                        </p>
-                        <span class="span-8"> </span>
-                        <p class="add---content-card-content-subtitle">
-                          <span style="display: block;">
-                            {{'CreateAIAgentFlowTypeDesc' | translate}}
-                          </span>
-                        </p>
-                      </div>
-                    </div>
-
-                    <div class="add---content-card-wpr" (click)="PERMISSION_TO_ADD_FLOWS && presentDialogCreateFlows(false)" 
-                      matRipple
-                      [matRippleDisabled]="!PERMISSION_TO_ADD_FLOWS"
-                      [ngClass]="{'add---content-card-wpr-disabled': !PERMISSION_TO_ADD_FLOWS}"
-                      matTooltipClass="custom-mat-tooltip"
-                      #tooltip="matTooltip"
-                      matTooltipPosition='above'
-                      matTooltipHideDelay="100"
-                      [matTooltip]="!PERMISSION_TO_ADD_FLOWS ? ('YouDoNotHavePermissions' | translate) : ''"
-                      [matTooltipDisabled]="PERMISSION_TO_ADD_FLOWS">
-                      <div class="add---content-card-content automations">
-                        <div class="add-content-card-content-icon-wpr">
-                          <span>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                              stroke-linejoin="round" class="svg-stroke">
-                              <path _ngcontent-wai-c230=""
-                                d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
-                              </path>
-                              <circle _ngcontent-wai-c230="" cx="12" cy="12" r="4"></circle>
-                            </svg>
-                          </span>
-                        </div>
-                        <span class="span-6"> </span>
-                        <p class="add-content-card-content-title">
-                          {{'Automations' | translate }}
-                        </p>
-                        <span class="span-8"> </span>
-                        <p class="add---content-card-content-subtitle">
-                          <span style="display: block;">
-                            {{'CreateAutomationFlowTypeDesc' | translate}}
-                          </span>
-                        </p>
-
-                      </div>
-                    </div>
-
-                  </div>
-
-
-                </div>
-
-                <!-- ----------------------------- -->
-                <!-- ./ All Flows -->
-                <!-- ----------------------------- -->
+                <section *ngIf="isChatbotRoute === 'all' && faqkbList?.length === 0" class="state-panel state-panel-empty">
+                  <mat-icon aria-hidden="true">account_tree</mat-icon>
+                  <h2>{{'YouDoNotHaveFlows' | translate}}.</h2>
+                  <p>{{'WhatTypeOfFlowDoYouWantToStart' | translate}}</p>
+                  <button type="button" class="btn btn-tdblu-no-boxshadow state-panel-action"
+                    [disabled]="!PERMISSION_TO_ADD_FLOWS" (click)="PERMISSION_TO_ADD_FLOWS && goToBotAllTemplates()">
+                    {{'AddFromTemplate' | translate}}
+                  </button>
+                </section>
 
                 <!-- ----------------------------- -->
                 <!-- AI agents -->
@@ -336,6 +251,11 @@
                           <!-- Automate business workflows and operations with customizable AI Agents -->
                           {{'AIAgentDesc' | translate}}
                         </p>
+                        <button type="button" class="btn btn-tdblu-no-boxshadow empty-state-action"
+                          [disabled]="!PERMISSION_TO_ADD_FLOWS"
+                          (click)="$event.stopPropagation(); PERMISSION_TO_ADD_FLOWS && presentModalAddBotFromScratch('chatbot')">
+                          {{'NewAIAgent' | translate}}
+                        </button>
 
                       </div>
 
@@ -540,6 +460,11 @@
                         <p class="add-content-card-content-subtitle">
                           {{'WebhookDesc' | translate}}
                         </p>
+                        <button type="button" class="btn btn-tdblu-no-boxshadow empty-state-action"
+                          [disabled]="!PERMISSION_TO_ADD_FLOWS"
+                          (click)="$event.stopPropagation(); PERMISSION_TO_ADD_FLOWS && presentModalAddBotFromScratch('webhook')">
+                          {{'NewAutomation' | translate}}
+                        </button>
                       </div>
                     </div>
 
@@ -624,7 +549,7 @@
                   </div>
                 </div>
 
-
+                <div class="bot-grid">
                 <div class="card-list" *ngFor="let faqkb of pagedFaqkbList; let i = index; trackBy: trackByFaqkbId">
 
                   <!-- matTooltipClass="custom-mat-tooltip"
@@ -782,6 +707,17 @@
 
                         <div class="cl-card-action-wpr">
                           <div class="cl-card-action-group">
+                            <button type="button" class="btn btn-tdblu-no-boxshadow bot-primary-action"
+                              [disabled]="!PERMISSION_TO_EDIT_FLOWS"
+                              [attr.aria-label]="faqkb.type === 'tilebot' && !faqkb.published ? ('BotsAddEditPage.Continue' | translate) : ('Edit' | translate)"
+                              (click)="$event.stopPropagation(); goToBotDtls(faqkb)">
+                              <span *ngIf="faqkb.type === 'tilebot' && !faqkb.published">
+                                {{'BotsAddEditPage.Continue' | translate}}
+                              </span>
+                              <span *ngIf="faqkb.type !== 'tilebot' || faqkb.published">
+                                {{'Edit' | translate}}
+                              </span>
+                            </button>
                             <ng-container
                               *ngIf="!faqkb?.subtype || (faqkb?.subtype !== 'webhook' && faqkb?.subtype !== 'copilot')">
                              
@@ -791,6 +727,7 @@
                                   (click)="openBotMsgsStats(faqkb)"
                                   matTooltipClass="custom-mat-tooltip"
                                   matTooltip="{{ 'BotsAddEditPage.Messages' | translate }}" 
+                                  [attr.aria-label]="'BotsAddEditPage.Messages' | translate"
                                   #tooltip="matTooltip"
                                   matTooltipPosition='below'
                                    matTooltipHideDelay="100">
@@ -803,6 +740,7 @@
                               <button id="share-btn-{{faqkb._id}}" 
                                 mat-icon-button 
                                 [matMenuTriggerFor]="menu"
+                                aria-label="{{'Share' | translate}}"
                                 matTooltipClass="custom-mat-tooltip" 
                                 matTooltip="{{'Share' | translate}}"
                                 #tooltip="matTooltip" 
@@ -840,6 +778,7 @@
 
                             <div class="cl-card-action-btn-wpr" (click)="$event.stopPropagation()">
                               <button mat-icon-button [matMenuTriggerFor]="sharemenu"
+                                aria-label="{{'Actions' | translate}}"
                                 matTooltipClass="custom-mat-tooltip" matTooltip="{{'Actions' | translate}}"
                                 #tooltip="matTooltip" matTooltipPosition='below' matTooltipHideDelay="100">
                                 <mat-icon>more_vert</mat-icon>
@@ -916,13 +855,14 @@
                     </sat-popover>
                   </div>
                 </div>
+                </div>
 
                 <div class="pagination-controls" *ngIf="faqkbList && faqkbList.length > pageSize"> 
                   
                   <!-- <div class="input-group"> -->
 
                     <!-- <span class="input-group-btn" style="padding-right:0px;  padding-left: 0px;"> -->
-                      <button  class="btn " (click)="prevPage()" 
+                      <button type="button" class="btn " (click)="prevPage()" aria-label="Previous page"
                         style="border-bottom-right-radius: 0px !important; border-top-right-radius: 0px !important;    border-top-left-radius: 9999px !important;
                           border-bottom-left-radius: 9999px !important;
                           box-shadow: unset; background-color: var(--blue-20);"
@@ -940,7 +880,7 @@
                     <!-- </span> -->
 
                     <!-- <span class="input-group-btn" style="padding-right:0px;  padding-left: 0px;"> -->
-                      <button class="btn" (click)="nextPage()" 
+                      <button type="button" class="btn" (click)="nextPage()" aria-label="Next page"
                         style="border-bottom-left-radius: 0px !important; border-top-left-radius: 0px !important; border-bottom-right-radius: 9999px !important;
                             box-shadow: unset;
                             background-color: var(--blue-20);

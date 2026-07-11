@@ -76,6 +76,7 @@ export class BotListComponent extends PricingBaseComponent implements OnInit, On
 
   project: Project;
   showSpinner: boolean = false;
+  loadError = false;
 
   NUMBER_OF_CICLE: number;
 
@@ -1025,6 +1026,7 @@ export class BotListComponent extends PricingBaseComponent implements OnInit, On
   // ----------------------------------------------------------------
  getFaqKbByProjectId() {
     this.showSpinner = true
+    this.loadError = false
     // this.faqKbService.getAllBotByProjectId().subscribe((faqKb: any) => {
     this.faqKbService.getFaqKbByProjectId()
     .pipe(takeUntil(this.unsubscribe$))
@@ -1214,6 +1216,9 @@ export class BotListComponent extends PricingBaseComponent implements OnInit, On
      
     }, (error) => {
       this.logger.error('[BOTS-LIST] GET BOTS ERROR ', error);
+      this.faqkbList = [];
+      this.pagedFaqkbList = [];
+      this.loadError = true;
       this.showSpinner = false;
     }, () => {
       this.logger.log('[BOTS-LIST] GET BOTS COMPLETE');
