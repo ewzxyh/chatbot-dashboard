@@ -1356,7 +1356,7 @@ input[type="checkbox"]:disabled {
 
 /* Local list refresh: keep the existing actions and make the page scan like Home. */
 .bots-list-main {
-  padding: 0 16px !important;
+  padding: 0 36px 40px !important;
   color: #25364d;
 }
 
@@ -1365,8 +1365,8 @@ input[type="checkbox"]:disabled {
   flex-direction: column;
   gap: 2px;
   left: auto;
-  margin-left: 238px;
-  padding: 18px 0 12px;
+  margin-left: 0;
+  padding: 24px 0 16px;
   position: static;
   top: auto;
   color: #25364d;
@@ -1388,15 +1388,21 @@ input[type="checkbox"]:disabled {
 
 .bots-list-container {
   max-width: 100% !important;
+  padding: 0 !important;
 }
 
 .bots-list-layout {
+  display: flex;
+  flex-direction: column;
   align-items: flex-start;
-  gap: 16px;
+  gap: 20px;
 }
 
 .bots-list-content {
+  flex: 1 1 auto;
+  width: 100%;
   min-width: 0;
+  margin-left: 0;
 }
 
 .bots-list-toolbar-row {
@@ -1417,7 +1423,7 @@ input[type="checkbox"]:disabled {
 .bots-list-toolbar .select-flow-btn {
   min-height: 36px;
   margin: 0 !important;
-  border-radius: 6px !important;
+  border-radius: 0 !important;
   font-size: 14px !important;
   line-height: 20px;
   padding: 8px 14px !important;
@@ -1485,7 +1491,7 @@ input[type="checkbox"]:disabled {
 
 .bot-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: 16px;
   min-width: 0;
 }
@@ -1499,28 +1505,28 @@ input[type="checkbox"]:disabled {
   display: flex;
   width: 100%;
   min-width: 0;
-  min-height: 214px;
+  min-height: 0;
   height: 100%;
   border: 1px solid #dce6f0;
-  border-radius: 8px;
+  border-radius: 0;
   background: #fff;
-  box-shadow: 0 1px 3px rgb(37 54 77 / 8%);
+  box-shadow: none;
   cursor: pointer;
 }
 
 .cl-card:hover {
   border-color: #b8d6ed;
-  box-shadow: 0 4px 12px rgb(37 54 77 / 10%);
+  box-shadow: none;
 }
 
 .cl-card-content {
-  display: flex;
+  display: grid;
   flex: 1;
-  flex-direction: column;
-  justify-content: space-between;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, auto);
+  align-items: center;
   min-width: 0;
   gap: 16px;
-  padding: 16px;
+  padding: 18px 20px;
 }
 
 .cl-card-first-column {
@@ -1568,7 +1574,7 @@ input[type="checkbox"]:disabled {
   margin: 0;
   overflow: hidden;
   border: 1px solid #e3ebf3;
-  border-radius: 8px;
+  border-radius: 0;
   background: #f4f8fc;
 }
 
@@ -1627,8 +1633,10 @@ input[type="checkbox"]:disabled {
   align-items: stretch;
   min-width: 0;
   gap: 12px;
-  padding-top: 12px;
-  border-top: 1px solid #edf2f7;
+  min-width: 300px;
+  padding: 0 0 0 20px;
+  border-top: 0;
+  border-left: 1px solid #edf2f7;
 }
 
 .cl-availble-for-agent {
@@ -1691,7 +1699,7 @@ input[type="checkbox"]:disabled {
   min-width: 88px;
   min-height: 34px;
   margin-right: auto;
-  border-radius: 5px !important;
+  border-radius: 0 !important;
   background: #0b6bcb !important;
   color: #fff !important;
   font-size: 13px;
@@ -1727,7 +1735,7 @@ input[type="checkbox"]:disabled {
   margin: 0 0 16px;
   padding: 32px 16px;
   border: 1px solid #dce6f0;
-  border-radius: 8px;
+  border-radius: 0;
   background: #fff;
   text-align: center;
 }
@@ -1767,7 +1775,7 @@ input[type="checkbox"]:disabled {
 .state-panel-action,
 .empty-state-action {
   min-height: 36px;
-  border-radius: 6px !important;
+  border-radius: 0 !important;
   background: #0b6bcb !important;
   color: #fff !important;
   font-size: 14px;
@@ -1781,7 +1789,7 @@ input[type="checkbox"]:disabled {
   margin: 0 0 16px;
   padding: 32px 16px;
   border: 1px solid #dce6f0;
-  border-radius: 8px;
+  border-radius: 0;
   background: #fff;
 }
 
@@ -1814,7 +1822,7 @@ input[type="checkbox"]:disabled {
 .no-bot-tr-msg-wpr .add--content-card-wpr {
   min-height: 0;
   border: 1px solid #dce6f0;
-  border-radius: 8px;
+  border-radius: 0;
   box-shadow: none !important;
   cursor: default;
 }
@@ -1844,14 +1852,14 @@ input[type="checkbox"]:disabled {
   margin: 20px 0 8px;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 900px) {
   .bots-list-main {
-    padding: 0 8px !important;
+    padding: 0 24px 32px !important;
   }
 
   .bots-list-main .page-title--sidebar-settings {
     margin-left: 0;
-    padding: 14px 10px 8px;
+    padding: 20px 0 12px;
   }
 
   .bots-list-layout {
@@ -1860,6 +1868,18 @@ input[type="checkbox"]:disabled {
 
   .bots-list-content {
     margin-left: 0 !important;
+  }
+
+  .cl-card-content {
+    display: flex;
+    padding: 16px;
+  }
+
+  .cl-card-second-column {
+    min-width: 0;
+    padding: 12px 0 0;
+    border-top: 1px solid #edf2f7;
+    border-left: 0;
   }
 
   .bots-list-toolbar {

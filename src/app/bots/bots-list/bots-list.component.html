@@ -35,17 +35,17 @@
 
 
 
-<div class="main-content bots-list-main" style="padding-top:0px; padding-left: 5px;padding-right: 5px;">
+<div class="main-content bots-list-main">
   <div class="page-title--sidebar-settings"
     [ngClass]="{'page-title--sidebar-settings_opened':IS_OPEN_SETTINGS_SIDEBAR, 'page-title--sidebar-settings_closed':!IS_OPEN_SETTINGS_SIDEBAR }">
     <span class="bots-page-eyebrow">{{'Flows' | translate}}</span>
     <h1>{{ pageName | translate}}</h1>
   </div>
-  <div class="container-fluid bots-list-container" style="padding-left: 5px;padding-right: 5px;">
+  <div class="container-fluid bots-list-container">
 
-    <div class="content-wpr bots-list-layout" style="display: flex;">
+    <div class="content-wpr bots-list-layout">
       <!-- [kbCount]="kbCount" -->
-      <appdashboard-bots-sidebar 
+      <appdashboard-bots-sidebar class="bots-top-navigation"
         [allTemplatesCount]="allTemplatesCount"
         [allCommunityTemplatesCount]="allCommunityTemplatesCount"
         [customerSatisfactionTemplatesCount]="customerSatisfactionTemplatesCount"
@@ -57,7 +57,7 @@
         [customerSatisfactionBotsCount]="customerSatisfactionBotsCount"
         [increaseSalesBotsCount]="increaseSalesBotsCount">
       </appdashboard-bots-sidebar>
-      <div class="teplate-content bots-list-content" style="flex: 1 1 auto; margin-left: 15px; ">
+      <div class="teplate-content bots-list-content">
 
         <!-- -------------------------------------------------------------------- -->
         <!-- Alert displayed when the number of chatbot exceed the chatbot limit -->

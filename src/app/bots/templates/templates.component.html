@@ -1,19 +1,6 @@
 <div class="main-content templates-page">
     <div class="container-fluid templates-container">
         <div class="content-wpr">
-            <appdashboard-bots-sidebar
-                [allTemplatesCount]="allTemplatesCount"
-                [allCommunityTemplatesCount]="allCommunityTemplatesCount"
-                [customerSatisfactionTemplatesCount]="customerSatisfactionTemplatesCount"
-                [increaseSalesTemplatesCount]="increaseSalesTemplatesCount"
-                [chatBotCount]="chatBotCount"
-                [myChatbotOtherCount]="myChatbotOtherCount"
-                [automationsCount]="automationsCount"
-                [flowWebhooksCount]="flowWebhooksCount"
-                [customerSatisfactionBotsCount]="customerSatisfactionBotsCount"
-                [increaseSalesBotsCount]="increaseSalesBotsCount">
-            </appdashboard-bots-sidebar>
-
             <main class="templates-content">
                 <appdashboard-chatbot-alert
                     *ngIf="(chatBotLimit || chatBotLimit === 0) && chatBotCount > chatBotLimit && isVisiblePAY">
@@ -34,6 +21,19 @@
                         <span>modelos disponíveis</span>
                     </div>
                 </header>
+
+                <appdashboard-bots-sidebar class="bots-top-navigation"
+                    [allTemplatesCount]="allTemplatesCount"
+                    [allCommunityTemplatesCount]="allCommunityTemplatesCount"
+                    [customerSatisfactionTemplatesCount]="customerSatisfactionTemplatesCount"
+                    [increaseSalesTemplatesCount]="increaseSalesTemplatesCount"
+                    [chatBotCount]="chatBotCount"
+                    [myChatbotOtherCount]="myChatbotOtherCount"
+                    [automationsCount]="automationsCount"
+                    [flowWebhooksCount]="flowWebhooksCount"
+                    [customerSatisfactionBotsCount]="customerSatisfactionBotsCount"
+                    [increaseSalesBotsCount]="increaseSalesBotsCount">
+                </appdashboard-bots-sidebar>
 
                 <nav class="templates-categories" aria-label="Categorias de modelos">
                     <button type="button"
@@ -137,7 +137,7 @@
                                     {{ getTemplateChannelSummary(template) }}
                                 </span>
                                 <span *ngIf="template?.certified === true" class="template-card-verified">
-                                    <mat-icon aria-hidden="true">done</mat-icon>
+                                    <mat-icon aria-hidden="true" svgIcon="td-check"></mat-icon>
                                     Verificado
                                 </span>
                             </div>

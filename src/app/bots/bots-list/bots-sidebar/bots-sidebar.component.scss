@@ -1,4 +1,3 @@
-
 :host {
     display: block;
     min-width: 0;
@@ -47,106 +46,140 @@ li.active-item .sidebar-item-s {
     color: var(--settings-sidebar-active-color) !important;
 }
 
+:host(.bots-top-navigation) {
+    width: 100%;
+    min-height: auto !important;
+    border-right: 0 !important;
+    border-bottom: 1px solid #dce6f4;
+}
+
+:host(.bots-top-navigation) .settings-sidebar-wpr,
+:host(.bots-top-navigation) .settings-sidebar-wpr-opened {
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    min-height: 0;
+    padding: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+}
+
+:host(.bots-top-navigation) .settings-sidebar {
+    display: flex;
+    align-items: stretch;
+    width: max-content;
+    min-width: 100%;
+    padding: 0;
+}
+
+:host(.bots-top-navigation) .settings-sidebar > li {
+    flex: 0 0 auto;
+    width: auto;
+    height: auto;
+    margin: 0;
+    border-radius: 0;
+}
+
+:host(.bots-top-navigation) .settings-sidebar > li.sidebar-item-wpr-no-link {
+    display: none;
+}
+
+:host(.bots-top-navigation) .sidebar-item {
+    width: auto;
+    min-width: max-content;
+    min-height: 48px;
+    padding: 10px 14px;
+    white-space: nowrap;
+}
+
+:host(.bots-top-navigation) .sidebar-item .custom_paragraph {
+    flex: 0 0 auto;
+}
+
+:host(.bots-top-navigation) .sidebar-item-s {
+    margin-left: 4px;
+    padding-left: 0;
+}
+
 @media (max-width: 900px) {
-    :host {
-        border-bottom: 1px solid #e5effe;
-        border-right: 0 !important;
+    :host:not(.bots-top-navigation) {
+        width: 100%;
         max-width: 100%;
         min-height: auto !important;
-        width: 100%;
+        border-right: 0 !important;
+        border-bottom: 1px solid #e5effe;
     }
 
-    .settings-sidebar-wpr,
-    .settings-sidebar-wpr-opened {
+    :host:not(.bots-top-navigation) .settings-sidebar-wpr,
+    :host:not(.bots-top-navigation) .settings-sidebar-wpr-opened {
+        width: 100%;
+        min-width: 0;
         max-width: none;
         min-height: 0;
-        min-width: 0;
+        padding: 4px 0;
         overflow-x: auto;
         overflow-y: hidden;
-        padding: 4px 0;
-        width: 100%;
         -webkit-overflow-scrolling: touch;
     }
 
-    .settings-sidebar {
-        align-items: center;
+    :host:not(.bots-top-navigation) .settings-sidebar {
         display: flex;
-        gap: 4px;
-        min-width: 100%;
-        padding: 0 4px;
+        align-items: center;
         width: max-content;
+        min-width: 100%;
+        gap: 4px;
+        padding: 0 4px;
     }
 
-    .settings-sidebar > li {
+    :host:not(.bots-top-navigation) .settings-sidebar > li {
         flex: 0 0 auto;
+        width: auto;
         height: auto;
         margin: 0;
-        width: auto;
     }
 
-    .sidebar-section-label {
+    :host:not(.bots-top-navigation) .sidebar-section-label {
         margin-top: 0;
     }
 
-    .sidebar-item-no-link {
+    :host:not(.bots-top-navigation) .sidebar-item-no-link {
         padding: 0 4px;
         white-space: nowrap;
     }
 
-    .sidebar-item {
+    :host:not(.bots-top-navigation) .sidebar-item {
+        width: auto;
         min-width: max-content;
         padding: 8px 10px;
         white-space: nowrap;
-        width: auto;
     }
 
-    .sidebar-item .custom_paragraph {
+    :host:not(.bots-top-navigation) .sidebar-item .custom_paragraph {
         flex: 0 0 auto;
-        width: auto;
     }
 
-    .sidebar-item-s {
+    :host:not(.bots-top-navigation) .sidebar-item-s {
         margin-left: 4px;
         padding-left: 0;
     }
 }
 
 li > a {
-    margin-top: 5px !important;
-    margin-right: 5px !important;
-    margin-bottom: 5px !important;
-    margin-left: 0px !important;
-    border-radius: 0px;
+    margin: 5px 5px 5px 0 !important;
+    border-radius: 0;
 }
 
 .settings-sidebar-icons {
     width: 20px;
     min-width: 20px;
     height: 20px;
+    margin-left: 0 !important;
+    color: var(--settings-sidebar-color);
     font-size: 20px !important;
     line-height: 20px;
-    margin-left: 0px !important;
-    color: var(--settings-sidebar-color);
 }
 
 li.active-item a .settings-sidebar-icons {
     color: var(--settings-sidebar-active-color) !important;
 }
-
-
-// .beta-badge-wpr {
-//     font-weight: 400;
-//     background-color: #6c757d;
-//     padding: 1px 5px;
-//     border-radius: 10px;
-//     font-size: 9px;
-//     color: #fff;
-//     position: relative;
-//     top: -1px;
-//     margin-left: 6px;
-//     line-height: 1.2em;
-// }
-// .beta-badge {
-//     position: relative;
-//     top: 1px;
-// }

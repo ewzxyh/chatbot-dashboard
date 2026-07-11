@@ -223,3 +223,18 @@
 - O fluxo normal de login e selecao de projeto exibiu 1 bot e 6 modelos, abriu o detalhe acessivel e canonicalizou `/bots` sem erros de console ou rede.
 - `ngc`, `tsc` focal, `git diff --check` e build production passaram; 1440px, 390px e 320px ficaram sem overflow horizontal.
 - O dashboard foi publicado na VPS DEV e o container `chatcase-dashboard` permaneceu ativo apos o rebuild.
+
+# Correcao: identidade visual e largura de Bots
+
+- [x] Comparar `/home`, `/bots` e `/bots/templates` em 1440px, 390px e 320px.
+- [x] Remover a segunda coluna fixa das paginas modernizadas e preservar Webhooks legados.
+- [x] Aplicar largura integral, bordas retas e navegacao horizontal responsiva.
+- [x] Corrigir o icone de verificacao que renderizava texto sobre o card.
+- [ ] Validar o bundle na VPS DEV, auditar screenshots e confirmar ausencia de overflow.
+
+## Criterios de aceite
+
+- Lista e modelos usam toda a largura disponivel depois do sidebar global.
+- Navegacao interna permanece acessivel por scroll horizontal em telas estreitas.
+- Cards e faixas seguem a identidade plana da Home, sem sombras ou cantos decorativos.
+- Textos, icones e acoes nao se sobrepoem em 1440px, 390px ou 320px.
