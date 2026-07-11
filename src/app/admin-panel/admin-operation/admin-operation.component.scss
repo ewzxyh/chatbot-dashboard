@@ -123,6 +123,11 @@
   width: 100%;
 }
 
+.operation-filters input.mat-input-element[type='date'] {
+  height: 1.125em;
+  line-height: 1.125em;
+}
+
 .operation-resource-context {
   color: #455a64;
   font-size: 13px;

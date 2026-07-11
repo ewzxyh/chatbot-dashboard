@@ -135,6 +135,11 @@ describe('AdminOperationComponent template', () => {
       expect(fields.length).toBe(fieldCount);
       expect(fields.every((field) => field.classList.contains('admin-filter-field'))).toBe(true);
       expect(filterBar.querySelectorAll('input[type="date"].mat-input-element').length).toBe(dateCount);
+      if (dateCount > 0) {
+        const textField = filterBar.querySelector('input[type="text"]')?.closest('mat-form-field') as HTMLElement;
+        const dateField = filterBar.querySelector('input[type="date"]')?.closest('mat-form-field') as HTMLElement;
+        expect(dateField.getBoundingClientRect().height).toBe(textField.getBoundingClientRect().height);
+      }
     };
 
     expectFilterBar('Filtros de canais', 6, 2);
