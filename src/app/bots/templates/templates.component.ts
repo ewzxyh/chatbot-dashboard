@@ -147,7 +147,6 @@ export class TemplatesComponent extends PricingBaseComponent implements OnInit {
 
 
   ngOnInit(): void {
-    this.roleService.checkRoleForCurrentProject('flows')
     this.getBrowserVersion();
     this.getTemplates()
     // this.getCommunityTemplates()
@@ -374,6 +373,7 @@ export class TemplatesComponent extends PricingBaseComponent implements OnInit {
       if (project) {
         this.project = project;
         this.projectId = project._id;
+        this.roleService.checkRoleForCurrentProject('flows')
         this.getProjectById(this.projectId)
       }
     });

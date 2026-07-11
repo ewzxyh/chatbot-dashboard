@@ -278,7 +278,6 @@ export class BotListComponent extends PricingBaseComponent implements OnInit, On
 
 
   ngOnInit() {
-    this.roleService.checkRoleForCurrentProject('flows')
     // this.getCommunityTemplates()
     this.getTemplates()
     // this.getAllNamespaces()
@@ -870,6 +869,7 @@ export class BotListComponent extends PricingBaseComponent implements OnInit, On
       this.project = project
       if (this.project) {
         this.currentProjectId = this.project._id
+        this.roleService.checkRoleForCurrentProject('flows')
          this.logger.log('[BOTS-LIST] 00 -> project from AUTH service subs  ', this.project)
         this.getProjectById(this.currentProjectId)
       }
@@ -1070,31 +1070,12 @@ export class BotListComponent extends PricingBaseComponent implements OnInit, On
           });
         }
 
-        if (this.orderByChatbotName) {
-          this.logger.log('[BOTS-LIST] - orderByChatbotName Here yes');
-          this.faqkbList.sort(function compare(a: Chatbot, b: Chatbot) {
-            if (a['name'].toLowerCase() < b['name'].toLowerCase()) {
-              return -1;
-            }
-            if (a['name'].toLowerCase() > b['name'].toLowerCase()) {
-              return 1;
-            }
-            return 0;
-          });
-        }
-
-        if (this.orderByChatbotName) {
-          this.logger.log('[BOTS-LIST] - orderByChatbotName Here yes');
-          this.faqkbList.sort(function compare(a: Chatbot, b: Chatbot) {
-            if (a['name'].toLowerCase() < b['name'].toLowerCase()) {
-              return -1;
-            }
-            if (a['name'].toLowerCase() > b['name'].toLowerCase()) {
-              return 1;
-            }
-            return 0;
-          });
-        }
+          if (this.orderByChatbotName) {
+            this.logger.log('[BOTS-LIST] - orderByChatbotName Here yes');
+            this.faqkbList.sort(function compare(a: Chatbot, b: Chatbot) {
+              return (a['name'] || '').localeCompare(b['name'] || '');
+            });
+          }
 
         this.faqkbList.forEach(bot => {
           this.logger.log('[BOTS-LIST] getFaqKbByProjectId bot ', bot)
