@@ -9,3 +9,4 @@
 - Para padronizar filtros admin, reutilizar `admin-filter-bar` e `admin-filter-field`; nao recriar altura/linha em CSS local nem misturar datas nativas fora de `mat-form-field`.
 - Novos itens do sidebar devem reutilizar `sb-mat-tooltip` e o mesmo delay dos menus existentes; `matTooltip` sozinho cai no estilo Material padrao.
 - Em `input[type='date']`, alinhar o `mat-form-field` nao garante o alinhamento visual do valor; validar tambem o `::-webkit-datetime-edit` com data preenchida e vazia no Chromium.
+- Na Home, chamadas dependentes do projeto devem iniciar somente depois de `project_bs` emitir um ID valido; erro de carregamento nao pode ser convertido em estado vazio, e a ativacao deve aparecer antes de cotas e upgrade.

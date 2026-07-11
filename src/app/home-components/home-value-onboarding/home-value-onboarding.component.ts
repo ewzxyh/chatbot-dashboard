@@ -1,7 +1,7 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Router } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { IntegrationService } from 'app/services/integration.service';
 import { WsRequestsService } from 'app/services/websocket/ws-requests.service';
 import { AppConfigService } from 'app/services/app-config.service';
@@ -16,12 +16,10 @@ interface OnboardingStep {
   icon: string;
 }
 
-interface SummaryCard {
-  title: string;
-  value: string;
-  detail: string;
-  icon: string;
-  tone: 'ok' | 'attention' | 'neutral';
+interface ChannelLoadResult {
+  channel: 'casezap' | 'whatsapp';
+  error: boolean;
+  instances: any[];
 }
 
 @Component({
@@ -34,15 +32,23 @@ export class HomeValueOnboardingComponent implements OnInit, OnChanges {
   @Input() chatbots: any[] = [];
   @Input() canManageChannels = true;
   @Input() canManageFlows = true;
+  @Output() onboardingAction = new EventEmitter<any>();
 
   loadingChannels = false;
   loadingConversations = false;
   channelCount = 0;
   flowCount = 0;
   conversationCount = 0;
+  activeChannel: 'casezap' | 'whatsapp' = 'casezap';
+  channelLoadFailed = false;
+  channelPartialFailure = false;
+  conversationLoadFailed = false;
   steps: OnboardingStep[] = [];
-  summaryCards: SummaryCard[] = [];
   private initialized = false;
+  private trackedCompletedSteps = new Set<string>();
+  private activationTracked = false;
+  private trackingInitialized = false;
+  private refreshId = 0;
 
   constructor(
     private router: Router,
@@ -57,21 +63,34 @@ export class HomeValueOnboardingComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes.chatbots) {
+    if (changes.chatbots || changes.canManageChannels || changes.canManageFlows) {
       this.flowCount = this.getFlowCount(this.chatbots);
       this.buildSteps();
     }
     if (this.initialized && changes.projectId && this.projectId) {
+      if (!changes.projectId.firstChange) {
+        this.trackedCompletedSteps.clear();
+        this.activationTracked = false;
+        this.trackingInitialized = false;
+      }
       this.refresh();
     }
   }
 
   refresh() {
+    const refreshId = ++this.refreshId;
     this.flowCount = this.getFlowCount(this.chatbots);
+    this.channelCount = 0;
+    this.conversationCount = 0;
+    this.channelLoadFailed = false;
+    this.channelPartialFailure = false;
+    this.conversationLoadFailed = false;
+    this.loadingChannels = !!this.projectId;
+    this.loadingConversations = !!this.projectId;
     this.buildSteps();
     if (!this.projectId) return;
-    this.loadChannels();
-    this.loadConversationCount();
+    this.loadChannels(refreshId);
+    this.loadConversationCount(refreshId);
   }
 
   get completedSteps(): number {
@@ -91,34 +110,50 @@ export class HomeValueOnboardingComponent implements OnInit, OnChanges {
     return this.loadingChannels || this.loadingConversations;
   }
 
+  get hasLoadError(): boolean {
+    return this.channelLoadFailed || this.conversationLoadFailed;
+  }
+
+  get isActivated(): boolean {
+    return !this.isLoading && !this.hasLoadError && !this.channelPartialFailure && this.steps.length > 0 && this.completedSteps === this.steps.length;
+  }
+
   get statusTone(): 'success' | 'warning' | 'neutral' {
     if (this.isLoading) return 'neutral';
-    if (this.steps.length && this.completedSteps === this.steps.length) return 'success';
+    if (this.isActivated) return 'success';
     return 'warning';
   }
 
   get statusLabel(): string {
     if (this.isLoading) return 'Atualizando';
-    if (this.steps.length && this.completedSteps === this.steps.length) return 'Pronto para atender';
+    if (this.channelPartialFailure) return 'Verificação parcial';
+    if (this.isActivated) return 'Pronto para atender';
     const suffix = this.pendingSteps === 1 ? 'etapa pendente' : 'etapas pendentes';
     return this.pendingSteps + ' ' + suffix;
   }
 
   get statusDetail(): string {
     if (this.isLoading) return 'Verificando canais e conversas';
-    if (this.steps.length && this.completedSteps === this.steps.length) return 'Canais, fluxo e atendimento configurados';
+    if (this.channelPartialFailure) return 'Um canal não pôde ser verificado agora';
+    if (this.isActivated) return 'Canal, resposta automática e atendimento configurados';
     return 'Siga a próxima ação para ativar o atendimento';
   }
 
   get attentionStep(): OnboardingStep | null {
     if (this.isLoading) return null;
-    return this.steps.find(step => !step.done) || null;
+    const pendingSteps = this.steps.filter(step => !step.done);
+    return pendingSteps.find(step => step.enabled) || pendingSteps[0] || null;
+  }
+
+  retry() {
+    this.refresh();
   }
 
   runStep(step: OnboardingStep) {
     if (!step || !step.enabled) return;
+    this.emitAction('Onboarding step clicked', { step: step.key });
     if (step.key === 'channel') {
-      this.router.navigate(['project/' + this.projectId + '/integrations'], { queryParams: { name: 'casezap' } });
+      this.router.navigate(['project/' + this.projectId + '/integrations'], { queryParams: { name: this.activeChannel } });
     }
     if (step.key === 'flow') {
       this.router.navigate(['project/' + this.projectId + '/bots/templates/all']);
@@ -133,34 +168,37 @@ export class HomeValueOnboardingComponent implements OnInit, OnChanges {
     }
   }
 
-  private loadChannels() {
-    this.loadingChannels = true;
-    this.buildSummaryCards();
+  private loadChannels(refreshId: number) {
     forkJoin({
-      casezap: this.integrationService.getIntegrationInstances('casezap', this.projectId).pipe(catchError(() => of([]))),
-      whatsapp: this.integrationService.getIntegrationInstances('whatsapp', this.projectId).pipe(catchError(() => of([])))
-    }).subscribe((res: any) => {
-      const casezap = this.countActiveInstances(res.casezap);
-      const whatsapp = this.countActiveInstances(res.whatsapp);
+      casezap: this.loadChannel('casezap'),
+      whatsapp: this.loadChannel('whatsapp')
+    }).subscribe((res: { casezap: ChannelLoadResult; whatsapp: ChannelLoadResult }) => {
+      if (refreshId !== this.refreshId) return;
+      const casezap = this.countActiveInstances(res.casezap.instances);
+      const whatsapp = this.countActiveInstances(res.whatsapp.instances);
       this.channelCount = casezap + whatsapp;
+      this.channelLoadFailed = res.casezap.error && res.whatsapp.error;
+      this.channelPartialFailure = !this.channelLoadFailed && (res.casezap.error || res.whatsapp.error);
+      this.activeChannel = casezap > 0 ? 'casezap' : whatsapp > 0 ? 'whatsapp' : res.casezap.error && !res.whatsapp.error ? 'whatsapp' : 'casezap';
       this.loadingChannels = false;
       this.buildSteps();
     }, () => {
-      this.channelCount = 0;
+      if (refreshId !== this.refreshId) return;
+      this.channelLoadFailed = true;
       this.loadingChannels = false;
       this.buildSteps();
     });
   }
 
-  private loadConversationCount() {
-    this.loadingConversations = true;
-    this.buildSummaryCards();
+  private loadConversationCount(refreshId: number) {
     this.wsRequestsService.getConversationCount(this.projectId).subscribe((res: any) => {
+      if (refreshId !== this.refreshId) return;
       this.conversationCount = this.parseConversationCount(res);
       this.loadingConversations = false;
       this.buildSteps();
     }, () => {
-      this.conversationCount = 0;
+      if (refreshId !== this.refreshId) return;
+      this.conversationLoadFailed = true;
       this.loadingConversations = false;
       this.buildSteps();
     });
@@ -170,7 +208,7 @@ export class HomeValueOnboardingComponent implements OnInit, OnChanges {
     this.steps = [
       {
         key: 'channel',
-        title: 'Canal conectado',
+        title: this.channelCount > 0 ? 'Canal conectado' : 'Conecte seu canal',
         detail: this.channelCount > 0 ? this.formatCount(this.channelCount, 'canal ativo', 'canais ativos') : 'Conecte o canal de atendimento',
         action: this.channelCount > 0 ? 'Gerenciar' : 'Conectar',
         done: this.channelCount > 0,
@@ -179,8 +217,8 @@ export class HomeValueOnboardingComponent implements OnInit, OnChanges {
       },
       {
         key: 'flow',
-        title: 'Fluxo inicial',
-        detail: this.flowCount > 0 ? this.formatCount(this.flowCount, 'fluxo criado', 'fluxos criados') : 'Use um modelo pronto para começar',
+        title: this.flowCount > 0 ? 'Resposta automática pronta' : 'Prepare sua primeira resposta',
+        detail: this.flowCount > 0 ? this.formatCount(this.flowCount, 'resposta criada', 'respostas criadas') : 'Use um modelo pronto para começar',
         action: this.flowCount > 0 ? 'Ver fluxos' : 'Usar modelo',
         done: this.flowCount > 0,
         enabled: this.canManageFlows,
@@ -188,48 +226,15 @@ export class HomeValueOnboardingComponent implements OnInit, OnChanges {
       },
       {
         key: 'conversation',
-        title: 'Primeiro atendimento',
-        detail: this.conversationCount > 0 ? this.formatCount(this.conversationCount, 'conversa registrada', 'conversas registradas') : 'Abra o chat para acompanhar as mensagens',
-        action: 'Abrir atendimentos',
+        title: this.conversationCount > 0 ? 'Primeiro atendimento concluído' : 'Teste seu atendimento',
+        detail: this.conversationCount > 0 ? this.formatCount(this.conversationCount, 'conversa registrada', 'conversas registradas') : 'Envie uma mensagem de teste e acompanhe a conversa',
+        action: this.conversationCount > 0 ? 'Abrir atendimentos' : 'Testar atendimento',
         done: this.conversationCount > 0,
-        enabled: true,
+        enabled: this.channelCount > 0 && this.flowCount > 0,
         icon: 'td-message-circle'
       }
     ];
-    this.buildSummaryCards();
-  }
-
-  private buildSummaryCards() {
-    this.summaryCards = [
-      {
-        title: 'Canais',
-        value: this.loadingChannels ? '-' : String(this.channelCount),
-        detail: this.channelCount > 0 ? 'conectados' : 'precisa conectar',
-        icon: 'td-plug-connected',
-        tone: this.channelCount > 0 ? 'ok' : 'attention'
-      },
-      {
-        title: 'Fluxos',
-        value: String(this.flowCount),
-        detail: this.flowCount > 0 ? 'criados' : 'sem fluxo inicial',
-        icon: 'td-sitemap',
-        tone: this.flowCount > 0 ? 'ok' : 'attention'
-      },
-      {
-        title: 'Conversas',
-        value: this.loadingConversations ? '-' : String(this.conversationCount),
-        detail: this.conversationCount > 0 ? 'registradas' : 'sem atendimento ainda',
-        icon: 'td-message-circle',
-        tone: this.conversationCount > 0 ? 'ok' : 'neutral'
-      },
-      {
-        title: 'Progresso',
-        value: this.completedSteps + '/' + this.steps.length,
-        detail: 'primeiros passos',
-        icon: 'td-check',
-        tone: this.steps.length && this.completedSteps === this.steps.length ? 'ok' : 'attention'
-      }
-    ];
+    this.trackProgress();
   }
 
   private getFlowCount(chatbots: any[]): number {
@@ -242,9 +247,44 @@ export class HomeValueOnboardingComponent implements OnInit, OnChanges {
     return instances.filter(instance => {
       if (!instance) return false;
       if (instance.trashed === true) return false;
-      if (instance.status === 'disabled') return false;
+      const status = String(instance.value && instance.value.status || instance.provider_status || instance.status || instance.state || '').toLowerCase();
+      if (['disabled', 'disconnected', 'down', 'failed', 'banned', 'restricted'].includes(status)) return false;
       return true;
     }).length;
+  }
+
+  private loadChannel(channel: 'casezap' | 'whatsapp') {
+    return this.integrationService.getIntegrationInstances(channel, this.projectId).pipe(
+      map((instances: any) => ({ channel, error: false, instances: Array.isArray(instances) ? instances : [] } as ChannelLoadResult)),
+      catchError(() => of({ channel, error: true, instances: [] } as ChannelLoadResult))
+    );
+  }
+
+  private trackProgress() {
+    if (!this.initialized || !this.projectId || this.isLoading || this.hasLoadError) return;
+    if (!this.trackingInitialized) {
+      this.trackingInitialized = true;
+      for (const step of this.steps) {
+        if (step.done) this.trackedCompletedSteps.add(step.key);
+      }
+      this.activationTracked = this.isActivated;
+      this.emitAction('Onboarding viewed', { completedSteps: this.completedSteps });
+      return;
+    }
+    for (const step of this.steps) {
+      if (step.done && !this.trackedCompletedSteps.has(step.key)) {
+        this.trackedCompletedSteps.add(step.key);
+        this.emitAction('Onboarding step completed', { step: step.key });
+      }
+    }
+    if (this.isActivated && !this.activationTracked) {
+      this.activationTracked = true;
+      this.emitAction('Onboarding activation completed', { completedSteps: this.completedSteps });
+    }
+  }
+
+  private emitAction(action: string, actionRes: any) {
+    this.onboardingAction.emit({ action, actionRes: { ...actionRes, projectId: this.projectId } });
   }
 
   private parseConversationCount(res: any): number {

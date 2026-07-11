@@ -78,6 +78,8 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   project: Project;
   projects: any;
   projectId: string;
+  private initializedProjectId: string;
+  private pendingOnboardingEvents: any[] = [];
   projectName: string;
   // user_is_available: boolean;
 
@@ -332,6 +334,7 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   PERMISSION_TO_VIEW_KB: boolean;
   PERMISSION_TO_VIEW_ANALYTICS: boolean;
   PERMISSION_TO_VIEW_WA_BRODCAST: boolean;
+  PERMISSION_TO_MANAGE_INTEGRATIONS: boolean;
   PERMISSION_TO_VIEW_TEAMMATES: boolean;
   PERMISSION_TO_READ_TEAMMATE_DETAILS: boolean;
   PERMISSION_TO_INVITE: boolean;
@@ -381,13 +384,6 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.getBrowserLanguage();
     this.translateString();
-
-    // get the PROJECT-USER BY CURRENT-PROJECT-ID AND CURRENT-USER-ID
-    // IS USED TO DETERMINE IF THE USER IS AVAILABLE OR NOT AVAILABLE
-    this.getProjectUser();
-
-    // GET AND SAVE ALL BOTS OF CURRENT PROJECT IN LOCAL STORAGE
-    this.usersService.getBotsByProjectIdAndSaveInStorage();
 
     // TEST FUNCTION : GET ALL AVAILABLE PROJECT USER
     // this.getAvailableProjectUsersByProjectId();
@@ -579,6 +575,22 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
         }
 
         // -------------------------------
+        // PERMISSION_TO_MANAGE_INTEGRATIONS
+        // -------------------------------
+        if (status.role === 'owner' || status.role === 'admin') {
+          this.PERMISSION_TO_MANAGE_INTEGRATIONS = true;
+          this.logger.log('[HOME] - Project user is owner or admin (1)', 'PERMISSION_TO_MANAGE_INTEGRATIONS:', this.PERMISSION_TO_MANAGE_INTEGRATIONS);
+
+        } else if (status.role === 'agent') {
+          this.PERMISSION_TO_MANAGE_INTEGRATIONS = false;
+          this.logger.log('[HOME] - Project user agent (2)', 'PERMISSION_TO_MANAGE_INTEGRATIONS:', this.PERMISSION_TO_MANAGE_INTEGRATIONS);
+
+        } else {
+          this.PERMISSION_TO_MANAGE_INTEGRATIONS = status.matchedPermissions.includes(PERMISSIONS.INTEGRATIONS_UPDATE);
+          this.logger.log('[HOME] - Custom role (3) role', status.role, 'PERMISSION_TO_MANAGE_INTEGRATIONS:', this.PERMISSION_TO_MANAGE_INTEGRATIONS);
+        }
+
+        // -------------------------------
         // PERMISSION_TO_VIEW_TEAMMATES
         // -------------------------------
          if (status.role === 'owner' || status.role === 'admin') {
@@ -666,6 +678,12 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
           this.projectName = this.project.name
 
           if (this.projectId) {
+            if (this.initializedProjectId !== this.projectId) {
+              this.initializedProjectId = this.projectId;
+              this.getProjectUser();
+              this.usersService.getBotsByProjectIdAndSaveInStorage();
+            }
+
             this.displayQuotaSkeleton = true
 
             this.logger.log("[QUOTA-DEBUG][HOME][DISPLAY-SKELETON] listenToQuotas displayQuotaSkeleton 1:", this.displayQuotaSkeleton);
@@ -1413,6 +1431,12 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
       trackObjct['button'] = 'Customize'
     }
 
+    if (userAction && userAction.indexOf('Onboarding ') === 0 && userActionRes) {
+      if (userActionRes.step) trackObjct['step'] = userActionRes.step;
+      if (userActionRes.completedSteps !== undefined) trackObjct['completedSteps'] = userActionRes.completedSteps;
+      if (userActionRes.projectId) trackObjct['projectId'] = userActionRes.projectId;
+    }
+
 
 
     this.logger.log('[HOME] - trackUserAction trackObjct', trackObjct);
@@ -1444,6 +1468,14 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
         // this.logger.error(`Group ${userAction} error`, err);
       }
     }
+  }
+
+  trackOnboardingAction(event) {
+    if (!this.user) {
+      this.pendingOnboardingEvents.push(event);
+      return;
+    }
+    this.trackUserAction(event);
   }
 
 
@@ -2071,6 +2103,10 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
         }
 
         if (this.user) {
+          if (this.pendingOnboardingEvents.length) {
+            const pendingEvents = this.pendingOnboardingEvents.splice(0);
+            for (const event of pendingEvents) this.trackUserAction(event);
+          }
           if (!isDevMode()) {
             if (window['analytics']) {
               try {

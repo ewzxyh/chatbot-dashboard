@@ -172,3 +172,21 @@
 - Diagnóstico WABA com `channel: webhook` envia request backend com `channel: waba`; CaseZap envia `channel: casezap`.
 - `tsc` app/admin e `tsc` de specs administrativos passaram; `ngc` e build production passaram.
 - Karma permanece conhecido como bloqueado antes das assertions pelos imports legados ausentes (`rxjs-compat`, Analytics e `@angular/http/testing`); não houve tentativa de corrigir essa infraestrutura.
+
+# Home orientada a ativacao e receita
+
+- [x] Corrigir lifecycle da Home, skeleton infinito e separar erro de estado vazio.
+- [x] Corrigir estados de canal, permissao, destino da acao e proxima etapa executavel.
+- [x] Orientar a ativacao para uma conversa de teste com copy para publico leigo.
+- [x] Colocar ativacao antes das cotas e remover representacoes redundantes de progresso.
+- [x] Exibir expansao somente no contexto de uso, instrumentar o funil minimo e corrigir acessibilidade.
+- [ ] Validar desktop/mobile, auditar o diff, commitar, enviar e aplicar na VPS DEV.
+
+## Criterios de aceite
+
+- Sessao nova nao permanece presa no skeleton quando uma dependencia falha.
+- Erro, vazio, sem permissao, configuracao pendente e pronto sao estados distintos.
+- O CTA abre o canal detectado e conduz ate uma conversa real registrada.
+- Projetos nao ativados veem uma unica proxima acao antes das cotas.
+- Projetos ativados veem um resumo compacto; upgrade aparece apenas com uso relevante e permissao.
+- A tela funciona sem overflow em 320px e possui controles acessiveis por teclado.

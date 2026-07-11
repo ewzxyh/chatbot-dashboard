@@ -1,0 +1,14 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../out-tsc/spec-home",
+    "baseUrl": "",
+    "types": [
+      "jasmine",
+      "node"
+    ]
+  },
+  "include": [
+    "app/home-components/home-value-onboarding/home-value-onboarding.component.spec.ts"
+  ]
+}

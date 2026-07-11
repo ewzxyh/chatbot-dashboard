@@ -1,101 +1,101 @@
-<mat-card class="value-onboarding" aria-label="Atendimento agora">
+<mat-card class="value-onboarding" [ngClass]="{ 'is-complete': isActivated }" aria-label="Ativação do atendimento">
   <mat-card-content class="value-onboarding__content">
-  <div class="value-onboarding__header">
-    <div class="value-onboarding__title">
-      <div class="value-onboarding__eyebrow">Atendimento</div>
-      <h2>Ative o projeto</h2>
-      <p>Conecte canal, fluxo e chat.</p>
-    </div>
-
-    <div class="value-onboarding__status" [ngClass]="'is-' + statusTone">
-      <span>{{ statusLabel }}</span>
-    </div>
-  </div>
-
-  <div class="value-onboarding__attention" *ngIf="attentionStep as step">
-    <mat-icon svgIcon="td-alert-triangle"></mat-icon>
-
-    <div class="value-onboarding__attention-copy">
-      <span>{{ step.title }}</span>
-      <small>{{ step.enabled ? step.detail : 'Você não tem permissão para executar esta ação.' }}</small>
-    </div>
-
-    <button
-      mat-flat-button
-      color="primary"
-      type="button"
-      (click)="runStep(step)"
-      [disabled]="!step.enabled">
-      {{ step.action }}
-    </button>
-  </div>
-
-  <div class="value-onboarding__summary" role="list">
-    <div
-      class="value-onboarding__summary-item"
-      *ngFor="let card of summaryCards"
-      [ngClass]="'is-' + card.tone"
-      role="listitem">
-      <div class="value-onboarding__summary-icon">
-        <mat-icon [svgIcon]="card.icon"></mat-icon>
+    <div *ngIf="isActivated; else activationFlow" class="value-onboarding__complete" role="status">
+      <div class="value-onboarding__complete-icon" aria-hidden="true">
+        <mat-icon svgIcon="td-check"></mat-icon>
       </div>
-      <div class="value-onboarding__summary-copy">
-        <strong>{{ card.value }}</strong>
-        <span>{{ card.title }}</span>
-        <small>{{ card.detail }}</small>
+      <div class="value-onboarding__complete-copy">
+        <div class="value-onboarding__eyebrow">Atendimento ativo</div>
+        <h2>Seu atendimento está pronto</h2>
+        <p>Canal, resposta automática e primeira conversa verificados.</p>
       </div>
-    </div>
-  </div>
-
-  <div class="value-onboarding__tracker">
-    <div class="value-onboarding__tracker-head">
-      <div>
-        <div class="value-onboarding__section-label">Primeiros passos</div>
-        <p>Conclua o básico.</p>
-      </div>
-
-      <div class="value-onboarding__progress-circle">
-        <mat-progress-spinner
-          [attr.aria-label]="'Progresso dos primeiros passos: ' + progressPercent + '%'"
-          [strokeWidth]="4"
-          [diameter]="48"
-          [color]="'primary'"
-          [mode]="'determinate'"
-          [value]="progressPercent">
-        </mat-progress-spinner>
-        <span>{{ progressPercent }}%</span>
-      </div>
+      <button mat-stroked-button type="button" (click)="runStep(steps[2])">
+        Abrir atendimentos
+      </button>
     </div>
 
-    <div class="value-onboarding__progress" aria-hidden="true">
-      <div [style.width.%]="progressPercent"></div>
-    </div>
-
-    <div class="value-onboarding__steps">
-      <div
-        class="value-onboarding__step"
-        *ngFor="let step of steps"
-        [ngClass]="{ 'is-done': step.done, 'is-disabled': !step.enabled }">
-        <div class="value-onboarding__icon">
-          <mat-icon [svgIcon]="step.done ? 'td-check' : step.icon"></mat-icon>
+    <ng-template #activationFlow>
+      <div class="value-onboarding__header">
+        <div class="value-onboarding__title">
+          <div class="value-onboarding__eyebrow">Primeiros passos</div>
+          <h2>Coloque seu atendimento no ar</h2>
+          <p>Siga a próxima ação. Você pode concluir em poucos minutos.</p>
         </div>
 
-        <div class="value-onboarding__copy">
-          <strong>{{ step.title }}</strong>
-          <span>{{ step.detail }}</span>
+        <div class="value-onboarding__status" [ngClass]="'is-' + statusTone" aria-live="polite">
+          <span>{{ statusLabel }}</span>
+          <small>{{ statusDetail }}</small>
         </div>
+      </div>
 
+      <div class="value-onboarding__error" *ngIf="hasLoadError" role="alert">
+        <mat-icon svgIcon="td-alert-triangle"></mat-icon>
+        <div>
+          <strong>Não foi possível atualizar os primeiros passos</strong>
+          <span>Tente novamente para verificar seus canais e conversas.</span>
+        </div>
+        <button mat-stroked-button type="button" (click)="retry()">
+          <mat-icon>refresh</mat-icon>
+          Tentar novamente
+        </button>
+      </div>
+
+      <div class="value-onboarding__notice" *ngIf="channelPartialFailure && !hasLoadError" role="status">
+        Alguns canais não puderam ser verificados agora. Os dados disponíveis continuam visíveis.
+      </div>
+
+      <div class="value-onboarding__attention" *ngIf="!hasLoadError && attentionStep as step">
+        <mat-icon>arrow_forward</mat-icon>
+        <div class="value-onboarding__attention-copy">
+          <span>{{ step.title }}</span>
+          <small>{{ step.enabled ? step.detail : 'Peça ao proprietário do projeto para concluir esta etapa.' }}</small>
+        </div>
         <button
           mat-flat-button
           color="primary"
           type="button"
-          class="value-onboarding__action"
           (click)="runStep(step)"
           [disabled]="!step.enabled">
           {{ step.action }}
         </button>
       </div>
-    </div>
-  </div>
+
+      <div class="value-onboarding__tracker">
+        <div class="value-onboarding__tracker-head">
+          <div>
+            <div class="value-onboarding__section-label">Seu progresso</div>
+            <p>{{ completedSteps }} de {{ steps.length }} etapas concluídas</p>
+          </div>
+          <strong>{{ progressPercent }}%</strong>
+        </div>
+
+        <div
+          class="value-onboarding__progress"
+          role="progressbar"
+          aria-label="Progresso da ativação"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          [attr.aria-valuenow]="progressPercent">
+          <div [style.width.%]="progressPercent"></div>
+        </div>
+
+        <div class="value-onboarding__steps" role="list">
+          <div
+            class="value-onboarding__step"
+            *ngFor="let step of steps"
+            [ngClass]="{ 'is-done': step.done, 'is-disabled': !step.enabled }"
+            [attr.aria-current]="!step.done && attentionStep?.key === step.key ? 'step' : null"
+            role="listitem">
+            <div class="value-onboarding__icon" aria-hidden="true">
+              <mat-icon [svgIcon]="step.done ? 'td-check' : step.icon"></mat-icon>
+            </div>
+            <div class="value-onboarding__copy">
+              <strong>{{ step.title }}</strong>
+              <span>{{ step.detail }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-template>
   </mat-card-content>
 </mat-card>
