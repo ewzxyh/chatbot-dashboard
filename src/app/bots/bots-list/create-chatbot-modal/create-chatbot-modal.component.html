@@ -1,33 +1,23 @@
-<h1 mat-dialog-title *ngIf="automationCopilotIsAvailable === undefined">
-    <!-- Enter the name of the   -->
-    <!-- {{'Create' | translate}}  -->
-    <span *ngIf="botSubType === 'chatbot'">
-        {{'CreateAnAIAgent' | translate}}
-    </span>
-    <span *ngIf="botSubType === 'voice' || botSubType === 'voice_twilio'">
-        {{'CreateAnAIVoiceAgent' | translate}}
-    </span>
-    <span *ngIf="botSubType === 'copilot'">
-        {{'CreateACopilot' | translate}}
-    </span>
-    <span *ngIf="botSubType === 'webhook'">
-        {{'CreateAWebhook' | translate}}
-    </span>
-</h1>
-
-<div class="m-header" *ngIf="automationCopilotIsAvailable !== undefined" style="margin-bottom: 12px;">
-    <h1 mat-dialog-title style="margin-bottom: 6px">
+<div class="dialog-shell" role="dialog" aria-modal="true" aria-labelledby="create-chatbot-modal-title">
+<div class="m-header dialog-header">
+    <h1 id="create-chatbot-modal-title" mat-dialog-title>
+        <span *ngIf="botSubType === 'chatbot'">
+            {{'CreateAnAIAgent' | translate}}
+        </span>
+        <span *ngIf="botSubType === 'voice' || botSubType === 'voice_twilio'">
+            {{'CreateAnAIVoiceAgent' | translate}}
+        </span>
         <span *ngIf="botSubType === 'copilot'">
             {{'CreateACopilot' | translate}}
         </span>
+        <span *ngIf="botSubType === 'webhook'">
+            {{'CreateAWebhook' | translate}}
+        </span>
     </h1>
 
-    <div class="m-top-right-icon">
-        <span class="material-icons-outlined" (click)="onNoClick()">
-            <!-- play_arrow -->
-            close
-        </span>
-    </div>
+    <button type="button" class="m-top-right-icon" mat-icon-button mat-dialog-close aria-label="Close">
+        <span class="material-icons-outlined" aria-hidden="true">close</span>
+    </button>
 </div>
 <!-- <div mat-dialog-content>
         <mat-form-field appearance="fill" class="cc-mat-form-field">
@@ -37,9 +27,9 @@
     
 </div> -->
 
-<div mat-dialog-content>
+<div mat-dialog-content class="dialog-content">
 
-    <mat-form-field appearance="fill" class="cc-mat-form-field" style="font-size: 14px;">
+    <mat-form-field appearance="fill" class="cc-mat-form-field">
         <mat-label>
             <span *ngIf="botSubType === 'chatbot'">
                 {{'ChatbotName' | translate}}
@@ -87,7 +77,7 @@
 <!-- <div> automationCopilotIsAvailable > {{ automationCopilotIsAvailable}}</div> -->
 <!-- <div> automationCopilotIsEnabled > {{ automationCopilotIsEnabled}} </div> -->
 
-<div *ngIf="automationCopilotIsAvailable === undefined" mat-dialog-actions style="justify-content: center;">
+<div *ngIf="automationCopilotIsAvailable === undefined" mat-dialog-actions class="dialog-actions">
     <button class="mat-dialog-close-btn" mat-button (click)="onNoClick()">
         {{ "Cancel" | translate }}
     </button>
@@ -100,8 +90,8 @@
 
 <div class="feature-available-from" *ngIf="automationCopilotIsAvailable !== undefined && automationCopilotIsAvailable === false">
 
-    <div style="font-weight: 400;"> {{'FeatureAvailableFromThe'| translate: t_params}} </div>
-    <button class="btn btn--get-feature-no-boxshadow" style="margin-bottom: 0px;" (click)="goToPricing()">
+    <p> {{'FeatureAvailableFromThe'| translate: t_params}} </p>
+    <button type="button" class="btn btn--get-feature-no-boxshadow" (click)="goToPricing()" cdkFocusInitial>
         <span class="material-icons-outlined get--feature-upgrade-plan-icon">
             upgrade
         </span>
@@ -114,10 +104,13 @@
 <ng-container *ngIf="isVisiblePAY">
     <div *ngIf="automationCopilotIsAvailable === true && !automationCopilotIsEnabled">
         <div class="contact--sales-to-enable-feature">
-            <div style="font-weight: 400;"> {{'ThisFeatureIsInBeta' | translate}}. </div>
-            <div class="contact-sales-to-enable-feature-link" (click)="contacUsViaEmail()">
+            <p> {{'ThisFeatureIsInBeta' | translate}}. </p>
+            <button type="button" class="contact-sales-to-enable-feature-link" mat-button
+                (click)="contacUsViaEmail()" cdkFocusInitial>
                 {{'ContactUsToEnableIt' | translate}}
-            </div>
+            </button>
         </div>
     </div>
 </ng-container>
+
+</div>

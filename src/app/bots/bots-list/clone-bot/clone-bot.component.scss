@@ -1,9 +1,47 @@
-// .mat-dialog-close-btn {
-//     background-color: #647491;
-//     color: #fff;
-// }
+.dialog-shell {
+    width: 100%;
+    min-width: 0;
+}
 
-// .mat-dialog-ok-btn {
-//     background-color: var(--blue-light);
-//     color: #fff;
-// }
+.dialog-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.dialog-close {
+    flex: 0 0 auto;
+    color: #647491;
+}
+
+.dialog-content {
+    min-height: 30px;
+    padding-bottom: 24px;
+}
+
+.clone-bot-description {
+    margin: 0 0 12px;
+    color: #647491;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.dialog-actions {
+    justify-content: center;
+    gap: 8px;
+}
+
+@media (max-width: 320px) {
+    .dialog-content {
+        padding-bottom: 16px;
+    }
+
+    .dialog-actions {
+        flex-wrap: wrap;
+    }
+
+    .dialog-actions button {
+        flex: 1 1 100%;
+    }
+}

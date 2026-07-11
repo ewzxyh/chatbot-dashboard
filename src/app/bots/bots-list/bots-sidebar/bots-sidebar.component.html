@@ -7,8 +7,7 @@
     chevron_right
   </span>
 </div> -->
-<!-- padding-left: 0px;list-style: none;width: 215px; padding-right: 8px; padding-left: 3px; -->
-<div class="settings-sidebar-wpr settings-sidebar-wpr-opened">
+<nav class="settings-sidebar-wpr settings-sidebar-wpr-opened" aria-label="Bot navigation">
   <ul class="settings-sidebar">
 
     <!-- -------------------------------------------------------- -->
@@ -16,67 +15,66 @@
     <!-- -------------------------------------------------------- -->
     <ng-container *ngIf="USER_ROLE !== 'agent'">
       <li class="sidebar-item-wpr-no-link">
-        <a class="sidebar-item-no-link">
+        <span class="sidebar-item-no-link">
           {{'Flows' | translate}}
-        </a>
+        </span>
       </li>
 
-      <li class="sidebar-item-wpr" [ngClass]="{'active-item': BOTS_MYCHATBOT_ALL_ROUTE_IS_ACTIVE}"
-        (click)="goToAllFlows()">
-        <a class="sidebar-item">
-          <mat-icon svgIcon="td-layout-grid" class="settings-sidebar-icons"></mat-icon>
-          <p class="custom_paragraph" style="position: relative; top: 1px;">
-  
+      <li class="sidebar-item-wpr" [ngClass]="{'active-item': BOTS_MYCHATBOT_ALL_ROUTE_IS_ACTIVE}">
+        <button type="button" class="sidebar-item" (click)="goToAllFlows()"
+          [attr.aria-current]="BOTS_MYCHATBOT_ALL_ROUTE_IS_ACTIVE ? 'page' : null">
+          <mat-icon aria-hidden="true" svgIcon="td-layout-grid" class="settings-sidebar-icons"></mat-icon>
+          <span class="custom_paragraph">
             {{'All' | translate}}
-          </p>
+          </span>
 
           <span class="sidebar-item-s">{{ chatBotCount }}</span>
-        </a>
+        </button>
       </li>
 
 
-      <li class="sidebar-item-wpr" [ngClass]="{'active-item': AIAGENT_ROUTE_IS_ACTIVE}"
-        (click)="goToAiAgents()">
-        <a class="sidebar-item">
-          <mat-icon svgIcon="td-robot" class="settings-sidebar-icons"></mat-icon>
-          <p class="custom_paragraph" style="position: relative; top: 1px;">
-       
+      <li class="sidebar-item-wpr" [ngClass]="{'active-item': AIAGENT_ROUTE_IS_ACTIVE}">
+        <button type="button" class="sidebar-item" (click)="goToAiAgents()"
+          [attr.aria-current]="AIAGENT_ROUTE_IS_ACTIVE ? 'page' : null">
+          <mat-icon aria-hidden="true" svgIcon="td-robot" class="settings-sidebar-icons"></mat-icon>
+          <span class="custom_paragraph">
             {{'AIAgents' | translate}}
-          </p>
+          </span>
 
           <span class="sidebar-item-s">{{ myChatbotOtherCount }}</span>
-        </a>
+        </button>
       </li>
 
 
-      <li class="sidebar-item-wpr" [ngClass]="{'active-item': AUTOMATION_ROUTE_IS_ACTIVE}" (click)="goToAutomations()">
-        <a class="sidebar-item">
-          <mat-icon svgIcon="td-settings-automation" class="settings-sidebar-icons"></mat-icon>
-          <p class="custom_paragraph" style="position: relative; top: 1px;">
+      <li class="sidebar-item-wpr" [ngClass]="{'active-item': AUTOMATION_ROUTE_IS_ACTIVE}">
+        <button type="button" class="sidebar-item" (click)="goToAutomations()"
+          [attr.aria-current]="AUTOMATION_ROUTE_IS_ACTIVE ? 'page' : null">
+          <mat-icon aria-hidden="true" svgIcon="td-settings-automation" class="settings-sidebar-icons"></mat-icon>
+          <span class="custom_paragraph">
             {{'Automations' | translate}}
-          </p>
+          </span>
           <span class="sidebar-item-s">{{ automationsCount }}</span>
-        </a>
+        </button>
       </li>
 
       <!-- -------------------------- -->
       <!-- WEBOOK SECTION -->
       <!-- -------------------------- -->
-      <li class="sidebar-item-wpr-no-link" style="margin-top: 16px;">
-        <a class="sidebar-item-no-link">
+      <li class="sidebar-item-wpr-no-link sidebar-section-label">
+        <span class="sidebar-item-no-link">
           Webhooks
-        </a>
+        </span>
       </li>
 
-      <li class="sidebar-item-wpr" [ngClass]="{'active-item': FLOWS_WEBHOOK_ROUTE_IS_ACTIVE }"
-        (click)="goToFlowWebhooks()">
-        <a class="sidebar-item">
-          <mat-icon svgIcon="td-webhook" class="settings-sidebar-icons"></mat-icon>
-          <p class="custom_paragraph" style="position: relative; top: 1px;">
+      <li class="sidebar-item-wpr" [ngClass]="{'active-item': FLOWS_WEBHOOK_ROUTE_IS_ACTIVE }">
+        <button type="button" class="sidebar-item" (click)="goToFlowWebhooks()"
+          [attr.aria-current]="FLOWS_WEBHOOK_ROUTE_IS_ACTIVE ? 'page' : null">
+          <mat-icon aria-hidden="true" svgIcon="td-webhook" class="settings-sidebar-icons"></mat-icon>
+          <span class="custom_paragraph">
             Webhooks
-          </p>
+          </span>
           <span class="sidebar-item-s">{{ flowWebhooksCount }}</span>
-        </a>
+        </button>
       </li>
 
 
@@ -119,23 +117,23 @@
     <!-- @ Template -> moved in the templates component -->
     <!-- ------------------------------------------------------- -->
      <ng-container *ngIf="USER_ROLE !== 'agent'">
-      <li class="sidebar-item-wpr-no-link" style="margin-top: 16px;">
-        <a class="sidebar-item-no-link" style="text-transform: uppercase;">
+      <li class="sidebar-item-wpr-no-link sidebar-section-label">
+        <span class="sidebar-item-no-link">
         
           {{'Templates' | translate}}
-        </a>
+        </span>
       </li>
 
 
-      <li class="sidebar-item-wpr" [ngClass]="{'active-item': BOTS_ALL_TEMPALTES_ROUTE_IS_ACTIVE}"
-        (click)="goToBotAllTemplates()">
-        <a class="sidebar-item">
-          <mat-icon svgIcon="td-template" class="settings-sidebar-icons"></mat-icon>
-          <p class="custom_paragraph" style="position: relative; top: 1px;">
+      <li class="sidebar-item-wpr" [ngClass]="{'active-item': BOTS_ALL_TEMPALTES_ROUTE_IS_ACTIVE}">
+        <button type="button" class="sidebar-item" (click)="goToBotAllTemplates()"
+          [attr.aria-current]="BOTS_ALL_TEMPALTES_ROUTE_IS_ACTIVE ? 'page' : null">
+          <mat-icon aria-hidden="true" svgIcon="td-template" class="settings-sidebar-icons"></mat-icon>
+          <span class="custom_paragraph">
             {{'AllTemplates' | translate}}
-          </p>
+          </span>
           <span class="sidebar-item-s">{{ allTemplatesCount }}</span>
-        </a>
+        </button>
       </li> 
 
      <!-- <li *ngIf="displayChatbotsCommunity" class="sidebar-item-wpr"
@@ -224,4 +222,4 @@
     </ng-container> -->
 
   </ul>
-</div>
+</nav>

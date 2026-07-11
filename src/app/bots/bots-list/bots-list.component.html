@@ -101,14 +101,14 @@
               </button>
               <ul *ngIf="PERMISSION_TO_ADD_FLOWS" class="dropdown-menu dropdown-menu-custom">
                 <li>
-                  <a class="dropdown-item" (click)="presentDialogCreateFlows(true)">
+                  <button type="button" class="dropdown-item" (click)="presentDialogCreateFlows(true)">
                     {{'AIAgents' | translate}}
-                  </a>
+                  </button>
                 </li>
                 <li>
-                  <a class="dropdown-item" (click)="presentDialogCreateFlows(false)">
+                  <button type="button" class="dropdown-item" (click)="presentDialogCreateFlows(false)">
                     {{'Automations' | translate}}
-                  </a>
+                  </button>
                 </li>
               </ul>
             </div>
@@ -152,7 +152,7 @@
                     <span class="order-by-label">{{'OrderBy' | translate}} </span>
 
                     <div class="dropdown">
-                      <a href="#" 
+                      <button type="button"
                         class="dropdown-toggle" 
                         id="orderByDropdown"
                         role="button"
@@ -164,22 +164,22 @@
                         <span class="order-by-selected-value" *ngIf="orderByCreationDate">{{'CreationDate' | translate}}
                         </span>
                         <span class="order-by-selected-value" *ngIf="orderByChatbotName">{{'Name' | translate}} </span>
-                      </a>
+                      </button>
                       <ul class="dropdown-menu">
                         <li>
-                          <a class="dropdown-item" (click)="orderBy('lastUpdates')" style="cursor: pointer;">
+                          <button type="button" class="dropdown-item" (click)="orderBy('lastUpdates')">
                             {{'LastUpdated' | translate }}
-                          </a>
+                          </button>
                         </li>
                         <li>
-                          <a class="dropdown-item" (click)="orderBy('creationDate')" style="cursor: pointer;">
+                          <button type="button" class="dropdown-item" (click)="orderBy('creationDate')">
                             {{'CreationDate' | translate}}
-                          </a>
+                          </button>
                         </li>
                         <li>
-                          <a class="dropdown-item" (click)="orderBy('botname')" style="cursor: pointer;">
+                          <button type="button" class="dropdown-item" (click)="orderBy('botname')">
                             {{'Name' | translate}}
-                          </a>
+                          </button>
                         </li>
                       </ul>
                     </div>
@@ -917,7 +917,9 @@
 <!-- --------------------------------- -->
 <!-- NEW DELETE BOT MODAL WINDOW  -->
 <!-- --------------------------------- -->
-<div class="modal" tabindex="-1" role="dialog" [ngStyle]="{'display':displayDeleteBotModal}"
+<div class="modal" tabindex="-1" role="alertdialog" aria-modal="true"
+  aria-labelledby="delete-bot-title" aria-describedby="delete-bot-description"
+  (keydown)="onDeleteBotModalKeydown($event)" [ngStyle]="{'display':displayDeleteBotModal}"
   style="background-color: rgba(90,90,90,0.5);">
   <div class="modal-dialog" role="document">
     <div class="modal-content custom--modal-content">
@@ -925,7 +927,7 @@
        <!-- <button type="button" class="close" aria-label="Close" (click)="onCloseDeleteBotModal()">
           <span aria-hidden="true">&times;</span>
         </button> -->
-        <h4 class="modal-title warning" style="font-size: 14px;">
+        <h4 id="delete-bot-title" class="modal-title warning" style="font-size: 14px;">
           
           <span class="modal-header-icon-wpr">
             <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="none">
@@ -948,7 +950,7 @@
       </div>
       <div class="modal-body" style="font-size: 14px;">
 
-        <label class="col-sm-10 modal-body--content">
+        <label id="delete-bot-description" class="col-sm-10 modal-body--content" for="delete-bot-confirmation">
           <span
             *ngIf="!botSubType || botSubType === 'chatbot' || botSubType === 'voice' || botSubType === 'voice_twilio' ">
             {{ "ToDeleteAIAgentTypeID" | translate }}:
@@ -961,7 +963,8 @@
 
         </label>
         <div class="col-sm-10">
-          <input [(ngModel)]="bot_id_typed" (input)="checkIdBotTyped()" class="" type="text" placeholder="ID">
+          <input #deleteBotInput id="delete-bot-confirmation" [(ngModel)]="bot_id_typed"
+            (input)="checkIdBotTyped()" type="text" placeholder="ID">
         </div>
       </div>
       <div class="modal-footer">

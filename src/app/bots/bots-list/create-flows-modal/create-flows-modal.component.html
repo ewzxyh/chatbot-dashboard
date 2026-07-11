@@ -1,5 +1,6 @@
-<div class="m-header">
-    <h1 mat-dialog-title>
+<div class="dialog-shell" role="dialog" aria-modal="true" aria-labelledby="create-flows-modal-title">
+<div class="m-header dialog-header">
+    <h1 id="create-flows-modal-title" mat-dialog-title>
         <span *ngIf="isChatbotRoute"> 
         <!-- {{'CreateFromScratch' | translate}} -->
             {{'NewAIAgent' | translate}}
@@ -9,20 +10,17 @@
         </span>
     </h1>
 
-    <div class="m-top-right-icon">
-        <span class="material-icons-outlined" (click)="onNoClick()">
-            <!-- play_arrow -->
-            close
-        </span>
-    </div>
+    <button type="button" class="m-top-right-icon" mat-icon-button mat-dialog-close cdkFocusInitial aria-label="Close">
+        <span class="material-icons-outlined" aria-hidden="true">close</span>
+    </button>
 </div>
 
 
-<div mat-dialog-content style="padding-bottom: 18px;">
+<div mat-dialog-content class="dialog-content">
     <!-- isChatbotRoute {{isChatbotRoute}} -->
-    <div class="add--content-cards-wpr" style="padding: 10px;" *ngIf="isChatbotRoute === true">
+    <div class="add--content-cards-wpr" *ngIf="isChatbotRoute === true">
 
-        <div class="add--content-card-wpr" (click)="onOkPresssed('chatbot')" matRipple>
+        <button type="button" class="add--content-card-wpr" (click)="onOkPresssed('chatbot')" matRipple>
 
             <div class="add-content-card-content">
                 <div class="add-content-card-content-icon-wpr">
@@ -49,12 +47,12 @@
                     {{'AIAgentDesc' | translate }}
                 </p>
             </div>
-        </div>
+        </button>
 
         <!-- ------------------------------------ -->
         <!-- Voice Chatbot (Twilio) -->
         <!-- ------------------------------------ -->
-        <div *ngIf="diplayTwilioVoiceChabotCard" class="add--content-card-wpr" (click)="onOkPresssed('voice_twilio')" matRipple>
+        <button type="button" *ngIf="diplayTwilioVoiceChabotCard" class="add--content-card-wpr" (click)="onOkPresssed('voice_twilio')" matRipple>
             <div class="add-content-card-content">
                 <div class="add-content-card-content-icon-wpr">
                     <span>
@@ -80,12 +78,12 @@
                     {{'AIVoiceAgentDesc' | translate}}
                 </p>
             </div>
-        </div>
+        </button>
 
         <!-- ------------------------------------ -->
         <!-- Voice Chatbot (VXML) -->
         <!-- ------------------------------------ -->
-        <div *ngIf="diplayVXMLVoiceChabotCard" class="add--content-card-wpr" (click)="onOkPresssed('voice')" matRipple>
+        <button type="button" *ngIf="diplayVXMLVoiceChabotCard" class="add--content-card-wpr" (click)="onOkPresssed('voice')" matRipple>
             <div class="add-content-card-content">
                 <div class="add-content-card-content-icon-wpr">
                     <span>
@@ -111,11 +109,11 @@
                     {{'AIVoiceAgentDesc' | translate}}
                 </p>
             </div>
-        </div>
+        </button>
 
-        <div class="add--content-card-wpr" (click)="fileInput.click()" matRipple>
-            <input type="file" #fileInput class="inputfile" name="upload-chatbot-from-json"
-                id="upload-chatbot-from-json" (change)="onFileSelected($event)" accept=".json">
+        <input type="file" #fileInput class="inputfile" name="upload-chatbot-from-json"
+            id="upload-chatbot-from-json" (change)="onFileSelected($event)" accept=".json">
+        <button type="button" class="add--content-card-wpr" (click)="fileInput.click()" matRipple>
             <div class="add-content-card-content">
                 <div class="add-content-card-content-icon-wpr">
                     <span>
@@ -137,15 +135,15 @@
                     {{'AIAgentImportDesc' | translate}}
                 </p>
             </div>
-        </div>
+        </button>
     </div>
 
-    <div class="add--content-cards-wpr" style="padding: 10px;" *ngIf="isChatbotRoute === false">
+    <div class="add--content-cards-wpr" *ngIf="isChatbotRoute === false">
 
         <!-- --------------------------------- -->
         <!-- Webhook -->
         <!-- --------------------------------- -->
-        <div class="add--content-card-wpr" (click)="onOkPresssed('webhook')" matRipple>
+        <button type="button" class="add--content-card-wpr" (click)="onOkPresssed('webhook')" matRipple>
             <div class="add-content-card-content" >
                 <div class="add-content-card-content-icon-wpr">
                     <span>
@@ -181,12 +179,12 @@
                     {{'WebhookDesc' | translate}}
                 </p>
             </div>
-        </div>
+        </button>
 
         <!-- --------------------------------- -->
         <!-- Copilot -->
         <!-- --------------------------------- -->
-        <div *ngIf="isVisibleCOP" class="add--content-card-wpr" (click)="onOkPresssed('copilot')" matRipple>
+        <button type="button" *ngIf="isVisibleCOP" class="add--content-card-wpr" (click)="onOkPresssed('copilot')" matRipple>
             <div class="add-content-card-content" >
                 <div class="add-content-card-content-icon-wpr">
                     <span>
@@ -209,14 +207,14 @@
                     {{'CopilotDesc' | translate}}
                 </p>
             </div>
-        </div>
+        </button>
 
         <!-- -------------------------------- -->
         <!-- Import Automations -->
         <!-- -------------------------------- -->
-        <div class="add--content-card-wpr" (click)="fileInput.click()" matRipple>
-            <input type="file" #fileInput class="inputfile" name="upload-chatbot-from-json"
-                id="upload-chatbot-from-json" (change)="onFileSelected($event)" accept=".json">
+        <input type="file" #fileInput class="inputfile" name="upload-chatbot-from-json"
+            id="upload-chatbot-from-json" (change)="onFileSelected($event)" accept=".json">
+        <button type="button" class="add--content-card-wpr" (click)="fileInput.click()" matRipple>
             <div class="add-content-card-content">
                 <div class="add-content-card-content-icon-wpr">
                     <span>
@@ -238,8 +236,10 @@
                     {{'AutomationImportDesc' | translate}}
                 </p>
             </div>
-        </div>
+        </button>
 
     </div>
+
+</div>
 
 </div>

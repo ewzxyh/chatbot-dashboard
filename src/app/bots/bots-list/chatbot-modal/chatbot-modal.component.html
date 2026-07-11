@@ -1,35 +1,38 @@
-<h1 *ngIf="!callingPage" mat-dialog-title style="text-align: center;">
-    {{ "Pricing.PlanChange" | translate }}
-</h1>
-<h1 *ngIf="callingPage" mat-dialog-title style="text-align: center;">
-    Oops!… 
-</h1>
-<div mat-dialog-content>
+<div class="dialog-shell" role="dialog" aria-modal="true" aria-labelledby="chatbot-modal-title">
+    <div class="dialog-header">
+        <h1 id="chatbot-modal-title" mat-dialog-title>
+            {{ "Pricing.PlanChange" | translate }}
+        </h1>
 
-    <div class="dialog--content">
-        <div class="dialog--content-first-row">
-            {{chatbotLimitReached}}
-        </div>
-        <div *ngIf="prjctProfileType === 'payment'" class="dialog--content-second-row">
-            {{ "Pricing.ContactUsViaEmailToUpgradeYourPricingPlan" | translate }}.
-        </div>
+        <button type="button" class="dialog-close" mat-icon-button mat-dialog-close aria-label="Close">
+            <span class="material-icons-outlined" aria-hidden="true">close</span>
+        </button>
     </div>
 
+    <div mat-dialog-content class="dialog-content">
+        <p class="dialog-message">
+            {{ chatbotLimitReached }}
+        </p>
+        <p *ngIf="prjctProfileType === 'payment'" class="dialog-guidance">
+            {{ "Pricing.ContactUsViaEmailToUpgradeYourPricingPlan" | translate }}.
+        </p>
+    </div>
 
+    <div mat-dialog-actions class="dialog-actions">
+        <button *ngIf="!callingPage" type="button" class="mat-dialog-close-btn" mat-button (click)="onNoClick()">
+            {{ "Cancel" | translate }}
+        </button>
+        <button *ngIf="prjctProfileType === 'payment'" type="button" class="mat-dialog-ok-btn" mat-button
+            (click)="onOkPresssed()" cdkFocusInitial>
+            {{'ContactUs' | translate}}
+        </button>
+        <button *ngIf="prjctProfileType === 'free'" type="button" class="mat-dialog-ok-btn" mat-button
+            (click)="onUpgradePlan()" cdkFocusInitial>
+            {{'Pricing.UpgradePlan' | translate}}
+        </button>
+        <button *ngIf="callingPage" type="button" class="mat-dialog-ok-btn" mat-button
+            (click)="onGoToHomePresssed()" cdkFocusInitial>
+            {{'GoToHome' | translate}}
+        </button>
+    </div>
 </div>
-<div  mat-dialog-actions style="justify-content: center;">
-    <button *ngIf="!callingPage" class="mat-dialog-close-btn" mat-button (click)="onNoClick()">
-        {{ "Cancel" | translate }}
-    </button>
-    <!-- cdkFocusInitial -->
-    <button *ngIf="prjctProfileType === 'payment'"  class="mat-dialog-ok-btn" mat-button (click)="onOkPresssed()">
-        {{'ContactUs' | translate}}
-    </button>
-    <button *ngIf="prjctProfileType === 'free'"  class="mat-dialog-ok-btn" mat-button (click)="onUpgradePlan()">
-        {{'Pricing.UpgradePlan' | translate}}
-    </button>
-    <button *ngIf="callingPage" class="mat-dialog-ok-btn" mat-button (click)="onGoToHomePresssed()">
-        {{'GoToHome' | translate}}
-    </button>
-</div>
-

@@ -1,17 +1,53 @@
-// .mat-dialog-close-btn {
-//     background-color: #647491;
-//     color: #fff;
-// }
+.dialog-shell {
+    width: 100%;
+    min-width: 0;
+}
 
-// .mat-dialog-ok-btn {
-//     background-color: var(--blue-light);
-//     color: #fff;
-// }
+.dialog-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
 
-.dialog--content {
-    font-size: 16px;
-    font-weight: 400;
-    line-height: 1.7;
+.dialog-close {
+    flex: 0 0 auto;
+    color: #647491;
+}
+
+.dialog-content {
+    min-width: 240px;
+    padding-bottom: 4px;
+}
+
+.dialog-message,
+.dialog-guidance {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
     text-align: center;
-    margin-bottom: 16px;
+}
+
+.dialog-guidance {
+    margin-top: 8px;
+    color: #647491;
+}
+
+.dialog-actions {
+    justify-content: center;
+    gap: 8px;
+}
+
+@media (max-width: 320px) {
+    .dialog-content {
+        min-width: 0;
+    }
+
+    .dialog-actions {
+        flex-wrap: wrap;
+    }
+
+    .dialog-actions button {
+        flex: 1 1 100%;
+    }
 }

@@ -138,9 +138,9 @@ button.close {
 
 /* MODAL END */
 
-/* REMOVE THE BORDER THAT IS USED TO SHOW THAT THE ELEMENT IS FOCUSED */
-*:focus {
-  outline: none;
+*:focus-visible {
+  outline: 2px solid #0b6bcb;
+  outline-offset: 2px;
 }
 
 /* MODAL END */
@@ -1040,7 +1040,7 @@ input[type="checkbox"]:disabled {
 }
 
 // Bootstrap 5 adds .show to the toggle button, not the parent
-.dropdown>a.dropdown-toggle.show~.dropdown-menu,
+.dropdown>.dropdown-toggle.show~.dropdown-menu,
 // Also support Bootstrap 3/4 compatibility (.open on parent)
 .dropdown.open>.dropdown-menu {
   display: block !important;
@@ -1062,7 +1062,7 @@ input[type="checkbox"]:disabled {
   }
 
   // Bootstrap 5 adds .show to the toggle button, not the parent
-  .dropdown>a.dropdown-toggle.show~.dropdown-menu,
+  .dropdown>.dropdown-toggle.show~.dropdown-menu,
   // Also support Bootstrap 3/4 compatibility (.open on parent)
   .dropdown.open>.dropdown-menu {
     display: block !important;
@@ -1422,14 +1422,14 @@ input[type="checkbox"]:disabled {
 
 .bots-list-toolbar .bots-list-primary-action,
 .bots-list-toolbar .select-flow-btn {
-  background: #3ea9f5 !important;
+  background: #0b6bcb !important;
   color: #fff !important;
 }
 
 .bots-list-toolbar .bots-list-template-action {
-  border: 1px solid #3ea9f5;
+  border: 1px solid #0b6bcb;
   background: #fff;
-  color: #287eb9;
+  color: #0b6bcb;
 }
 
 .bots-list-new-flow {
@@ -1688,7 +1688,7 @@ input[type="checkbox"]:disabled {
   min-height: 34px;
   margin-right: auto;
   border-radius: 5px !important;
-  background: #3ea9f5 !important;
+  background: #0b6bcb !important;
   color: #fff !important;
   font-size: 13px;
   line-height: 18px;
@@ -1764,7 +1764,7 @@ input[type="checkbox"]:disabled {
 .empty-state-action {
   min-height: 36px;
   border-radius: 6px !important;
-  background: #3ea9f5 !important;
+  background: #0b6bcb !important;
   color: #fff !important;
   font-size: 14px;
   line-height: 20px;

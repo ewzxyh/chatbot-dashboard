@@ -2,6 +2,26 @@
   width: 100%;
 }
 
+.dialog-shell {
+  width: 100%;
+  min-width: 0;
+}
+
+.dialog-header {
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.dialog-content {
+  padding-bottom: 4px;
+}
+
+.dialog-actions {
+  justify-content: center;
+  gap: 8px;
+}
+
 
 ::ng-deep .mat-autocomplete-panel.mat-autocomplete-visible {
   border-left: unset !important;
@@ -12,16 +32,16 @@
 
 .btn--get-feature-no-boxshadow {
     margin-top: 0px;
-    font-size: 12px;
-    letter-spacing: 1px;
+    font-size: 14px;
+    letter-spacing: 0;
     background: transparent;
     border: 1px solid #d1d9e0;
-    color: #2196f3; // var(--btn-get-feature-color); 
+    color: #0b6bcb;
     font-weight: 400;
     box-shadow: unset !important;
     text-transform: none !important;
     padding: 6px 15px !important;
-    border-radius: 9999px// var(--btn-border-radius)
+    border-radius: 4px;
 }
 
 .btn--get-feature-no-boxshadow:hover {
@@ -32,7 +52,7 @@
 
 .get--feature-upgrade-plan-icon {
     vertical-align: middle;
-    color: #2196f3; //var(--btn-get-feature-color); 
+    color: #0b6bcb;
     font-size: 21px;
 }
 
@@ -43,24 +63,8 @@
 }
 
 .m-top-right-icon {
-    cursor: pointer;
-}
-
-.m-top-right-icon>span {
-    padding: 8px;
-    background: #e4e6eb;
-    border-radius: 999px;
-    position: relative;
-    top: 0px;
-    left: 0px;
-    font-size: 18px;
-    color: rgb(91, 98, 106);
-
-}
-
-.m-top-right-icon:hover>span {
-    background-color: rgb(213, 214, 220);
-    color: rgb(28, 30, 33)
+    flex: 0 0 auto;
+    color: #647491;
 }
 
 
@@ -72,6 +76,13 @@
     gap: 8px;
 }
 
+.feature-available-from p,
+.contact--sales-to-enable-feature p {
+    margin: 0;
+    font-weight: 400;
+    text-align: center;
+}
+
 .contact--sales-to-enable-feature {
     width: 100%;
     display: flex;
@@ -81,17 +92,27 @@
 }
 
 .contact-sales-to-enable-feature-link {
-    cursor: pointer;
-    color: #2196f3; // var(--blue-20);
+    color: #0b6bcb;
     padding: 0 4px;
     border-radius: 4px;
     max-width: -moz-fit-content;
     max-width: fit-content;
     margin: auto;
+    text-transform: none;
 }
 
 .contact-sales-to-enable-feature-link:hover { 
   background-color: #378fe91a;
+}
+
+@media (max-width: 320px) {
+  .dialog-actions {
+    flex-wrap: wrap;
+  }
+
+  .dialog-actions button {
+    flex: 1 1 100%;
+  }
 }
 
 // .mat-dialog-close-btn {

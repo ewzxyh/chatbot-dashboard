@@ -1,4 +1,116 @@
 
+:host {
+    display: block;
+    min-width: 0;
+}
+
+.settings-sidebar-wpr {
+    min-width: 0;
+}
+
+.settings-sidebar {
+    margin: 0;
+}
+
+.settings-sidebar > li.sidebar-item-wpr-no-link {
+    height: auto;
+}
+
+.sidebar-section-label {
+    margin-top: 16px;
+}
+
+.sidebar-item {
+    align-items: center;
+    box-sizing: border-box;
+    display: flex;
+    font: inherit;
+    line-height: 1.2;
+    min-height: 35px;
+}
+
+.sidebar-item:focus-visible {
+    border-radius: var(--settings-sidebar-border-radius);
+    outline: 2px solid #1a73e8;
+    outline-offset: -2px;
+}
+
+.sidebar-item .custom_paragraph {
+    display: block;
+    flex: 1 1 auto;
+    width: auto;
+}
+
+li.active-item .custom_paragraph,
+li.active-item .settings-sidebar-icons,
+li.active-item .sidebar-item-s {
+    color: var(--settings-sidebar-active-color) !important;
+}
+
+@media (max-width: 900px) {
+    :host {
+        border-bottom: 1px solid #e5effe;
+        border-right: 0 !important;
+        max-width: 100%;
+        min-height: auto !important;
+        width: 100%;
+    }
+
+    .settings-sidebar-wpr,
+    .settings-sidebar-wpr-opened {
+        max-width: none;
+        min-height: 0;
+        min-width: 0;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding: 4px 0;
+        width: 100%;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .settings-sidebar {
+        align-items: center;
+        display: flex;
+        gap: 4px;
+        min-width: 100%;
+        padding: 0 4px;
+        width: max-content;
+    }
+
+    .settings-sidebar > li {
+        flex: 0 0 auto;
+        height: auto;
+        margin: 0;
+        width: auto;
+    }
+
+    .sidebar-section-label {
+        margin-top: 0;
+    }
+
+    .sidebar-item-no-link {
+        padding: 0 4px;
+        white-space: nowrap;
+    }
+
+    .sidebar-item {
+        min-width: max-content;
+        padding: 8px 10px;
+        white-space: nowrap;
+        width: auto;
+    }
+
+    .sidebar-item .custom_paragraph {
+        flex: 0 0 auto;
+        width: auto;
+    }
+
+    .sidebar-item-s {
+        margin-left: 4px;
+        padding-left: 0;
+    }
+}
+
 li > a {
     margin-top: 5px !important;
     margin-right: 5px !important;

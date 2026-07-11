@@ -1,4 +1,4 @@
-import { Component, isDevMode, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, ElementRef, isDevMode, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { FaqKbService } from '../../services/faq-kb.service';
 import { Chatbot, FaqKb } from '../../models/faq_kb-model';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -53,6 +53,8 @@ export class BotListComponent extends PricingBaseComponent implements OnInit, On
   PLAN_NAME = PLAN_NAME;
   CHATBOT_MAX_NUM = CHATBOT_MAX_NUM;
   private unsubscribe$: Subject<any> = new Subject<any>();
+  @ViewChild('deleteBotInput', { static: false }) deleteBotInput: ElementRef<HTMLInputElement>;
+  private deleteBotModalTrigger: HTMLElement;
   tparams: any;
 
   faqkbList: FaqKb[];
@@ -1462,6 +1464,7 @@ export class BotListComponent extends PricingBaseComponent implements OnInit, On
       return;
     }
 
+    this.deleteBotModalTrigger = document.activeElement as HTMLElement;
     this.logger.log('[BOTS-LIST] »» ON MODAL DELETE OPEN - botSubType', botSubType);
     const deptsArray = this.getDepartments(id)
 
@@ -1516,6 +1519,7 @@ export class BotListComponent extends PricingBaseComponent implements OnInit, On
       if (foundDeptsArray.length === 0) {
         this.logger.log('[BOTS-LIST] ON MODAL DELETE OPEN - BOT NOT ASSOCIATED');
         this.displayDeleteBotModal = 'block'; // THE NEW MODAL USED TO DELETE THE BOT
+        setTimeout(() => this.deleteBotInput?.nativeElement.focus());
       } else {
         this.logger.log('[BOTS-LIST] ON MODAL DELETE OPEN - BOT !!! ASSOCIATED');
         this.logger.log('[BOTS-LIST] ON MODAL DELETE OPEN - foundDeptsArray', foundDeptsArray);
@@ -1601,6 +1605,29 @@ export class BotListComponent extends PricingBaseComponent implements OnInit, On
 
   onCloseDeleteBotModal() {
     this.displayDeleteBotModal = 'none';
+    setTimeout(() => this.deleteBotModalTrigger?.focus());
+  }
+
+  onDeleteBotModalKeydown(event: KeyboardEvent) {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      this.onCloseDeleteBotModal();
+      return;
+    }
+
+    if (event.key !== 'Tab') return;
+    const dialog = event.currentTarget as HTMLElement;
+    const controls = Array.from(dialog.querySelectorAll<HTMLElement>('button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'));
+    if (!controls.length) return;
+    const first = controls[0];
+    const last = controls[controls.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
   }
 
   // ENABLED THE BUTTON 'DELETE BOT' IF THE BOT ID TYPED BY THE USER
@@ -1683,7 +1710,7 @@ export class BotListComponent extends PricingBaseComponent implements OnInit, On
 
       this.logger.error('[BOTS-LIST] TRASH THE BOT - ERROR ', error);
       this.showSpinner = false;
-      this.displayDeleteBotModal = 'none'
+      this.onCloseDeleteBotModal()
     }, () => {
       this.logger.log('[BOTS-LIST] TRASH THE BOT - COMPLETE');
       // =========== NOTIFY SUCCESS===========
@@ -1693,7 +1720,7 @@ export class BotListComponent extends PricingBaseComponent implements OnInit, On
       this.getFaqKbByProjectId();
       this.getFlowWebhooks()
 
-      this.displayDeleteBotModal = 'none';
+      this.onCloseDeleteBotModal();
       setTimeout(() => {
         this.showSpinner = false;
       }, 100);
