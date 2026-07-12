@@ -270,8 +270,8 @@
 - [x] Modernizar Knowledge Bases com estados explicitos, layout responsivo e controles acessiveis.
 - [x] Corrigir deep links, semantica de cards/linhas, overflow de tags e retry de Webhooks.
 - [x] Reduzir overrides, restaurar testes Angular e obter aprovacao da auditoria Luna.
-- [ ] Validar as rotas na VPS DEV em desktop e mobile.
-- [ ] Commitar, enviar e aplicar na VPS DEV.
+- [x] Validar as rotas na VPS DEV em desktop e mobile.
+- [x] Commitar, enviar e aplicar na VPS DEV.
 
 ## Criterios de aceite
 
@@ -280,3 +280,12 @@
 - Navegacao de Knowledge Bases preserva tab e subtab ao trocar de base.
 - Nenhuma rota cria overflow horizontal em 1440px, 390px ou 320px.
 - Build, diff check, auditoria, commit, push e deploy DEV concluidos.
+
+## Review
+
+- A auditoria Luna bloqueou encoding, erro de Webhooks, deep links, semantica interativa, overflow e testes; os achados foram corrigidos e a decisao final foi APROVAR.
+- Os overrides responsivos novos foram reduzidos em cerca de 42% antes da aprovacao.
+- O build de producao e `git diff --check` passaram; Karma permanece bloqueado apenas por imports legados externos ao escopo.
+- Na VPS DEV, Fluxos e Knowledge Bases ficaram sem overflow em 1700px, 390px e 320px; as duas acoes de criacao medem 40px.
+- O icone dos modelos usa `chatcase-icon.svg`, e os filtros distinguem WhatsApp aberto de Meta WABA.
+- A validacao live encontrou o binding orfao `@fadeInOut`; ele foi removido, republicado e o erro deixou de aparecer no bundle novo.
