@@ -253,4 +253,11 @@
 - [x] Reutilizar a navegacao horizontal e a largura integral das outras paginas de Fluxos.
 - [x] Transformar o vazio em uma proxima acao clara para criar uma automacao.
 - [x] Preservar copiar, abrir, ativar/desativar e excluir webhooks em controles proprios.
-- [ ] Validar 1440px, 390px e 320px na VPS DEV e confirmar ausencia de erros e overflow.
+- [x] Validar 1440px, 390px e 320px na VPS DEV e confirmar ausencia de erros e overflow.
+
+## Review
+
+- A rota agora usa o mesmo titulo local, navegacao horizontal e largura integral das outras paginas de Fluxos.
+- O estado vazio conduz diretamente a `/flows/flow-automations`; o destino foi validado no navegador.
+- 1440px, 390px e 320px ficaram sem overflow, erros de console, falhas de rede ou respostas HTTP com erro.
+- O clique implicito do card de bot foi removido; a acao Editar continua sendo o controle explicito e acessivel.
