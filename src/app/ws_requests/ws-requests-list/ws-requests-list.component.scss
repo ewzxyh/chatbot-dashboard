@@ -1785,3 +1785,328 @@ span .switch-agent-admin-requests-btn {
   color: var(--blue-20);
   cursor: pointer;
 }
+
+/* ChatCase monitoring shell */
+:host {
+  display: block;
+  color: #25364d;
+}
+
+.monitor-tabs-shell {
+  position: relative;
+  height: 64px;
+  margin-top: 60px;
+  border-bottom: 1px solid #d8e0e8;
+  background: #fff;
+}
+
+.monitor-tabs {
+  position: absolute;
+  inset: auto 0 0;
+  width: 100%;
+  height: 48px;
+  margin: 0;
+  padding: 0 36px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  scrollbar-width: thin;
+}
+
+.monitor-tabs li {
+  height: 48px;
+  padding: 0 24px !important;
+}
+
+.monitor-tabs li a,
+.monitor-tabs li button {
+  display: inline-flex;
+  height: 48px;
+  align-items: center;
+  color: #60758b;
+  font-size: 14px;
+}
+
+.monitor-tabs li.li-active {
+  border-bottom: 2px solid #0b6bcb !important;
+}
+
+.monitor-tabs li.li-active a,
+.monitor-tabs li.li-active button {
+  color: #0b6bcb !important;
+}
+
+.monitor-tab-button,
+.monitor-tab-icon-button {
+  border: 0;
+  background: transparent;
+}
+
+.monitor-tab-button {
+  padding: 0;
+}
+
+.monitor-tab-icon-button {
+  width: 48px;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+}
+
+.main-content.monitor-page {
+  width: 100%;
+  min-height: calc(100vh - 133px);
+  margin: 0;
+  padding: 0;
+  background: #f6f8fa;
+}
+
+.monitor-page > .container-fluid {
+  width: 100%;
+  max-width: none;
+  padding: 36px !important;
+}
+
+.monitor-page-header {
+  margin-bottom: 28px;
+}
+
+.monitor-page-header__eyebrow {
+  display: block;
+  margin-bottom: 6px;
+  color: #0b6bcb;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.monitor-page-header h1 {
+  margin: 0;
+  color: #25364d;
+  font-family: var(--header-font-family);
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.monitor-page-header p {
+  max-width: 720px;
+  margin: 8px 0 0;
+  color: #60758b;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.monitor-overview {
+  display: grid;
+  grid-template-columns: minmax(360px, 0.8fr) minmax(520px, 1.2fr);
+  gap: 24px;
+  margin: 0 0 20px;
+}
+
+.monitor-summary,
+.monitor-filters {
+  width: auto;
+  max-width: none;
+  min-width: 0;
+  padding: 20px !important;
+  border: 1px solid #d8e0e8;
+  background: #fff;
+}
+
+.monitor-summary .graph-legend {
+  padding: 0;
+}
+
+.monitor-summary .graph-legend .advanced-pie-legend-wrapper {
+  height: auto;
+  min-height: 108px;
+}
+
+.monitor-summary .graph-legend .advanced-pie-legend-wrapper .advanced-legend {
+  position: static;
+  transform: none;
+}
+
+.monitor-summary .graph-legend .advanced-pie-legend-wrapper .advanced-legend .total-value {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 0 0 20px;
+  color: #25364d !important;
+}
+
+.monitor-summary .total-label {
+  margin: 0;
+  color: #60758b !important;
+  font-size: 16px;
+}
+
+.monitor-summary .legend-items {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.monitor-summary .legend-item {
+  min-width: 0;
+}
+
+.monitor-summary .legend-item .item-value {
+  color: #25364d !important;
+  font-size: 22px;
+  font-variant-numeric: tabular-nums;
+}
+
+.monitor-summary .legend-item .item-label {
+  padding-top: 4px;
+  color: #60758b;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.monitor-filters > .row {
+  margin: 0 -6px;
+}
+
+.monitor-filters .filter-convs-title-wpr {
+  margin: 0 0 12px;
+  padding: 0 6px;
+}
+
+.monitor-filters .filter-convs-title {
+  margin: 0;
+  color: #25364d !important;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.monitor-filters .select-dept-wpr,
+.monitor-filters .select-agent-wpr,
+.monitor-filters .select-convtype-wpr {
+  padding: 0 6px;
+}
+
+::ng-deep .monitor-page ng-select .ng-select-container {
+  min-height: 40px !important;
+  border-color: #b9c5d1 !important;
+  border-radius: 4px !important;
+  box-shadow: none !important;
+}
+
+::ng-deep .monitor-page ng-select .ng-value-container {
+  min-height: 38px;
+  align-items: center;
+  padding-top: 0 !important;
+}
+
+::ng-deep .monitor-page ng-select .ng-placeholder,
+::ng-deep .monitor-page ng-select .ng-value {
+  color: #25364d !important;
+  font-size: 14px;
+}
+
+.monitor-team-row,
+.monitor-options-row {
+  margin-right: 0;
+  margin-left: 0;
+}
+
+.monitor-team-row > .col-12,
+.monitor-options-row > .col-12 {
+  padding: 0;
+}
+
+.monitor-page .smart-assign-and-operatinghours-options {
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 20px;
+}
+
+.monitor-page .smart-assign-and-operatinghours-options > button {
+  max-width: 100%;
+  height: auto;
+  min-height: 40px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  border-radius: 4px;
+  box-shadow: none !important;
+  line-height: 1.35;
+  text-align: left;
+  white-space: normal;
+}
+
+.monitor-page button:focus-visible,
+.monitor-page a:focus-visible,
+.monitor-page ng-select:focus-within {
+  outline: 3px solid rgba(11, 107, 203, 0.32);
+  outline-offset: 2px;
+}
+
+@media (max-width: 1100px) {
+  .monitor-overview {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 767px) {
+  .monitor-tabs {
+    padding: 0 24px;
+  }
+
+  .monitor-tabs li {
+    padding: 0 16px !important;
+  }
+
+  .monitor-page .smart-assign-and-operatinghours-options > button {
+    width: 100%;
+  }
+
+  .monitor-page > .container-fluid {
+    padding: 24px !important;
+  }
+
+  .monitor-page-header {
+    margin-bottom: 20px;
+  }
+
+  .monitor-page-header h1 {
+    font-size: 26px;
+  }
+
+  .monitor-overview {
+    gap: 12px;
+  }
+
+  .monitor-summary,
+  .monitor-filters {
+    padding: 16px !important;
+  }
+
+  .monitor-summary .legend-items {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .monitor-filters .select-dept-wpr,
+  .monitor-filters .select-agent-wpr,
+  .monitor-filters .select-convtype-wpr {
+    width: 100%;
+    max-width: none;
+    flex: 0 0 100%;
+    margin-bottom: 10px;
+  }
+}
+
+@media (max-width: 340px) {
+  .monitor-tabs {
+    padding: 0 6px;
+  }
+
+  .monitor-page > .container-fluid {
+    padding: 6px !important;
+  }
+
+  .monitor-page-header h1 {
+    font-size: 24px;
+  }
+}

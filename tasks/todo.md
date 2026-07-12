@@ -289,3 +289,26 @@
 - Na VPS DEV, Fluxos e Knowledge Bases ficaram sem overflow em 1700px, 390px e 320px; as duas acoes de criacao medem 40px.
 - O icone dos modelos usa `chatcase-icon.svg`, e os filtros distinguem WhatsApp aberto de Meta WABA.
 - A validacao live encontrou o binding orfao `@fadeInOut`; ele foi removido, republicado e o erro deixou de aparecer no bundle novo.
+
+# Padronizacao do Monitoramento
+
+- [x] Identificar a rota e preservar o fluxo de WebSocket, filtros e acoes.
+- [x] Aplicar a hierarquia, largura e linguagem visual da Home.
+- [x] Validar build, diff e responsividade em desktop e mobile.
+- [x] Publicar na VPS DEV e validar a rota live.
+- [x] Commitar e enviar o resultado.
+
+## Criterios de aceite
+
+- A rota `/wsrequests` usa toda a largura util e possui eyebrow, titulo e descricao.
+- Resumo, filtros, equipe e estados mantem a funcionalidade sem sobreposicao.
+- Nenhum elemento cria overflow horizontal em 1700px, 390px ou 320px.
+- Build, commit, push e publicacao DEV concluidos.
+
+## Review
+
+- A pagina recebeu cabecalho traduzido, fundo operacional, largura integral e secoes planas alinhadas com Home e Knowledge Bases.
+- As abas continuam horizontais e rolaveis no mobile; os controles de aba, busca e mapa agora sao botoes focaveis com rotulos acessiveis.
+- A auditoria Luna apontou conflitos globais, i18n e risco de corte; os estilos foram restringidos e o texto longo de horario passou a quebrar dentro da largura disponivel.
+- O build de producao e `git diff --check` passaram sem novos erros; permanecem apenas os warnings preexistentes do Angular.
+- A VPS DEV foi validada em 1700px, 390px e 320px, sem overflow de documento ou erros novos de console.

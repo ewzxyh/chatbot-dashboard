@@ -7,25 +7,33 @@
 <!-- <ng-container *ngIf="permissionChecked">
   <ng-container *ngIf="isAuthorized; else unauthorizedTplAuth"> -->
 
-    <div style="height: 87px; position: relative;">
-      <ul class="bottom-nav" *ngIf="OPEN_RIGHT_SIDEBAR === false" style="top: 60px; position: absolute; width: 100%;">
+    <div class="monitor-tabs-shell">
+      <ul class="bottom-nav monitor-tabs" *ngIf="OPEN_RIGHT_SIDEBAR === false">
         <ng-container *ngIf="hasDefaultRole">
-          <li *ngIf="ROLE_IS_AGENT === false" (click)="seeIamAgentRequests(seeAll = !seeAll)"
+          <li *ngIf="ROLE_IS_AGENT === false"
             class="btn-with-border-effect" [ngClass]="
               { 'disabled-li' : displayBtnLabelSeeYourRequets === false, 
                 'border-from-center' : displayBtnLabelSeeYourRequets === true,
                 'li-active' : displayBtnLabelSeeYourRequets === false
               }">
 
-            <a href="javascript:;" role="button"> {{ "AllAgentsRequests" | translate }} </a>
+            <button type="button" class="monitor-tab-button"
+              [attr.aria-current]="displayBtnLabelSeeYourRequets === false ? 'page' : null"
+              (click)="seeIamAgentRequests(seeAll = !seeAll)">
+              {{ "AllAgentsRequests" | translate }}
+            </button>
           </li>
 
-          <li (click)="seeIamAgentRequests(seeAll = !seeAll)" class="btn-with-border-effect" [ngClass]="
+          <li class="btn-with-border-effect" [ngClass]="
           { 'disabled-li' : displayBtnLabelSeeYourRequets === true, 
             'border-from-center' : displayBtnLabelSeeYourRequets === false, 
             'li-active' : displayBtnLabelSeeYourRequets === true
           }">
-            <a href="javascript:;" role="button"> {{ "YourRequests" | translate }} </a>
+            <button type="button" class="monitor-tab-button"
+              [attr.aria-current]="displayBtnLabelSeeYourRequets === true ? 'page' : null"
+              (click)="seeIamAgentRequests(seeAll = !seeAll)">
+              {{ "YourRequests" | translate }}
+            </button>
           </li>
         </ng-container>
       
@@ -55,17 +63,17 @@
 
 
         <!-- NO REALTIME REQUESTS -->
-        <li class="see-no-realtime-request right-li" style="float: right; padding-right: 5px;"
-          (click)='goToNoRealtimeConversations()'>
-          <a attr.aria-label="{{ 'GoToNotRealTimeRequests' | translate }}" href="javascript:;" role="button"
-            class="tool_tip" style="cursor: pointer; display: unset;"
+        <li class="see-no-realtime-request right-li" style="float: right; padding-right: 5px;">
+          <button type="button" attr.aria-label="{{ 'GoToNotRealTimeRequests' | translate }}"
+            class="tool_tip monitor-tab-icon-button"
+            (click)='goToNoRealtimeConversations()'
             [ngClass]="{ 'has-reached-100' : served_unserved_sum >= 100 }" matTooltipClass="mat-white-tooltip"
             matTooltip="{{'ClickHereForMoreAdvancedSearches' | translate}}" #tooltip="matTooltip"
             matTooltipPosition='below' matTooltipHideDelay="100">
             <span aria-hidden="true" class="material-icons">
               manage_search
             </span>
-          </a>
+          </button>
 
           <span *ngIf="served_unserved_sum >= 100" class="served-unserved-sum">
             <span>
@@ -77,15 +85,16 @@
         </li>
 
         <!-- SHOW SERVED REQUEST MAP -->
-        <li class="show-request-on-map right-li" style="float: right; padding-right: 5px;" (click)='openRightSideBar()'>
-          <a attr.aria-label="{{ 'ViewServedRequestsMap' | translate }}" class="tool_tip"
-            style="cursor: pointer; display: unset;" matTooltipClass="mat-white-tooltip"
+        <li class="show-request-on-map right-li" style="float: right; padding-right: 5px;">
+          <button type="button" attr.aria-label="{{ 'ViewServedRequestsMap' | translate }}"
+            class="tool_tip monitor-tab-icon-button" (click)='openRightSideBar()'
+            matTooltipClass="mat-white-tooltip"
             matTooltip="{{'ViewServedRequestsMap' | translate}}" #tooltip="matTooltip" matTooltipPosition='below'
             matTooltipHideDelay="100">
             <span class="material-icons">
               pin_drop
             </span>
-          </a>
+          </button>
         </li>
       </ul>
 
@@ -152,8 +161,14 @@
       </ul> -->
     </div>
 
-    <div class="main-content" style="padding-top: 25px; margin-top: 0px;padding-left: 0px;padding-right: 0px; min-height: calc(100% - 133px)">
+    <div class="main-content monitor-page">
       <div class="container-fluid">
+
+        <header class="monitor-page-header">
+          <span class="monitor-page-header__eyebrow">{{ 'Requests' | translate }}</span>
+          <h1>{{ 'Analytics.RealTimeMonitoring' | translate }}</h1>
+          <p>{{ 'QuickTipsAssigned' | translate }}</p>
+        </header>
 
         <!-- <div class="row">
           <div class="col-sm-12">
@@ -197,8 +212,8 @@
             <!-- ---------------------------------------------------------- -->
             <!-- LEGEND OF COUNT OF REQUESTS: ACTIVE, SERVED & UNSERVED -->
             <!-- ---------------------------------------------------------- -->
-            <div class="row">
-              <div class="col-5">
+            <div class="row monitor-overview">
+              <div class="col-5 monitor-summary">
                 <div class="graph-legend">
                   <div class="advanced-pie-legend-wrapper">
                     <div class="advanced-legend">
@@ -257,7 +272,7 @@
                 </div>
               </div> <!-- ./ col-4 -->
 
-              <div class="col-7">
+              <div class="col-7 monitor-filters">
 
                 <div class="row">
                   <div class="col-sm-12 filter-convs-title-wpr">
@@ -327,7 +342,7 @@
 
             </div> <!-- ./ row -->
 
-            <div class="row">
+            <div class="row monitor-team-row">
 
               <!--  -------------------------------------------------------------------------------------- -->
               <!--  @ New TEAMMATES SCROLL DIV -->
@@ -505,7 +520,7 @@
         </div>
         <!-- ------====== / .end CARDS COUNT OF REQUESTS: ACTIVE, SERVED & UNSERVED AND REQUESTS FOR DEPTS ======------ -->
         <!-- *ngIf="ROLE_IS_AGENT === false" -->
-        <div class="row">
+        <div class="row monitor-options-row">
           <div class="col-12">
             <!-- style="background: rgb(231,241,255);" -->
             <div class="smart-assign-and-operatinghours-options">
