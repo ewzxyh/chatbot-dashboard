@@ -39,6 +39,7 @@ export class KnowledgeBaseTableComponent implements OnInit {
   @Input() payIsVisible: boolean;
   @Input() t_params: string;
   @Input() showKBTableSpinner: boolean = false;
+  @Input() hasError: boolean = false;
   @Input() currentSortParams: any = null;
   @Output() openBaseModalDetail = new EventEmitter();
   @Output() openBaseModalDelete = new EventEmitter();
@@ -48,6 +49,7 @@ export class KnowledgeBaseTableComponent implements OnInit {
   @Output() runIndexing = new EventEmitter();
   @Output() loadPage = new EventEmitter();
   @Output() loadByFilter = new EventEmitter();
+  @Output() retry = new EventEmitter<void>();
   
   // last added
   @Output() openBaseModalPreviewSettings = new EventEmitter();
@@ -271,6 +273,10 @@ export class KnowledgeBaseTableComponent implements OnInit {
     // Math.floor(this.kbsList.length/KB_DEFAULT_PARAMS.LIMIT);
     // this.logger.log('[KB TABLE] emit loadPage searchParams', this.searchParams) 
     this.loadPage.emit(this.searchParams);
+  }
+
+  retryList(): void {
+    this.retry.emit();
   }
 
 

@@ -8,16 +8,22 @@ describe('KnowledgeBaseTableComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ KnowledgeBaseTableComponent ]
-    })
-    .compileComponents();
+      declarations: [KnowledgeBaseTableComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(KnowledgeBaseTableComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('emits retry from the error-state action', () => {
+    const emit = jasmine.createSpy('emit');
+
+    KnowledgeBaseTableComponent.prototype.retryList.call({ retry: { emit } });
+
+    expect(emit).toHaveBeenCalledTimes(1);
   });
 });

@@ -34,6 +34,7 @@ export class ModalUnansweredQuestionsComponent implements OnInit, OnChanges, OnD
   @Input() isLoadingMore: boolean = false;
   /** Se mostrare lo spinner al posto della lista (refresh completo) */
   @Input() showUQTableSpinner: boolean = false;
+  @Input() hasError: boolean = false;
   /** answered: solo lettura (niente aggiungi a KB / scarta). unanswered: comportamento precedente. */
   @Input() listMode: 'answered' | 'unanswered' = 'unanswered';
   /** Direzione ordinamento data (-1 | 1), stessa convenzione di Activities. */
@@ -178,10 +179,7 @@ export class ModalUnansweredQuestionsComponent implements OnInit, OnChanges, OnD
     this.toggleQuestionsDateSort.emit();
   }
 
-  onRowClick(ev: MouseEvent, q: UnansweredQuestion): void {
-    if ((ev.target as HTMLElement).closest('button')) {
-      return;
-    }
+  openQuestionConversation(q: UnansweredQuestion): void {
     const requestId = q.request_id || q.requestId;
     if (!requestId) {
       return;

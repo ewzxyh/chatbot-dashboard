@@ -1,6 +1,6 @@
 <div class="add-content-container unanswered-questions-modal">
  
-  <div class="preview-count-left" style="margin-bottom: 12px;">
+  <div *ngIf="!hasError" class="preview-count-left">
     <div>
         <button mat-icon-button aria-label="Refresh" style="color: grey;" (click)="refreshList()">
             <mat-icon>refresh</mat-icon>
@@ -11,16 +11,23 @@
   </div>
 
   <!-- *ngIf="!showUQTableSpinner" -->
-  <div class="uq-list-header" *ngIf="unansweredQuestions.length > 0 || unansweredQuestionsCount > 0">
+  <section *ngIf="hasError" class="uq-state" role="alert">
+    <mat-icon aria-hidden="true">error_outline</mat-icon>
+    <h2>{{ 'AnErrorHasOccurred' | translate }}</h2>
+    <p>{{ 'PleaseTryAgain' | translate }}</p>
+    <button type="button" class="uq-primary-action" (click)="refreshList()">
+      <mat-icon aria-hidden="true">refresh</mat-icon>
+      {{ 'PleaseTryAgain' | translate }}
+    </button>
+  </section>
+
+  <div class="uq-list-header" *ngIf="!hasError && !showUQTableSpinner && (unansweredQuestions.length > 0 || unansweredQuestionsCount > 0)">
     <span class="uq-list-header-question">{{'FaqPage.Question' | translate}}</span>
     <span class="uq-list-header-date">
-      <span
+      <button type="button"
         class="uq-list-header-date-sort"
         (click)="onToggleDateSort($event)"
-        (keydown.enter)="onToggleDateSort($event)"
-        (keydown.space)="onToggleDateSort($event)"
-        tabindex="0"
-        role="button">
+        [attr.aria-label]="'KbPage.CreationDate' | translate">
         {{'KbPage.CreationDate' | translate}}
        <!-- <span
           class="sorting"
@@ -29,19 +36,18 @@
           class="th-label material-icons-outlined icon-direction">expand_more</span>
         <span *ngIf="questionsSortDirection === -1"
           class="th-label material-icons-outlined icon-direction">expand_less</span>
-      </span>
+      </button>
     </span>
     <span class="uq-list-header-actions" *ngIf="listMode === 'unanswered' || listMode === 'answered'">{{'Actions' | translate}}</span>
   </div>
 
-  <loading-spinner *ngIf="showUQTableSpinner"></loading-spinner>
+  <loading-spinner *ngIf="!hasError && showUQTableSpinner"></loading-spinner>
 
-  <ng-container *ngIf="!showUQTableSpinner">
+  <ng-container *ngIf="!hasError && !showUQTableSpinner">
     <ng-container *ngIf="unansweredQuestions.length > 0; else noQuestions">
       <div class="uq-list">
-        <div *ngFor="let q of unansweredQuestions" class="uq-list-item uq-list-item--clickable"
-          [class.uq-list-item--answered-with-answer]="listMode === 'answered' && getAnswerText(q)"
-          (click)="onRowClick($event, q)">
+        <div *ngFor="let q of unansweredQuestions" class="uq-list-item"
+          [class.uq-list-item--answered-with-answer]="listMode === 'answered' && getAnswerText(q)">
           <div class="uq-list-item-main">
             <span class="uq-question-text">{{ q.question }}</span>
             <div
@@ -76,18 +82,17 @@
             <div style="font-size: 0.85em; color: #666;margin-top: 3px;">{{ q.createdAt | date: 'd/M/y HH:mm:ss' }}</div>
           </span>
           <span class="uq-date-text" *ngIf="!q.createdAt">-</span>
+          <button *ngIf="q.request_id || q.requestId" type="button" class="uq-open-conversation" mat-icon-button
+            matTooltipClass="kb-custom-mat-tooltip"
+            [matTooltip]="listMode === 'answered' ? ('KbPage.ClickToViewConversation' | translate) : ('KbPage.GoToConversation' | translate)"
+            [attr.aria-label]="listMode === 'answered' ? ('KbPage.ClickToViewConversation' | translate) : ('KbPage.GoToConversation' | translate)"
+            matTooltipPosition="before" matTooltipHideDelay="100"
+            (click)="openQuestionConversation(q)">
+            <mat-icon aria-hidden="true">open_in_new</mat-icon>
+          </button>
           <span class="uq-actions" *ngIf="listMode === 'unanswered'">
-            <span
-              class="uq-open-conversation-hint"
-              matTooltipClass="kb-custom-mat-tooltip"
-              [matTooltip]="'KbPage.GoToConversation' | translate"
-              matTooltipPosition="before"
-              matTooltipHideDelay="100"
-              tabindex="0"
-              [attr.aria-label]="'KbPage.GoToConversation' | translate">
-              <mat-icon class="uq-open-conversation-hint__icon" aria-hidden="true">chevron_right</mat-icon>
-            </span>
             <button class="uq-btn uq-btn-icon" mat-icon-button 
+              [attr.aria-label]="'AddQuestionToKB' | translate"
               matTooltipClass="kb-custom-mat-tooltip" 
               [matTooltip]="'AddQuestionToKB' | translate" 
               #tooltip="matTooltip" 
@@ -97,6 +102,7 @@
               <mat-icon class="add-icon">add_circle_outline</mat-icon>
             </button>
             <button class="uq-btn uq-btn-icon" mat-icon-button 
+              [attr.aria-label]="'DiscardQuestion' | translate"
               matTooltipClass="kb-custom-mat-tooltip" 
               [matTooltip]="'DiscardQuestion' | translate" 
                #tooltip="matTooltip" 
@@ -107,17 +113,8 @@
             </button>
           </span>
           <span class="uq-actions uq-actions--answered" *ngIf="listMode === 'answered'">
-            <span
-              class="uq-open-conversation-hint"
-              matTooltipClass="kb-custom-mat-tooltip"
-              [matTooltip]="'KbPage.ClickToViewConversation' | translate"
-              matTooltipPosition="before"
-              matTooltipHideDelay="100"
-              tabindex="0"
-              [attr.aria-label]="'KbPage.ClickToViewConversation' | translate">
-              <mat-icon class="uq-open-conversation-hint__icon" aria-hidden="true">chevron_right</mat-icon>
-            </span>
             <button class="uq-btn uq-btn-icon" mat-icon-button
+              [attr.aria-label]="'KbPage.DeleteAnsweredQuestion' | translate"
               matTooltipClass="kb-custom-mat-tooltip"
               [matTooltip]="'KbPage.DeleteAnsweredQuestion' | translate"
                #tooltip="matTooltip" 
@@ -134,9 +131,9 @@
       <div *ngIf="isLoadingMore" style="margin-top: 20px; text-align: center;" class="loading-indicator">
         {{'KbPage.Loading' | translate}}&nbsp;
       </div>
-      <div *ngIf="!isLoadingMore && hasMore" class="btn-more btn--default" (click)="loadMoreData()" style="margin-top: 20px;">
+      <button *ngIf="!isLoadingMore && hasMore" type="button" class="btn-more btn--default" (click)="loadMoreData()">
         {{'KbPage.LoadMore' | translate}}
-      </div>
+      </button>
     </ng-container>
     <ng-template #noQuestions>
       <div class="add-header-container" *ngIf="listMode === 'answered'">

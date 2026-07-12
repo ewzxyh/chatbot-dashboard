@@ -420,6 +420,11 @@ export class KnowledgeBasesComponent extends PricingBaseComponent implements OnI
   unansweredQuestionsSearch = '';
   private questionsSearchDebounceTimer: ReturnType<typeof setTimeout> | null = null;
   isLoadingNamespaces = true;
+  namespacesLoadError = false;
+  kbListLoadError = false;
+  answeredQuestionsLoadError = false;
+  unansweredQuestionsLoadError = false;
+  private lastKbListRequestParams: string | undefined;
   pineconeReranking: boolean
 
 
@@ -825,6 +830,7 @@ export class KnowledgeBasesComponent extends PricingBaseComponent implements OnI
 
   getAllNamespaces() {
     this.isLoadingNamespaces = true;
+    this.namespacesLoadError = false;
     this.kbService.getAllNamespaces().subscribe((res: any) => {
       if (res) {
         this.kbCount = res.length
@@ -833,15 +839,24 @@ export class KnowledgeBasesComponent extends PricingBaseComponent implements OnI
       }
     }, (error) => {
       this.logger.error('[KNOWLEDGE-BASES-COMP]  GET GET ALL NAMESPACES ERROR ', error);
-      this.isLoadingNamespaces = false; 
+      this.namespacesLoadError = true;
+      this.isLoadingNamespaces = false;
+      this.showSpinner = false;
     }, () => {
       this.logger.log('[KNOWLEDGE-BASES-COMP]  GET ALL NAMESPACES * COMPLETE *');
-      if (this.namespaces) {
+      if (this.namespaces?.length) {
         this.selectLastUsedNamespaceAndGetKbList(this.namespaces);
         this.totalCount = this.namespaces.reduce((acc, ns) => acc + (ns.count || 0), 0);
-        this.isLoadingNamespaces = false;
+      } else {
+        this.selectedNamespace = null;
+        this.showSpinner = false;
       }
+      this.isLoadingNamespaces = false;
     });
+  }
+
+  retryKnowledgeBases(): void {
+    this.getAllNamespaces();
   }
 
   isAlphaNumeric(str) {
@@ -1207,7 +1222,8 @@ export class KnowledgeBasesComponent extends PricingBaseComponent implements OnI
     this.logger.log('[KNOWLEDGE-BASES-COMP] onSelectNamespace namespace', namespace)
 
     if (namespace) {
-      this.router.navigate(['project/' + this.project._id + '/knowledge-bases/' + namespace.id]);
+      const kbNavExtras = this.buildKbDeepLinkNavExtras();
+      this.router.navigate(['project/' + this.project._id + '/knowledge-bases/' + namespace.id], kbNavExtras);
       // this.getDeptsByProjectId()
       this.hasChangedNameSpace = true;
       this.selectedNamespace = namespace
@@ -2989,6 +3005,8 @@ _presentDialogImportContents() {
       this.kbsList = [];
     }
     this.logger.log("[KNOWLEDGE BASES COMP] getListOfKb params", params);
+    this.kbListLoadError = false;
+    this.lastKbListRequestParams = params;
     this.kbService.getListOfKb(params).subscribe((resp: any) => {
       this.logger.log("[KNOWLEDGE BASES COMP] get kbList resp: ", resp);
       //this.kbs = resp;
@@ -3035,6 +3053,7 @@ _presentDialogImportContents() {
 
     }, (error) => {
       this.logger.error("[KNOWLEDGE BASES COMP] ERROR GET KB LIST: ", error);
+      this.kbListLoadError = true;
       this.showSpinner = false
       this.showKBTableSpinner = false;
       this.getKbCompleted = false
@@ -3047,6 +3066,11 @@ _presentDialogImportContents() {
 
 
     })
+  }
+
+  retryKbList(): void {
+    this.showKBTableSpinner = true;
+    this.getListOfKb(this.lastKbListRequestParams ?? this.paramsDefault, 'retry');
   }
 
 
@@ -4142,6 +4166,7 @@ _presentDialogImportContents() {
     }
 
     if (page === 0 && !append) {
+      this.answeredQuestionsLoadError = false;
       this.isLoadingAnswered = true;
       this.showUQTableSpinner = true;
       this.answeredQuestionsPage = 0;
@@ -4199,6 +4224,7 @@ _presentDialogImportContents() {
           });
         },
         (err) => {
+          this.answeredQuestionsLoadError = true;
           this.isLoadingAnswered = false;
           this.showUQTableSpinner = false;
           this.isLoadingMoreAnswered = false;
@@ -4229,6 +4255,7 @@ _presentDialogImportContents() {
     }
 
     if (page === 0 && !append) {
+      this.unansweredQuestionsLoadError = false;
       this.isLoadingUnanswered = true;
       this.showUQTableSpinner = true;
       this.unansweredQuestionsPage = 0;
@@ -4289,6 +4316,7 @@ _presentDialogImportContents() {
           });
         },
         (err) => {
+          this.unansweredQuestionsLoadError = true;
           this.isLoadingUnanswered = false;
           this.showUQTableSpinner = false;
           this.isLoadingMoreUnanswered = false;

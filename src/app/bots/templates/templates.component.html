@@ -111,19 +111,7 @@
                         <article class="template-card" *ngFor="let template of templates">
                             <div class="template-card-topline">
                                 <div class="template-card-image">
-                                    <img *ngIf="template?.bigImage"
-                                        [src]="template.bigImage"
-                                        [alt]="template.name">
-                                    <ng-container *ngIf="!template?.bigImage">
-                                        <img *ngIf="UPLOAD_ENGINE_IS_FIREBASE"
-                                            [src]="'https://firebasestorage.googleapis.com/v0/b/tiledesk-prod-v2.appspot.com/o/profiles%2F' + template._id + '%2Fphoto.jpg?alt=media'"
-                                            [alt]="template.name"
-                                            onerror="this.src='assets/img/avatar_bot_chatcase.svg'">
-                                        <img *ngIf="!UPLOAD_ENGINE_IS_FIREBASE"
-                                            [src]="baseUrl + 'files?path=uploads%2Fusers%2F' + template._id + '%2Fimages%2Fthumbnails_200_200-photo.jpg'"
-                                            [alt]="template.name"
-                                            onerror="this.src='assets/img/avatar_bot_chatcase.svg'">
-                                    </ng-container>
+                                    <img src="assets/img/logos/chatcase-icon.svg" alt="ChatCase">
                                 </div>
                                 <span class="template-card-objective">{{ getTemplateObjective(template) }}</span>
                             </div>

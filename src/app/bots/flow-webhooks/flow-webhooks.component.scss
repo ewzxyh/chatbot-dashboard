@@ -15,9 +15,11 @@
 }
 
 .flow-webhooks-header span {
-    color: #647491;
+    color: #0b6bcb;
     font-size: 13px;
+    font-weight: 700;
     line-height: 18px;
+    text-transform: uppercase;
 }
 
 .flow-webhooks-header h1 {
@@ -26,6 +28,15 @@
     font-size: 22px;
     font-weight: 500;
     line-height: 28px;
+}
+
+.flow-webhooks-header p {
+    max-width: 650px;
+    margin: 4px 0 0;
+    color: #647491;
+    font-size: 14px;
+    line-height: 20px;
+    text-wrap: pretty;
 }
 
 .flow-webhooks-content {
@@ -51,6 +62,10 @@
     margin-bottom: 14px;
     color: #6d83a2;
     font-size: 36px;
+}
+
+.flow-webhooks-empty--error > mat-icon {
+    color: #c62828;
 }
 
 .flow-webhooks-empty h2 {

@@ -5,9 +5,49 @@
 </p> -->
 
 
-<div class="main-content" style="padding-top:0px; padding-left: 5px;padding-right: 5px;">
+<div class="main-content kb-page">
 
-  <div class="container-fluid" style="padding-left: 5px;padding-right: 5px;">
+  <div class="container-fluid">
+
+    <header class="kb-page-header">
+      <span class="kb-page-header__eyebrow">{{ 'KnowledgeBases' | translate }}</span>
+      <h1>{{ 'KbPage.YourKnowledgeBases' | translate }}</h1>
+      <p>{{ 'KbPage.AddNewKbOrSelectExistingOne' | translate }}</p>
+    </header>
+
+    <section *ngIf="isLoadingNamespaces" class="kb-page-state kb-page-state--loading" aria-busy="true">
+      <div class="kb-page-skeleton kb-page-skeleton--title"></div>
+      <div class="kb-page-skeleton"></div>
+      <div class="kb-page-skeleton kb-page-skeleton--short"></div>
+    </section>
+
+    <section *ngIf="!isLoadingNamespaces && namespacesLoadError" class="kb-page-state" role="alert">
+      <mat-icon aria-hidden="true">error_outline</mat-icon>
+      <h2>{{ 'AnErrorHasOccurred' | translate }}</h2>
+      <p>{{ 'PleaseTryAgain' | translate }}</p>
+      <button type="button" class="kb-primary-action" (click)="retryKnowledgeBases()">
+        <mat-icon aria-hidden="true">refresh</mat-icon>
+        {{ 'PleaseTryAgain' | translate }}
+      </button>
+    </section>
+
+    <section *ngIf="!isLoadingNamespaces && !namespacesLoadError && !namespaces?.length" class="kb-page-state">
+      <mat-icon aria-hidden="true">library_books</mat-icon>
+      <h2>{{ 'KbPage.NoKnowledgeBases' | translate }}</h2>
+      <p>{{ 'KbPage.NoKbAddedText' | translate }}</p>
+      <button *ngIf="PERMISSION_TO_ADD_KB" type="button" class="kb-primary-action"
+        (click)="presentModalAddNewNamespace()">
+        <mat-icon aria-hidden="true">add</mat-icon>
+        {{ 'KbPage.NewNamespace' | translate }}
+      </button>
+    </section>
+
+    <div *ngIf="!isLoadingNamespaces && !namespacesLoadError && namespaces?.length" class="kb-mobile-selector">
+      <label for="kb-namespace-select">{{ 'KbPage.YourKnowledgeBases' | translate }}</label>
+      <select id="kb-namespace-select" [ngModel]="selectedNamespace" (ngModelChange)="onSelectNamespace($event)">
+        <option *ngFor="let ns of namespaces" [ngValue]="ns">{{ ns.name }}</option>
+      </select>
+    </div>
 
     <!-- <div class="content-wpr" style="display: flex;"> -->
 
@@ -21,7 +61,7 @@
         [increaseSalesBotsCount]="increaseSalesBotsCount" [kbCount]="kbCount">
       </appdashboard-bots-sidebar> -->
 
-      <div class="kb-layout" style="display: flex; flex-direction: row; height: 100%;">
+      <div *ngIf="!isLoadingNamespaces && !namespacesLoadError && namespaces?.length" class="kb-layout">
         <!-- Sidebar sinistra -->
         <div class="kb-sidebar">
           <div class="sidebar-title" >
@@ -29,31 +69,18 @@
             {{ 'KbPage.YourKnowledgeBases' | translate }}
           </div>
 
-          <button *ngIf="PERMISSION_TO_ADD_KB" class="custom-button xs" style="margin: 9px 9px 0 9px; width: calc(100% - 48px); position: relative;left: -10px;height: 42px;" (click)="presentModalAddNewNamespace()">
-            <mat-icon style="vertical-align: middle;">add</mat-icon>
-            <span style="vertical-align: middle;">{{'KbPage.NewNamespace' | translate}}</span>
+          <button *ngIf="PERMISSION_TO_ADD_KB" type="button" class="kb-sidebar-add" (click)="presentModalAddNewNamespace()">
+            <mat-icon aria-hidden="true">add</mat-icon>
+            <span>{{'KbPage.NewNamespace' | translate}}</span>
           </button>
 
-
-          <!-- SKELETON LOADER -->
-          <ul *ngIf="isLoadingNamespaces" class="kb-list">
-            <li *ngFor="let skeleton of [1]" >
-              <div class="skeleton-item" style="display: flex; align-items: center; gap: 3px;">
-                <div class="skeleton-text" style="flex: 1; height: 42px; background: #eee;"></div>
-              </div>
-            </li>
-          </ul>
-
           <ul class="kb-list" *ngIf="!isLoadingNamespaces && namespaces?.length > 0">
-            <li *ngFor="let ns of namespaces"
-                (click)="onSelectNamespace(ns)"
-                [ngClass]="{'active': ns === selectedNamespace}"
-                [style.background]="ns === selectedNamespace ? '#e3e9f6' : 'transparent'"
-                [style.borderLeftColor]="ns === selectedNamespace ? '#0f62ff' : 'transparent'"
-                [style.fontWeight]="ns === selectedNamespace ? '400' : '300'">
-              <div style="display: flex; align-items: center; width: 100%;">
+            <li *ngFor="let ns of namespaces">
+              <button type="button" class="kb-sidebar-item" (click)="onSelectNamespace(ns)"
+                [class.active]="ns === selectedNamespace" [attr.aria-current]="ns === selectedNamespace ? 'page' : null">
+              <span class="kb-sidebar-item__content">
 
-                <div style="display: flex; align-items: center; justify-content: flex-end; min-width: 0; margin-bottom: 2px;">
+                <span style="display: flex; align-items: center; justify-content: flex-end; min-width: 0; margin-bottom: 2px;">
                   
                   <span *ngIf="ns?.hybrid === true" 
                     class="hybrid-search-icon" 
@@ -85,20 +112,21 @@
                     style="font-size: 18px; color: #d9b100; margin-right: 6px;">
                     grade
                   </span>
-                </div>
+                </span>
 
-                <div style="flex: 1 1 0; font-size: 14px; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;font-family: var(--header-font-family)">
+                <span class="kb-sidebar-item__name">
                   {{ ns.name }}
-                </div>
+                </span>
                 
 
-                <div *ngIf="ns.count" class="counter-badge">{{ns.count}}</div>
-                <div *ngIf="!ns.count" class="counter-badge">0</div>
+                <span *ngIf="ns.count" class="counter-badge">{{ns.count}}</span>
+                <span *ngIf="!ns.count" class="counter-badge">0</span>
 
-                <div style="flex: 0 0 32px; display: flex; align-items: center; justify-content: center; margin-left: 12px;">
-                  <mat-icon *ngIf="ns === selectedNamespace" style="color: #0f62ff;">chevron_right</mat-icon>
-                </div>
-              </div>
+                <span class="kb-sidebar-item__chevron">
+                  <mat-icon *ngIf="ns === selectedNamespace" aria-hidden="true">chevron_right</mat-icon>
+                </span>
+              </span>
+              </button>
             </li>
             <!-- <li *ngIf="!namespaces || namespaces?.length === 0" style="padding: 12px 24px; color: #888;">
               {{ 'KbPage.NoKnowledgeBases' | translate }}
@@ -107,7 +135,7 @@
           </ul>
 
 
-          <div  *ngIf="!isLoadingNamespaces" class="sidebar-title" style="text-transform: none; font-weight: 400; font-size: 13px; margin-top: 30px;">
+          <div *ngIf="!isLoadingNamespaces" class="kb-sidebar-total">
             {{'KbPage.TotalContents' | translate }}: {{totalCount}}/{{quotas?.kbs}}
           </div>
           
@@ -130,9 +158,9 @@
 
                 </span>
 
-                <span class="kb-link-to-docs" (click)="goToKbDoc()">
+                <button type="button" class="kb-link-to-docs" (click)="goToKbDoc()">
                     {{'KbPage.LearnMoreAboutKB' | translate}}
-                </span>
+                </button>
               </div>
       
               <div class="kb-content-container">
@@ -146,14 +174,14 @@
                       <div class="selected-namespace-content">
                         <div id="selected-namespace-name" class="selected-namespace-name" (mouseover)="onMouseOver()"
                           (mouseout)="onMouseOut()">
-                          <div *ngIf="!namespaceIsEditable" id="namespace-name-output" class="namespace-name-output"
-                            style="padding: 0px;" (click)="hasClickedNamespaceName()" matTooltipClass="kb-custom-mat-tooltip"
+                          <button *ngIf="!namespaceIsEditable" id="namespace-name-output" type="button" class="namespace-name-output"
+                            (click)="hasClickedNamespaceName()" matTooltipClass="kb-custom-mat-tooltip"
                             matTooltip="{{'Rename' | translate}}" #tooltip="matTooltip" matTooltipPosition='after'
                             matTooltipHideDelay="100">
-                            <div class="selected-namespace">
+                            <span class="selected-namespace">
                               {{selectedNamespace?.name}}
-                            </div>
-                          </div>
+                            </span>
+                          </button>
 
                           <input *ngIf="namespaceIsEditable" id="namespace-name-input"
                             class="namespace-name-input"
@@ -203,6 +231,7 @@
       
                       <!-- Export Button  -->
                       <button *ngIf="PERMISSION_TO_EXPORT_CONTENTS" class="btn btn-blu-gray-outline" matTooltipClass="kb-custom-mat-tooltip"
+                        [attr.aria-label]="'KbPage.ExportContents' | translate"
                         matTooltip="{{'KbPage.ExportContents' | translate }}" #tooltip="matTooltip" matTooltipPosition='below'
                         matTooltipHideDelay="100" (click)="presentDialogExportContents()">
                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px">
@@ -213,6 +242,7 @@
       
                       <!-- Import Button -->
                       <button *ngIf="PERMISSION_TO_ADD_CONTENTS" class="btn btn-blu-gray-outline" matTooltipClass="kb-custom-mat-tooltip"
+                        [attr.aria-label]="'KbPage.ImportContents' | translate"
                         matTooltip="{{'KbPage.ImportContents' | translate }}" #tooltip="matTooltip" matTooltipPosition='below'
                         matTooltipHideDelay="100" (click)="presentDialogImportContents()">
                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px">
@@ -250,15 +280,15 @@
                       <div class="served-by-cb-row" style="display: flex; flex-wrap: wrap; flex-wrap: wrap;">
                         <ng-container *ngFor="let chatbot of chatbotsUsingNamespace; let i = index">
                           <div class="served-by-cb-b" [ngClass]="{'first-served-by': i === 0, 'disable-link-if-is-agent': USER_ROLE === 'agent' }">
-                            <div class="served-by-cb-c"
+                            <button type="button" class="served-by-cb-c"
                               (click)="presentDialogGoToCDS(chatbot)"
                               matTooltipClass="kb-custom-mat-tooltip"
                               matTooltip=" {{'ViewOption' | translate}}"
                               #tooltip="matTooltip"
                               matTooltipPosition='below'
                               matTooltipHideDelay="100">
-                              <div class="served-by-cb-d">
-                                <div size="32" class="served-by-cb-e">
+                              <span class="served-by-cb-d">
+                                <span size="32" class="served-by-cb-e">
                                   <!-- USECASE uploadEngine Firebase -->
                                   <img *ngIf="UPLOAD_ENGINE_IS_FIREBASE"
                                     [ngClass]="{'bot-img-gray-bckgrnd': chatbot.hasImage === false}"
@@ -269,12 +299,12 @@
                                     [ngClass]="{'bot-img-gray-bckgrnd': chatbot.hasImage === false}"
                                     src="{{baseUrl}}files?path=uploads%2Fusers%2F{{chatbot?._id}}%2Fimages%2Fthumbnails_200_200-photo.jpg"
                                     alt="" onerror="this.src='assets/img/avatar_bot_chatcase.svg'">
-                                </div>
-                                <div class="served-by-cb-name">
+                                </span>
+                                <span class="served-by-cb-name">
                                   {{chatbot.name }}
-                                </div>
-                              </div>
-                            </div>
+                                </span>
+                              </span>
+                            </button>
                           </div>
                         </ng-container>
                       </div>
@@ -316,30 +346,24 @@
                   </div>
 
                   <div class="kb-stats-cards" *ngIf="selectedNamespace">
-                    <div class="kb-stats-card kb-stats-card--clickable" role="button" tabindex="0"
+                    <button type="button" class="kb-stats-card kb-stats-card--clickable"
                       [attr.aria-label]="('KbPage.KbStatsContents' | translate) + ' — ' + ('KbPage.Contents' | translate)"
-                      (click)="onKbStatsContentsClick()"
-                      (keydown.enter)="onKbStatsContentsClick()"
-                      (keydown.space)="$event.preventDefault(); onKbStatsContentsClick()">
-                      <div class="kb-stats-card__label">{{ 'KbPage.KbStatsContents' | translate }}</div>
-                      <div class="kb-stats-card__value kb-stats-card__value--dark">{{ kbsContentTotalCount }}</div>
-                    </div>
-                    <div class="kb-stats-card kb-stats-card--clickable" role="button" tabindex="0"
+                      (click)="onKbStatsContentsClick()">
+                      <span class="kb-stats-card__label">{{ 'KbPage.KbStatsContents' | translate }}</span>
+                      <span class="kb-stats-card__value kb-stats-card__value--dark">{{ kbsContentTotalCount }}</span>
+                    </button>
+                    <button type="button" class="kb-stats-card kb-stats-card--clickable"
                       [attr.aria-label]="('KbPage.KbStatsAnswered' | translate) + ' — ' + ('KbPage.AnsweredQuestionsTab' | translate)"
-                      (click)="onKbStatsAnsweredClick()"
-                      (keydown.enter)="onKbStatsAnsweredClick()"
-                      (keydown.space)="$event.preventDefault(); onKbStatsAnsweredClick()">
-                      <div class="kb-stats-card__label">{{ 'KbPage.KbStatsAnswered' | translate }}</div>
-                      <div class="kb-stats-card__value kb-stats-card__value--answered">{{ kbStatsAnsweredCount }}</div>
-                    </div>
-                    <div class="kb-stats-card kb-stats-card--clickable" role="button" tabindex="0"
+                      (click)="onKbStatsAnsweredClick()">
+                      <span class="kb-stats-card__label">{{ 'KbPage.KbStatsAnswered' | translate }}</span>
+                      <span class="kb-stats-card__value kb-stats-card__value--answered">{{ kbStatsAnsweredCount }}</span>
+                    </button>
+                    <button type="button" class="kb-stats-card kb-stats-card--clickable"
                       [attr.aria-label]="('KbPage.KbStatsUnanswered' | translate) + ' — ' + ('KbPage.UnansweredQuestionsTab' | translate)"
-                      (click)="onKbStatsUnansweredClick()"
-                      (keydown.enter)="onKbStatsUnansweredClick()"
-                      (keydown.space)="$event.preventDefault(); onKbStatsUnansweredClick()">
-                      <div class="kb-stats-card__label">{{ 'KbPage.KbStatsUnanswered' | translate }}</div>
-                      <div class="kb-stats-card__value kb-stats-card__value--unanswered">{{ kbStatsUnansweredCount }}</div>
-                    </div>
+                      (click)="onKbStatsUnansweredClick()">
+                      <span class="kb-stats-card__label">{{ 'KbPage.KbStatsUnanswered' | translate }}</span>
+                      <span class="kb-stats-card__value kb-stats-card__value--unanswered">{{ kbStatsUnansweredCount }}</span>
+                    </button>
                     <div class="kb-stats-card">
                       <div class="kb-stats-card__label">{{ 'KbPage.KbStatsAnswerRate' | translate }}</div>
                       <div class="kb-stats-card__value kb-stats-card__value--dark">{{ kbStatsAnswerRatePercent }}%</div>
@@ -387,6 +411,7 @@
                       [refreshRateIsEnabled]="refreshRateIsEnabled" [payIsVisible]="payIsVisible" [salesEmail]="salesEmail"
                       [project_name]="project_name" [id_project]="id_project"
                       [showKBTableSpinner]="showKBTableSpinner"
+                      [hasError]="kbListLoadError"
                       [currentSortParams]="currentSortParams"
                       (openBaseModalDetail)="onOpenBaseModalDetail($event)"
                       (openBaseModalDelete)="onOpenBaseModalDelete($event)"
@@ -395,7 +420,7 @@
                       (openBaseModalPreviewSettings)="onOpenBaseModalPreviewSettings()"
                       (openAddKnowledgeBaseModal)="openAddKnowledgeBaseModal($event)" (checkStatus)="onCheckStatus($event)"
                       (runIndexing)="onRunIndexing($event)" (loadPage)="onLoadPage($event)"
-                      (loadByFilter)="onLoadByFilter($event)">
+                      (loadByFilter)="onLoadByFilter($event)" (retry)="retryKbList()">
                     </knowledge-base-table>
                   </div>
                   <div [@fadeInOut] *ngIf="selectedTab === 'unanswered'">
@@ -457,6 +482,7 @@
                       [hasMore]="questionsSubTab === 'answered' ? hasMoreAnsweredQuestions : hasMoreUnansweredQuestions"
                       [isLoadingMore]="questionsSubTab === 'answered' ? isLoadingMoreAnswered : isLoadingMoreUnanswered"
                       [showUQTableSpinner]="showUQTableSpinner"
+                      [hasError]="questionsSubTab === 'answered' ? answeredQuestionsLoadError : unansweredQuestionsLoadError"
                       [namespace]="selectedNamespace"
                       [id_project]="id_project"
                       [questionsSortDirection]="questionsSubTab === 'answered' ? answeredQuestionsDirection : unansweredQuestionsDirection"

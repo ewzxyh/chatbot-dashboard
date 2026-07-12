@@ -1,8 +1,9 @@
 <div class="main-content flow-webhooks-page">
     <div class="flow-webhooks-shell">
         <header class="flow-webhooks-header">
-            <span>Fluxos</span>
+            <span>Integrações automatizadas</span>
             <h1>Webhooks</h1>
+            <p>Conecte o ChatCase aos seus sistemas e acompanhe os webhooks usados nas automações.</p>
         </header>
 
         <appdashboard-bots-sidebar class="bots-top-navigation"
@@ -21,7 +22,16 @@
         <main class="flow-webhooks-content">
             <loading-spinner *ngIf="showSpinner"></loading-spinner>
 
-            <section *ngIf="!showSpinner && flowWebhooks?.length === 0" class="flow-webhooks-empty">
+            <section *ngIf="!showSpinner && loadError" class="flow-webhooks-empty flow-webhooks-empty--error" role="alert">
+                <mat-icon aria-hidden="true">error_outline</mat-icon>
+                <h2>Não foi possível carregar os webhooks</h2>
+                <p>Verifique sua conexão e tente novamente.</p>
+                <button type="button" class="flow-webhooks-primary-action" (click)="getFlowWebhooks()">
+                    Tentar novamente
+                </button>
+            </section>
+
+            <section *ngIf="!showSpinner && !loadError && flowWebhooks?.length === 0" class="flow-webhooks-empty">
                 <mat-icon aria-hidden="true" svgIcon="td-webhook"></mat-icon>
                 <h2>Ainda não tem nenhum webhook nas suas automações</h2>
                 <p>Crie uma automação com Webhook para conectar o ChatCase aos seus outros sistemas.</p>
@@ -30,7 +40,7 @@
                 </button>
             </section>
 
-            <section *ngIf="!showSpinner && flowWebhooks?.length" class="flow-webhooks-list"
+            <section *ngIf="!showSpinner && !loadError && flowWebhooks?.length" class="flow-webhooks-list"
                 aria-label="Webhooks configurados">
                 <article class="flow-webhook-card" *ngFor="let webhook of flowWebhooks; let i = index">
                     <div class="flow-webhook-info">

@@ -90,8 +90,8 @@ export class TemplatesComponent extends PricingBaseComponent implements OnInit {
   public templateChannelFilters = [
     { id: 'all', label: 'Todos', hint: 'Mostra todos os modelos, sem filtrar por canal.' },
     { id: 'casezap', label: 'CaseZap', hint: 'Fluxos com menu numerico e conversa aberta via UAZAPI.' },
-    { id: 'whatsapp', label: 'WhatsApp', hint: 'Fluxos para conversa aberta no WhatsApp.' },
-    { id: 'waba', label: 'WABA', hint: 'Templates Meta aprovados para iniciar conversa.' },
+    { id: 'whatsapp', label: 'WhatsApp aberto', hint: 'Fluxos usados depois que o cliente inicia a conversa.' },
+    { id: 'waba', label: 'Meta (WABA)', hint: 'Templates aprovados pela Meta para iniciar uma conversa.' },
     { id: 'telegram', label: 'Telegram', hint: 'Modelos compativeis com Telegram quando existirem.' }
   ];
 

@@ -27,6 +27,7 @@ export class FlowWebhooksComponent implements OnInit {
   increaseSalesTemplatesCount: number;
   route: string
   showSpinner: boolean
+  loadError = false;
 
   chatBotCount: any;
 
@@ -171,6 +172,7 @@ export class FlowWebhooksComponent implements OnInit {
 
   getFlowWebhooks() {
     this.showSpinner = true;
+    this.loadError = false;
     this.webhookService.getFlowWebhooks().subscribe((res: any) => {
 
       this.logger.log('[FLOW-WEBHOOKS] GET WH RES  ', res);
@@ -185,6 +187,7 @@ export class FlowWebhooksComponent implements OnInit {
 
     }, (error) => {
       this.logger.error('[FLOW-WEBHOOKS] GET WH ERROR ', error);
+      this.loadError = true;
       this.showSpinner = false;
     }, () => {
       this.logger.log('[FLOW-WEBHOOKS] GET WH COMPLETE');

@@ -261,3 +261,22 @@
 - O estado vazio conduz diretamente a `/flows/flow-automations`; o destino foi validado no navegador.
 - 1440px, 390px e 320px ficaram sem overflow, erros de console, falhas de rede ou respostas HTTP com erro.
 - O clique implicito do card de bot foi removido; a acao Editar continua sendo o controle explicito e acessivel.
+
+# Identidade de Fluxos e Knowledge Bases
+
+- [x] Adicionar eyebrow, titulo e descricao nas paginas de Fluxos.
+- [x] Igualar a altura das acoes de criacao e usar o icone ChatCase do sidebar nos modelos.
+- [x] Diferenciar WhatsApp aberto de Meta WABA na selecao de canal.
+- [x] Modernizar Knowledge Bases com estados explicitos, layout responsivo e controles acessiveis.
+- [x] Corrigir deep links, semantica de cards/linhas, overflow de tags e retry de Webhooks.
+- [x] Reduzir overrides, restaurar testes Angular e obter aprovacao da auditoria Luna.
+- [ ] Validar as rotas na VPS DEV em desktop e mobile.
+- [ ] Commitar, enviar e aplicar na VPS DEV.
+
+## Criterios de aceite
+
+- Fluxos e Knowledge Bases seguem a largura integral, bordas retas e hierarquia visual da Home.
+- Loading, erro, vazio e conteudo nao se sobrepoem.
+- Navegacao de Knowledge Bases preserva tab e subtab ao trocar de base.
+- Nenhuma rota cria overflow horizontal em 1440px, 390px ou 320px.
+- Build, diff check, auditoria, commit, push e deploy DEV concluidos.

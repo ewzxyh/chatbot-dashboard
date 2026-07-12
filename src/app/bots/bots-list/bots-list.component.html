@@ -40,6 +40,15 @@
     [ngClass]="{'page-title--sidebar-settings_opened':IS_OPEN_SETTINGS_SIDEBAR, 'page-title--sidebar-settings_closed':!IS_OPEN_SETTINGS_SIDEBAR }">
     <span class="bots-page-eyebrow">{{'Flows' | translate}}</span>
     <h1>{{ pageName | translate}}</h1>
+    <p *ngIf="isChatbotRoute === 'all'" class="bots-page-description">
+      Crie, organize e acompanhe os fluxos que automatizam seu atendimento.
+    </p>
+    <p *ngIf="isChatbotRoute === true" class="bots-page-description">
+      Crie agentes de IA para responder clientes e encaminhar conversas quando necessário.
+    </p>
+    <p *ngIf="isChatbotRoute === false" class="bots-page-description">
+      Automatize tarefas e conecte sistemas ao seu atendimento.
+    </p>
   </div>
   <div class="container-fluid bots-list-container">
 
