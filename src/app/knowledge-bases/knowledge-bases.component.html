@@ -403,7 +403,7 @@
                   <!-- TAB SWITCHER END -->
       
                   <!-- START TABLE -->
-                  <div [@fadeInOut] *ngIf="selectedTab === 'contents'">
+                  <div *ngIf="selectedTab === 'contents'">
                     <knowledge-base-table [kbsList]="kbsList" [kbsListCount]="kbsListCount" [refresh]="refreshKbsList"
                       [hasRemovedKb]="hasRemovedKb" [hasUpdatedKb]="hasUpdatedKb" [getKbCompleted]="getKbCompleted"
                       [selectedNamespaceName]="selectedNamespaceName" [hasAlreadyVisitedKb]="hasAlreadyVisitedKb"
@@ -423,7 +423,7 @@
                       (loadByFilter)="onLoadByFilter($event)" (retry)="retryKbList()">
                     </knowledge-base-table>
                   </div>
-                  <div [@fadeInOut] *ngIf="selectedTab === 'unanswered'">
+                  <div *ngIf="selectedTab === 'unanswered'">
                     <div class="kb-questions-subtabs">
                       <div class="kb-questions-subtabs__main">
                         <!-- <div *ngIf="questionsSubTab === 'answered'" class="question-icon-wpr" style="display: flex;align-items: center;">
