@@ -1,181 +1,106 @@
-<!-- <span class="navbar-brand navbar-brand-sidebar-settings"
-    [ngStyle]="{'margin-top':isChromeVerGreaterThan100 === true ? '-64px' : '6px' }"
-    [ngClass]="{'is_opened':IS_OPEN_SETTINGS_SIDEBAR, 'is_closed':!IS_OPEN_SETTINGS_SIDEBAR }">
-    <div class="chatbot-svg-icon">
-        <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-            x="0px" y="0px" viewBox="0 0 24 24" style="enable-background:new 0 0 24 24;" xml:space="preserve"
-            height="29px" width="29px">
-            <style type="text/css">
-                .st0 {
-                    fill: #3C4858
-                }
-            </style>
-            <path class="st0" d="M12,21.9c-1,0-1.8-0.3-2.5-1c-0.7-0.7-1-1.5-1-2.5c0-0.8,0.3-1.6,0.8-2.2c0.5-0.6,1.2-1,1.9-1.2v-2.3H5.5V9H3
-                V2.5h6.4V9H7v2.3h10V8.9c-0.8-0.2-1.4-0.6-1.9-1.2c-0.5-0.6-0.8-1.3-0.8-2.2c0-1,0.3-1.8,1-2.5c0.7-0.7,1.5-1,2.5-1
-                c1,0,1.8,0.3,2.5,1c0.7,0.7,1,1.5,1,2.5c0,0.8-0.3,1.6-0.8,2.2c-0.5,0.6-1.2,1-1.9,1.2v3.9h-5.7v2.3c0.8,0.2,1.4,0.6,1.9,1.2
-                c0.5,0.6,0.8,1.3,0.8,2.2c0,1-0.3,1.8-1,2.5C13.8,21.6,13,21.9,12,21.9z M17.8,7.5c0.5,0,1-0.2,1.4-0.6c0.4-0.4,0.6-0.8,0.6-1.4
-                c0-0.5-0.2-1-0.6-1.4c-0.4-0.4-0.8-0.6-1.4-0.6c-0.5,0-1,0.2-1.4,0.6C16,4.5,15.8,5,15.8,5.5c0,0.5,0.2,1,0.6,1.4S17.2,7.5,17.8,7.5
-                z M4.5,7.5H8V4H4.5C4.5,4,4.5,7.5,4.5,7.5z M12,20.4c0.5,0,1-0.2,1.4-0.6S14,19,14,18.5s-0.2-1-0.6-1.4c-0.4-0.4-0.8-0.6-1.4-0.6
-                c-0.5,0-1,0.2-1.4,0.6S10,17.9,10,18.5s0.2,1,0.6,1.4C11,20.2,11.5,20.4,12,20.4z" />
-        </svg>
-    </div>
-    <span class="chatbot-sidebar-title" *ngIf="IS_OPEN_SETTINGS_SIDEBAR">
-        {{'Flows' | translate }} 
-    </span>
-</span> -->
+<div class="main-content flow-webhooks-page">
+    <div class="flow-webhooks-shell">
+        <header class="flow-webhooks-header">
+            <span>Fluxos</span>
+            <h1>Webhooks</h1>
+        </header>
 
-<div class="main-content" style="padding-top:0px; padding-left: 5px;padding-right: 5px;">
+        <appdashboard-bots-sidebar class="bots-top-navigation"
+            [allTemplatesCount]="allTemplatesCount"
+            [allCommunityTemplatesCount]="allCommunityTemplatesCount"
+            [customerSatisfactionTemplatesCount]="customerSatisfactionTemplatesCount"
+            [increaseSalesTemplatesCount]="increaseSalesTemplatesCount"
+            [chatBotCount]="chatBotCount"
+            [myChatbotOtherCount]="myChatbotOtherCount"
+            [automationsCount]="automationsCount"
+            [flowWebhooksCount]="flowWebhooksCount"
+            [customerSatisfactionBotsCount]="customerSatisfactionBotsCount"
+            [increaseSalesBotsCount]="increaseSalesBotsCount">
+        </appdashboard-bots-sidebar>
 
-    <div class="page-title--sidebar-settings"
-        [ngClass]="{'page-title--sidebar-settings_opened':IS_OPEN_SETTINGS_SIDEBAR, 'page-title--sidebar-settings_closed':!IS_OPEN_SETTINGS_SIDEBAR }">
-        Webhooks
-    </div>
+        <main class="flow-webhooks-content">
+            <loading-spinner *ngIf="showSpinner"></loading-spinner>
 
-    <div class="container-fluid" style="padding-left: 5px;padding-right: 5px;">
-        <div class="content-wpr" style="display: flex;">
-            <appdashboard-bots-sidebar 
-                [allTemplatesCount]="allTemplatesCount"
-                [allCommunityTemplatesCount]="allCommunityTemplatesCount"
-                [customerSatisfactionTemplatesCount]="customerSatisfactionTemplatesCount"
-                [increaseSalesTemplatesCount]="increaseSalesTemplatesCount" 
-                [chatBotCount]="chatBotCount"
-                [myChatbotOtherCount]="myChatbotOtherCount"
-                [automationsCount]="automationsCount" 
-                [flowWebhooksCount]="flowWebhooksCount"
-                [customerSatisfactionBotsCount]="customerSatisfactionBotsCount"
-                [increaseSalesBotsCount]="increaseSalesBotsCount">
-            </appdashboard-bots-sidebar>
+            <section *ngIf="!showSpinner && flowWebhooks?.length === 0" class="flow-webhooks-empty">
+                <mat-icon aria-hidden="true" svgIcon="td-webhook"></mat-icon>
+                <h2>Ainda não tem nenhum webhook nas suas automações</h2>
+                <p>Crie uma automação com Webhook para conectar o ChatCase aos seus outros sistemas.</p>
+                <button type="button" class="flow-webhooks-primary-action" (click)="goToAutomations()">
+                    Criar automação
+                </button>
+            </section>
 
-            <div class="teplate-content" style="flex: 1 1 auto; margin-left: 15px; ">
+            <section *ngIf="!showSpinner && flowWebhooks?.length" class="flow-webhooks-list"
+                aria-label="Webhooks configurados">
+                <article class="flow-webhook-card" *ngFor="let webhook of flowWebhooks; let i = index">
+                    <div class="flow-webhook-info">
+                        <div class="flow-webhook-logo" aria-hidden="true">
+                            <img src="assets/img/logos/webhook-logo.svg" alt="">
+                        </div>
 
-                <div class="row">
-                    <div class="col-xs-12">
-
-                        <div class="card card--no-border" style="margin-top: 5px;">
-
-                            <loading-spinner *ngIf="showSpinner"></loading-spinner>
-                            <div *ngIf="!showSpinner" class="main--wrapper">
-                                <div *ngIf="flowWebhooks && flowWebhooks?.length === 0" class="no-bot-tr-msg-wpr">
-
-                                    <p class="no-bot-msg">
-                                        <span style="display: block;max-width: 600px;margin: auto;">
-                                            <!-- You don't have any Webhooks in your automations yet. -->
-                                            {{'YouDoNotHaveWebhooks' | translate}}.
-                                        </span>
-                                    </p>
-                                </div>
-
-                                <div class="card-list" *ngFor="let webhook of flowWebhooks; let i = index">
-                                    <!-- (click)='goToBotDtls(faqkb)' -->
-                                    <div class="cl-card" (click)="goToFlowWebhookDetail(webhook.webhook_id)">
-                                        <div class="cl-card-content">
-
-                                            <div class="cl-card-first-column">
-                                                <div class="cl-card-img-wpr">
-                                                    <img src="assets/img/logos/webhook-logo.svg"
-                                                        style="width: 47px;height: 47px;" />
-                                                </div>
-
-                                                <div class="cl-card-info-wpr">
-                                                    <span class="cl-card-item-name-wpr">
-
-                                                        <div class="cl-card-item-name">
-
-                                                            <span *ngIf="webhook?.name">
-                                                                {{webhook?.name}}
-                                                            </span>
-                                                            <span *ngIf="!webhook?.name">
-                                                                N/A
-                                                            </span>
-
-                                                        </div>
-                                                    </span>
-                                                    <div class="cl--card-item-description-wpr">
-
-                                                        <div class="cl--card-item-description">
-                                                            <span #copyText class="copy-text"> {{webhook?.url}} </span>
-                                
-                                                        </div>
-                                                        <span class="copy-container"
-                                                            (click)="PERMISSION_TO_COPY_WEBHOOK_URL && copyToClipboard(copyText, 'item-' + i)">
-                                                            <span 
-                                                              matTooltipClass="custom-mat-tooltip"
-                                                              #tooltip="matTooltip"
-                                                              matTooltipPosition='above'
-                                                              matTooltipHideDelay="100"
-                                                              [matTooltip]="!PERMISSION_TO_COPY_WEBHOOK_URL ? ('YouDoNotHavePermissions' | translate) : ''"
-                                                              [matTooltipDisabled]="PERMISSION_TO_COPY_WEBHOOK_URL">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" height="14px"
-                                                                    viewBox="0 0 24 24" width="14px" fill="#e8eaed">
-                                                                    <path d="M0 0h24v24H0V0z" fill="none" />
-                                                                    <path
-                                                                        d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
-                                                                </svg>
-                                                            </span>
-                                                            <span class="copied-tooltip"
-                                                                *ngIf="copiedStates['item-' + i]">
-                                                                <span style="position: relative;
-                                                                   top: -2px;
-                                                                   font-weight: 600;"> {{'Copied' | translate}}! </span>
-                                                            </span>
-                                                        </span>
-
-                                                    </div>
-                                                </div>
-                                            </div>
-
-
-                                            <div class="cl-card-second-column">
-                                                <div class="wh-onoffswitch"
-                                                    (click)="$event.stopPropagation()"
-                                                    matTooltipClass="custom-mat-tooltip"
-                                                    #tooltip="matTooltip"
-                                                    matTooltipPosition='above'
-                                                    matTooltipHideDelay="100"
-                                                    [matTooltip]="!PERMISSION_TO_ENABLE_DISABLE_WEBHOOK ? ('YouDoNotHavePermissions' | translate) : ''"
-                                                    [matTooltipDisabled]="PERMISSION_TO_ENABLE_DISABLE_WEBHOOK">
-                                                    <input type="checkbox" name="onoffswitch{{i}}"
-                                                        class="wh-onoffswitch-checkbox" id="whonoffswitch{{i}}"
-                                                        tabindex="0" [checked]="webhook.enabled"
-                                                        (change)="webhookOnOff($event, webhook.webhook_id)"
-                                                        [disabled]="!PERMISSION_TO_ENABLE_DISABLE_WEBHOOK">
-                                                    <label class="wh-onoffswitch-label" for="whonoffswitch{{i}}">
-                                                        <span class="wh-onoffswitch-inner"></span>
-                                                        <span class="wh-onoffswitch-switch"></span>
-                                                    </label>
-                                                </div>
-
-
-                                                <div class="wh-btn-delete-wpr">
-
-                                                    <button class="btn btn-round-red delete-flow-wh"
-                                                        (click)="$event.stopPropagation();deleteWebhook(webhook.webhook_id)"
-                                                        [disabled]="!PERMISSION_TO_DELETE_WEBHOOK"
-                                                        matTooltipClass="custom-mat-tooltip"
-                                                        #tooltip="matTooltip"
-                                                        matTooltipPosition='above'
-                                                        matTooltipHideDelay="100"
-                                                        [matTooltip]="!PERMISSION_TO_DELETE_WEBHOOK ? ('YouDoNotHavePermissions' | translate) : ''"
-                                                        [matTooltipDisabled]="PERMISSION_TO_DELETE_WEBHOOK">
-                                                        <span>
-                                                            <svg xmlns="http://www.w3.org/2000/svg" height="22px"
-                                                                viewBox="0 -960 960 960" width="22px" fill="none">
-                                                                <path
-                                                                    d="m376-300 104-104 104 104 56-56-104-104 104-104-56-56-104 104-104-104-56 56 104 104-104 104 56 56Zm-96 180q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520Zm-400 0v520-520Z">
-                                                                </path>
-                                                            </svg>
-                                                        </span>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                        <div class="flow-webhook-copy">
+                            <h2>{{ webhook?.name || 'N/A' }}</h2>
+                            <div class="flow-webhook-url">
+                                <span #copyText>{{ webhook?.url }}</span>
+                                <button type="button" class="copy-container"
+                                    aria-label="Copiar URL do webhook"
+                                    (click)="copyToClipboard(copyText, 'item-' + i)"
+                                    [disabled]="!PERMISSION_TO_COPY_WEBHOOK_URL"
+                                    matTooltipClass="custom-mat-tooltip"
+                                    matTooltipPosition="above"
+                                    matTooltipHideDelay="100"
+                                    [matTooltip]="!PERMISSION_TO_COPY_WEBHOOK_URL ? ('YouDoNotHavePermissions' | translate) : ''"
+                                    [matTooltipDisabled]="PERMISSION_TO_COPY_WEBHOOK_URL">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 0 24 24" width="16"
+                                        aria-hidden="true">
+                                        <path d="M0 0h24v24H0V0z" fill="none"></path>
+                                        <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"></path>
+                                    </svg>
+                                    <span class="copied-tooltip" *ngIf="copiedStates['item-' + i]">
+                                        {{ 'Copied' | translate }}!
+                                    </span>
+                                </button>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
+
+                    <div class="flow-webhook-actions">
+                        <button type="button" class="flow-webhooks-primary-action"
+                            (click)="goToFlowWebhookDetail(webhook.webhook_id)">
+                            Abrir
+                        </button>
+
+                        <div class="wh-onoffswitch"
+                            matTooltipClass="custom-mat-tooltip"
+                            matTooltipPosition="above"
+                            matTooltipHideDelay="100"
+                            [matTooltip]="!PERMISSION_TO_ENABLE_DISABLE_WEBHOOK ? ('YouDoNotHavePermissions' | translate) : ''"
+                            [matTooltipDisabled]="PERMISSION_TO_ENABLE_DISABLE_WEBHOOK">
+                            <input type="checkbox" name="onoffswitch{{ i }}"
+                                class="wh-onoffswitch-checkbox" id="whonoffswitch{{ i }}"
+                                [checked]="webhook.enabled"
+                                (change)="webhookOnOff($event, webhook.webhook_id)"
+                                [disabled]="!PERMISSION_TO_ENABLE_DISABLE_WEBHOOK">
+                            <label class="wh-onoffswitch-label" for="whonoffswitch{{ i }}">
+                                <span class="wh-onoffswitch-inner"></span>
+                                <span class="wh-onoffswitch-switch"></span>
+                            </label>
+                        </div>
+
+                        <button type="button" class="delete-flow-wh"
+                            aria-label="Excluir webhook"
+                            (click)="deleteWebhook(webhook.webhook_id)"
+                            [disabled]="!PERMISSION_TO_DELETE_WEBHOOK"
+                            matTooltipClass="custom-mat-tooltip"
+                            matTooltipPosition="above"
+                            matTooltipHideDelay="100"
+                            [matTooltip]="!PERMISSION_TO_DELETE_WEBHOOK ? ('YouDoNotHavePermissions' | translate) : ''"
+                            [matTooltipDisabled]="PERMISSION_TO_DELETE_WEBHOOK">
+                            <mat-icon aria-hidden="true">delete_outline</mat-icon>
+                        </button>
+                    </div>
+                </article>
+            </section>
+        </main>
     </div>
 </div>

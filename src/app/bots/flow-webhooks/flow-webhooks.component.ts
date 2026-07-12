@@ -198,6 +198,12 @@ export class FlowWebhooksComponent implements OnInit {
     }
   }
 
+  goToAutomations() {
+    if (this.project && this.project._id) {
+      this.router.navigate(['project/' + this.project._id + '/flows/flow-automations']);
+    }
+  }
+
   // --------------------------------------------------------------------------------------
   //  @ Enable / disable flow webkook
   // --------------------------------------------------------------------------------------

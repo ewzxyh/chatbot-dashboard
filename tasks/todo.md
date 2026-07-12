@@ -246,3 +246,11 @@
 - O primeiro teste live revelou o card mobile em linha; a causa foi corrigida restaurando `flex-direction: column` no breakpoint de 900px.
 - A VPS DEV ficou sem overflow em 1440px, 390px e 320px nas duas rotas, sem erros de console, rede ou HTTP.
 - O card de modelo em 320px manteve selo, canais, tags e CTA sem sobreposicao.
+
+# Correcao: Webhooks no shell de Fluxos
+
+- [x] Remover o titulo absoluto e a sidebar vertical da rota `/flows/flow-webhooks`.
+- [x] Reutilizar a navegacao horizontal e a largura integral das outras paginas de Fluxos.
+- [x] Transformar o vazio em uma proxima acao clara para criar uma automacao.
+- [x] Preservar copiar, abrir, ativar/desativar e excluir webhooks em controles proprios.
+- [ ] Validar 1440px, 390px e 320px na VPS DEV e confirmar ausencia de erros e overflow.

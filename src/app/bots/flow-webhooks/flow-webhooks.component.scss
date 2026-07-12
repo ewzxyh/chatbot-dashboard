@@ -1,216 +1,369 @@
-/* WH on off switch
-/* ******************* */
+:host {
+    display: block;
+}
+.flow-webhooks-page {
+    color: #25364d;
+    padding: 0 36px 40px !important;
+}
+
+.flow-webhooks-shell {
+    min-width: 0;
+}
+
+.flow-webhooks-header {
+    padding: 24px 0 16px;
+}
+
+.flow-webhooks-header span {
+    color: #647491;
+    font-size: 13px;
+    line-height: 18px;
+}
+
+.flow-webhooks-header h1 {
+    margin: 0;
+    color: #25364d;
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 28px;
+}
+
+.flow-webhooks-content {
+    min-width: 0;
+    padding-top: 28px;
+}
+
+.flow-webhooks-empty {
+    display: flex;
+    min-height: 304px;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 32px 24px;
+    border: 1px solid #dce6f0;
+    background: #fff;
+    text-align: center;
+}
+
+.flow-webhooks-empty > mat-icon {
+    width: 36px;
+    height: 36px;
+    margin-bottom: 14px;
+    color: #6d83a2;
+    font-size: 36px;
+}
+
+.flow-webhooks-empty h2 {
+    margin: 0;
+    color: #25364d;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 24px;
+    text-wrap: balance;
+}
+
+.flow-webhooks-empty p {
+    max-width: 520px;
+    margin: 8px 0 18px;
+    color: #647491;
+    font-size: 14px;
+    line-height: 20px;
+    text-wrap: pretty;
+}
+
+.flow-webhooks-primary-action {
+    min-height: 40px;
+    padding: 9px 16px;
+    border: 1px solid #0b6bcb;
+    border-radius: 0;
+    background: #0b6bcb;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+}
+
+.flow-webhooks-primary-action:focus-visible,
+.copy-container:focus-visible,
+.delete-flow-wh:focus-visible {
+    outline: 2px solid #1a73e8;
+    outline-offset: 2px;
+}
+
+.flow-webhooks-list {
+    display: grid;
+    gap: 16px;
+}
+
+.flow-webhook-card {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 18px 20px;
+    border: 1px solid #dce6f0;
+    background: #fff;
+}
+
+.flow-webhook-info {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 12px;
+}
+
+.flow-webhook-logo {
+    display: flex;
+    width: 56px;
+    height: 56px;
+    flex: 0 0 56px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #e3ebf3;
+    background: #f4f8fc;
+}
+
+.flow-webhook-logo img {
+    width: 42px;
+    height: 42px;
+}
+
+.flow-webhook-copy {
+    min-width: 0;
+}
+
+.flow-webhook-copy h2 {
+    margin: 0;
+    color: #25364d;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 22px;
+}
+
+.flow-webhook-url {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 6px;
+    margin-top: 5px;
+    color: #647491;
+    font-size: 13px;
+    line-height: 18px;
+}
+
+.flow-webhook-url > span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.copy-container {
+    position: relative;
+    display: inline-flex;
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #287eb9;
+}
+
+.copy-container:hover:not(:disabled) {
+    background: #edf6fe;
+}
+
+.copy-container:disabled {
+    cursor: not-allowed;
+    opacity: .45;
+}
+
+.copy-container svg {
+    fill: currentColor;
+}
+
+.copied-tooltip {
+    position: absolute;
+    top: -27px;
+    left: 50%;
+    padding: 3px 6px;
+    border: 1px solid #aab5c3;
+    background: #fff;
+    color: #51617c;
+    font-size: 11px;
+    line-height: 16px;
+    white-space: nowrap;
+    transform: translateX(-50%);
+}
+
+.flow-webhook-actions {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 12px;
+    padding-left: 20px;
+    border-left: 1px solid #edf2f7;
+}
 
 .wh-onoffswitch {
     position: relative;
     width: 76px;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
     user-select: none;
 }
 
 .wh-onoffswitch-checkbox {
     position: absolute;
     opacity: 0;
-    pointer-events: none;
+}
+
+.wh-onoffswitch-checkbox:focus-visible + .wh-onoffswitch-label {
+    outline: 2px solid #1a73e8;
+    outline-offset: 2px;
 }
 
 .wh-onoffswitch-label {
     display: block;
+    margin: 0;
     overflow: hidden;
-    cursor: pointer;
-    border: 2px solid #FFFFFF;
+    border: 2px solid #fff;
     border-radius: 20px;
-    margin-bottom: 0px;
+    cursor: pointer;
 }
 
 .wh-onoffswitch-inner {
     display: block;
     width: 200%;
     margin-left: -100%;
-    transition: margin 0.3s ease-in 0s;
+    transition: margin .15s ease-out;
 }
 
-.wh-onoffswitch-inner:before,
-.wh-onoffswitch-inner:after {
+.wh-onoffswitch-inner::before,
+.wh-onoffswitch-inner::after {
     display: block;
+    box-sizing: border-box;
     float: left;
     width: 50%;
     height: 32px;
     padding: 0;
-    line-height: 32px;
+    color: #fff;
     font-size: 14px;
-    color: white;
-    font-family: var(--font-geist-sans);
-    font-weight: bold;
-    box-sizing: border-box;
+    font-weight: 700;
+    line-height: 32px;
 }
 
-.wh-onoffswitch-inner:before {
+.wh-onoffswitch-inner::before {
     content: "ON";
     padding-left: 10px;
-    background-color: #2196F3;
-    color: #FFFFFF;
-    padding-top: 1px;
+    background: #2196f3;
 }
 
-.wh-onoffswitch-inner:after {
+.wh-onoffswitch-inner::after {
     content: "OFF";
     padding-right: 10px;
-    background-color: #EEEEEE;
-    color: #999;
+    background: #eee;
+    color: #777;
     text-align: right;
-    padding-top: 1px;
 }
 
 .wh-onoffswitch-switch {
+    position: absolute;
+    top: 0;
+    right: 40px;
+    bottom: 0;
     display: block;
     width: 26px;
     height: 26px;
     margin: 5px;
-    background: #FFFFFF;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    right: 40px;
-    border: 2px solid #FFFFFF;
-    border-radius: 20px;
-    transition: all 0.3s ease-in 0s;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    background: #fff;
+    transition: right .15s ease-out;
 }
 
-.wh-onoffswitch-checkbox:checked+.wh-onoffswitch-label .wh-onoffswitch-inner {
+.wh-onoffswitch-checkbox:checked + .wh-onoffswitch-label .wh-onoffswitch-inner {
     margin-left: 0;
 }
 
-.wh-onoffswitch-checkbox:checked+.wh-onoffswitch-label .wh-onoffswitch-switch {
-    right: 0px;
-}
-
-/* WH on off switch end
-/* ******************* */
-
-
-
-.wh-btn-delete-wpr {
-    margin-left: 16px;
+.wh-onoffswitch-checkbox:checked + .wh-onoffswitch-label .wh-onoffswitch-switch {
+    right: 0;
 }
 
 .delete-flow-wh {
-    width: 32px !important;
-    height: 32px !important;
-    padding: 4px !important;
-}
-
-.delete-flow-wh>span>svg {
-    fill: #fff
-}
-
-// .cl-card-item-description {
-//   color:  var(--blue-20) !important;
-// }
-
-
-
-
-.cl--card-item-description-wpr {
-    display: flex;
+    display: inline-flex;
+    width: 40px;
+    height: 40px;
     align-items: center;
-    padding-right: 104px;
-    font-size: var(--cl-card-item-description-wpr-font-size);
-    font-weight: var(--cl-card-item-description-wpr-font-weight);
-    margin-top: 4px;
+    justify-content: center;
+    padding: 0;
+    border: 1px solid #dce6f0;
+    border-radius: 0;
+    background: #fff;
+    color: #c62828;
 }
 
-.cl--card-item-description {
-    word-break: break-word;
-    align-items: center;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    overflow: hidden;
+.delete-flow-wh:hover:not(:disabled) {
+    border-color: #e7caca;
+    background: #fff5f5;
 }
 
-// .copy-text {
-//     flex-grow: 1;
-//     overflow: hidden;
-//     white-space: nowrap;
-//     text-overflow: ellipsis;
-//     max-width: calc(100% - 40px); /* Ensures the icon stays visible */
-//     text-align: center; /* Helps with centering effect */
-// }
-
-.copy-container {
-    position: relative;
-    display: inline-block;
-    cursor: pointer;
-    display: flex;
-    align-items: flex-end;
-    margin-left: 3px;
-    padding: 3px;
-    border-radius: 5px;
-    background-color: transparent;
-    // flex-shrink: 0;
-    // margin-left: 8px;
+.delete-flow-wh:disabled {
+    cursor: not-allowed;
+    opacity: .45;
 }
 
-
-.copy-container:hover {
-    background-color: rgba(100, 116, 145, 0.08);
-}
-
-.copy-container>span>svg {
-    font-size: 14px;
-    vertical-align: middle;
-    fill: var(--blue-20) !important;
-    // flex-shrink: 0; /* Prevent icon from shrinking */
-    // margin-left: 8px; /* Add spacing */
-}
-
-
-.copied-tooltip {
-    position: absolute;
-    // top: -25px;
-    top: 3px;
-    left: 50%;
-    transform: translateX(-50%);
-    // background-color: black;
-    background-color: #fff;
-    // color: white;
-    color: #aaa;
-    // padding: 5px 8px;
-    padding: 0px 6px;
-    font-size: 10px;
-    border-radius: 4px;
-    white-space: nowrap;
-    opacity: 1;
-    transition: opacity 0.3s;
-    border: 1px solid #aaa;
+.delete-flow-wh mat-icon {
+    width: 20px;
     height: 20px;
-}
-
-.copy-container:hover .copied-tooltip {
-    opacity: 1;
-}
-
-.no-bot-msg {
-    font-size: 24px;
-    margin-bottom: 0px;
-    color: var(--text-color);
-    font-weight: 600;
-    font-family: var(--header-font-family);
-    margin-top: 60px;
-    text-align: center;
-    line-height: 1.7em;
+    font-size: 20px;
 }
 
 ::ng-deep .custom-mat-tooltip {
-  background-color: #2d323e !important;
-  font-size: 12px !important;
-  border-radius: 2px !important;
-  font-family: var(--font-geist-sans) !important;
-  padding-top: 8px !important;
-  padding-bottom: 8px !important;
-  color: #fff !important;
+    border-radius: 2px !important;
+    background: #2d323e !important;
+    color: #fff !important;
+    font-family: var(--font-geist-sans) !important;
+    font-size: 12px !important;
+}
+
+@media (max-width: 900px) {
+    .flow-webhooks-page {
+        padding: 0 24px 32px !important;
+    }
+
+    .flow-webhooks-content {
+        padding-top: 24px;
+    }
+
+    .flow-webhook-card {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 16px;
+        padding: 16px;
+    }
+
+    .flow-webhook-actions {
+        width: 100%;
+        flex-wrap: wrap;
+        padding: 12px 0 0;
+        border-top: 1px solid #edf2f7;
+        border-left: 0;
+    }
+
+    .flow-webhook-actions .flow-webhooks-primary-action {
+        margin-right: auto;
+    }
+}
+
+@media (max-width: 360px) {
+    .flow-webhooks-page {
+        padding-right: 6px !important;
+        padding-left: 6px !important;
+    }
+
+    .flow-webhook-info {
+        align-items: flex-start;
+    }
 }
