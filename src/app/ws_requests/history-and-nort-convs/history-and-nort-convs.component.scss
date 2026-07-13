@@ -1,5 +1,45 @@
 @import "./src/assets/sass/md/_variables.scss";
 
+.history-page-header {
+  margin: 28px 28px 12px;
+}
+
+.history-page-header__eyebrow {
+  display: block;
+  margin-bottom: 6px;
+  color: #0b6bcb;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.history-page-header h1 {
+  margin: 0;
+  color: #25364d;
+  font-family: var(--header-font-family);
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.history-page-header p {
+  max-width: 720px;
+  margin: 8px 0 0;
+  color: #60758b;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+@media screen and (max-width: 767px) {
+  .history-page-header {
+    margin: 20px 12px 10px;
+  }
+
+  .history-page-header h1 {
+    font-size: 24px;
+  }
+}
+
 input[type="text"] {
   // min-width: 307px !important;
   height: 36px;

@@ -14,6 +14,12 @@
 <div class="main-content" style="padding-top:0px;">
   <div class="container-fluid">
 
+    <header class="history-page-header" *ngIf="IS_HERE_FOR_HISTORY">
+      <span class="history-page-header__eyebrow">{{ 'Requests' | translate }}</span>
+      <h1>{{ 'History' | translate }}</h1>
+      <p>{{ 'HomePage.HistorySubtitle' | translate }}</p>
+    </header>
+
     <!-- ---------------------------------------------------------------- -->
     <!-- No real-time conversation info background: rgb(231, 241, 255); -->
     <!-- ---------------------------------------------------------------- -->

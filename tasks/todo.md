@@ -335,3 +335,23 @@
 - O nome carregado em `id_user` aparece junto ao avatar com truncamento seguro; em 320px nao houve overflow.
 - O tooltip da acao usa a traducao existente `VisitorsPage.Archive`.
 - O endpoint de arquivamento mantem o status `1000`, exibido por padrao em `/history`, onde a conversa pode ser reaberta enquanto a regra de retencao permitir.
+
+# Correcao da pagina de Historico
+
+- [x] Carregar conversas arquivadas ao abrir `/history`, sem exigir pesquisa manual.
+- [x] Adicionar subtitulo, titulo e descricao seguindo a hierarquia visual do Monitoramento.
+- [ ] Validar build, comportamento live e responsividade.
+- [ ] Commitar, enviar e aplicar na VPS DEV.
+
+## Criterios de aceite
+
+- A rota sem query de pesquisa consulta por padrao o status fechado `1000`.
+- Filtros existentes e deep links continuam executando uma unica pesquisa coerente.
+- O cabecalho nao cria sobreposicao ou overflow em desktop e mobile.
+
+## Revisao
+
+- A inicializacao usa o mesmo fluxo de pesquisa manual, preservando o filtro fechado `1000` e os deep links existentes.
+- Os filtros de departamento e agente sao inicializados antes da consulta automatica.
+- O build de producao concluiu com sucesso; os avisos restantes sao preexistentes do Angular/CommonJS.
+- O erro `500` antigo foi rastreado a `req.projectuser` ausente, mas as chamadas impersonificadas atuais retornam `200/304` e o servidor ja contem a hidratacao correspondente; nenhum patch adicional de backend foi necessario.

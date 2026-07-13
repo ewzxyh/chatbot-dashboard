@@ -13,3 +13,4 @@
 - No `AuthGuard`, publicar o projeto deve acontecer antes de aquecer caches de membros e bots; iniciar esses requests enquanto `getUserRole` ainda esta pendente produz URLs indefinidas no interceptor XSRF.
 - Harnesses Node com `fs`, `path` ou dependencias transitivas nao podem ficar em `src/app/**/*.spec.ts`; o glob do Karma tenta empacota-los para o navegador e bloqueia toda a suite.
 - Abas mutuamente exclusivas devem enviar o estado desejado (`true` ou `false`) ao handler; alternar uma variavel auxiliar compartilhada torna o resultado dependente da ordem dos cliques.
+- Uma pagina de historico com filtro padrao deve executar a consulta na inicializacao; exibir o filtro selecionado sem buscar os dados cria um estado vazio enganoso.

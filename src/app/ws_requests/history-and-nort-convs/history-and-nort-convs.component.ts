@@ -406,12 +406,12 @@ export class HistoryAndNortConvsComponent extends WsSharedComponent implements O
   ngOnInit() {
     this.getOSCODE();
     this.getTag();
-    this.getCurrentUrlLoadRequests();
-    this.getImageStorageAndChatBaseUrl();
     // selectedDeptId is assigned to empty so in the template will be selected the custom option ALL DEPARTMENTS
     this.selectedDeptId = '';
     // selectedAgentId is assigned to empty so in the template will be selected the custom option ALL AGENTS
     this.selectedAgentId = '';
+    this.getCurrentUrlLoadRequests();
+    this.getImageStorageAndChatBaseUrl();
     this.getCurrentUser();
 
     this.getCurrentProject();
@@ -1156,7 +1156,7 @@ export class HistoryAndNortConvsComponent extends WsSharedComponent implements O
       // }
       if (!hasOpenedAdvancedSearch && !hasAdvancedFiltersInQs && !hasRatedFilter) {
         // this.logger.log('[HISTORY & NORT-CONVS] - >>>>> getCurrentUrlLoadRequests ');
-        // this.getRequests(); nk commented
+        this.search('initial-load');
       }
     }
   }
@@ -4112,4 +4112,3 @@ export class HistoryAndNortConvsComponent extends WsSharedComponent implements O
   }
 
 }
-
