@@ -11,27 +11,19 @@
       <ul class="bottom-nav monitor-tabs" *ngIf="OPEN_RIGHT_SIDEBAR === false">
         <ng-container *ngIf="hasDefaultRole">
           <li *ngIf="ROLE_IS_AGENT === false"
-            class="btn-with-border-effect" [ngClass]="
-              { 'disabled-li' : displayBtnLabelSeeYourRequets === false, 
-                'border-from-center' : displayBtnLabelSeeYourRequets === true,
-                'li-active' : displayBtnLabelSeeYourRequets === false
-              }">
+            [class.li-active]="displayBtnLabelSeeYourRequets === false">
 
             <button type="button" class="monitor-tab-button"
               [attr.aria-current]="displayBtnLabelSeeYourRequets === false ? 'page' : null"
-              (click)="seeIamAgentRequests(seeAll = !seeAll)">
+              (click)="seeIamAgentRequests(false)">
               {{ "AllAgentsRequests" | translate }}
             </button>
           </li>
 
-          <li class="btn-with-border-effect" [ngClass]="
-          { 'disabled-li' : displayBtnLabelSeeYourRequets === true, 
-            'border-from-center' : displayBtnLabelSeeYourRequets === false, 
-            'li-active' : displayBtnLabelSeeYourRequets === true
-          }">
+          <li [class.li-active]="displayBtnLabelSeeYourRequets === true">
             <button type="button" class="monitor-tab-button"
               [attr.aria-current]="displayBtnLabelSeeYourRequets === true ? 'page' : null"
-              (click)="seeIamAgentRequests(seeAll = !seeAll)">
+              (click)="seeIamAgentRequests(true)">
               {{ "YourRequests" | translate }}
             </button>
           </li>
@@ -416,6 +408,10 @@
                                   </div>
                                 </div>
                               </div>
+
+                              <span class="teammates-carousel__name">
+                                {{ agent?.id_user?.firstname || agent?.id_user?.email }} {{ agent?.id_user?.lastname }}
+                              </span>
 
                             </div>
                           </div>

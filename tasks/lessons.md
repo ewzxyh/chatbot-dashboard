@@ -12,3 +12,4 @@
 - Na Home, chamadas dependentes do projeto devem iniciar somente depois de `project_bs` emitir um ID valido; erro de carregamento nao pode ser convertido em estado vazio, e a ativacao deve aparecer antes de cotas e upgrade.
 - No `AuthGuard`, publicar o projeto deve acontecer antes de aquecer caches de membros e bots; iniciar esses requests enquanto `getUserRole` ainda esta pendente produz URLs indefinidas no interceptor XSRF.
 - Harnesses Node com `fs`, `path` ou dependencias transitivas nao podem ficar em `src/app/**/*.spec.ts`; o glob do Karma tenta empacota-los para o navegador e bloqueia toda a suite.
+- Abas mutuamente exclusivas devem enviar o estado desejado (`true` ou `false`) ao handler; alternar uma variavel auxiliar compartilhada torna o resultado dependente da ordem dos cliques.

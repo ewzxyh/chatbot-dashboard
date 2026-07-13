@@ -312,3 +312,26 @@
 - A auditoria Luna apontou conflitos globais, i18n e risco de corte; os estilos foram restringidos e o texto longo de horario passou a quebrar dentro da largura disponivel.
 - O build de producao e `git diff --check` passaram sem novos erros; permanecem apenas os warnings preexistentes do Angular.
 - A VPS DEV foi validada em 1700px, 390px e 320px, sem overflow de documento ou erros novos de console.
+
+# Correcao do fluxo de Monitoramento
+
+- [x] Tornar as abas Todas e Suas conversas deterministicas.
+- [x] Mostrar o nome junto ao avatar do agente.
+- [x] Renomear a acao visual para Arquivar e confirmar o destino no Historico.
+- [x] Validar build e comportamento live em desktop e mobile.
+- [x] Publicar na VPS DEV, commit e push.
+
+## Criterios de aceite
+
+- Cada aba seleciona diretamente o conjunto correto e atualiza o estado ativo.
+- O carrossel identifica o agente por avatar e nome sem sobreposicao.
+- A acao usa Arquivar; a conversa arquivada permanece encontravel em Historico.
+- Build, validacao live, commit, push e publicacao DEV concluidos.
+
+## Review
+
+- As abas agora enviam `false` e `true` diretamente; a camada visual legada que interceptava o clique foi removida.
+- O clique live alternou `aria-current` e o estado azul nos dois sentidos.
+- O nome carregado em `id_user` aparece junto ao avatar com truncamento seguro; em 320px nao houve overflow.
+- O tooltip da acao usa a traducao existente `VisitorsPage.Archive`.
+- O endpoint de arquivamento mantem o status `1000`, exibido por padrao em `/history`, onde a conversa pode ser reaberta enquanto a regra de retencao permitir.

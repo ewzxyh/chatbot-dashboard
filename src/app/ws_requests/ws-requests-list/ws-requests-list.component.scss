@@ -829,6 +829,28 @@ span .switch-agent-admin-requests-btn {
   position: relative;
 }
 
+.teammates-carousel .served-by-conv-b {
+  margin-right: 24px;
+}
+
+.teammates-carousel .served-by-conv-c {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.teammates-carousel__name {
+  max-width: 160px;
+  overflow: hidden;
+  color: #25364d;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .teammates-with-picture-status-icon {
   width: 10px;
   height: 10px;
@@ -1815,7 +1837,7 @@ span .switch-agent-admin-requests-btn {
 
 .monitor-tabs li {
   height: 48px;
-  padding: 0 24px !important;
+  padding: 0 !important;
 }
 
 .monitor-tabs li a,
@@ -1843,7 +1865,8 @@ span .switch-agent-admin-requests-btn {
 }
 
 .monitor-tab-button {
-  padding: 0;
+  padding: 0 24px;
+  cursor: pointer;
 }
 
 .monitor-tab-icon-button {
@@ -2055,7 +2078,11 @@ span .switch-agent-admin-requests-btn {
   }
 
   .monitor-tabs li {
-    padding: 0 16px !important;
+    padding: 0 !important;
+  }
+
+  .monitor-tab-button {
+    padding: 0 16px;
   }
 
   .monitor-page .smart-assign-and-operatinghours-options > button {

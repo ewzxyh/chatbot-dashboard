@@ -84,7 +84,6 @@ export class WsRequestsListComponent extends WsSharedComponent implements OnInit
   user_and_bot_array = [];
   team_ids_array = [];
 
-  seeAll: any;
   subscription: Subscription;
   storageBucket: string;
 
