@@ -340,8 +340,8 @@
 
 - [x] Carregar conversas arquivadas ao abrir `/history`, sem exigir pesquisa manual.
 - [x] Adicionar subtitulo, titulo e descricao seguindo a hierarquia visual do Monitoramento.
-- [ ] Validar build, comportamento live e responsividade.
-- [ ] Commitar, enviar e aplicar na VPS DEV.
+- [x] Validar build, comportamento live e responsividade.
+- [x] Commitar, enviar e aplicar na VPS DEV.
 
 ## Criterios de aceite
 
@@ -355,3 +355,5 @@
 - Os filtros de departamento e agente sao inicializados antes da consulta automatica.
 - O build de producao concluiu com sucesso; os avisos restantes sao preexistentes do Angular/CommonJS.
 - O erro `500` antigo foi rastreado a `req.projectuser` ausente, mas as chamadas impersonificadas atuais retornam `200/304` e o servidor ja contem a hidratacao correspondente; nenhum patch adicional de backend foi necessario.
+- O commit `81ae52c57` foi enviado ao `master` e aplicado na VPS DEV; o chunk live do historico responde `200` e contem o cabecalho e a consulta `initial-load`.
+- O container `chatcase-dashboard` foi recriado com a nova imagem e permaneceu em execucao, sem novos erros de permissao ou respostas `500` nos logs do servidor apos o deploy.
