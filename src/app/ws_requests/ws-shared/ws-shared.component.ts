@@ -405,6 +405,7 @@ export class WsSharedComponent implements OnInit {
           this.logger.log('[WS-SHARED][WS-REQUESTS-UNSERVED-X-PANEL][HISTORY & NORT-CONVS][WS-REQUESTS-LIST] - STORED BOT ', bot);
 
           bot['is_bot'] = true;
+          this.setBotAvatar(bot, imageStorage, isFirebaseUploadEngine);
           newpartarray.push(bot)
 
         } else {
@@ -415,6 +416,7 @@ export class WsSharedComponent implements OnInit {
 
 
             bot['is_bot'] = true;
+            this.setBotAvatar(bot, imageStorage, isFirebaseUploadEngine);
             newpartarray.push(bot)
 
             this.botLocalDbService.saveBotsInStorage(bot_id, bot);
@@ -503,6 +505,108 @@ export class WsSharedComponent implements OnInit {
       }
     });
     return newpartarray
+  }
+
+  getBotAvatarFallback(bot) {
+    return !bot.subtype || bot.subtype === 'chatbot'
+      ? 'assets/img/avatar_bot_chatcase.svg'
+      : 'assets/img/avatar_flow_chatcase.svg';
+  }
+
+  setBotAvatar(bot, imageStorage, isFirebaseUploadEngine) {
+    const fallback = this.getBotAvatarFallback(bot);
+    const storedAvatar = bot.botImage && !bot.botImage.includes('assets/img/avatar_')
+      ? bot.botImage
+      : null;
+    let avatarUrl = storedAvatar;
+
+    if (!avatarUrl && bot._id && imageStorage) {
+      avatarUrl = isFirebaseUploadEngine
+        ? 'https://firebasestorage.googleapis.com/v0/b/' + imageStorage + '/o/profiles%2F' + bot._id + '%2Fthumb_photo.jpg?alt=media'
+        : imageStorage + 'files?path=uploads%2Fusers%2F' + bot._id + '%2Fimages%2Fthumbnails_200_200-photo.jpg';
+    }
+
+    bot.botImage = fallback;
+    if (!avatarUrl) {
+      return;
+    }
+
+    this.verifyBotAvatarURL(avatarUrl, (imageExists) => {
+      if (imageExists) {
+        bot.botImage = avatarUrl;
+      }
+    });
+  }
+
+  verifyBotAvatarURL(imageUrl, callBack) {
+    const image = new Image();
+    image.onload = () => {
+      try {
+        callBack(this.hasVisibleBotAvatarContent(image));
+      } catch (_error) {
+        callBack(false);
+      }
+    };
+    image.onerror = () => callBack(false);
+    image.crossOrigin = 'anonymous';
+    image.src = imageUrl;
+  }
+
+  hasVisibleBotAvatarContent(image: HTMLImageElement) {
+    if (!image || image.naturalWidth <= 1 || image.naturalHeight <= 1) {
+      return false;
+    }
+
+    const sampleSize = 24;
+    const canvas = document.createElement('canvas');
+    canvas.width = sampleSize;
+    canvas.height = sampleSize;
+
+    const context = canvas.getContext('2d');
+    if (!context) {
+      return false;
+    }
+
+    context.drawImage(image, 0, 0, sampleSize, sampleSize);
+    const pixels = context.getImageData(0, 0, sampleSize, sampleSize).data;
+    let visiblePixels = 0;
+    let nonWhitePixels = 0;
+    let minX = sampleSize;
+    let minY = sampleSize;
+    let maxX = -1;
+    let maxY = -1;
+
+    for (let i = 0; i < pixels.length; i += 4) {
+      if (pixels[i + 3] <= 8) {
+        continue;
+      }
+
+      visiblePixels++;
+      if (pixels[i] < 235 || pixels[i + 1] < 235 || pixels[i + 2] < 235) {
+        nonWhitePixels++;
+        const pixelIndex = i / 4;
+        const x = pixelIndex % sampleSize;
+        const y = Math.floor(pixelIndex / sampleSize);
+        minX = Math.min(minX, x);
+        minY = Math.min(minY, y);
+        maxX = Math.max(maxX, x);
+        maxY = Math.max(maxY, y);
+      }
+    }
+
+    if (visiblePixels === 0 || nonWhitePixels < Math.ceil(sampleSize * sampleSize * 0.08)) {
+      return false;
+    }
+
+    return maxX - minX + 1 >= Math.ceil(sampleSize * 0.35)
+      && maxY - minY + 1 >= Math.ceil(sampleSize * 0.35);
+  }
+
+  setBotAvatarFallback(event: Event, bot) {
+    const fallback = this.getBotAvatarFallback(bot);
+    const image = event.target as HTMLImageElement;
+    bot.botImage = fallback;
+    image.src = fallback;
   }
 
   createAgentAvatar(agent) {

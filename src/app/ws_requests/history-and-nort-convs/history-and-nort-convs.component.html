@@ -2001,25 +2001,9 @@
 
                         <span (click)="goToBotProfile(agent, agent?._id, agent?.type)" style="cursor:pointer">
 
-                          <!-- --------------------------------------------------- -->
-                          <!-- USECASE uploadEngine Firebase -->
-                          <!-- --------------------------------------------------- -->
-                          <!-- <img *ngIf="UPLOAD_ENGINE_IS_FIREBASE" class="user-img ws-requests-list-servedby-avatar"
-                            src="https://firebasestorage.googleapis.com/v0/b/{{storageBucket}}/o/profiles%2F{{agent?._id}}%2Fphoto.jpg?alt=media"
-                            onerror="this.src='assets/img/avatar_bot_chatcase.svg'" /> -->
-                          <!-- --------------------------- -->
-                          <!-- thumb_photo -->
-                          <!-- --------------------------- -->
-                          <img *ngIf="UPLOAD_ENGINE_IS_FIREBASE" class="user-img ws-requests-list-servedby-avatar"
-                            src="https://firebasestorage.googleapis.com/v0/b/{{storageBucket}}/o/profiles%2F{{agent?._id}}%2Fthumb_photo.jpg?alt=media"
-                            onerror="this.src='assets/img/avatar_bot_chatcase.svg'" />
-
-                          <!-- --------------------------------------------------- -->
-                          <!-- USECASE uploadEngine Native -->
-                          <!-- --------------------------------------------------- -->
-                          <img *ngIf="!UPLOAD_ENGINE_IS_FIREBASE" class="user-img ws-requests-list-servedby-avatar"
-                            src="{{baseUrl}}files?path=uploads%2Fusers%2F{{agent?._id}}%2Fimages%2Fthumbnails_200_200-photo.jpg"
-                            onerror="this.src='assets/img/avatar_bot_chatcase.svg'" />
+                          <img class="user-img ws-requests-list-servedby-avatar"
+                            [src]="agent.botImage || getBotAvatarFallback(agent)"
+                            (error)="setBotAvatarFallback($event, agent)" />
 
                           <span class="served-by-agent">
                             {{ agent.name}}
@@ -2200,26 +2184,9 @@
                           matTooltipPosition='above' 
                           matTooltipHideDelay="100">
 
-                          <!-- --------------------------------------------------- -->
-                          <!-- USECASE uploadEngine Firebase -->
-                          <!-- --------------------------------------------------- -->
-                          <!-- <img *ngIf="UPLOAD_ENGINE_IS_FIREBASE" class="user-img ws-requests-list-servedby-avatar"
-                            src="https://firebasestorage.googleapis.com/v0/b/{{storageBucket}}/o/profiles%2F{{agent?._id}}%2Fphoto.jpg?alt=media"
-                            onerror="this.src='assets/img/avatar_bot_chatcase.svg'" /> -->
-
-                          <!-- ------------------------------------- -->
-                          <!-- thumb_photo -->
-                          <!-- ------------------------------------- -->
-                          <img *ngIf="UPLOAD_ENGINE_IS_FIREBASE" class="user-img ws-requests-list-servedby-avatar"
-                            src="https://firebasestorage.googleapis.com/v0/b/{{storageBucket}}/o/profiles%2F{{agent?._id}}%2Fthumb_photo.jpg?alt=media"
-                            onerror="this.src='assets/img/avatar_bot_chatcase.svg'" />
-
-                          <!-- --------------------------------------------------- -->
-                          <!-- USECASE uploadEngine Native -->
-                          <!-- --------------------------------------------------- -->
-                          <img *ngIf="!UPLOAD_ENGINE_IS_FIREBASE" class="user-img ws-requests-list-servedby-avatar"
-                            src="{{baseUrl}}files?path=uploads%2Fusers%2F{{agent?._id}}%2Fimages%2Fthumbnails_200_200-photo.jpg"
-                            onerror="this.src='assets/img/avatar_bot_chatcase.svg'" />
+                          <img class="user-img ws-requests-list-servedby-avatar"
+                            [src]="agent.botImage || getBotAvatarFallback(agent)"
+                            (error)="setBotAvatarFallback($event, agent)" />
 
                           <!-- <span
                             style="min-width: fit-content; top:-8px; border-radius: 3px; padding: 3px 10px; white-space: nowrap;"
