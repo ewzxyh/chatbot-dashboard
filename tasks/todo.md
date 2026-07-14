@@ -357,3 +357,29 @@
 - O erro `500` antigo foi rastreado a `req.projectuser` ausente, mas as chamadas impersonificadas atuais retornam `200/304` e o servidor ja contem a hidratacao correspondente; nenhum patch adicional de backend foi necessario.
 - O commit `81ae52c57` foi enviado ao `master` e aplicado na VPS DEV; o chunk live do historico responde `200` e contem o cabecalho e a consulta `initial-load`.
 - O container `chatcase-dashboard` foi recriado com a nova imagem e permaneceu em execucao, sem novos erros de permissao ou respostas `500` nos logs do servidor apos o deploy.
+
+# Identidade de contatos, atividades e avatar no Historico
+
+- [x] Auditar os contatos repetidos no projeto Ewzxyh e identificar a origem dos nomes.
+- [x] Verificar a fonte de dados e a configuracao da pagina de Atividades.
+- [x] Impedir que mensagens CaseZap enviadas pela propria instancia sobrescrevam o nome do contato.
+- [x] Exibir no Historico o mesmo avatar padrao de bot ou fluxo usado na pagina de Fluxos.
+- [x] Validar testes, build, dados reais e comportamento na VPS DEV.
+- [x] Auditar, commit, push e publicacao DEV.
+
+## Criterios de aceite
+
+- Eventos `fromMe` do CaseZap nao alteram o nome persistido do contato.
+- Contatos existentes podem ser reparados apenas quando uma mensagem recebida fornece um nome confiavel.
+- O Historico exibe um avatar visivel e coerente para bots e fluxos, sem depender de uma imagem remota vazia.
+- A ausencia de Atividades e explicada pelo estado real do arquivador e da colecao, sem fabricar dados na interface.
+
+## Revisao
+
+- Os testes focados do servidor passaram com 54 casos, incluindo ecos `fromMe` no payload raiz e em `message.key.fromMe` e o upsert atomico de leads.
+- O build de producao do dashboard concluiu com o hash `eb49c88bef23890d`; a auditoria independente aprovou o escopo final sem bloqueios.
+- O servidor DEV foi reconstruido e permaneceu `healthy`; o dashboard foi reconstruido, permaneceu em execucao e respondeu `200` no endpoint publico.
+- Antes da correcao existiam 83 leads CaseZap distintos, 56 chamados `Loteria Amazonas` e 8 chamados `Rainhajogo`; 35 nomes foram reparados a partir da mensagem recebida mais recente, sem conflitos e sem divergencias confiaveis restantes.
+- O backup integral e o manifesto da reparacao estao em `/opt/chatcase-dev/backups/ewzxyh-contacts-repair-20260714-110450`, com 83 leads e 35 alteracoes registradas.
+- A colecao de atividades do projeto Ewzxyh permanece vazia e `ACTIVITY_HISTORY_ENABLED` nao esta configurada; a pagina representa historico de ciclo de vida, nao mensagens ou conversas.
+- Os arquivos de traducao `src/assets/i18n/en.json` e `src/assets/i18n/pt.json` continuaram fora do escopo e nao foram alterados por esta tarefa.

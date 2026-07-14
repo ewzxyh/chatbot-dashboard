@@ -14,3 +14,4 @@
 - Harnesses Node com `fs`, `path` ou dependencias transitivas nao podem ficar em `src/app/**/*.spec.ts`; o glob do Karma tenta empacota-los para o navegador e bloqueia toda a suite.
 - Abas mutuamente exclusivas devem enviar o estado desejado (`true` ou `false`) ao handler; alternar uma variavel auxiliar compartilhada torna o resultado dependente da ordem dos cliques.
 - Uma pagina de historico com filtro padrao deve executar a consulta na inicializacao; exibir o filtro selecionado sem buscar os dados cria um estado vazio enganoso.
+- Em integracoes de canal, ecos `fromMe` nunca devem atualizar a identidade do contato; o nome persistido deve vir apenas de mensagens recebidas do proprio contato.
