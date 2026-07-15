@@ -15,3 +15,7 @@
 - Abas mutuamente exclusivas devem enviar o estado desejado (`true` ou `false`) ao handler; alternar uma variavel auxiliar compartilhada torna o resultado dependente da ordem dos cliques.
 - Uma pagina de historico com filtro padrao deve executar a consulta na inicializacao; exibir o filtro selecionado sem buscar os dados cria um estado vazio enganoso.
 - Em integracoes de canal, ecos `fromMe` nunca devem atualizar a identidade do contato; o nome persistido deve vir apenas de mensagens recebidas do proprio contato.
+- Em streams realtime compartilhados, nunca assinar uma vez por item: mantenha uma subscription dedicada por fluxo, indexe o bootstrap por IDs estaveis e cancele antes de reassinar e no destroy.
+- Em listas realtime paginadas no cliente, uma mudanca de ordem deve voltar para a primeira pagina; preservar o offset faz itens pularem ou reaparecerem enquanto novos eventos chegam.
+- Fallback de avatar deve partir de `hasImage === true`; assumir imagem quando o campo esta ausente dispara requests invalidos e piora justamente o carregamento que se queria otimizar.
+- Se um preload em lote falhar, liberar a tela em modo degradado nao pode reativar os mesmos lookups individuais que o preload substituiu; use placeholders locais e mantenha o fallback remoto desabilitado ate um novo bootstrap explicito.

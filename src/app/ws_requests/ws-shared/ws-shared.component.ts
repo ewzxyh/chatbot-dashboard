@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { LocalDbService } from '../../services/users-local-db.service';
 import { BotLocalDbService } from '../../services/bot-local-db.service';
 import { CHANNELS, CHANNELS_NAME, avatarPlaceholder, getColorBck } from '../../utils/util';
@@ -9,13 +9,23 @@ import { UsersService } from '../../services/users.service';
 import { NotifyService } from '../../core/notify.service';
 import { LoggerService } from '../../services/logger/logger.service';
 import { TranslateService } from '@ngx-translate/core';
+import { Subject } from 'rxjs';
+import { first, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'appdashboard-ws-shared',
   templateUrl: './ws-shared.component.html',
   styleUrls: ['./ws-shared.component.scss']
 })
-export class WsSharedComponent implements OnInit {
+export class WsSharedComponent implements OnInit, OnDestroy {
+
+  private readonly botAvatarChecks = new Map<string, { expiresAt: number; promise: Promise<boolean> }>();
+  private readonly botAvatarCacheLimit = 100;
+  private readonly avatarCacheTtlMs = 5 * 60 * 1000;
+  private readonly botRequests = new Map<string, Promise<any>>();
+  private readonly projectUserRequests = new Map<string, Promise<any>>();
+  private readonly sharedUnsubscribe$ = new Subject<void>();
+  private readonly activeImageChecks = new Set<HTMLImageElement>();
 
   priority = [
     {
@@ -95,6 +105,20 @@ export class WsSharedComponent implements OnInit {
   ) { }
 
   ngOnInit() { }
+
+  ngOnDestroy() {
+    this.sharedUnsubscribe$.next();
+    this.sharedUnsubscribe$.complete();
+    this.activeImageChecks.forEach((image) => {
+      image.onload = null;
+      image.onerror = null;
+      image.src = '';
+    });
+    this.activeImageChecks.clear();
+    this.botRequests.clear();
+    this.projectUserRequests.clear();
+    this.botAvatarChecks.clear();
+  }
 
   // myWindow = window.open('https://console.tiledesk.com/v2/chat5-dev/#/conversation-detail?convId=222', 'Tiledesk - Open Source Live Chat');
   // myWindow.document.write("<p>This is 'myWindow'</p>");
@@ -216,7 +240,13 @@ export class WsSharedComponent implements OnInit {
     this.agents_array = unique
   }
 
-  createAgentsArrayFromParticipantsId(members_array: any, requester_id: string, isFirebaseUploadEngine: boolean, imageStorage: any) {
+  createAgentsArrayFromParticipantsId(
+    members_array: any,
+    requester_id: string,
+    isFirebaseUploadEngine: boolean,
+    imageStorage: any,
+    allowRemoteLookup = true
+  ) {
     this.logger.log('%%% WsRequestsMsgsComponent - calling createAgentsArrayFromParticipantsId');
     this.agents_array = [];
     this.cleaned_members_array = [];
@@ -255,6 +285,14 @@ export class WsSharedComponent implements OnInit {
             this.logger.log('[WS-SHARED][WS-REQUESTS-MSGS] - STORED USER user id', storeduser['_id'])
             // console.log('[WS-SHARED][WS-REQUESTS-MSGS] - member_id ', member_id)
             if (member_id === storeduser['_id']) {
+
+              if (!allowRemoteLookup) {
+                storeduser['hasImage'] = storeduser['hasImage'] === true;
+                this.createAgentAvatar(storeduser);
+                this.agents_array.push({ '_id': storeduser['_id'], 'firstname': storeduser['firstname'], 'lastname': storeduser['lastname'], 'isBot': false, 'hasImage': storeduser['hasImage'], 'userfillColour': storeduser['fillColour'], 'userFullname': storeduser['fullname_initial'] });
+                this.removeDuplicateAgents(this.agents_array);
+                return;
+              }
 
               let imgUrl = ''
               if (isFirebaseUploadEngine === true) {
@@ -309,7 +347,7 @@ export class WsSharedComponent implements OnInit {
             } else {
               //  console.log('[WS-SHARED][WS-REQUESTS-MSGS] - member_id =! from ', storeduser['_id'])
             }
-          } else {
+          } else if (allowRemoteLookup) {
             this.logger.log('[WS-SHARED][WS-REQUESTS-MSGS] - there is not stored user with id ', member_id)
 
             this.usersService.getProjectUserById(member_id)
@@ -360,6 +398,9 @@ export class WsSharedComponent implements OnInit {
                 this.logger.log('[WS-SHARED][WS-REQUESTS-MSGS] - USER IS NOT IN STORAGE - GET PROJECT-USER BY ID * COMPLETE *');
                 this.logger.log('[WS-SHARED][WS-REQUESTS-MSGS] this.agents_array ', this.agents_array)
               });
+          } else {
+            this.agents_array.push({ '_id': member_id, 'firstname': 'Agente', 'isBot': false, 'hasImage': false });
+            this.removeDuplicateAgents(this.agents_array);
           }
         }
       }
@@ -386,7 +427,7 @@ export class WsSharedComponent implements OnInit {
 
   }
 
-  doParticipatingAgentsArray(participants, first_text, imageStorage, isFirebaseUploadEngine) {
+  doParticipatingAgentsArray(participants, first_text, imageStorage, isFirebaseUploadEngine, allowRemoteLookup = true) {
     this.logger.log('[WS-SHARED][WS-REQUESTS-UNSERVED-X-PANEL][HISTORY & NORT-CONVS][WS-REQUESTS-LIST] - doParticipatingAgentsArray imageStorage ', imageStorage);
     this.logger.log('[WS-SHARED][WS-REQUESTS-UNSERVED-X-PANEL][HISTORY & NORT-CONVS][WS-REQUESTS-LIST] - doParticipatingAgentsArray - first_text: ', first_text, ' participants: ', participants, 'isFirebaseUploadEngine: ', isFirebaseUploadEngine);
 
@@ -408,10 +449,10 @@ export class WsSharedComponent implements OnInit {
           this.setBotAvatar(bot, imageStorage, isFirebaseUploadEngine);
           newpartarray.push(bot)
 
-        } else {
+        } else if (allowRemoteLookup) {
           this.logger.log('[WS-SHARED][WS-REQUESTS-UNSERVED-X-PANEL][HISTORY & NORT-CONVS][WS-REQUESTS-LIST] - RUN GET BOT FROM SERVICE');
 
-          this.faqKbService.getFaqKbById(bot_id).subscribe((bot: any) => {
+          this.getBot(bot_id).then((bot: any) => {
             this.logger.log('[WS-SHARED][WS-REQUESTS-UNSERVED-X-PANEL][HISTORY & NORT-CONVS][WS-REQUESTS-LIST] - GET BOT BY ID - RES', bot);
 
 
@@ -421,12 +462,19 @@ export class WsSharedComponent implements OnInit {
 
             this.botLocalDbService.saveBotsInStorage(bot_id, bot);
 
-          }, (error) => {
+          }).catch((error) => {
 
             this.logger.error('[WS-SHARED][WS-REQUESTS-UNSERVED-X-PANEL][HISTORY & NORT-CONVS][WS-REQUESTS-LIST] - GET BOT BY ID - ERR', error);
-          }, () => {
-            this.logger.log('[WS-SHARED][WS-REQUESTS-UNSERVED-X-PANEL][HISTORY & NORT-CONVS][WS-REQUESTS-LIST] - GET BOT BY ID * COMPLETE *');
           });
+
+        } else {
+          const botFallback: any = {
+            _id: bot_id,
+            name: 'Bot',
+            is_bot: true,
+            botImage: this.getBotAvatarFallback({})
+          };
+          newpartarray.push(botFallback);
 
         }
       } else {
@@ -434,77 +482,72 @@ export class WsSharedComponent implements OnInit {
         const user = this.usersLocalDbService.getMemberFromStorage(participantid);
         this.logger.log('[WS-SHARED][WS-REQUESTS-UNSERVED-X-PANEL][HISTORY & NORT-CONVS][WS-REQUESTS-LIST] - USER GET FROM STORAGE ', user);
         if (user) {
-          // check if user iamge exist  
-          let imgUrl = ''
-          if (isFirebaseUploadEngine) {
-            // ------------------------------------------------------------------------------
-            // Usecase uploadEngine Firebase 
-            // ------------------------------------------------------------------------------
-            imgUrl = "https://firebasestorage.googleapis.com/v0/b/" + imageStorage + "/o/profiles%2F" + participantid + "%2Fphoto.jpg?alt=media"
-          } else {
-            // ------------------------------------------------------------------------------
-            // Usecase uploadEngine Native 
-            // ------------------------------------------------------------------------------
-            imgUrl = imageStorage + "files?path=uploads%2Fusers%2F" + participantid + "%2Fimages%2Fthumbnails_200_200-photo.jpg"
-          }
-          this.checkImageExists(imgUrl, (existsImage) => {
-            if (existsImage == true) {
-              user['hasImage'] = true
-            }
-            else {
-              user['hasImage'] = false
-            }
-          });
-
+          user['hasImage'] = user['hasImage'] === true;
           this.createAgentAvatar(user)
           user['is_bot'] = false
           newpartarray.push(user)
 
-        } else {
+        } else if (allowRemoteLookup) {
           this.logger.log('[WS-SHARED][WS-REQUESTS-UNSERVED-X-PANEL][HISTORY & NORT-CONVS][WS-REQUESTS-LIST] - USER IS NOT IN STORAGE - RUN GET FROM SERVICE participantid ', participantid);
-          this.usersService.getProjectUserById(participantid)
-            .subscribe((projectuser) => {
+          this.getProjectUser(participantid)
+            .then((projectuser) => {
               this.logger.log('[WS-SHARED][WS-REQUESTS-UNSERVED-X-PANEL][HISTORY & NORT-CONVS][WS-REQUESTS-LIST] - USER IS NOT IN STORAGE GET PROJECT-USER BY ID - RES', projectuser);
               const user: any = projectuser[0].id_user;
               this.logger.log('[WS-SHARED][WS-REQUESTS-UNSERVED-X-PANEL][HISTORY & NORT-CONVS][WS-REQUESTS-LIST] - USER IS NOT IN STORAGE GET PROJECT-USER BY ID - RES > user ', user);
-
-              let imgUrl = ''
-              if (isFirebaseUploadEngine === true) {
-                // ------------------------------------------------------------------------------
-                // Usecase uploadEngine Firebase 
-                // ------------------------------------------------------------------------------
-                imgUrl = "https://firebasestorage.googleapis.com/v0/b/" + imageStorage + "/o/profiles%2F" + participantid + "%2Fphoto.jpg?alt=media"
-
-              } else {
-                // ------------------------------------------------------------------------------
-                // Usecase uploadEngine Native 
-                // ------------------------------------------------------------------------------
-                imgUrl = imageStorage + "files?path=uploads%2Fusers%2F" + participantid + "%2Fimages%2Fthumbnails_200_200-photo.jpg"
-              }
-
-              this.checkImageExists(imgUrl, (existsImage) => {
-                if (existsImage == true) {
-                  user.hasImage = true
-                }
-                else {
-                  user.hasImage = false
-                }
-              });
-
+              user['hasImage'] = user['hasImage'] === true;
               user['is_bot'] = false
               this.createAgentAvatar(user)
               newpartarray.push(user)
               this.usersLocalDbService.saveMembersInStorage(user['_id'], user, 'ws-shared (doParticipatingAgentsArray)');
 
-            }, (error) => {
+            }).catch((error) => {
               this.logger.error('[WS-SHARED][WS-REQUESTS-UNSERVED-X-PANEL][HISTORY & NORT-CONVS][WS-REQUESTS-LIST][WS-SHARED] - USER IS NOT IN STORAGE - GET PROJECT-USER BY ID - ERROR ', error);
-            }, () => {
-              this.logger.log('[WS-SHARED][WS-REQUESTS-UNSERVED-X-PANEL][HISTORY & NORT-CONVS][WS-REQUESTS-LIST] - USER IS NOT IN STORAGE - GET PROJECT-USER BY ID * COMPLETE *');
             });
+        } else {
+          const userFallback: any = {
+            _id: participantid,
+            firstname: 'Agente',
+            hasImage: false,
+            is_bot: false
+          };
+          this.createAgentAvatar(userFallback);
+          newpartarray.push(userFallback);
         }
       }
     });
     return newpartarray
+  }
+
+  private getBot(botId: string): Promise<any> {
+    const pending = this.botRequests.get(botId);
+    if (pending) {
+      return pending;
+    }
+    const request = this.faqKbService.getFaqKbById(botId)
+      .pipe(takeUntil(this.sharedUnsubscribe$), first())
+      .toPromise();
+    this.botRequests.set(botId, request);
+    request.then(
+      () => this.botRequests.delete(botId),
+      () => this.botRequests.delete(botId)
+    );
+    return request;
+  }
+
+  private getProjectUser(userId: string): Promise<any> {
+    const pending = this.projectUserRequests.get(userId);
+    if (pending) {
+      return pending;
+    }
+    const request = this.usersService.getProjectUserById(userId)
+      .pipe(takeUntil(this.sharedUnsubscribe$), first())
+      .toPromise();
+    this.projectUserRequests.set(userId, request);
+    request.then(
+      () => this.projectUserRequests.delete(userId),
+      () => this.projectUserRequests.delete(userId)
+    );
+    return request;
   }
 
   getBotAvatarFallback(bot) {
@@ -531,28 +574,52 @@ export class WsSharedComponent implements OnInit {
       return;
     }
 
-    this.verifyBotAvatarURL(avatarUrl, (imageExists) => {
-      if (imageExists) {
+    this.getBotAvatarVisibility(avatarUrl).then((isVisible) => {
+      if (isVisible) {
         bot.botImage = avatarUrl;
       }
     });
   }
 
-  verifyBotAvatarURL(imageUrl, callBack) {
-    const image = new Image();
-    image.onload = () => {
-      try {
-        callBack(this.hasVisibleBotAvatarContent(image));
-      } catch (_error) {
-        callBack(false);
-      }
-    };
-    image.onerror = () => callBack(false);
-    image.crossOrigin = 'anonymous';
-    image.src = imageUrl;
+  private getBotAvatarVisibility(imageUrl: string): Promise<boolean> {
+    const now = Date.now();
+    const cachedCheck = this.botAvatarChecks.get(imageUrl);
+    if (cachedCheck && cachedCheck.expiresAt > now) {
+      return cachedCheck.promise;
+    }
+    if (cachedCheck) {
+      this.botAvatarChecks.delete(imageUrl);
+    }
+
+    const avatarCheck = new Promise<boolean>((resolve) => {
+      const image = new Image();
+      this.activeImageChecks.add(image);
+      image.onload = () => {
+        this.activeImageChecks.delete(image);
+        try {
+          resolve(this.hasVisibleBotAvatarContent(image));
+        } catch (_error) {
+          resolve(false);
+        }
+      };
+      image.onerror = () => {
+        this.activeImageChecks.delete(image);
+        resolve(false);
+      };
+      image.crossOrigin = 'anonymous';
+      image.src = imageUrl;
+    });
+    if (this.botAvatarChecks.size >= this.botAvatarCacheLimit) {
+      this.botAvatarChecks.delete(this.botAvatarChecks.keys().next().value);
+    }
+    this.botAvatarChecks.set(imageUrl, {
+      expiresAt: now + this.avatarCacheTtlMs,
+      promise: avatarCheck
+    });
+    return avatarCheck;
   }
 
-  hasVisibleBotAvatarContent(image: HTMLImageElement) {
+  private hasVisibleBotAvatarContent(image: HTMLImageElement): boolean {
     if (!image || image.naturalWidth <= 1 || image.naturalHeight <= 1) {
       return false;
     }
@@ -576,15 +643,15 @@ export class WsSharedComponent implements OnInit {
     let maxX = -1;
     let maxY = -1;
 
-    for (let i = 0; i < pixels.length; i += 4) {
-      if (pixels[i + 3] <= 8) {
+    for (let index = 0; index < pixels.length; index += 4) {
+      if (pixels[index + 3] <= 8) {
         continue;
       }
 
       visiblePixels++;
-      if (pixels[i] < 235 || pixels[i + 1] < 235 || pixels[i + 2] < 235) {
+      if (pixels[index] < 235 || pixels[index + 1] < 235 || pixels[index + 2] < 235) {
         nonWhitePixels++;
-        const pixelIndex = i / 4;
+        const pixelIndex = index / 4;
         const x = pixelIndex % sampleSize;
         const y = Math.floor(pixelIndex / sampleSize);
         minX = Math.min(minX, x);
@@ -627,11 +694,14 @@ export class WsSharedComponent implements OnInit {
   }
 
   checkImageExists(imageUrl, callBack) {
-    var imageData = new Image();
-    imageData.onload = function () {
+    const imageData = new Image();
+    this.activeImageChecks.add(imageData);
+    imageData.onload = () => {
+      this.activeImageChecks.delete(imageData);
       callBack(imageData.naturalWidth > 1 || imageData.naturalHeight > 1);
     };
-    imageData.onerror = function () {
+    imageData.onerror = () => {
+      this.activeImageChecks.delete(imageData);
       callBack(false);
     };
     imageData.src = imageUrl;

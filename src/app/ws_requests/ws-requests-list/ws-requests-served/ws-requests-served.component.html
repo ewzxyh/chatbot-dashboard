@@ -162,7 +162,7 @@
         <!-- ------------------------------ -->
         <!-- CONVS SERVED FOR -->
         <!-- ------------------------------ -->
-        <tr *ngFor="let request of wsRequestsServed; trackBy: trackByFn"
+        <tr *ngFor="let request of visibleRequests; trackBy: trackByFn"
           [ngClass]="{'active-row': request?.request_id != null && storedRequestId != null && request.request_id == storedRequestId }" class="align-middle">
 
           <!-- ------------------------------------------------------------------------------------------------------ -->
@@ -819,7 +819,7 @@
           <!-- -------------------------------------------- -->
           <td *ngIf="isMobile">
             <div style="min-width: 105px; position: relative;">
-              <div *ngFor="let agent of request?.participanting_Agents">
+              <div *ngFor="let agent of request?.participanting_Agents; trackBy: trackByAgent">
 
                 <span *ngIf="agent.is_bot === true">
 
@@ -836,14 +836,14 @@
                     <!-- ------------------------------------- -->
                     <img *ngIf="UPLOAD_ENGINE_IS_FIREBASE" class="user-img ws-requests-list-servedby-avatar"
                       src="https://firebasestorage.googleapis.com/v0/b/{{storageBucket}}/o/profiles%2F{{agent?._id}}%2Fthumb_photo.jpg?alt=media"
-                      onerror="this.src='assets/img/avatar_bot_chatcase.svg'" />
+                      loading="lazy" decoding="async" onerror="this.src='assets/img/avatar_bot_chatcase.svg'" />
 
                     <!-- --------------------------------------- -->
                     <!-- Usecase  Native (bot) -->
                     <!-- --------------------------------------- -->
                     <img *ngIf="!UPLOAD_ENGINE_IS_FIREBASE" class="user-img ws-requests-list-servedby-avatar"
                       src="{{baseUrl}}files?path=uploads%2Fusers%2F{{agent?._id}}%2Fimages%2Fthumbnails_200_200-photo.jpg"
-                      onerror="this.src='assets/img/avatar_bot_chatcase.svg'" />
+                      loading="lazy" decoding="async" onerror="this.src='assets/img/avatar_bot_chatcase.svg'" />
 
                     <span class="served-by-agent">
                       {{ agent.name}}
@@ -901,13 +901,13 @@
                     <!-- ------------------------------------- -->
                     <img *ngIf="UPLOAD_ENGINE_IS_FIREBASE" class="user-img ws-requests-list-servedby-avatar"
                       src="https://firebasestorage.googleapis.com/v0/b/{{storageBucket}}/o/profiles%2F{{agent?._id}}%2Fthumb_photo.jpg?alt=media"
-                      onerror="this.src='assets/img/no_image_user.png'" />
+                      loading="lazy" decoding="async" onerror="this.src='assets/img/no_image_user.png'" />
                     <!-- --------------------------------------- -->
                     <!-- Usecase  Native -->
                     <!-- --------------------------------------- -->
                     <img *ngIf="!UPLOAD_ENGINE_IS_FIREBASE" class="user-img ws-requests-list-servedby-avatar"
                       src="{{baseUrl}}files?path=uploads%2Fusers%2F{{agent?._id}}%2Fimages%2Fthumbnails_200_200-photo.jpg"
-                      onerror="this.src='assets/img/no_image_user.png'" />
+                      loading="lazy" decoding="async" onerror="this.src='assets/img/no_image_user.png'" />
 
 
                     <span [ngClass]="{'current-user-member' : agent._id === currentUserID}" class="served-by-agent">
@@ -930,7 +930,7 @@
           <!-- {{ request?.participanting_Agents }} -->
           <td *ngIf="!isMobile">
             <div class="served-by-desktop-a">
-              <div class="served-by-desktop-b" *ngFor="let agent of request?.participanting_Agents; let first = first;">
+              <div class="served-by-desktop-b" *ngFor="let agent of request?.participanting_Agents; trackBy: trackByAgent; let first = first;">
 
                 <span *ngIf="agent.is_bot === false">
 
@@ -953,24 +953,24 @@
                         <!-- ------------------------------------- -->
                         <!-- thumb_photo -->
                         <!-- ------------------------------------- -->
-                        <img *ngIf="agent?.hasImage && UPLOAD_ENGINE_IS_FIREBASE"
+                        <img *ngIf="agent?.hasImage === true && UPLOAD_ENGINE_IS_FIREBASE"
                           [ngClass]="{'current-user-member-border' : agent._id === currentUserID}"
                           src="https://firebasestorage.googleapis.com/v0/b/{{storageBucket}}/o/profiles%2F{{agent?._id}}%2Fthumb_photo.jpg?alt=media"
-                          alt="" onerror="this.src='assets/img/no_image_user.png'" (error)="updateUrl($event, agent)">
+                          alt="" loading="lazy" decoding="async" onerror="this.src='assets/img/no_image_user.png'" (error)="updateUrl($event, agent)">
 
                         <!-- --------------------------------------- -->
                         <!-- Usecase  Native -->
                         <!-- --------------------------------------- -->
-                        <img *ngIf="agent?.hasImage && !UPLOAD_ENGINE_IS_FIREBASE"
+                        <img *ngIf="agent?.hasImage === true && !UPLOAD_ENGINE_IS_FIREBASE"
                           [ngClass]="{'current-user-member-border' : agent._id === currentUserID}"
                           src="{{baseUrl}}files?path=uploads%2Fusers%2F{{agent?._id}}%2Fimages%2Fthumbnails_200_200-photo.jpg"
-                          alt="" onerror="this.src='assets/img/no_image_user.png'" (error)="updateUrl($event, agent)">
+                          alt="" loading="lazy" decoding="async" onerror="this.src='assets/img/no_image_user.png'" (error)="updateUrl($event, agent)">
 
                         <!-- --------------------------------------- -->
                         <!-- Usecase  No Profile image -->
                         <!-- --------------------------------------- -->
                         <!-- [ngStyle]="{'background-color': agent?.fillColour }" -->
-                        <div *ngIf="!agent?.hasImage"
+                        <div *ngIf="agent?.hasImage !== true"
                           [ngClass]="{'current-user-member-border' : agent._id === currentUserID}"
                           class="altenative-avatar-wrap"
                           [ngStyle]="{'background':  'linear-gradient(rgb(255,255,255) -125%,' + agent?.fillColour + ')'}">
@@ -1016,14 +1016,14 @@
                     <!-- ------------------------------------- -->
                     <img *ngIf="UPLOAD_ENGINE_IS_FIREBASE" class="user-img ws-requests-list-servedby-avatar"
                       src="https://firebasestorage.googleapis.com/v0/b/{{storageBucket}}/o/profiles%2F{{agent?._id}}%2Fthumb_photo.jpg?alt=media"
-                      onerror="this.src='assets/img/avatar_bot_chatcase.svg'" />
+                      loading="lazy" decoding="async" onerror="this.src='assets/img/avatar_bot_chatcase.svg'" />
 
                     <!-- --------------------------------------- -->
                     <!-- Usecase  Native (bot) -->
                     <!-- --------------------------------------- -->
                     <img *ngIf="!UPLOAD_ENGINE_IS_FIREBASE" class="user-img ws-requests-list-servedby-avatar"
                       src="{{baseUrl}}files?path=uploads%2Fusers%2F{{agent?._id}}%2Fimages%2Fthumbnails_200_200-photo.jpg"
-                      onerror="this.src='assets/img/avatar_bot_chatcase.svg'" />
+                      loading="lazy" decoding="async" onerror="this.src='assets/img/avatar_bot_chatcase.svg'" />
 
 
                     <!-- <span
@@ -1178,6 +1178,22 @@
         </tr>
       </tbody>
     </table>
+    <nav class="requests-pagination" *ngIf="totalPages > 1"
+      attr.aria-label="{{ 'VisitorsPage.ConversationPagination' | translate }}">
+      <button type="button" class="btn btn-tdblu"
+        attr.aria-label="{{ 'VisitorsPage.PreviousPage' | translate }}"
+        title="{{ 'VisitorsPage.PreviousPage' | translate }}"
+        (click)="setPage(pageIndex - 1)" [disabled]="pageIndex === 0">
+        <span class="material-icons" aria-hidden="true">chevron_left</span>
+      </button>
+      <span>{{ pageIndex + 1 }} / {{ totalPages }}</span>
+      <button type="button" class="btn btn-tdblu"
+        attr.aria-label="{{ 'VisitorsPage.NextPage' | translate }}"
+        title="{{ 'VisitorsPage.NextPage' | translate }}"
+        (click)="setPage(pageIndex + 1)" [disabled]="pageIndex === totalPages - 1">
+        <span class="material-icons" aria-hidden="true">chevron_right</span>
+      </button>
+    </nav>
   </div> <!-- ./ card-content table-responsive -->
 </div> <!-- ./ card -->
 

@@ -313,6 +313,25 @@
 - O build de producao e `git diff --check` passaram sem novos erros; permanecem apenas os warnings preexistentes do Angular.
 - A VPS DEV foi validada em 1700px, 390px e 320px, sem overflow de documento ou erros novos de console.
 
+# Otimizacao de /wsrequests
+
+- [x] Confirmar o fluxo realtime, APIs de requests e origem do carregamento de avatares.
+- [x] Limitar o DOM das tabelas com paginacao client-side e preservar filtros, contadores, realtime e mapa.
+- [x] Remover sondagens repetidas de imagem e manter fallback lazy de avatar.
+- [x] Consolidar subscriptions de project users e requests sem alterar os refs WS existentes.
+- [x] Preservar a página atual durante atualizações realtime e limitar o índice quando a lista encolhe.
+- [x] Adicionar testes focados para paginação e trackBy.
+- [x] Executar validacoes e revisar os arquivos alterados sem tocar nos i18n modificados.
+
+## Revisao
+
+- As tabelas servida e não servida renderizam no máximo 25 linhas por página, usando IDs estáveis no trackBy; atualizações realtime preservam a página atual.
+- O bootstrap HTTP de usuários inicializa a ordenação e uma única subscription faz lookup por `_id` ou `id_user._id`; os N refs WS existentes permanecem porque fazem parte da API atual.
+- `getWsRequests$()` agora possui subscription própria, cancelada antes de reassinar e no destroy.
+- Avatares carregam sob demanda; URLs de bots são verificadas uma única vez e mantêm o fallback quando a imagem retornada está vazia.
+- O build Angular passou. A suíte Karma não iniciou os specs porque o repositório falha antes com o bundle `main.js` em 404 e erros antigos de analytics/rxjs fora de `/wsrequests`.
+- Os arquivos i18n já modificados permaneceram intocados por esta tarefa.
+
 # Correcao do fluxo de Monitoramento
 
 - [x] Tornar as abas Todas e Suas conversas deterministicas.
@@ -383,3 +402,29 @@
 - O backup integral e o manifesto da reparacao estao em `/opt/chatcase-dev/backups/ewzxyh-contacts-repair-20260714-110450`, com 83 leads e 35 alteracoes registradas.
 - A colecao de atividades do projeto Ewzxyh permanece vazia e `ACTIVITY_HISTORY_ENABLED` nao esta configurada; a pagina representa historico de ciclo de vida, nao mensagens ou conversas.
 - Os arquivos de traducao `src/assets/i18n/en.json` e `src/assets/i18n/pt.json` continuaram fora do escopo e nao foram alterados por esta tarefa.
+
+# Desempenho e paginacao do Monitoramento
+
+- [x] Limitar as tabelas de conversas atribuidas e nao atribuidas a 25 linhas visiveis por pagina.
+- [x] Remover verificacoes de imagem por linha e carregar avatares somente quando `hasImage` for verdadeiro.
+- [x] Carregar os usuarios do projeto uma vez e reutilizar o cache local para participantes e historico de abandono.
+- [x] Impedir fallback N+1 quando o preload de usuarios falhar.
+- [x] Cancelar requisicoes compartilhadas no destroy e remover promessas concluidas dos caches em memoria.
+- [x] Localizar os rotulos acessiveis da paginacao.
+- [x] Validar JSON, diff e build de producao.
+- [ ] Concluir auditoria independente, commit, push e publicacao na VPS DEV.
+
+## Criterios de aceite
+
+- A tela renderiza no maximo 25 conversas por tabela e permite navegar sem perder IDs estaveis.
+- A coluna de agentes nao dispara uma verificacao HTTP de imagem por linha.
+- Uma falha no preload mantem a lista utilizavel com placeholders e nao inicia consultas individuais em cascata.
+- Requisicoes de bot e usuario sao compartilhadas apenas enquanto pendentes e canceladas ao sair da pagina.
+- Os controles de paginacao possuem nomes localizados para leitores de tela.
+
+## Revisao
+
+- O build de producao passou com hash `bf3ae09291bd5ec4`.
+- `git diff --check` e o parse dos arquivos `en.json` e `pt.json` passaram.
+- O Karma iniciou o ChromeHeadless, mas executou zero specs porque o bundle global ainda falha em dependencias legadas de analytics, `rxjs-compat` e `@angular/http/testing` fora deste escopo.
+- A auditoria independente rejeitou duas iteracoes, os bloqueios foram corrigidos e a terceira contraprova aprovou o fluxo sem achados restantes.

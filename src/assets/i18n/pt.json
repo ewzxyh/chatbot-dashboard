@@ -1741,6 +1741,9 @@
         "ChatLeft": "Você deixou o bate-papo",
         "AuthenticatedUser": "Usuário autenticado",
         "ViewRequestDetails": "Ver detalhes da conversa",
+        "ConversationPagination": "Paginação de conversas",
+        "PreviousPage": "Página anterior",
+        "NextPage": "Próxima página",
         "Open": "Aberto"
     },
     "RequestMsgsPage": {

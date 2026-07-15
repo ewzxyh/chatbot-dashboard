@@ -24,6 +24,24 @@ button {
   margin-bottom: 5px;
 }
 
+.requests-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 12px 0 4px;
+}
+
+.requests-pagination button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin: 0;
+  padding: 0;
+}
+
 // MESSAGES IN MODAL
 .msgcontainer {
   border: 2px solid #dedede;

@@ -40,6 +40,8 @@ export class WsRequestsServedComponent extends WsSharedComponent implements OnIn
   @Input() wsRequestsServed: Request[];
   @Input() ws_requests_length: number;
   @Input() current_selected_prjct: any;
+  readonly pageSize = 25;
+  pageIndex = 0;
 
   CHAT_PANEL_MODE: boolean = false;
   @ViewChild(MatMenuTrigger) contextMenu: MatMenuTrigger;
@@ -252,7 +254,7 @@ export class WsRequestsServedComponent extends WsSharedComponent implements OnIn
 
   ngOnChanges(changes: SimpleChanges) {
     this.logger.log('[WS-REQUESTS-LIST][SERVED] ngOnChanges changes', changes)
-    this.logger.log('[WS-REQUESTS-LIST][SERVED] ngOnChanges wsRequestsServed length', this.wsRequestsServed.length)
+    this.logger.log('[WS-REQUESTS-LIST][SERVED] ngOnChanges wsRequestsServed length', this.wsRequestsServed?.length)
     // this.logger.log('[WS-REQUESTS-LIST][SERVED] ngOnChanges wsRequestsServed ', this.wsRequestsServed)
 
     // this.logger.log('[WS-REQUEST-SERVED] ngOnChanges requestCountResp', this.requestCountResp)
@@ -268,6 +270,10 @@ export class WsRequestsServedComponent extends WsSharedComponent implements OnIn
       // this.logger.log('[WS-REQUEST-SERVED] ngOnChanges countRequestsUnservedRr', this.countRequestsUnservedRr)
     }
 
+    if (changes?.wsRequestsServed) {
+      this.pageIndex = Math.min(this.pageIndex, this.totalPages - 1);
+    }
+
 
 
     if (changes?.current_selected_prjct || changes?.ws_requests_length && changes?.ws_requests_length?.previousValue === 0 || changes?.ws_requests_length?.previousValue === undefined) {
@@ -279,6 +285,7 @@ export class WsRequestsServedComponent extends WsSharedComponent implements OnIn
 
 
   ngOnDestroy() {
+    super.ngOnDestroy();
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
   }
@@ -1020,7 +1027,25 @@ export class WsRequestsServedComponent extends WsSharedComponent implements OnIn
 
   trackByFn(index, request) {
     if (!request) return null
-    return index; // unique id corresponding to the item
+    return request.request_id || request._id || request.id || index;
+  }
+
+  trackByAgent(index, agent) {
+    if (!agent) return index;
+    return agent._id || agent.id || agent.user_id || index;
+  }
+
+  get visibleRequests(): Request[] {
+    const start = this.pageIndex * this.pageSize;
+    return (this.wsRequestsServed || []).slice(start, start + this.pageSize);
+  }
+
+  get totalPages(): number {
+    return Math.max(1, Math.ceil((this.wsRequestsServed || []).length / this.pageSize));
+  }
+
+  setPage(pageIndex: number): void {
+    this.pageIndex = Math.max(0, Math.min(pageIndex, this.totalPages - 1));
   }
 
   detectMobile() {
@@ -1035,7 +1060,7 @@ export class WsRequestsServedComponent extends WsSharedComponent implements OnIn
   updateUrl($event, agent) {
     this.logger.log('[WS-REQUESTS-LIST][SERVED] - UPDATE-URL IMAGE ERROR  event ', $event)
     this.logger.log('[WS-REQUESTS-LIST][SERVED] - UPDATE-URL IMAGE ERROR  agent ', agent)
-    agent['has__image'] = false
+    agent['hasImage'] = false
   }
 
 

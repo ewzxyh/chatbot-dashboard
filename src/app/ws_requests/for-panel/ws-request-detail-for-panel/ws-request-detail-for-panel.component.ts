@@ -356,6 +356,7 @@ export class WsRequestDetailForPanelComponent extends WsSharedComponent implemen
 
 
   ngOnDestroy() {
+    super.ngOnDestroy();
     this.logger.log('[REQUEST-DTLS-X-PANEL] - ngOnDestroy')
     // this.subscribe.unsubscribe();
     // the two snippet bottom replace  this.subscribe.unsubscribe()

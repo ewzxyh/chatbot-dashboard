@@ -34,6 +34,8 @@ export class WsRequestsUnservedComponent extends WsSharedComponent implements On
   @Input() wsRequestsUnserved: Request[];
   @Input() ws_requests_length: number
   @Input() requestCountResp: any;
+  readonly pageSize = 25;
+  pageIndex = 0;
   CHAT_PANEL_MODE: boolean = false
 
   countRequestsServedByHumanRr: number
@@ -255,7 +257,7 @@ export class WsRequestsUnservedComponent extends WsSharedComponent implements On
 
   ngOnChanges(changes: SimpleChanges) {
     this.logger.log('[WS-REQUEST-UNSERVED] from @Input »»» WebSocketJs WF - wsRequestsUnserved', this.wsRequestsUnserved)
-    this.logger.log('[WS-REQUEST-UNSERVED] from @Input »»» WebSocketJs WF - wsRequestsUnserved length', this.wsRequestsUnserved.length)
+    this.logger.log('[WS-REQUEST-UNSERVED] from @Input »»» WebSocketJs WF - wsRequestsUnserved length', this.wsRequestsUnserved?.length)
     this.logger.log('[WS-REQUEST-UNSERVED] ngOnChanges changes', changes)
     // this.logger.log('[WS-REQUEST-UNSERVED] ngOnChanges requestCountResp', this.requestCountResp)
 
@@ -270,6 +272,10 @@ export class WsRequestsUnservedComponent extends WsSharedComponent implements On
       // this.logger.log('[WS-REQUEST-UNSERVED] ngOnChanges countRequestsUnservedRr', this.countRequestsUnservedRr)
     }
 
+    if (changes?.wsRequestsUnserved) {
+      this.pageIndex = Math.min(this.pageIndex, this.totalPages - 1);
+    }
+
 
     if (changes?.current_selected_prjct || changes?.ws_requests_length && changes?.ws_requests_length?.previousValue === 0 || changes?.ws_requests_length?.previousValue === undefined) {
       // this.logger.log('[WS-REQUESTS-LIST][SERVED] ngOnChanges changes.current_selected_prjct ', changes.current_selected_prjct)
@@ -282,6 +288,7 @@ export class WsRequestsUnservedComponent extends WsSharedComponent implements On
   }
 
   ngOnDestroy() {
+    super.ngOnDestroy();
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
   }
@@ -739,7 +746,20 @@ export class WsRequestsUnservedComponent extends WsSharedComponent implements On
   trackByFn(index, request) {
     // this.logger.log('% »»» WebSocketJs WF WS-RL - trackByFn ', request );
     if (!request) return null
-    return index; // unique id corresponding to the item
+    return request.request_id || request._id || request.id || index;
+  }
+
+  get visibleRequests(): Request[] {
+    const start = this.pageIndex * this.pageSize;
+    return (this.wsRequestsUnserved || []).slice(start, start + this.pageSize);
+  }
+
+  get totalPages(): number {
+    return Math.max(1, Math.ceil((this.wsRequestsUnserved || []).length / this.pageSize));
+  }
+
+  setPage(pageIndex: number): void {
+    this.pageIndex = Math.max(0, Math.min(pageIndex, this.totalPages - 1));
   }
 
   // ------------------------------------------

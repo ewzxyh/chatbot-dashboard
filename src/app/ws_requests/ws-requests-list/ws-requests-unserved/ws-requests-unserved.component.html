@@ -138,7 +138,7 @@
         <!-- ------------------------- -->
         <!-- UNSERVED FOR -->
         <!-- ------------------------- -->
-        <tr *ngFor="let request of wsRequestsUnserved; trackBy: trackByFn; let i= index"
+        <tr *ngFor="let request of visibleRequests; trackBy: trackByFn; let i= index"
           [ngClass]="{'active-row': request?.request_id != null && storedRequestId != null && request.request_id == storedRequestId }" class="align-middle">
 
           <!-- ------------------------------------------------------------------------------------------------------ -->
@@ -1089,6 +1089,22 @@
 
       </tbody>
     </table>
+    <nav class="requests-pagination" *ngIf="totalPages > 1"
+      attr.aria-label="{{ 'VisitorsPage.ConversationPagination' | translate }}">
+      <button type="button" class="btn btn-tdblu"
+        attr.aria-label="{{ 'VisitorsPage.PreviousPage' | translate }}"
+        title="{{ 'VisitorsPage.PreviousPage' | translate }}"
+        (click)="setPage(pageIndex - 1)" [disabled]="pageIndex === 0">
+        <span class="material-icons" aria-hidden="true">chevron_left</span>
+      </button>
+      <span>{{ pageIndex + 1 }} / {{ totalPages }}</span>
+      <button type="button" class="btn btn-tdblu"
+        attr.aria-label="{{ 'VisitorsPage.NextPage' | translate }}"
+        title="{{ 'VisitorsPage.NextPage' | translate }}"
+        (click)="setPage(pageIndex + 1)" [disabled]="pageIndex === totalPages - 1">
+        <span class="material-icons" aria-hidden="true">chevron_right</span>
+      </button>
+    </nav>
   </div> <!-- ./ card-content table-responsive -->
 </div> <!-- ./ card -->
 

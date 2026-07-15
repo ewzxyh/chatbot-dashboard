@@ -446,6 +446,7 @@ export class HistoryAndNortConvsComponent extends WsSharedComponent implements O
   }
 
   ngOnDestroy() {
+    super.ngOnDestroy();
     if (this.subscription) {
       this.subscription.unsubscribe();
       this.unsubscribe$.next();

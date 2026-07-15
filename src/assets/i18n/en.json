@@ -1743,6 +1743,9 @@
         "ChatLeft": "You left the chat",
         "AuthenticatedUser": "Authenticated User",
         "ViewRequestDetails": "View conversation details",
+        "ConversationPagination": "Conversation pagination",
+        "PreviousPage": "Previous page",
+        "NextPage": "Next page",
         "Open": "Open"
     },
     "RequestMsgsPage": {

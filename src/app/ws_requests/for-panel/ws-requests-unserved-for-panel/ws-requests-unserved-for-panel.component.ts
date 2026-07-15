@@ -250,6 +250,7 @@ export class WsRequestsUnservedForPanelComponent extends WsSharedComponent imple
   }
 
   ngOnDestroy() {
+    super.ngOnDestroy();
     this.logger.log('[WS-REQUESTS-UNSERVED-X-PANEL] - ngOnDestroy')
     if (this.subscription) {
       this.subscription.unsubscribe()

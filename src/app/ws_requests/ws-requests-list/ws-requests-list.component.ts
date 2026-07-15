@@ -85,6 +85,12 @@ export class WsRequestsListComponent extends WsSharedComponent implements OnInit
   team_ids_array = [];
 
   subscription: Subscription;
+  projectUsersSubscription: Subscription;
+  wsRequestsSubscription: Subscription;
+  private projectUsersLoaded = false;
+  private projectUsersLoading = false;
+  private projectUsersLoadFailed = false;
+  private pendingWsRequestsLoad = false;
   storageBucket: string;
 
   departments: any;
@@ -417,8 +423,15 @@ export class WsRequestsListComponent extends WsSharedComponent implements OnInit
     if (this.subscription) {
       this.subscription.unsubscribe()
     }
+    if (this.projectUsersSubscription) {
+      this.projectUsersSubscription.unsubscribe()
+    }
+    if (this.wsRequestsSubscription) {
+      this.wsRequestsSubscription.unsubscribe()
+    }
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
+    super.ngOnDestroy();
 
     this.projectUserArray.forEach(projectuser => {
       this.wsRequestsService.unsubsToToWsAllProjectUsersOfTheProject(projectuser.id_user._id)
@@ -604,7 +617,7 @@ export class WsRequestsListComponent extends WsSharedComponent implements OnInit
       this.storageBucket = firebase_conf['storageBucket'];
       this.logger.log('[WS-REQUESTS-LIST] - IMAGE STORAGE (getImageStorageAndThenProjectUsers)', this.storageBucket, 'usecase firebase');
 
-      this.getAllProjectUsers(this.storageBucket, this.UPLOAD_ENGINE_IS_FIREBASE);
+      this.getAllProjectUsers();
 
     } else {
 
@@ -612,7 +625,7 @@ export class WsRequestsListComponent extends WsSharedComponent implements OnInit
       this.baseUrl = this.appConfigService.getConfig().SERVER_BASE_URL;
 
       this.logger.log('[WS-REQUESTS-LIST] - IMAGE STORAGE (getImageStorageAndThenProjectUsers) ', this.baseUrl, 'usecase native')
-      this.getAllProjectUsers(this.baseUrl, this.UPLOAD_ENGINE_IS_FIREBASE);
+      this.getAllProjectUsers();
     }
 
     this.displayProjectUserImageSkeleton()
@@ -722,17 +735,24 @@ getProjectUserRole() {
     this.widgetsContent.nativeElement.scrollTo({ left: (this.widgetsContent.nativeElement.scrollLeft + 150), behavior: 'smooth' });
   }
 
-  getAllProjectUsers(imagestorage: string, isfirebaseuploadengine: boolean) {
+  getAllProjectUsers() {
+    if (this.projectUsersLoaded || this.projectUsersLoading) {
+      return;
+    }
+    this.projectUsersLoading = true;
     // createBotsAndUsersArray() {
-    this.usersService.getProjectUsersByProjectId().subscribe((_projectUsers: any) => {
+    this.usersService.getProjectUsersByProjectId()
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((_projectUsers: any) => {
       this.logger.log('% »»» WebSocketJs WF WS-RL - +++ GET PROJECT-USERS ', _projectUsers);
 
-      if (_projectUsers) {
+      if (Array.isArray(_projectUsers) && _projectUsers.length > 0) {
         this.project_users = _projectUsers
         this.project_user_length = _projectUsers.length;
         // this.logger.log('[WS-REQUESTS-LIST] - GET PROJECT-USERS LENGTH ', this.project_user_length);
         this.logger.log('[WS-REQUESTS-LIST] - GET PROJECT-USERS project_users ', this.project_users);
         this.projectUserArray = _projectUsers;
+        this.tempProjectUserArray = [..._projectUsers];
         this.teammatesCarouselExpanded = false;
 
         _projectUsers.forEach(projectuser => {
@@ -742,38 +762,65 @@ getProjectUserRole() {
           projectuser['profileStatus_rt'] = projectuser['profileStatus'];
 
           this.logger.log('WS-REQUESTS-LIST - GET PROJECT-USERS forEach projectuser ', projectuser);
-          let imgUrl = ''
-          if (isfirebaseuploadengine === true) {
-            imgUrl = "https://firebasestorage.googleapis.com/v0/b/" + imagestorage + "/o/profiles%2F" + projectuser.id_user._id + "%2Fphoto.jpg?alt=media";
-          } else {
-            imgUrl = imagestorage + "files?path=uploads%2Fusers%2F" + projectuser.id_user._id + "%2Fimages%2Fthumbnails_200_200-photo.jpg"
+          const user = projectuser.id_user;
+          projectuser.hasImage = projectuser.hasImage === true || user?.hasImage === true;
+
+          if (user?._id) {
+            user.hasImage = projectuser.hasImage;
+            this.createAgentAvatarInitialsAnfBckgrnd(user);
+            this.usersLocalDbService.saveMembersInStorage(user._id, user, 'ws-requests-list');
+            this.usersLocalDbService.saveUserInStorageWithProjectUserId(projectuser._id, user);
           }
 
-          projectuser.hasImage = false
-          this.checkImageExists(imgUrl, (existsImage) => {
-            if (existsImage == true) {
-              projectuser.hasImage = true
-            }
-            else {
-              projectuser.hasImage = false
-            }
-          });
-
           this.wsRequestsService.subscriptionToWsAllProjectUsersOfTheProject(projectuser.id_user._id);
-          this.listenToAllProjectUsersOfProject$(projectuser)
-
-          this.createAgentAvatarInitialsAnfBckgrnd(projectuser.id_user)
 
         });
 
+        this.tempProjectUserArray.sort(function (a, b) { return a.user_available_rt - b.user_available_rt });
+        this.tempProjectUserArray.reverse();
+        this.projectUserArray = this.tempProjectUserArray;
+        this.listenToAllProjectUsersOfProject$();
+        this.finishProjectUsersLoad();
+
         // this.logger.log('% »»» WebSocketJs WF WS-RL - +++ USERS & BOTS ARRAY (1) ', this.user_and_bot_array);
+      } else {
+        this.project_users = [];
+        this.projectUserArray = [];
+        this.tempProjectUserArray = [];
+        this.finishProjectUsersLoad(false);
       }
     }, (error) => {
       this.logger.error('[WS-REQUESTS-LIST] - GET PROJECT-USERS - ERROR ', error);
+      this.finishProjectUsersLoad(false);
     }, () => {
       this.logger.log('[WS-REQUESTS-LIST]T - GET PROJECT-USERS * COMPLETE *');
 
     });
+  }
+
+  private finishProjectUsersLoad(succeeded = true): void {
+    this.projectUsersLoading = false;
+    this.projectUsersLoaded = true;
+    this.projectUsersLoadFailed = !succeeded;
+    if (this.pendingWsRequestsLoad) {
+      this.pendingWsRequestsLoad = false;
+      this.getWsRequests$();
+    }
+  }
+
+  setAgentImageUnavailable(agent: any): void {
+    agent.hasImage = false;
+    if (!agent.id_user) {
+      return;
+    }
+
+    agent.id_user.hasImage = false;
+    if (agent.id_user._id) {
+      this.usersLocalDbService.saveMembersInStorage(agent.id_user._id, agent.id_user, 'ws-requests-list');
+    }
+    if (agent._id) {
+      this.usersLocalDbService.saveUserInStorageWithProjectUserId(agent._id, agent.id_user);
+    }
   }
 
   createAgentAvatarInitialsAnfBckgrnd(agent) {
@@ -794,52 +841,54 @@ getProjectUserRole() {
 
   }
 
-  listenToAllProjectUsersOfProject$(projectuser) {
-    this.wsRequestsService.projectUsersOfProject$
+  listenToAllProjectUsersOfProject$() {
+    const projectUsersById = new Map<string, any>();
+    this.tempProjectUserArray.forEach((projectuser) => {
+      if (projectuser?._id) {
+        projectUsersById.set(projectuser._id, projectuser);
+      }
+      if (projectuser?.id_user?._id) {
+        projectUsersById.set(projectuser.id_user._id, projectuser);
+      }
+    });
+
+    if (this.projectUsersSubscription) {
+      this.projectUsersSubscription.unsubscribe();
+    }
+
+    this.projectUsersSubscription = this.wsRequestsService.projectUsersOfProject$
       .pipe(
         takeUntil(this.unsubscribe$)
       )
       .subscribe((projectUser_from_ws_subscription) => {
-        this.logger.log('[WS-REQUESTS-LIST] $UBSC TO WS PROJECT-USERS (listenTo) projectUser_from_ws_subscription id_user ', projectUser_from_ws_subscription['id_user']);
-        this.logger.log('[WS-REQUESTS-LIST] $UBSC TO WS PROJECT-USERS (listenTo) projectUser_from_ws_subscription ', projectUser_from_ws_subscription);
-       
-        // this.logger.log('WS-REQUESTS-LIST PROJECT-USERS ', projectuser);
-        this.logger.log('[WS-REQUESTS-LIST] $UBSC TO WS PROJECT-USERS $UBSC TO WS PROJECT-USERS projectuser[_id] ', projectuser['_id'])
-        this.logger.log('[WS-REQUESTS-LIST] $UBSC TO WS PROJECT-USERS projectUser_from_ws_subscription[_id] ', projectUser_from_ws_subscription['_id'])
+        const projectUserId = projectUser_from_ws_subscription['_id'] || projectUser_from_ws_subscription['id_user']?._id;
+        const projectuser = projectUsersById.get(projectUserId);
 
-        if (projectuser['_id'] === projectUser_from_ws_subscription['_id']) {
-          this.logger.log('[WS-REQUESTS-LIST] $UBSC TO WS PROJECT-USERS HERE IN THE IF')
-          this.logger.log('[WS-REQUESTS-LIST] $UBSC TO WS PROJECT-USERS HERE IN THE IF ----> user_available ', projectUser_from_ws_subscription['user_available'])
-          this.logger.log('[WS-REQUESTS-LIST] $UBSC TO WS PROJECT-USERS HERE IN THE IF ----> profileStatus ', projectUser_from_ws_subscription['profileStatus'])
-          // projectUser_from_ws_subscription['email'] = projectuser['id_user']['email']
-          // projectUser_from_ws_subscription['firstname'] = projectuser['id_user']['firstname']
-          // projectUser_from_ws_subscription['lastname'] = projectuser['id_user']['lastname']
-
-          projectuser['number_assigned_requests_rt'] = projectUser_from_ws_subscription['number_assigned_requests'];
-          projectuser['user_available_rt'] = projectUser_from_ws_subscription['user_available'];
-          projectuser['isBusy_rt'] = projectUser_from_ws_subscription['isBusy'];
-          projectuser['updatedAt_rt'] = projectUser_from_ws_subscription['updatedAt'];
-          // if (projectUser_from_ws_subscription['profileStatus']) {
-          //  projectuser['profileStatus_rt'] = projectUser_from_ws_subscription['profileStatus']
-          // }
-          if ('profileStatus' in projectUser_from_ws_subscription) {
-            // this.logger.log('[WS-REQUESTS-LIST] Updating profileStatus_rt to', projectUser_from_ws_subscription['profileStatus']);
-            projectuser['profileStatus_rt'] = projectUser_from_ws_subscription['profileStatus'];
-          }
-          if ('status' in projectUser_from_ws_subscription) {
-            projectuser['status'] = projectUser_from_ws_subscription['status'];
-          }
-
+        if (!projectuser) {
+          return;
         }
 
-        this.tempProjectUserArray.indexOf(projectuser) === -1 ? this.tempProjectUserArray.push(projectuser) : this.logger.log("PUSH PROJECT-USER IN tempProjectUserArray: This item already exists");
+        this.logger.log('[WS-REQUESTS-LIST] $UBSC TO WS PROJECT-USERS (listenTo) projectUser_from_ws_subscription ', projectUser_from_ws_subscription);
+        this.logger.log('[WS-REQUESTS-LIST] $UBSC TO WS PROJECT-USERS projectuser[_id] ', projectuser['_id'])
+        this.logger.log('[WS-REQUESTS-LIST] $UBSC TO WS PROJECT-USERS projectUser_from_ws_subscription[_id] ', projectUser_from_ws_subscription['_id'])
+        this.logger.log('[WS-REQUESTS-LIST] $UBSC TO WS PROJECT-USERS HERE IN THE IF ----> user_available ', projectUser_from_ws_subscription['user_available'])
+        this.logger.log('[WS-REQUESTS-LIST] $UBSC TO WS PROJECT-USERS HERE IN THE IF ----> profileStatus ', projectUser_from_ws_subscription['profileStatus'])
+
+        projectuser['number_assigned_requests_rt'] = projectUser_from_ws_subscription['number_assigned_requests'];
+        projectuser['user_available_rt'] = projectUser_from_ws_subscription['user_available'];
+        projectuser['isBusy_rt'] = projectUser_from_ws_subscription['isBusy'];
+        projectuser['updatedAt_rt'] = projectUser_from_ws_subscription['updatedAt'];
+        if ('profileStatus' in projectUser_from_ws_subscription) {
+          projectuser['profileStatus_rt'] = projectUser_from_ws_subscription['profileStatus'];
+        }
+        if ('status' in projectUser_from_ws_subscription) {
+          projectuser['status'] = projectUser_from_ws_subscription['status'];
+        }
 
         this.tempProjectUserArray.sort(function (a, b) { return a.user_available_rt - b.user_available_rt });
         this.tempProjectUserArray.reverse();
         this.projectUserArray = this.tempProjectUserArray;
         // this.logger.log('[WS-REQUESTS-LIST] this.projectUserArray ', this.projectUserArray)
-
-
 
       }, (error) => {
         this.logger.error('[WS-REQUESTS-LIST] $UBSC TO WS PROJECT-USERS - ERROR ', error);
@@ -1030,6 +1079,10 @@ getProjectUserRole() {
   get teammatesCarouselOverflowChipVisible(): boolean {
     const n = (this.projectUserArray || []).length;
     return n > this.teammateCarouselVisibleCap && !this.teammatesCarouselExpanded;
+  }
+
+  trackByTeamMember(index: number, projectUser: any): string {
+    return projectUser?._id || projectUser?.id_user?._id || String(index);
   }
 
   expandTeammatesCarousel(ev?: Event): void {
@@ -1477,12 +1530,19 @@ getProjectUserRole() {
   // -----------------------------------------------------------------------------------------------------
   getWsRequests$() {
     this.logger.log("[WS-REQUESTS-LIST] - enter NOW in getWsRequests$");
+    if (!this.projectUsersLoaded) {
+      this.pendingWsRequestsLoad = true;
+      return;
+    }
+    if (this.wsRequestsSubscription) {
+      this.wsRequestsSubscription.unsubscribe();
+    }
     // this.wsRequestsService.wsRequestsList$
     //   .pipe(
     //     takeUntil(this.unsubscribe$)
     //   )
 
-    this.permissionReady$
+    this.wsRequestsSubscription = this.permissionReady$
       .pipe(
         filter(ready => ready),         // ✅ only continue when true
         take(1),                        // ✅ only use the first `true`
@@ -1866,7 +1926,7 @@ getProjectUserRole() {
             if (users_found_in_storage_by_projectuserid !== null) {
               this.logger.log('[WS-REQUESTS-LIST] - LAST PROJECT-USER THAT HAS ABANDONED project_users_found_in_storage 1', users_found_in_storage_by_projectuserid)
               this.createArrayLast_abandoned_by_project_user(users_found_in_storage_by_projectuserid, request)
-            } else {
+            } else if (!this.projectUsersLoadFailed) {
 
               this.usersService.getProjectUserByProjecUserId(project_user_id)
                 .subscribe((projectuser) => {
@@ -1920,7 +1980,7 @@ getProjectUserRole() {
                   this.logger.log('[WS-REQUESTS-LIST] - OTHER PROJECT-USER THAT HAS ABANDONED other_project_users_found 1', other_project_users_found)
                   this.createArrayOther_project_users_that_has_abandoned(other_project_users_found)
 
-                } else {
+                } else if (!this.projectUsersLoadFailed) {
 
                   this.usersService.getProjectUserByProjecUserId(key)
                     .subscribe((projectuser) => {
@@ -1976,7 +2036,13 @@ getProjectUserRole() {
 
               this.logger.log('[WS-REQUESTS-LIST] - PARTICIPATING-AGENTS IS ', request['participanting_Agents'], ' - RUN doParticipatingAgentsArray ');
 
-              request['participanting_Agents'] = this.doParticipatingAgentsArray(request.participants, request.first_text, this.imageStorage$, this.UPLOAD_ENGINE_IS_FIREBASE)
+              request['participanting_Agents'] = this.doParticipatingAgentsArray(
+                request.participants,
+                request.first_text,
+                this.imageStorage$,
+                this.UPLOAD_ENGINE_IS_FIREBASE,
+                !this.projectUsersLoadFailed
+              )
 
             } else {
 

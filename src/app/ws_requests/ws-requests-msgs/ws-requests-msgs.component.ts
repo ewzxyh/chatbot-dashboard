@@ -656,6 +656,7 @@ updateTagContainerHeight() {
 
 
   ngOnDestroy() {
+    super.ngOnDestroy();
     //  this.logger.log('[WS-REQUESTS-MSGS] - ngOnDestroy')
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
@@ -2439,7 +2440,7 @@ updateTagContainerHeight() {
             this.wsRequestsServed = []
             if (this.request.status === 200) {
               this.wsRequestsServed.push(this.request)
-              this.request['participanting_Agents'] = this.doParticipatingAgentsArray(this.request.participants, this.request.first_text, this.imageStorage$, this.UPLOAD_ENGINE_IS_FIREBASE)
+              this.request['participanting_Agents'] = this.doParticipatingAgentsArray(this.request.participants, this.request.first_text, this.imageStorage$, this.UPLOAD_ENGINE_IS_FIREBASE, false)
             } else {
               this.wsRequestsUnserved.push(this.request)
             }
@@ -3011,7 +3012,7 @@ updateTagContainerHeight() {
 
 
           this.logger.log('[WS-REQUESTS-MSGS] members_array', this.members_array)
-          this.createAgentsArrayFromParticipantsId(this.members_array, this.requester_id, this.UPLOAD_ENGINE_IS_FIREBASE, this.imageStorage)
+          this.createAgentsArrayFromParticipantsId(this.members_array, this.requester_id, this.UPLOAD_ENGINE_IS_FIREBASE, this.imageStorage, false)
           this.createRequesterAvatar(this.request.lead);
           this.logger.log('[WS-REQUESTS-MSGS] - IS_CURRENT_USER_JOINED this.request.participants? ', this.request.participants, 'this.currentUserID ', this.currentUserID)
           this.IS_CURRENT_USER_JOINED = this.currentUserIdIsInParticipants(this.request.participants, this.currentUserID, this.request.request_id);
