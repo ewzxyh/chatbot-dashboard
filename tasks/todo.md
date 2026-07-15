@@ -412,7 +412,7 @@
 - [x] Cancelar requisicoes compartilhadas no destroy e remover promessas concluidas dos caches em memoria.
 - [x] Localizar os rotulos acessiveis da paginacao.
 - [x] Validar JSON, diff e build de producao.
-- [ ] Concluir auditoria independente, commit, push e publicacao na VPS DEV.
+- [x] Concluir auditoria independente, commit, push e publicacao na VPS DEV.
 
 ## Criterios de aceite
 
@@ -428,3 +428,6 @@
 - `git diff --check` e o parse dos arquivos `en.json` e `pt.json` passaram.
 - O Karma iniciou o ChromeHeadless, mas executou zero specs porque o bundle global ainda falha em dependencias legadas de analytics, `rxjs-compat` e `@angular/http/testing` fora deste escopo.
 - A auditoria independente rejeitou duas iteracoes, os bloqueios foram corrigidos e a terceira contraprova aprovou o fluxo sem achados restantes.
+- O commit funcional `1d5ce6f68` foi enviado ao `master`; o dashboard foi
+  reconstruido na VPS DEV, permaneceu em execucao e respondeu `200` no endpoint
+  publico.
