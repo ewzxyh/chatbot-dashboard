@@ -256,6 +256,11 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   email_perc = 0;
   email_limit = 0;
 
+  unassignedConversationCount = 0;
+  currentConversationCount = 0;
+  conversationSummaryLoaded = false;
+  conversationSummaryFailed = false;
+
   tokens_count = 0;
   tokens_perc = 0;
   tokens_limit = 0;
@@ -328,6 +333,31 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.usageStatusTone === 'critical') return 'Limite atingido';
     if (this.usageStatusTone === 'attention') return 'Atenção';
     return 'Uso normal';
+  }
+
+  get conversationAttentionValue(): string | number {
+    if (!this.conversationSummaryLoaded || this.conversationSummaryFailed) return '—';
+    if (this.unassignedConversationCount > 0) return this.unassignedConversationCount;
+    if (this.currentConversationCount > 0) return 'Em dia';
+    return 0;
+  }
+
+  get conversationAttentionLabel(): string {
+    if (!this.conversationSummaryLoaded) return 'Atualizando atendimento';
+    if (this.conversationSummaryFailed) return 'Atendimento indisponível';
+    if (this.unassignedConversationCount > 0) return 'Aguardando atendimento';
+    if (this.currentConversationCount > 0) return 'Atendimento em dia';
+    return 'Sem conversas';
+  }
+
+  get conversationAttentionHint(): string {
+    if (!this.conversationSummaryLoaded) return 'verificando conversas';
+    if (this.conversationSummaryFailed) return 'não foi possível atualizar';
+    if (this.unassignedConversationCount > 0) {
+      return this.unassignedConversationCount === 1 ? 'conversa sem agente' : 'conversas sem agente';
+    }
+    if (this.currentConversationCount > 0) return 'nenhuma conversa sem agente';
+    return 'novas conversas aparecerão aqui';
   }
 
   PERMISSION_TO_VIEW_FLOWS: boolean;
@@ -732,7 +762,7 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
 
         this.contacts_count = status.usage.contacts ? status.usage.contacts.current || 0 : 0;
         this.contacts_limit = status.usage.contacts ? status.usage.contacts.limit || 0 : 0;
-        this.contacts_perc = this.contacts_limit > 0 ? Math.min(100, Math.floor((this.contacts_count / this.contacts_limit) * 100)) : 0;
+        this.contacts_perc = this.contacts_limit > 0 ? Math.min(100, (this.contacts_count / this.contacts_limit) * 100) : 0;
 
         this.members_count = status.usage.agents ? status.usage.agents.current || 0 : 0;
         this.members_limit = status.usage.agents ? status.usage.agents.limit || 0 : 0;
@@ -1479,6 +1509,18 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
     this.trackUserAction(event);
+  }
+
+  onConversationSummaryChange(summary: {
+    unassigned: number;
+    total: number;
+    loaded: boolean;
+    failed: boolean;
+  }) {
+    this.unassignedConversationCount = summary.unassigned;
+    this.currentConversationCount = summary.total;
+    this.conversationSummaryLoaded = summary.loaded;
+    this.conversationSummaryFailed = summary.failed;
   }
 
 

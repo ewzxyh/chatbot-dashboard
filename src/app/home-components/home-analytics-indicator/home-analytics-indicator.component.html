@@ -31,12 +31,17 @@
     <mat-card class="home-analytics-card">
       <mat-card-content class="home-analytics-card__content">
         <div class="home-analytics-card__icon" aria-hidden="true">
-          <mat-icon svgIcon="td-world"></mat-icon>
+          <mat-icon svgIcon="td-message-circle"></mat-icon>
         </div>
         <div class="home-analytics-card__body">
-          <span class="home-analytics-card__label">Visitantes únicos</span>
-          <strong class="home-analytics-card__value">{{ (countOfVisitors || 0) | number:'1.0-0' }}</strong>
-          <span class="home-analytics-card__meta">Acessos identificados</span>
+          <span class="home-analytics-card__label">Conversas</span>
+          <strong class="home-analytics-card__value" *ngIf="!conversationCountLoading && !conversationCountFailed">
+            {{ (countOfConversations || 0) | number:'1.0-0' }}
+          </strong>
+          <strong class="home-analytics-card__value" *ngIf="conversationCountLoading || conversationCountFailed">—</strong>
+          <span class="home-analytics-card__meta" *ngIf="conversationCountLoading">Atualizando conversas</span>
+          <span class="home-analytics-card__meta" *ngIf="conversationCountFailed">Métrica indisponível</span>
+          <span class="home-analytics-card__meta" *ngIf="!conversationCountLoading && !conversationCountFailed">Iniciadas no período</span>
         </div>
         <button
           *ngIf="PERMISSION_TO_VIEW_ANALYTICS && USER_ROLE !== 'agent' && isVisibleANA"
@@ -44,8 +49,8 @@
           color="primary"
           class="home-analytics-card__action"
           type="button"
-          (click)="goToVisitorsAnalytics()">
-          Ver visitantes
+          (click)="goToConversationsAnalytics()">
+          Ver conversas
           <mat-icon svgIcon="td-chevron-right"></mat-icon>
         </button>
       </mat-card-content>

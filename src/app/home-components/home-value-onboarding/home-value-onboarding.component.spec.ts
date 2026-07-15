@@ -1,7 +1,27 @@
 import { of, Subject, throwError } from 'rxjs';
+import { normalizeConversationSummary } from './home-conversation-summary';
 import { HomeValueOnboardingComponent } from './home-value-onboarding.component';
 
 describe('HomeValueOnboardingComponent', () => {
+  it('normalizes assignment buckets without double-counting aggregate fields', () => {
+    const summary = normalizeConversationSummary({
+      unassigned: 2,
+      assigned: 3,
+      bot_assigned: 4,
+      open: 9,
+      closed: 7
+    });
+
+    expect(summary).toEqual({
+      unassigned: 2,
+      assigned: 3,
+      botAssigned: 4,
+      total: 9,
+      loaded: true,
+      failed: false
+    });
+  });
+
   const createComponent = (casezap: any, whatsapp: any, conversations: any) => {
     const router = { navigate: jasmine.createSpy('navigate') };
     const integrationService = {
@@ -37,6 +57,23 @@ describe('HomeValueOnboardingComponent', () => {
 
     expect(component.conversationLoadFailed).toBe(true);
     expect(component.hasLoadError).toBe(true);
+  });
+
+  it('publishes the current conversation summary to the home dashboard', () => {
+    const { component } = createComponent(of([]), of([]), of({ unassigned: 2, assigned: 3, bot_assigned: 1 }));
+    const summaries: any[] = [];
+    component.conversationSummaryChange.subscribe(summary => summaries.push(summary));
+
+    component.ngOnInit();
+
+    expect(summaries[summaries.length - 1]).toEqual({
+      unassigned: 2,
+      assigned: 3,
+      botAssigned: 1,
+      total: 6,
+      loaded: true,
+      failed: false
+    });
   });
 
   it('opens the provider that produced the active channel', () => {

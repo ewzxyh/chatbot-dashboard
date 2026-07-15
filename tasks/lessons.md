@@ -19,3 +19,4 @@
 - Em listas realtime paginadas no cliente, uma mudanca de ordem deve voltar para a primeira pagina; preservar o offset faz itens pularem ou reaparecerem enquanto novos eventos chegam.
 - Fallback de avatar deve partir de `hasImage === true`; assumir imagem quando o campo esta ausente dispara requests invalidos e piora justamente o carregamento que se queria otimizar.
 - Se um preload em lote falhar, liberar a tela em modo degradado nao pode reativar os mesmos lookups individuais que o preload substituiu; use placeholders locais e mantenha o fallback remoto desabilitado ate um novo bootstrap explicito.
+- Na Home, percentual de cota nao e KPI de desempenho: mostre a quantidade como informacao principal, deixe o consumo percentual em Uso do plano e nao chame conversa sem agente de mensagem sem resposta sem uma metrica real de primeira resposta.

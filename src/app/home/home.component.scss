@@ -2935,7 +2935,7 @@ img {
 .home-main-content ::ng-deep .mat-raised-button.mat-primary,
 .home-main-content ::ng-deep .mat-fab.mat-primary,
 .home-main-content ::ng-deep .mat-mini-fab.mat-primary {
-  background-color: var(--home-blue) !important;
+  background-color: var(--home-blue-strong) !important;
   color: #fff !important;
 }
 
@@ -3148,6 +3148,26 @@ img {
   color: var(--home-muted);
   font-size: 12px;
   line-height: 16px;
+}
+
+.home-kpi-card--attention {
+  border-color: #075fa9;
+  background: var(--home-blue-strong);
+}
+
+.home-kpi-card--attention .home-kpi-card__icon {
+  border-color: rgba(255, 255, 255, 0.48);
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+}
+
+.home-kpi-card--attention .home-kpi-card__value,
+.home-kpi-card--attention .home-kpi-card__label {
+  color: #fff;
+}
+
+.home-kpi-card--attention .home-kpi-card__hint {
+    color: #ffffff;
 }
 
 .home-chart-card {

@@ -298,7 +298,7 @@
                   </mat-progress-spinner>
 
                   <div class="percentage">
-                    {{ contacts_perc }}
+                    {{ (contacts_perc || 0) | number:'1.0-1' }}
                     <span style="font-size: 10px; margin-top: 2px; margin-left: 1px"> %</span>
                   </div>
                 </div>
@@ -663,6 +663,7 @@
                 [chatbots]="chatbots"
                 [canManageChannels]="PERMISSION_TO_MANAGE_INTEGRATIONS"
                 [canManageFlows]="PERMISSION_TO_VIEW_FLOWS"
+                (conversationSummaryChange)="onConversationSummaryChange($event)"
                 (onboardingAction)="trackOnboardingAction($event)">
               </appdashboard-home-value-onboarding>
 
@@ -670,15 +671,15 @@
                 <div class="home-dashboard-main-column">
                   <section class="home-insights-section" aria-label="KPIs do projeto">
                     <div class="home-insights-grid">
-                      <mat-card class="home-kpi-card">
+                      <mat-card class="home-kpi-card home-kpi-card--attention">
                         <mat-card-content class="home-kpi-card__content">
                           <div class="home-kpi-card__icon" aria-hidden="true">
-                            <mat-icon svgIcon="td-git-branch"></mat-icon>
+                            <mat-icon svgIcon="td-message-circle"></mat-icon>
                           </div>
                           <div>
-                            <div class="home-kpi-card__value">{{ (chatbots?.length || 0) | number:'1.0-0' }}</div>
-                            <div class="home-kpi-card__label">Fluxos</div>
-                            <div class="home-kpi-card__hint">no projeto</div>
+                            <div class="home-kpi-card__value">{{ conversationAttentionValue }}</div>
+                            <div class="home-kpi-card__label">{{ conversationAttentionLabel }}</div>
+                            <div class="home-kpi-card__hint">{{ conversationAttentionHint }}</div>
                           </div>
                         </mat-card-content>
                       </mat-card>
@@ -702,9 +703,9 @@
                             <mat-icon svgIcon="td-address-book"></mat-icon>
                           </div>
                           <div>
-                            <div class="home-kpi-card__value">{{ contacts_perc || 0 }}%</div>
-                            <div class="home-kpi-card__label">Contatos</div>
-                            <div class="home-kpi-card__hint">{{ (contacts_count || 0) | number:'1.0-0' }} ativos</div>
+                            <div class="home-kpi-card__value">{{ (contacts_count || 0) | number:'1.0-0' }}</div>
+                            <div class="home-kpi-card__label">Contatos cadastrados</div>
+                            <div class="home-kpi-card__hint">total atual</div>
                           </div>
                         </mat-card-content>
                       </mat-card>
@@ -712,12 +713,12 @@
                       <mat-card class="home-kpi-card">
                         <mat-card-content class="home-kpi-card__content">
                           <div class="home-kpi-card__icon" aria-hidden="true">
-                            <mat-icon svgIcon="td-mail"></mat-icon>
+                            <mat-icon svgIcon="td-git-branch"></mat-icon>
                           </div>
                           <div>
-                            <div class="home-kpi-card__value">{{ email_perc || 0 }}%</div>
-                            <div class="home-kpi-card__label">E-mail</div>
-                            <div class="home-kpi-card__hint">{{ (email_count || 0) | number:'1.0-0' }} enviados</div>
+                            <div class="home-kpi-card__value">{{ (chatbots?.length || 0) | number:'1.0-0' }}</div>
+                            <div class="home-kpi-card__label">Fluxos</div>
+                            <div class="home-kpi-card__hint">no projeto</div>
                           </div>
                         </mat-card-content>
                       </mat-card>
@@ -744,7 +745,7 @@
                             <div class="home-chart-row">
                               <div class="home-chart-row__label">
                                 <span>Contatos</span>
-                                <strong>{{ contacts_perc || 0 }}%</strong>
+                                <strong>{{ (contacts_perc || 0) | number:'1.0-1' }}%</strong>
                               </div>
                               <mat-progress-bar mode="determinate" [value]="contacts_perc || 0"></mat-progress-bar>
                             </div>

@@ -16,12 +16,15 @@ import { AnalyticsService } from 'app/services/analytics.service';
 })
 export class HomeAnalyticsIndicatorComponent implements OnInit {
   private unsubscribe$: Subject<any> = new Subject<any>();
+  private conversationRequestId = 0;
   @Input() public projectId: string;
   @Input() public USER_ROLE: string;
   @Output() trackUserAction = new EventEmitter();
   @Input() public PERMISSION_TO_VIEW_ANALYTICS: boolean;
   countOfActiveContacts: number;
-  countOfVisitors: number;
+  countOfConversations: number;
+  conversationCountLoading = true;
+  conversationCountFailed = false;
   countOfLastMonthMsgs: number;
   public_Key: string;
   isVisibleANA: boolean;
@@ -62,7 +65,7 @@ export class HomeAnalyticsIndicatorComponent implements OnInit {
 
   inizializeHomeStatic() {
     this.getActiveContactsCount();
-    this.getVisitorsCount();
+    this.getLastMonthConversationsCount();
     this.getLastMounthMessagesCount();
   }
 
@@ -123,25 +126,33 @@ export class HomeAnalyticsIndicatorComponent implements OnInit {
     });
   }
 
-  getVisitorsCount() {
-    this.analyticsService.getVisitors()
+  getLastMonthConversationsCount() {
+    const requestId = ++this.conversationRequestId;
+    this.conversationCountLoading = true;
+    this.conversationCountFailed = false;
+
+    this.analyticsService.getLastMountConversationsCount()
       .pipe(
         takeUntil(this.unsubscribe$)
       )
-      .subscribe((visitorcounts: any) => {
-        this.logger.log("HOME - GET VISITORS COUNT RES: ", visitorcounts)
+      .subscribe((conversationCounts: any) => {
+        if (requestId !== this.conversationRequestId) return;
+        this.logger.log('[HOME-ANALITICS] - GET LAST 30 DAYS CONVERSATION COUNT RES', conversationCounts)
 
-        if (visitorcounts && visitorcounts.length > 0) {
-          this.countOfVisitors = visitorcounts[0]['totalCount']
-          this.logger.log("HOME - GET VISITORS COUNT: ", this.countOfVisitors)
+        if (conversationCounts && conversationCounts.length > 0) {
+          this.countOfConversations = conversationCounts[0]['totalCount']
         } else {
-          this.countOfVisitors = 0
+          this.countOfConversations = 0
         }
+        this.conversationCountLoading = false;
       }, (error) => {
-        this.logger.error('[HOME-ANALITICS] - GET VISITORS COUNT - ERROR ', error);
+        if (requestId !== this.conversationRequestId) return;
+        this.conversationCountLoading = false;
+        this.conversationCountFailed = true;
+        this.logger.error('[HOME-ANALITICS] - GET LAST 30 DAYS CONVERSATION COUNT - ERROR ', error);
 
       }, () => {
-        this.logger.log('[HOME-ANALITICS] - GET VISITORS COUNT * COMPLETE *');
+        this.logger.log('[HOME-ANALITICS] - GET LAST 30 DAYS CONVERSATION COUNT * COMPLETE *');
       });
   }
 
@@ -169,10 +180,10 @@ export class HomeAnalyticsIndicatorComponent implements OnInit {
 
 
 
-  goToVisitorsAnalytics() {
-    this.trackUserAction.emit({action:'Filter Unique Visitors in analytics',actionRes: null })
+  goToConversationsAnalytics() {
+    this.trackUserAction.emit({action:'View conversations in analytics',actionRes: null })
     if (this.USER_ROLE !== 'agent') {
-      this.router.navigate(['project/' + this.projectId + '/analytics/metrics/visitors']);
+      this.router.navigate(['project/' + this.projectId + '/analytics/metrics']);
     }
   }
 

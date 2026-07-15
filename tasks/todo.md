@@ -431,3 +431,26 @@
 - O commit funcional `1d5ce6f68` foi enviado ao `master`; o dashboard foi
   reconstruido na VPS DEV, permaneceu em execucao e respondeu `200` no endpoint
   publico.
+
+# Metricas de atendimento da Home
+
+- [x] Identificar por que contatos ativos apareciam como 0%.
+- [x] Separar quantidade de contatos do percentual de uso da cota.
+- [x] Substituir o card de e-mail por um resumo operacional de conversas sem agente.
+- [x] Substituir visitantes unicos por conversas dos ultimos 30 dias.
+- [x] Validar testes focados, build e interface.
+- [ ] Auditar, criar commit, enviar e publicar na VPS DEV.
+
+## Criterios de aceite
+
+- O KPI de contatos mostra a quantidade cadastrada; a porcentagem aparece somente em Uso do plano com uma casa decimal.
+- O card azul diferencia carregamento, falha, conversas sem agente, atendimento em dia e ausencia de conversas.
+- O card nao chama conversas sem agente de mensagens sem resposta, pois o endpoint atual nao mede resposta.
+- O resumo de metricas usa conversas iniciadas nos ultimos 30 dias no lugar de visitantes unicos.
+
+## Revisao
+
+- O build de producao passou apos as correcoes finais.
+- O normalizador foi executado diretamente e preservou `9` conversas ao receber tambem agregados `open` e `closed`, sem dupla contagem.
+- Os testes focados compilam sem erros proprios, mas o bundle global do Karma ainda para antes da execucao por dependencias legadas de analytics, `rxjs-compat` e `@angular/http/testing` fora deste escopo.
+- A auditoria independente rejeitou duas iteracoes; apos corrigir semantica, estados, contraste e a corrida A-B-A, a terceira contraprova aprovou o diff.

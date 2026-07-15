@@ -5,6 +5,7 @@ import { catchError, map } from 'rxjs/operators';
 import { IntegrationService } from 'app/services/integration.service';
 import { WsRequestsService } from 'app/services/websocket/ws-requests.service';
 import { AppConfigService } from 'app/services/app-config.service';
+import { ConversationSummary, normalizeConversationSummary } from './home-conversation-summary';
 
 interface OnboardingStep {
   key: 'channel' | 'flow' | 'conversation';
@@ -33,6 +34,7 @@ export class HomeValueOnboardingComponent implements OnInit, OnChanges {
   @Input() canManageChannels = true;
   @Input() canManageFlows = true;
   @Output() onboardingAction = new EventEmitter<any>();
+  @Output() conversationSummaryChange = new EventEmitter<ConversationSummary>();
 
   loadingChannels = false;
   loadingConversations = false;
@@ -87,6 +89,14 @@ export class HomeValueOnboardingComponent implements OnInit, OnChanges {
     this.conversationLoadFailed = false;
     this.loadingChannels = !!this.projectId;
     this.loadingConversations = !!this.projectId;
+    this.conversationSummaryChange.emit({
+      unassigned: 0,
+      assigned: 0,
+      botAssigned: 0,
+      total: 0,
+      loaded: false,
+      failed: false
+    });
     this.buildSteps();
     if (!this.projectId) return;
     this.loadChannels(refreshId);
@@ -194,12 +204,22 @@ export class HomeValueOnboardingComponent implements OnInit, OnChanges {
   private loadConversationCount(refreshId: number) {
     this.wsRequestsService.getConversationCount(this.projectId).subscribe((res: any) => {
       if (refreshId !== this.refreshId) return;
-      this.conversationCount = this.parseConversationCount(res);
+      const summary = normalizeConversationSummary(res);
+      this.conversationCount = summary.total;
+      this.conversationSummaryChange.emit(summary);
       this.loadingConversations = false;
       this.buildSteps();
     }, () => {
       if (refreshId !== this.refreshId) return;
       this.conversationLoadFailed = true;
+      this.conversationSummaryChange.emit({
+        unassigned: 0,
+        assigned: 0,
+        botAssigned: 0,
+        total: 0,
+        loaded: true,
+        failed: true
+      });
       this.loadingConversations = false;
       this.buildSteps();
     });
@@ -293,15 +313,6 @@ export class HomeValueOnboardingComponent implements OnInit, OnChanges {
 
   private emitAction(action: string, actionRes: any) {
     this.onboardingAction.emit({ action, actionRes: { ...actionRes, projectId: this.projectId } });
-  }
-
-  private parseConversationCount(res: any): number {
-    if (typeof res === 'number') return res;
-    if (!res) return 0;
-    if (typeof res.count === 'number') return res.count;
-    return ['unassigned', 'assigned', 'bot_assigned', 'open', 'closed']
-      .map(key => Number(res[key] || 0))
-      .reduce((total, value) => total + value, 0);
   }
 
   private formatCount(count: number, singular: string, plural: string): string {
