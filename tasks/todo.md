@@ -439,7 +439,7 @@
 - [x] Substituir o card de e-mail por um resumo operacional de conversas sem agente.
 - [x] Substituir visitantes unicos por conversas dos ultimos 30 dias.
 - [x] Validar testes focados, build e interface.
-- [ ] Auditar, criar commit, enviar e publicar na VPS DEV.
+- [x] Auditar, criar commit, enviar e publicar na VPS DEV.
 
 ## Criterios de aceite
 
@@ -454,3 +454,5 @@
 - O normalizador foi executado diretamente e preservou `9` conversas ao receber tambem agregados `open` e `closed`, sem dupla contagem.
 - Os testes focados compilam sem erros proprios, mas o bundle global do Karma ainda para antes da execucao por dependencias legadas de analytics, `rxjs-compat` e `@angular/http/testing` fora deste escopo.
 - A auditoria independente rejeitou duas iteracoes; apos corrigir semantica, estados, contraste e a corrida A-B-A, a terceira contraprova aprovou o diff.
+- O commit funcional `80e423563` foi enviado ao `master`; os arquivos sincronizados na VPS conferiram por SHA-256, o dashboard foi reconstruido e recriado, permaneceu ativo e respondeu `200` no endpoint publico.
+- O bundle implantado foi inspecionado no container e contem o novo rotulo `Contatos cadastrados`.
