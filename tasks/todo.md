@@ -484,3 +484,31 @@
 - CasePay e suas rotas permanecem inalterados; o cadastro publico segue diretamente para o workspace criado e para a Home.
 - Os commits `41f09233e` e `8e9a62c18` foram enviados ao `master`, implantados na VPS DEV e o dashboard publico respondeu `200`.
 - A validacao em navegador confirmou `/register` centralizado em portugues; o login mostra `Criar uma conta`, removeu o CTA antigo de contato e `/forgotpsw` renderiza o formulario de recuperacao.
+
+# E2E de cadastro e auditoria dos testes legados
+
+- [x] Validar cadastro publico ate a Home sem redirecionamento de pagamento.
+- [x] Validar login com a senha original.
+- [x] Validar solicitacao e consumo unico do token de redefinicao de senha.
+- [x] Validar criacao, busca e exclusao de usuario pelo superadmin.
+- [x] Remover os dados descartaveis criados pelo E2E.
+- [x] Reproduzir o bloqueio global do Karma e provar a ordem das substituicoes em worktree descartavel.
+
+## Revisao E2E
+
+- Cadastro, login e entrada direta em `/project/:id/home` passaram no navegador; nao houve pagina de pagamento.
+- Criacao e exclusao pelo admin passaram com respostas `201` e `200`, e o usuario removido deixou de aparecer na busca.
+- A API e a interface de recuperacao passaram; o token controlado expiravel foi aceito uma vez, invalidou a senha antiga e retornou `404` na reutilizacao.
+- A entrega real do e-mail permanece bloqueada na DEV porque `EMAIL_ENABLED=false` e SMTP nao esta configurado; portanto o trajeto completo caixa de entrada -> link ainda nao passa nesse ambiente.
+- O E2E revelou que o login por `SUPER_PASSWORD` expunha o hash e aceitava um fallback inseguro. O servidor foi corrigido, testado, publicado e validado sem o campo `password` no commit `9b7085fc`.
+- Os usuarios, projetos, memberships e caixa postal descartaveis foram removidos ao final.
+
+## Auditoria de substituicao legada
+
+- O Edge e o Chromium conectam ao Karma; o primeiro bloqueio e de compilacao, nao do launcher.
+- Onze specs de Analytics apontam para um diretorio removido. A substituicao correta e `app/services/analytics.service`.
+- O spec de Satisfaction mistura `@angular/http/testing` com `HttpClientTestingModule` e importa `rxjs/Observable` apenas para codigo comentado. A substituicao minima e remover o backend morto; testes HTTP reativados devem usar `HttpTestingController` e imports de `rxjs`.
+- Uma contraprova descartavel removeu todos os erros iniciais sem instalar `@angular/http` ou `rxjs-compat`.
+- A segunda camada e o bootstrap manual antigo de `src/test.ts`; com `zone.js/testing`, a suite deixa de expirar e revela um ciclo `AuthService` com `UsersService` e `RolesService`.
+- Protractor 5.4 e o smoke `app works!` formam uma divida E2E separada e nao causam a falha do Karma.
+- Nenhuma migracao estrutural foi aplicada ao branch nesta auditoria; a ordem segura e imports mortos -> bootstrap -> ciclo de servicos -> assercoes dos 409 specs.
