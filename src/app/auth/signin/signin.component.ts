@@ -517,10 +517,8 @@ export class SigninComponent implements OnInit {
     this.router.navigate(['forgotpsw']);
   }
 
-  goToSignup() {
-    // this.router.navigate(['signup']);
-    const url = 'https://meetings-eu1.hubspot.com/jovana-ugrinic'
-    window.open(url, '_blank'); 
+  goToRegisterPage() {
+    this.router.navigate(['/register']);
   }
 
   goToCompanySite() {
@@ -538,7 +536,7 @@ export class SigninComponent implements OnInit {
       // localStorage.removeItem('user')
       this.auth.signOut('signin');
     }
-    this.router.navigate(['signup']);
+    this.router.navigate(['/register']);
   }
 
 

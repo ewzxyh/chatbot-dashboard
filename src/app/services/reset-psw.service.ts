@@ -46,10 +46,8 @@ export class ResetPswService {
     };
 
     const url = this.REQUEST_RESET_PSW_URL;
-    this.logger.log('[RESET-PSW.SERV] - SEND RESET PSW EMAIL AND UPDATE USER WITH RESET PSW REQUEST ID - PUT URL ', url)
 
     const body = { 'email': user_email };
-    this.logger.log('[RESET-PSW.SERV] - SEND RESET PSW EMAIL AND UPDATE USER WITH RESET PSW REQUEST ID - PUT BODY ', body)
    
     return this._httpclient
       .put<User[]>(url, JSON.stringify(body), httpOptions)
@@ -70,10 +68,8 @@ export class ResetPswService {
     };
 
     const url = this.RESET_PSW_BASE_URL + reset_psw_request_id;
-    this.logger.log('[RESET-PSW.SERV] - GET USER BY RESET PSW REQUEST ID AND RESET PSW - PUT URL ', url)
 
     const body = { 'password': newpsw };
-    this.logger.log('[RESET-PSW.SERV] - GET USER BY RESET PSW REQUEST ID AND RESET PSW - PUT BODY ', body)
     return this._httpclient
       .put(url, JSON.stringify(body), httpOptions)
   }
@@ -98,7 +94,6 @@ export class ResetPswService {
     };
 
     const url = this.CHECK_PSW_RESET_KEY_BASE_URL + reset_psw_request_id;
-    this.logger.log('[RESET-PSW.SERV] - GET USER BY PSW REQUEST ID ', url)
     return this._httpclient
       .get(url, httpOptions)
   }

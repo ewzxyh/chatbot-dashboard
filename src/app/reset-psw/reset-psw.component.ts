@@ -8,6 +8,7 @@ import { PasswordValidation } from './password-validation';
 // import brand from 'assets/brand/brand.json';
 import { BrandService } from '../services/brand.service';
 import { LoggerService } from '../services/logger/logger.service';
+import { bcryptPasswordByteLimit, unicodePasswordLength } from '../utils/password-validator';
 
 
 type EmailField = 'email';
@@ -50,7 +51,8 @@ export class ResetPswComponent implements OnInit {
       'required': 'Password is required.',
       'pattern': 'Password must be include at one letter and one number.',
       'minlength': 'Password must be at least 8 characters long.',
-      'maxlength': 'Password cannot be more than 25 characters long.',
+      'maxlength': 'Password cannot be more than 72 characters long.',
+      'bcryptmaxlength': 'Password cannot be more than 72 bytes.',
     },
     'confirmPassword': {
       'required': 'Confirm Password is required.',
@@ -140,7 +142,6 @@ export class ResetPswComponent implements OnInit {
 
   getResetPswRequestId() {
     this.resetPswRequestId = this.activetedRoute.snapshot.params['resetpswrequestid'];
-    this.logger.log('[RESET-PSW] - ID OF THE REQUEST FOR RESET THE PSW ', this.resetPswRequestId);
 
     if (this.resetPswRequestId) {
       this.checkIfExistResetPswRequestId();
@@ -148,11 +149,9 @@ export class ResetPswComponent implements OnInit {
   }
 
   checkIfExistResetPswRequestId() {
-    this.resetPswService.getUserByPswRequestId(this.resetPswRequestId).subscribe((user) => {
-      this.logger.log('[RESET-PSW] »»» »»» CHECK RESET PSW REQUEST ID  ', user);
-
+    this.resetPswService.getUserByPswRequestId(this.resetPswRequestId).subscribe(() => {
     }, (error) => {
-      this.logger.error('[RESET-PSW] »»» »»» CHECK RESET PSW REQUEST ID - ERROR ', error);
+      this.logger.error('[RESET-PSW] CHECK RESET PSW REQUEST ID - ERROR STATUS', error && error.status);
 
       const ckeckrequestid_errorMsg = error['error']['msg'];
       this.logger.log('[RESET-PSW] »»» »»» CHECK RESET PSW REQUEST ID - ERROR MSG ', ckeckrequestid_errorMsg)
@@ -186,8 +185,9 @@ export class ResetPswComponent implements OnInit {
     this.pswForm = this.fb.group({
       'password': ['', [
         // Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/),
-        Validators.minLength(8),
-        Validators.maxLength(512),
+        Validators.required,
+        unicodePasswordLength,
+        bcryptPasswordByteLimit,
       ]],
       'confirmPassword': ['', Validators.required]
       // Validators.pattern('^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$'),
@@ -261,7 +261,6 @@ export class ResetPswComponent implements OnInit {
 
     const pswrdElem = <HTMLInputElement>document.querySelector('#reset-password')
    
-    this.logger.log('[RESET-PSW] togglePswdVisibility pswrdElem (use case type password) ', pswrdElem)
     if (isVisiblePsw) {
       pswrdElem.setAttribute("type", "text");
     } else {
@@ -281,11 +280,8 @@ export class ResetPswComponent implements OnInit {
 
   requestResetPsw() {
     this.showSpinnerInRequestNewPswBtn = true;
-    this.logger.log('[RESET-PSW] - REQUEST RESET PSW USER EMAIL ', this.emailForm.value['email']);
 
     this.resetPswService.sendResetPswEmailAndUpdateUserWithResetPswRequestId(this.emailForm.value['email']).subscribe((user) => {
-      this.logger.log('[RESET-PSW] - REQUEST RESET PSW - UPDATED USER ', user);
-
       if (user['success'] === false) {
         this.ERROR_SENDING_EMAIL_RESET_PSW = true;
         this.logger.error('[RESET-PSW] - REQUEST RESET PSW - UPDATED USER - success false > MSG', user['msg']);
@@ -330,15 +326,20 @@ export class ResetPswComponent implements OnInit {
   }
 
   resetPsw() {
+    if (this.showSpinnerInResetPswBtn) {
+      return;
+    }
     this.showSpinnerInResetPswBtn = true;
-    this.logger.log('[RESET-PSW] - RESET-PSW - NEW PSW ', this.pswForm.value['password']);
 
-    this.resetPswService.getUserByResetPswRequestIdAndResetPsw(this.resetPswRequestId, this.pswForm.value['password']).subscribe((user) => {
-      this.logger.log('[RESET-PSW] - RESET-PSW - UPDATED USER ', user);
-
+    this.resetPswService.getUserByResetPswRequestIdAndResetPsw(this.resetPswRequestId, this.pswForm.value['password']).subscribe(() => {
     }, (error) => {
-      this.logger.error('[RESET-PSW] - RESET-PSW - ERROR ', error);
       this.showSpinnerInResetPswBtn = false;
+      if (error && error.status === 404) {
+        this.RESET_PSW_REQUEST_ID_IS_VALID = false;
+      } else if (error && error.status === 429) {
+        this.OTHER_ERROR_MSG = 'Muitas tentativas. Aguarde alguns minutos e tente novamente.';
+        this.display = 'block';
+      }
     }, () => {
       this.logger.log('[RESET-PSW] - RESET-PSW - * COMPLETE *');
       setTimeout(() => {

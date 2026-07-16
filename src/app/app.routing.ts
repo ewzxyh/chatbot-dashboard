@@ -194,6 +194,12 @@ const routes: Routes = [
   },
   // { path: 'signup', component: SignupComponent },// now lazy
 
+  // Public registration
+  {
+    path: 'register',
+    loadChildren: () => import('app/auth/signup/signup.module').then(m => m.SignupModule)
+  },
+
   // Verify Email Waiting
   {
     path: 'verify-email-waiting',

@@ -230,7 +230,8 @@
                     </div>
                   </div>
 
-                  <button type="submit" class="btn btn-forgotpsw_nomatch" [disabled]="!pswForm.valid"
+                  <button type="submit" class="btn btn-forgotpsw_nomatch"
+                    [disabled]="!pswForm.valid || showSpinnerInResetPswBtn"
                     [ngStyle]="{'background-color': primaryBrandColor ? primaryBrandColor : '#f0806f' }">
                     <span *ngIf="!showSpinnerInResetPswBtn">
                       <!-- RESET PASSWORD  -->

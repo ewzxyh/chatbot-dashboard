@@ -297,6 +297,37 @@ export class AdminService {
       .get<any>(url, httpOptions);
   }
 
+  public createUser(name: string, email: string, password: string): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': this.TOKEN
+      })
+    };
+    const url = this.SERVER_BASE_PATH + 'sadmin/users';
+    const body = { firstname: name, lastname: '', email: email, password: password };
+    this.logger.log('[ADMIN-SERV] - CREATE USER - URL', url);
+
+    return this._httpclient
+      .post<any>(url, JSON.stringify(body), httpOptions);
+  }
+
+  public deleteUser(userId: string): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': this.TOKEN
+      })
+    };
+    const url = this.SERVER_BASE_PATH + 'sadmin/users/' + userId;
+    this.logger.log('[ADMIN-SERV] - DELETE USER - URL', url);
+
+    return this._httpclient
+      .delete<any>(url, httpOptions);
+  }
+
   public getPayments(page: number, limit: number, filters: any): Observable<any> {
     const httpOptions = {
       headers: new HttpHeaders({

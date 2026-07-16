@@ -320,7 +320,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.logger.log('[APP-COMPONENT] setRecaptchaVisibility  url (in the method) ',url ) 
         const grecaptchaBadgeEl = document.querySelector('.grecaptcha-badge') as HTMLElement;
         this.logger.log('[APP-COMPONENT] setRecaptchaVisibility  grecaptchaBadgeEl' , grecaptchaBadgeEl) 
-        const showRecaptcha = url === '/signup' || url === '/login';
+        const showRecaptcha = url === '/signup' || url === '/register' || url === '/login';
 
         if (grecaptchaBadgeEl) {
             grecaptchaBadgeEl.style.setProperty('visibility', showRecaptcha ? 'visible' : 'hidden', 'important');

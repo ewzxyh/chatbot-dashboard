@@ -1063,7 +1063,7 @@ export class AuthService {
    * @param first_name
    * @param last_name
    */
-  public signup(email: string, password: string, first_name: string, last_name: string): Observable<any> {
+  public signup(email: string, password: string, first_name: string, last_name: string, recaptchaToken?: string): Observable<any> {
 
     const httpOptions = {
       headers: new HttpHeaders({
@@ -1077,9 +1077,8 @@ export class AuthService {
       password: password,
       firstname: first_name,
       lastname: last_name,
+      'g-recaptcha-response': recaptchaToken,
     }
-    this.logger.log('[AUTH-SERV] - SIGNUP POST REQUEST BODY ', body)
-
     const url = this.SIGNUP_BASE_URL
     this.logger.log('[AUTH-SERV] - SIGNUP URL ', url)
 
@@ -1110,8 +1109,6 @@ export class AuthService {
     };
 
     const body = { email: email, password: password }
-    this.logger.log('[AUTH-SERV] - SIGNIN POST REQUEST BODY ', body)
-
     // const url = this.SIGNIN_BASE_URL
     const url = baseUrl + 'auth/signin';
     // this.logger.log('[AUTH-SERV] - SIGNIN URL ', url)
@@ -1177,7 +1174,7 @@ export class AuthService {
                     .auth()
                     .signInWithCustomToken(fbtoken)
                     .then((firebase_user) => {
-                      this.logger.log('[AUTH-SERV] SSO - LOGIN - 4. FIREBASE CUSTOM AUTH DATA ', firebase_user)
+                      this.logger.log('[AUTH-SERV] SSO - LOGIN - Firebase custom auth completed')
 
                       if (this.appConfigService.getConfig().pushEngine === 'firebase') {
                         // if (!this.APP_IS_DEV_MODE && this.FCM_Supported === true) {
@@ -1194,7 +1191,7 @@ export class AuthService {
                       callback(error)
                       // Handle Errors here.
                       // const errorCode = error.code;
-                      this.logger.error('[AUTH-SERV] SSO - LOGIN - FIREBASE CUSTOM AUTH ERROR CODE ', error)
+                      this.logger.error('[AUTH-SERV] SSO - LOGIN - FIREBASE CUSTOM AUTH ERROR CODE ', error && error.code)
                     })
                 } else {
                   callback({
@@ -1219,7 +1216,7 @@ export class AuthService {
         }
       })
       .catch((error) => {
-        this.logger.error('[AUTH-SERV] SSO - LOGIN - SIGNIN POST REQUEST ERROR', error)
+        this.logger.error('[AUTH-SERV] SSO - LOGIN - SIGNIN POST REQUEST ERROR STATUS', error && error.status)
         callback(error)
       })
   }

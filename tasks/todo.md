@@ -456,3 +456,29 @@
 - A auditoria independente rejeitou duas iteracoes; apos corrigir semantica, estados, contraste e a corrida A-B-A, a terceira contraprova aprovou o diff.
 - O commit funcional `80e423563` foi enviado ao `master`; os arquivos sincronizados na VPS conferiram por SHA-256, o dashboard foi reconstruido e recriado, permaneceu ativo e respondeu `200` no endpoint publico.
 - O bundle implantado foi inspecionado no container e contem o novo rotulo `Contatos cadastrados`.
+
+# Cadastro publico e administracao de usuarios
+
+- [x] Criar `/register` com nome, e-mail e senha, criar workspace padrao e abrir o dashboard sem pagamento.
+- [x] Trocar o CTA de contato do login pelo acesso ao cadastro.
+- [x] Permitir ao superadmin criar e excluir usuarios em `/admin/users`.
+- [x] Tornar a recuperacao de senha uniforme, temporaria e de uso unico.
+- [x] Validar cadastro, reset, autorizacao e exclusao segura.
+- [ ] Auditar, criar commits, enviar e publicar na VPS DEV.
+
+## Criterios de aceite
+
+- O cadastro nao chama nem altera CasePay e termina em `/project/:id/home`.
+- Senhas nunca aparecem em respostas ou logs; tokens de reset expiram e so podem ser usados uma vez.
+- Endpoints administrativos exigem superadmin; a exclusao bloqueia a propria conta, superadmins e usuarios vinculados a projetos.
+- A exclusao e logica e remove o usuario da listagem sem apagar dados relacionais.
+
+## Revisao da fatia DASHBOARD
+
+- Build Angular e compilacao TypeScript do app passaram.
+- Os tres testes focados compilam isoladamente: register, admin users e AdminService.
+- Karma global nao executa os testes por dependencias legadas de analytics, `rxjs-compat` e `@angular/http/testing`; nenhum teste foi executado (`Executed 0 of 0`).
+- O limite de senha no frontend e `8..72` para register/admin, sem exigir simbolos ou maiusculas; o servidor continua sendo a autoridade.
+- O build de producao passou com o hash `d484add4569fb798`.
+- A auditoria independente aprovou o fluxo sem achados criticos ou altos; os achados medios foram corrigidos e cobertos por testes.
+- CasePay e suas rotas permanecem inalterados; o cadastro publico segue diretamente para o workspace criado e para a Home.

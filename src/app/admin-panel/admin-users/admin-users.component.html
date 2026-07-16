@@ -4,6 +4,10 @@
     <p>Consulte contas, verificação e acesso administrativo seguro.</p>
   </div>
   <div class="admin-actions-row">
+    <button mat-flat-button color="primary" type="button" (click)="openCreateUserDialog()" [disabled]="createUserLoading">
+      <mat-icon aria-hidden="true">person_add</mat-icon>
+      Criar usuário
+    </button>
     <span *ngIf="!isLoading && totalCount > 0" class="admin-page-meta">{{ totalCount }} usuários</span>
     <button mat-stroked-button type="button" (click)="retry()" [disabled]="isLoading">
       <mat-icon aria-hidden="true">refresh</mat-icon>
@@ -26,6 +30,7 @@
     <button mat-stroked-button type="button" (click)="retry()" [disabled]="isLoading">Tentar novamente</button>
   </div>
 <div *ngIf="impersonationError" class="admin-error-state" role="alert">{{ impersonationError }}</div>
+<div *ngIf="successMessage" class="admin-feedback admin-feedback-success" role="status">{{ successMessage }}</div>
 
 <table mat-table *ngIf="!isLoading && (!errorMessage || users.length > 0)" [dataSource]="users" class="admin-table">
   <ng-container matColumnDef="name">
@@ -67,6 +72,17 @@
         <mat-icon aria-hidden="true">person_search</mat-icon>
         {{ impersonatingTargetId === u._id ? 'Entrando...' : 'Acessar como usuário' }}
       </button>
+      <button
+        mat-stroked-button
+        color="warn"
+        type="button"
+        class="btn-action"
+        (click)="deleteUser(u)"
+        [disabled]="deletingUserId !== null || u.projectCount > 0"
+        [attr.title]="u.projectCount > 0 ? 'Remova os vínculos com projetos antes de excluir este usuário.' : 'Excluir usuário'">
+        <mat-icon aria-hidden="true">delete</mat-icon>
+        {{ deletingUserId === u._id ? 'Excluindo...' : 'Excluir' }}
+      </button>
     </td>
   </ng-container>
 
@@ -85,3 +101,31 @@
   showFirstLastButtons
   (page)="onPageChange($event)">
 </mat-paginator>
+
+<ng-template #createUserDialog>
+  <h2 mat-dialog-title>Criar usuário</h2>
+  <form #createUserForm="ngForm" (ngSubmit)="createUser()">
+    <mat-dialog-content class="admin-dialog-content">
+      <mat-form-field appearance="outline" class="modal-field">
+        <mat-label>Nome</mat-label>
+        <input matInput name="name" [(ngModel)]="newUser.name" required autocomplete="name" />
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="modal-field">
+        <mat-label>E-mail</mat-label>
+        <input matInput type="email" name="email" [(ngModel)]="newUser.email" required autocomplete="email" />
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="modal-field">
+        <mat-label>Senha</mat-label>
+        <input matInput type="password" name="password" [(ngModel)]="newUser.password" required minlength="8" maxlength="72" autocomplete="new-password" />
+        <mat-hint>Use entre 8 e 72 caracteres.</mat-hint>
+      </mat-form-field>
+      <div *ngIf="createUserError" class="admin-feedback admin-feedback-error" role="alert">{{ createUserError }}</div>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end" class="modal-actions">
+      <button mat-button type="button" mat-dialog-close [disabled]="createUserLoading">Cancelar</button>
+      <button mat-flat-button color="primary" type="submit" [disabled]="createUserForm.invalid || createUserLoading">
+        {{ createUserLoading ? 'Criando...' : 'Criar usuário' }}
+      </button>
+    </mat-dialog-actions>
+  </form>
+</ng-template>

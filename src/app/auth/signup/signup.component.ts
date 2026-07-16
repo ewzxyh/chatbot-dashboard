@@ -15,6 +15,7 @@ import { LocalDbService } from 'app/services/users-local-db.service';
 import { ProjectService } from 'app/services/project.service';
 import { Project } from 'app/models/project-model';
 import { emailDomainWhiteList } from 'app/utils/util';
+import { bcryptPasswordByteLimit, unicodePasswordLength } from 'app/utils/password-validator';
 import { TitleCasePipe } from '@angular/common';
 declare const grecaptcha: any;
 import { WidgetSetUpBaseComponent } from 'app/widget_components/widget-set-up/widget-set-up-base/widget-set-up-base.component';
@@ -88,6 +89,8 @@ export class SignupComponent extends WidgetSetUpBaseComponent implements OnInit,
   displaySocialProofContainer: string;
   hideGoogleAuthBtn: string;
   USER_ROLE: string;
+  isRegisterRoute = false;
+  registerAccountCreated = false;
 
   // newUser = false; // to toggle login or signup form
   // passReset = false; // set to true when password reset is triggered
@@ -110,6 +113,7 @@ export class SignupComponent extends WidgetSetUpBaseComponent implements OnInit,
       'pattern': 'Password must be include at one letter and one number.',
       'minlength': 'Password must be at least 8 characters long.',
       'maxlength': 'Password is too long.',
+      'bcryptmaxlength': 'Password is too long.',
 
     },
     'firstName': {
@@ -162,6 +166,15 @@ export class SignupComponent extends WidgetSetUpBaseComponent implements OnInit,
   }
 
   ngOnInit() {
+    this.isRegisterRoute = this.router.url.split('?')[0] === '/register';
+    if (this.isRegisterRoute) {
+      this.validationMessages.email.required = 'Informe seu e-mail.';
+      this.validationMessages.email.pattern = 'Informe um e-mail valido.';
+      this.validationMessages.password.minlength = 'A senha deve ter pelo menos 8 caracteres.';
+      this.validationMessages.password.maxlength = 'A senha deve ter no maximo 72 caracteres.';
+      this.validationMessages.password.bcryptmaxlength = 'A senha deve ter no maximo 72 bytes.';
+      this.validationMessages.firstName.required = 'Informe seu nome.';
+    }
     this.redirectIfLogged();
     this.buildForm();
     this.getBrowserLang();
@@ -222,14 +235,14 @@ export class SignupComponent extends WidgetSetUpBaseComponent implements OnInit,
         // Validators.pattern(/[$-/:-?{-~!"^@#`\[\]]/g),
         // Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$-/:-?{-~!"^@#`\[\]]).{8,}$/),
 
-        Validators.maxLength(512),
-        Validators.minLength(8),
+        unicodePasswordLength,
+        bcryptPasswordByteLimit,
         Validators.required,
 
       ]],
       'displayName': ['', []],
-      'firstName': ['', []],
-      'lastName': [' ', []],
+      'firstName': ['', this.isRegisterRoute ? [Validators.required, Validators.minLength(2)] : []],
+      'lastName': [this.isRegisterRoute ? '' : ' ', []],
       'terms': ['', [Validators.required,]],
     });
     this.userForm.valueChanges.subscribe((data) => this.onValueChanged(data));
@@ -246,31 +259,6 @@ export class SignupComponent extends WidgetSetUpBaseComponent implements OnInit,
       return;
     }
     const form = this.userForm;
-
-  //  console.log('[SIGN-UP] pswrd change ',  this.userForm.value.password)
-  //  const regex = /[$-/:-?{-~!"^@#`\[\]]/g;
-  //  const hasPassedSymbolTest =  regex.test(this.userForm.value.password);
-  //  console.log('[SIGN-UP] pswrd change hasPassedSymbolTest',  hasPassedSymbolTest)
-
-    
-
-    // this.logger.log('[SIGN-UP] onValueChanged  data', data)
-    // if (data) {
-    //   let elemPswInput = <HTMLInputElement>document.getElementById('signup-password')
-    //   this.logger.log('[SIGN-UP] onValueChanged  data password length (1)', data.password.length)
-    //   if (data.password.length >= 0) {
-    //     this.logger.log('[SIGN-UP] onValueChanged  data password length (2)', data.password.length)
-    //     // document.getElementById("password")
-
-    //     elemPswInput.setAttribute("type", "text");
-    //     elemPswInput.classList.add("secure");
-    //   }
-    //   // else if ( data.password.length == 0) {
-    //   //   this.logger.log('[SIGN-UP] onValueChanged  data password length (3)', data.password.length)
-    //   //   elemPswInput.setAttribute("type", "password");
-    //   //   elemPswInput.classList.remove("secure");
-    //   // }
-    // }
 
     for (const field in this.formErrors) {
       // tslint:disable-next-line:max-line-length
@@ -433,7 +421,7 @@ export class SignupComponent extends WidgetSetUpBaseComponent implements OnInit,
   redirectIfLogged() {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
-      this.logger.log('[SIGN-UP] - REDIRECT TO DASHBORD IF USER IS LOGGED-IN - STORED USER', storedUser);
+      this.logger.log('[SIGN-UP] - REDIRECT TO DASHBOARD IF USER IS LOGGED-IN');
       this.router.navigate(['/projects']);
     }
   }
@@ -490,7 +478,9 @@ export class SignupComponent extends WidgetSetUpBaseComponent implements OnInit,
     // this.logger.log('[SIGN-UP] checkCurrentUrlAndSkipWizard router.url  ', this.router.url)
 
 
-    if (this.router.url.indexOf('/signup-on-invitation') !== -1) {
+    if (this.isRegisterRoute) {
+      this.SKIP_WIZARD = true;
+    } else if (this.router.url.indexOf('/signup-on-invitation') !== -1) {
       this.SKIP_WIZARD = true;
       this.logger.log('[SIGN-UP] checkCurrentUrlAndSkipWizard SKIP_WIZARD ', this.SKIP_WIZARD)
       this.getAndPatchInvitationEmail();
@@ -540,18 +530,27 @@ export class SignupComponent extends WidgetSetUpBaseComponent implements OnInit,
   }
 
   signUp() {
+    if (this.showSpinnerInLoginBtn) {
+      return;
+    }
     if (this.userForm.valid) {
-      if (window && window['grecaptcha']) {
+      this.showSpinnerInLoginBtn = true;
+      if (this.isRegisterRoute && this.registerAccountCreated) {
+        this.createRegisterWorkspace();
+        return;
+      }
+      if (window && window['grecaptcha'] && this.reCaptchaSiteKey) {
         this.logger.log('[SIGN-UP] window grecaptcha', window['grecaptcha'])
         this.logger.log('[SIGN-UP] signup with recaptcha', window['grecaptcha'])
         grecaptcha.ready(() => {
           grecaptcha.execute(this.reCaptchaSiteKey, { action: 'submit' }).then((token) => {
             // Add your logic to submit to your backend server here.
-            this.logger.log('[SIGN-UP] grecaptcha ', token)
             if (token) {
-              this.signup()
+              this.signup(token)
+            } else {
+              this.handleRecaptchaError();
             }
-          });
+          }).catch(() => this.handleRecaptchaError());
         });
       } else {
         this.logger.log('[SIGN-UP] signup without recaptcha')
@@ -561,29 +560,27 @@ export class SignupComponent extends WidgetSetUpBaseComponent implements OnInit,
   }
 
 
-  signup() {
-    this.logger.log('[SIGN-UP] !!!! ')
+  signup(recaptchaToken?: string) {
+    if (this.isRegisterRoute && this.registerAccountCreated) {
+      this.createRegisterWorkspace();
+      return;
+    }
+    this.logger.log('[SIGN-UP] account creation started')
     this.showSpinnerInLoginBtn = true;
     const email = this.userForm.value['email']
-    this.logger.log('[SIGN-UP] signup  email ', email)
 
     let yourname = "";
-    if (email.includes('@')) {
+    if (!this.isRegisterRoute && email.includes('@')) {
       const emailBeforeAt = email.split('@')[0];
       if (emailBeforeAt && !emailBeforeAt.includes('.')) {
         yourname = this.titleCasePipe.transform(emailBeforeAt);
-        this.logger.log('[SIGN-UP] signup  yourname (use case email without dot before @) ', yourname)
         this.userForm.controls['firstName'].patchValue(yourname)
       } else if (emailBeforeAt && emailBeforeAt.includes('.')) {
         const emailBeforeAtAndFirstOfDot = email.split('.')[0];
-        this.logger.log('[SIGN-UP] signup  emailBeforeAtAndFirstDot ', emailBeforeAtAndFirstOfDot)
         yourname = this.titleCasePipe.transform(emailBeforeAtAndFirstOfDot);
-        this.logger.log('[SIGN-UP] signup  yourname (use case email with dot before @) ', yourname)
         this.userForm.controls['firstName'].patchValue(yourname)
       }
     }
-
-    this.logger.log('[SIGN-UP] signup  this.userForm ', this.userForm)
 
     this.auth.showExpiredSessionPopup(true);
 
@@ -592,21 +589,14 @@ export class SignupComponent extends WidgetSetUpBaseComponent implements OnInit,
 
     // const _first_name = stringOnlyFirstCharacter + stringWithoutFirstCharacter
 
-    this.auth.signup(this.userForm.value['email'], this.userForm.value['password'], this.userForm.value['firstName'], this.userForm.value['lastName'])
+    this.auth.signup(this.userForm.value['email'], this.userForm.value['password'], this.userForm.value['firstName'], this.userForm.value['lastName'], recaptchaToken)
 
       .subscribe((signupResponse) => {
-        this.logger.log('[SIGN-UP] Email ', this.userForm.value['email']);
-        this.logger.log('[SIGN-UP] Password ', this.userForm.value['password']);
-        this.logger.log('[SIGN-UP] Firstname ', this.userForm.value['firstName']);
-        this.logger.log('[SIGN-UP] Lastname ', this.userForm.value['lastName']);
-        this.logger.log('[SIGN-UP] POST DATA ', signupResponse);
         if (signupResponse['success'] === true) {
 
           // this.localDbService.setInStorage('signedup', 'true')
           // this.router.navigate(['/welcome']);
-          this.logger.log('[SIGN-UP] RES ', signupResponse);
           const userEmail = signupResponse.user.email
-          this.logger.log('[SIGN-UP] RES USER EMAIL ', userEmail);
 
           // Hide pending email alert if the user sign up (will be displayed when the userr signin)
           // this.localDbService.setInStorage('hpea', true);
@@ -645,10 +635,9 @@ export class SignupComponent extends WidgetSetUpBaseComponent implements OnInit,
         }
       }, (error) => {
 
-        this.logger.error('[SIGN-UP] CREATE NEW USER - POST REQUEST ERROR ', error);
+        this.logger.error('[SIGN-UP] CREATE NEW USER - POST REQUEST ERROR STATUS', error && error.status);
         this.showSpinnerInLoginBtn = false;
         this.display = 'block';
-        this.logger.error('[SIGN-UP] CREATE NEW USER - POST REQUEST ERROR STATUS', error.status);
         this.notify.showToast(this.translate.instant('SomethingWentWrongCreatingYourAccount'), 4, 'report_problem')
         // if (error.status === 422) {
         //   this.signin_errormsg = 'Form validation error. Please fill in every fields.';
@@ -669,10 +658,12 @@ export class SignupComponent extends WidgetSetUpBaseComponent implements OnInit,
     const self = this;
 
     this.auth.signin(userEmail, this.userForm.value['password'], this.appConfigService.getConfig().SERVER_BASE_URL, function (error) {
-      self.logger.log('[SIGN-UP] autoSignin 1. POST DATA ', error);
-      // this.logger.log('autoSignin: ', error);
       if (!error) {
-       
+        if (self.isRegisterRoute) {
+          self.registerAccountCreated = true;
+          self.createRegisterWorkspace();
+          return;
+        }
 
         // this.logger.log('[SIGN-UP] autoSignin storedRoute ', self.storedRoute)
         // this.logger.log('[SIGN-UP] autoSignin EXIST_STORED_ROUTE ', self.EXIST_STORED_ROUTE)
@@ -699,7 +690,7 @@ export class SignupComponent extends WidgetSetUpBaseComponent implements OnInit,
         const signin_errorbody = error['error']
         self.signin_errormsg = signin_errorbody['msg']
         self.display = 'block';
-        self.logger.error('[SIGN-UP] SIGNIN USER - POST REQUEST MSG ERROR ', self.signin_errormsg);
+        self.logger.error('[SIGN-UP] SIGNIN USER - POST REQUEST STATUS', error && error.status);
       }
 
     });
@@ -785,6 +776,33 @@ export class SignupComponent extends WidgetSetUpBaseComponent implements OnInit,
     this.temp_SelectedLangCode = this.defaultWidgetLanguageCode;
     this.addNewLanguage(this.temp_SelectedLangCode, this.temp_SelectedLangName)
 
+  }
+
+  private handleRecaptchaError() {
+    this.showSpinnerInLoginBtn = false;
+    const message = this.isRegisterRoute
+      ? 'Nao foi possivel validar o cadastro. Tente novamente.'
+      : this.translate.instant('SomethingWentWrongCreatingYourAccount');
+    this.notify.showToast(message, 4, 'report_problem');
+  }
+
+  createRegisterWorkspace() {
+    const workspaceName = (this.userForm.value['firstName'] || '').trim() || 'Meu projeto';
+    this.projectService.createProject(workspaceName, 'signup').subscribe(
+      (project: any) => {
+        this.showSpinnerInLoginBtn = false;
+        this.registerAccountCreated = false;
+        this.auth.projectSelected(project, 'workspace-name');
+        this.projectService.newProjectCreated(true);
+        this.router.navigate(['/project/' + project._id + '/home']);
+      },
+      () => {
+        this.showSpinnerInLoginBtn = false;
+        this.signin_errormsg = 'Nao foi possivel criar seu workspace. Tente novamente.';
+        this.display = 'block';
+        this.notify.showToast(this.signin_errormsg, 4, 'report_problem');
+      }
+    );
   }
 
   addNewLanguage(langCode, langName) {
@@ -946,13 +964,6 @@ export class SignupComponent extends WidgetSetUpBaseComponent implements OnInit,
     this.isVisiblePsw = isVisiblePsw;
 
     const pswrdElem = <HTMLInputElement>document.querySelector('#signup-password')
-    // if (pswrdElem.type === "text") {
-    //   this.logger.log('[SIGN-UP] togglePswdVisibility pswrdElem (use case type text)', pswrdElem)
-    //   pswrdElem.classList.toggle("secure")
-    // }
-
-    // if (pswrdElem.type === "password") {
-    this.logger.log('[SIGN-UP] togglePswdVisibility pswrdElem (use case type password) ', pswrdElem)
     if (isVisiblePsw) {
       pswrdElem.setAttribute("type", "text");
     } else {

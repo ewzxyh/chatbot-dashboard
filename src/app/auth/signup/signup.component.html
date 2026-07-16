@@ -313,6 +313,14 @@
 
           <form id="signup-form" [formGroup]="userForm" (ngSubmit)="signUp()" autocomplete="off">
 
+            <ng-container *ngIf="isRegisterRoute">
+              <label for="register-name">Nome <span style="color:#ff5252">*</span></label>
+              <input type="text" id="register-name" class="input" formControlName="firstName" required autocomplete="name">
+              <div *ngIf="formErrors.firstName" class="is-danger">
+                {{ formErrors.firstName }}
+              </div>
+            </ng-container>
+
             <!-- <label for="firstName">
               {{ "FirstName" | translate }} <span style="color:#ff5252">*</span>
             </label>
@@ -330,7 +338,8 @@
               {{ formErrors.lastName }}
             </div> -->
 
-            <label for="email">Work email <span style="color:#ff5252">*</span></label>
+            <label for="user-email" *ngIf="!isRegisterRoute">Work email <span style="color:#ff5252">*</span></label>
+            <label for="user-email" *ngIf="isRegisterRoute">E-mail <span style="color:#ff5252">*</span></label>
             <!-- id="email" -->
             <!-- [readonly]="SKIP_WIZARD"   [ngClass]="{'gray-bckgnd' : SKIP_WIZARD}" -->
             <input id="user-email" type="email" class="input" formControlName="email" required autocomplete="off"
@@ -344,12 +353,13 @@
               Email must be a valid email
             </div>
 
-            <label for="password">Password <span style="color:#ff5252">*</span></label>
+            <label for="signup-password">{{ isRegisterRoute ? 'Senha' : 'Password' }} <span style="color:#ff5252">*</span></label>
             <div class="pswrd-wpr">
 
               <!-- (focus)='onFocusPwsInput()' (blur)='onBlurPwsInput()' -->
               <input type="password" id="signup-password" class="input" autocomplete="new-password"
-                aria-autocomplete="list" formControlName="password">
+                aria-autocomplete="list" formControlName="password" minlength="8"
+                maxlength="72">
 
               <button type="button" tabindex="-1" class="pswrd-eye-btn"
                 (click)="togglePswdVisibility(isVisiblePsw = !isVisiblePsw)">
@@ -378,6 +388,7 @@
             <div *ngIf="formErrors.password" class="is-danger" translate style="margin-bottom: 0px;">
               {{ formErrors.password }}
             </div>
+            <div *ngIf="isRegisterRoute" class="signup-password-hint">Use entre 8 e 72 caracteres.</div>
 
             <!-- <div class="is-danger" *ngIf="passwordFormField?.dirty">
               <span class="block" [ngClass]="{'text-primary': passwordFormField?.value?.match('^(?=.*[A-Z])')}">
@@ -430,7 +441,8 @@
             <button [ngStyle]="{'background-color': primaryBrandColor ? primaryBrandColor : '#f0806f' }" type="submit" 
               class="btn signup-button" [disabled]="!userForm.valid || showSpinnerInLoginBtn">
               <span *ngIf="!showSpinnerInLoginBtn">
-                {{ "GetStarted" | translate}}
+                <ng-container *ngIf="!isRegisterRoute">{{ "GetStarted" | translate}}</ng-container>
+                <ng-container *ngIf="isRegisterRoute">Criar conta</ng-container>
               </span>
               <span *ngIf="showSpinnerInLoginBtn"> 
                 <i class="fa fa-spinner fa-spin"></i>

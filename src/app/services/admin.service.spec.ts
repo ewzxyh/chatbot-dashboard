@@ -1,4 +1,4 @@
-import type { HttpClient, HttpParams } from '@angular/common/http';
+import type { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { BehaviorSubject, of } from 'rxjs';
 import type { AuthService } from '../core/auth.service';
 import type { AppConfigService } from './app-config.service';
@@ -67,11 +67,15 @@ type PagedResponseContractIsExact = Expect<Equal<
 
 describe('AdminService operational endpoints', () => {
   let getSpy: jasmine.Spy;
+  let postSpy: jasmine.Spy;
+  let deleteSpy: jasmine.Spy;
   let service: AdminService;
 
   beforeEach(() => {
     getSpy = jasmine.createSpy('get').and.returnValue(of({ data: [], count: 0, page: 1, limit: 25 }));
-    const httpClient = { get: getSpy } as unknown as HttpClient;
+    postSpy = jasmine.createSpy('post').and.returnValue(of({}));
+    deleteSpy = jasmine.createSpy('delete').and.returnValue(of({}));
+    const httpClient = { get: getSpy, post: postSpy, delete: deleteSpy } as unknown as HttpClient;
     const auth = {
       user_bs: new BehaviorSubject({ token: 'admin-token' })
     } as unknown as AuthService;
@@ -146,5 +150,27 @@ describe('AdminService operational endpoints', () => {
     expect(options.params.get('resourceType')).toBeNull();
     expect(options.params.get('token')).toBeNull();
     expect(options.params.toString()).toContain('project_id=project%20A%26B');
+  });
+
+  it('cria usuario no endpoint admin sem registrar o payload', () => {
+    service.createUser('Ana', 'redacted@example.invalid', 'senha simples').subscribe();
+
+    const [url, body, options] = postSpy.calls.mostRecent().args as [string, string, { headers: HttpHeaders }];
+    expect(url).toBe('https://api.chatcase.test/sadmin/users');
+    expect(JSON.parse(body)).toEqual({
+      firstname: 'Ana',
+      lastname: '',
+      email: 'redacted@example.invalid',
+      password: 'senha simples'
+    });
+    expect(options.headers.get('Authorization')).toBe('admin-token');
+  });
+
+  it('exclui usuario pelo id no endpoint admin', () => {
+    service.deleteUser('user-1').subscribe();
+
+    const [url, options] = deleteSpy.calls.mostRecent().args as [string, { headers: HttpHeaders }];
+    expect(url).toBe('https://api.chatcase.test/sadmin/users/user-1');
+    expect(options.headers.get('Authorization')).toBe('admin-token');
   });
 });
