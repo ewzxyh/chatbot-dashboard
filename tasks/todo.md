@@ -464,7 +464,7 @@
 - [x] Permitir ao superadmin criar e excluir usuarios em `/admin/users`.
 - [x] Tornar a recuperacao de senha uniforme, temporaria e de uso unico.
 - [x] Validar cadastro, reset, autorizacao e exclusao segura.
-- [ ] Auditar, criar commits, enviar e publicar na VPS DEV.
+- [x] Auditar, criar commits, enviar e publicar na VPS DEV.
 
 ## Criterios de aceite
 
@@ -482,3 +482,5 @@
 - O build de producao passou com o hash `d484add4569fb798`.
 - A auditoria independente aprovou o fluxo sem achados criticos ou altos; os achados medios foram corrigidos e cobertos por testes.
 - CasePay e suas rotas permanecem inalterados; o cadastro publico segue diretamente para o workspace criado e para a Home.
+- Os commits `41f09233e` e `8e9a62c18` foram enviados ao `master`, implantados na VPS DEV e o dashboard publico respondeu `200`.
+- A validacao em navegador confirmou `/register` centralizado em portugues; o login mostra `Criar uma conta`, removeu o CTA antigo de contato e `/forgotpsw` renderiza o formulario de recuperacao.
