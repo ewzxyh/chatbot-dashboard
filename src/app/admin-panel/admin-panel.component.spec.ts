@@ -18,6 +18,7 @@ const childRoutes = [
   'payments',
   'operation',
   'audit',
+  'uazapi',
   'privacy'
 ].map((path) => ({ path, component: RoutePageComponent }));
 
@@ -85,7 +86,7 @@ describe('AdminPanelComponent', () => {
     router = TestBed.inject(Router);
   });
 
-  it('expõe exatamente as seis tabs visíveis', () => {
+  it('expõe a tab UAZAPI logo após Auditoria', () => {
     const fixture = TestBed.createComponent(AdminPanelComponent);
     const component = fixture.componentInstance;
 
@@ -96,6 +97,7 @@ describe('AdminPanelComponent', () => {
       'Pagamentos',
       'Operação',
       'Auditoria',
+      'UAZAPI',
     ]);
     expect(component.navItems.map((item) => item.route)).toEqual([
       'dashboard',
@@ -104,6 +106,7 @@ describe('AdminPanelComponent', () => {
       'payments',
       'operation',
       'audit',
+      'uazapi',
     ]);
   });
 
@@ -133,7 +136,7 @@ describe('AdminPanelComponent', () => {
     const dashboardLink = findNavLink(links, 'Dashboard');
     const operationLink = findNavLink(links, 'Operação');
 
-    expect(links.length).toBe(6);
+    expect(links.length).toBe(7);
     expect(findNavLink(links, 'Privacidade')).toBeUndefined();
     expect(activeLinks.length).toBe(1);
     expect(activeLinks[0]).toBe(operationLink);

@@ -1,6 +1,6 @@
 import { Component, ViewEncapsulation } from '@angular/core';
 
-export type AdminTab = 'dashboard' | 'projects' | 'users' | 'payments' | 'operation' | 'audit' | 'privacy';
+export type AdminTab = 'dashboard' | 'projects' | 'users' | 'payments' | 'operation' | 'audit' | 'uazapi' | 'privacy';
 
 export interface AdminNavItem {
   id: AdminTab;
@@ -15,6 +15,7 @@ export const ADMIN_NAV_ITEMS: readonly AdminNavItem[] = [
   { id: 'payments', label: 'Pagamentos', route: 'payments' },
   { id: 'operation', label: 'Operação', route: 'operation' },
   { id: 'audit', label: 'Auditoria', route: 'audit' },
+  { id: 'uazapi', label: 'UAZAPI', route: 'uazapi' },
 ];
 
 @Component({

@@ -1,0 +1,46 @@
+.uazapi-table-wrap {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.uazapi-table {
+  min-width: 920px;
+
+  .mat-header-cell,
+  .mat-cell {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+}
+
+.uazapi-domain,
+.uazapi-instance-count {
+  font-variant-numeric: tabular-nums;
+}
+
+.uazapi-token-status {
+  display: block;
+  margin-top: 5px;
+  color: #718096;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.uazapi-actions-cell {
+  width: 144px;
+  white-space: nowrap;
+}
+
+.uazapi-actions-cell .mat-icon-button {
+  width: 40px;
+  min-width: 40px;
+  height: 40px;
+}
+
+@media (max-width: 768px) {
+  .uazapi-table {
+    min-width: 840px;
+  }
+}

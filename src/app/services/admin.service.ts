@@ -201,6 +201,42 @@ export interface OperationalAlert {
   occurrences: number;
 }
 
+export interface UazapiAccount {
+  id: number;
+  name: string;
+  subdomain: string;
+  acceptsNewInstances: boolean;
+  hasAdminToken: boolean;
+  tokenLastFour: string | null;
+  instanceCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface UazapiAccountsResponse {
+  accounts: UazapiAccount[];
+  maxAccounts: number;
+}
+
+export interface UazapiAccountCreatePayload {
+  name: string;
+  subdomain: string;
+  adminToken: string;
+  acceptsNewInstances: boolean;
+}
+
+export interface UazapiAccountUpdatePayload {
+  name: string;
+  subdomain: string;
+  acceptsNewInstances: boolean;
+  adminToken?: string;
+}
+
+export interface UazapiAccountTestResponse {
+  ok: true;
+  instanceCount: number;
+}
+
 const CHANNEL_FILTER_KEYS: Array<keyof ChannelDiagnosticFilters> = [
   'page', 'limit', 'product', 'channel', 'status', 'cause', 'from', 'to'
 ];
@@ -326,6 +362,51 @@ export class AdminService {
 
     return this._httpclient
       .delete<any>(url, httpOptions);
+  }
+
+  public getUazapiAccounts(): Observable<UazapiAccountsResponse> {
+    const url = this.SERVER_BASE_PATH + 'sadmin/uazapi-accounts';
+    this.logger.log('[ADMIN-SERV] - GET UAZAPI ACCOUNTS - URL', url);
+
+    return this._httpclient.get<UazapiAccountsResponse>(url, {
+      headers: this.getOperationalHeaders()
+    });
+  }
+
+  public createUazapiAccount(payload: UazapiAccountCreatePayload): Observable<unknown> {
+    const url = this.SERVER_BASE_PATH + 'sadmin/uazapi-accounts';
+    this.logger.log('[ADMIN-SERV] - CREATE UAZAPI ACCOUNT - URL', url);
+
+    return this._httpclient.post<unknown>(url, payload, {
+      headers: this.getOperationalHeaders()
+    });
+  }
+
+  public updateUazapiAccount(accountId: number, payload: UazapiAccountUpdatePayload): Observable<unknown> {
+    const url = this.SERVER_BASE_PATH + 'sadmin/uazapi-accounts/' + encodeURIComponent(accountId);
+    this.logger.log('[ADMIN-SERV] - UPDATE UAZAPI ACCOUNT - URL', url);
+
+    return this._httpclient.put<unknown>(url, payload, {
+      headers: this.getOperationalHeaders()
+    });
+  }
+
+  public deleteUazapiAccount(accountId: number): Observable<unknown> {
+    const url = this.SERVER_BASE_PATH + 'sadmin/uazapi-accounts/' + encodeURIComponent(accountId);
+    this.logger.log('[ADMIN-SERV] - DELETE UAZAPI ACCOUNT - URL', url);
+
+    return this._httpclient.delete<unknown>(url, {
+      headers: this.getOperationalHeaders()
+    });
+  }
+
+  public testUazapiAccount(accountId: number): Observable<UazapiAccountTestResponse> {
+    const url = this.SERVER_BASE_PATH + 'sadmin/uazapi-accounts/' + encodeURIComponent(accountId) + '/test';
+    this.logger.log('[ADMIN-SERV] - TEST UAZAPI ACCOUNT - URL', url);
+
+    return this._httpclient.post<UazapiAccountTestResponse>(url, {}, {
+      headers: this.getOperationalHeaders()
+    });
   }
 
   public getPayments(page: number, limit: number, filters: any): Observable<any> {

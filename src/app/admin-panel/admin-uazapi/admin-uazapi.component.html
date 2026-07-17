@@ -1,0 +1,154 @@
+<div class="admin-page-heading">
+  <div>
+    <h2>UAZAPI</h2>
+    <p>Gerencie as contas disponíveis para novas instâncias.</p>
+  </div>
+  <div class="admin-actions-row">
+    <span *ngIf="!isLoading" class="admin-page-meta">{{ accounts.length }}/{{ maxAccounts }} contas</span>
+    <button
+      mat-flat-button
+      color="primary"
+      type="button"
+      (click)="openCreateDialog()"
+      [disabled]="isLoading || isAtLimit"
+      [attr.title]="isAtLimit ? 'Limite de contas atingido' : 'Adicionar conta UAZAPI'">
+      <mat-icon aria-hidden="true">add</mat-icon>
+      Adicionar
+    </button>
+    <button mat-stroked-button type="button" (click)="loadAccounts()" [disabled]="isLoading">
+      <mat-icon aria-hidden="true">refresh</mat-icon>
+      Atualizar
+    </button>
+  </div>
+</div>
+
+<div *ngIf="isLoading" class="admin-loading-state" role="status">Carregando...</div>
+<div *ngIf="errorMessage" class="admin-feedback admin-feedback-error" role="alert">
+  <span>{{ errorMessage }}</span>
+  <button mat-stroked-button type="button" (click)="loadAccounts()" [disabled]="isLoading">Tentar novamente</button>
+</div>
+<div *ngIf="successMessage" class="admin-feedback admin-feedback-success" role="status">{{ successMessage }}</div>
+
+<div *ngIf="!isLoading && (!errorMessage || accounts.length > 0)" class="uazapi-table-wrap">
+  <table mat-table [dataSource]="accounts" class="admin-table uazapi-table">
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef>Nome</th>
+      <td mat-cell *matCellDef="let account"><strong>{{ account.name }}</strong></td>
+    </ng-container>
+
+    <ng-container matColumnDef="subdomain">
+      <th mat-header-cell *matHeaderCellDef>Subdomínio</th>
+      <td mat-cell *matCellDef="let account">
+        <span class="uazapi-domain">{{ account.subdomain }}.uazapi.com</span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef>Status</th>
+      <td mat-cell *matCellDef="let account">
+        <span [ngClass]="account.acceptsNewInstances ? 'admin-state-success' : 'admin-state-muted'">
+          {{ account.acceptsNewInstances ? 'Recebendo instâncias' : 'Pausada' }}
+        </span>
+        <small class="uazapi-token-status">
+          {{ account.hasAdminToken ? 'Token configurado · final ' + account.tokenLastFour : 'Token não configurado' }}
+        </small>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="createdAt">
+      <th mat-header-cell *matHeaderCellDef>Criado em</th>
+      <td mat-cell *matCellDef="let account">{{ account.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="instances">
+      <th mat-header-cell *matHeaderCellDef>Instâncias</th>
+      <td mat-cell *matCellDef="let account" class="uazapi-instance-count">{{ account.instanceCount }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef>Ações</th>
+      <td mat-cell *matCellDef="let account" class="uazapi-actions-cell">
+        <button
+          mat-icon-button
+          type="button"
+          (click)="openEditDialog(account)"
+          [disabled]="busyAccountId !== null"
+          title="Editar conta"
+          aria-label="Editar conta UAZAPI">
+          <mat-icon aria-hidden="true">edit</mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          type="button"
+          (click)="testAccount(account)"
+          [disabled]="busyAccountId !== null"
+          title="Testar conexão"
+          aria-label="Testar conexão UAZAPI">
+          <mat-icon aria-hidden="true">network_check</mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          color="warn"
+          type="button"
+          (click)="deleteAccount(account)"
+          [disabled]="busyAccountId !== null"
+          title="Excluir conta"
+          aria-label="Excluir conta UAZAPI">
+          <mat-icon aria-hidden="true">delete</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+</div>
+
+<div *ngIf="!isLoading && !errorMessage && accounts.length === 0" class="admin-empty-state">
+  Nenhuma conta UAZAPI cadastrada.
+</div>
+
+<ng-template #accountDialog>
+  <h2 mat-dialog-title>{{ editingAccount ? 'Editar conta UAZAPI' : 'Adicionar conta UAZAPI' }}</h2>
+  <form #accountFormElement="ngForm" (ngSubmit)="saveAccount()">
+    <mat-dialog-content class="admin-dialog-content">
+      <mat-form-field appearance="outline" class="modal-field">
+        <mat-label>Nome</mat-label>
+        <input matInput name="name" [(ngModel)]="accountForm.name" required autocomplete="off" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="modal-field">
+        <mat-label>Subdomínio</mat-label>
+        <input matInput name="subdomain" [(ngModel)]="accountForm.subdomain" required autocomplete="off" />
+        <span matSuffix>.uazapi.com</span>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="modal-field">
+        <mat-label>Token administrativo</mat-label>
+        <input
+          matInput
+          type="password"
+          name="adminToken"
+          [(ngModel)]="accountForm.adminToken"
+          [required]="!editingAccount"
+          autocomplete="new-password" />
+        <mat-hint *ngIf="editingAccount">Deixe vazio para preservar o token atual.</mat-hint>
+      </mat-form-field>
+
+      <mat-slide-toggle
+        name="acceptsNewInstances"
+        color="primary"
+        [(ngModel)]="accountForm.acceptsNewInstances">
+        Receber novas instâncias
+      </mat-slide-toggle>
+
+      <div *ngIf="formError" class="admin-feedback admin-feedback-error" role="alert">{{ formError }}</div>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end" class="modal-actions">
+      <button mat-button type="button" mat-dialog-close [disabled]="isSaving">Cancelar</button>
+      <button mat-flat-button color="primary" type="submit" [disabled]="accountFormElement.invalid || isSaving">
+        {{ isSaving ? 'Salvando...' : 'Salvar' }}
+      </button>
+    </mat-dialog-actions>
+  </form>
+</ng-template>

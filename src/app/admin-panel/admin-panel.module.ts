@@ -12,6 +12,7 @@ import { MatPaginatorIntl, MatPaginatorModule } from '@angular/material/paginato
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { AdminPanelComponent } from './admin-panel.component';
 import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard.component';
 import { AdminProjectsComponent } from './admin-projects/admin-projects.component';
@@ -20,6 +21,7 @@ import { AdminPaymentsComponent } from './admin-payments/admin-payments.componen
 import { AdminOperationComponent } from './admin-operation/admin-operation.component';
 import { AdminAuditComponent } from './admin-audit/admin-audit.component';
 import { AdminPrivacyComponent } from './admin-privacy/admin-privacy.component';
+import { AdminUazapiComponent } from './admin-uazapi/admin-uazapi.component';
 
 const routes: Routes = [
   {
@@ -33,6 +35,7 @@ const routes: Routes = [
       { path: 'payments', component: AdminPaymentsComponent },
       { path: 'operation', component: AdminOperationComponent },
       { path: 'audit', component: AdminAuditComponent },
+      { path: 'uazapi', component: AdminUazapiComponent },
       { path: 'privacy', component: AdminPrivacyComponent },
     ]
   }
@@ -63,6 +66,7 @@ function ptBrPaginatorIntl(): MatPaginatorIntl {
     AdminPaymentsComponent,
     AdminOperationComponent,
     AdminAuditComponent,
+    AdminUazapiComponent,
     AdminPrivacyComponent,
   ],
   imports: [
@@ -76,6 +80,7 @@ function ptBrPaginatorIntl(): MatPaginatorIntl {
     MatIconModule,
     MatPaginatorModule,
     MatSelectModule,
+    MatSlideToggleModule,
     MatTableModule,
     MatTabsModule,
     RouterModule.forChild(routes)

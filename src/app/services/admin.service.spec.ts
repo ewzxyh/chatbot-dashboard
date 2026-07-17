@@ -68,14 +68,16 @@ type PagedResponseContractIsExact = Expect<Equal<
 describe('AdminService operational endpoints', () => {
   let getSpy: jasmine.Spy;
   let postSpy: jasmine.Spy;
+  let putSpy: jasmine.Spy;
   let deleteSpy: jasmine.Spy;
   let service: AdminService;
 
   beforeEach(() => {
     getSpy = jasmine.createSpy('get').and.returnValue(of({ data: [], count: 0, page: 1, limit: 25 }));
     postSpy = jasmine.createSpy('post').and.returnValue(of({}));
+    putSpy = jasmine.createSpy('put').and.returnValue(of({}));
     deleteSpy = jasmine.createSpy('delete').and.returnValue(of({}));
-    const httpClient = { get: getSpy, post: postSpy, delete: deleteSpy } as unknown as HttpClient;
+    const httpClient = { get: getSpy, post: postSpy, put: putSpy, delete: deleteSpy } as unknown as HttpClient;
     const auth = {
       user_bs: new BehaviorSubject({ token: 'admin-token' })
     } as unknown as AuthService;
@@ -172,5 +174,54 @@ describe('AdminService operational endpoints', () => {
     const [url, options] = deleteSpy.calls.mostRecent().args as [string, { headers: HttpHeaders }];
     expect(url).toBe('https://api.chatcase.test/sadmin/users/user-1');
     expect(options.headers.get('Authorization')).toBe('admin-token');
+  });
+
+  it('lista contas UAZAPI no endpoint admin autenticado', () => {
+    service.getUazapiAccounts().subscribe();
+
+    const [url, options] = getSpy.calls.mostRecent().args as [string, { headers: HttpHeaders }];
+    expect(url).toBe('https://api.chatcase.test/sadmin/uazapi-accounts');
+    expect(options.headers.get('Authorization')).toBe('admin-token');
+  });
+
+  it('envia o payload completo ao criar uma conta UAZAPI', () => {
+    const payload = {
+      name: 'Conta principal',
+      subdomain: 'principal',
+      adminToken: 'token-secreto',
+      acceptsNewInstances: true
+    };
+
+    service.createUazapiAccount(payload).subscribe();
+
+    const [url, body] = postSpy.calls.mostRecent().args;
+    expect(url).toBe('https://api.chatcase.test/sadmin/uazapi-accounts');
+    expect(body).toEqual(payload);
+  });
+
+  it('atualiza uma conta UAZAPI sem exigir novo token', () => {
+    const payload = {
+      name: 'Conta editada',
+      subdomain: 'editada',
+      acceptsNewInstances: false
+    };
+
+    service.updateUazapiAccount(1, payload).subscribe();
+
+    const [url, body] = putSpy.calls.mostRecent().args;
+    expect(url).toBe('https://api.chatcase.test/sadmin/uazapi-accounts/1');
+    expect(body).toEqual(payload);
+    expect(body.adminToken).toBeUndefined();
+  });
+
+  it('exclui e testa a conta UAZAPI nos endpoints corretos', () => {
+    service.deleteUazapiAccount(1).subscribe();
+    service.testUazapiAccount(1).subscribe();
+
+    expect(deleteSpy.calls.mostRecent().args[0])
+      .toBe('https://api.chatcase.test/sadmin/uazapi-accounts/1');
+    const [testUrl, testBody] = postSpy.calls.mostRecent().args;
+    expect(testUrl).toBe('https://api.chatcase.test/sadmin/uazapi-accounts/1/test');
+    expect(testBody).toEqual({});
   });
 });
