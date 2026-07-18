@@ -57,27 +57,6 @@
         </button>
       </li>
 
-      <!-- -------------------------- -->
-      <!-- WEBOOK SECTION -->
-      <!-- -------------------------- -->
-      <li class="sidebar-item-wpr-no-link sidebar-section-label">
-        <span class="sidebar-item-no-link">
-          Webhooks
-        </span>
-      </li>
-
-      <li class="sidebar-item-wpr" [ngClass]="{'active-item': FLOWS_WEBHOOK_ROUTE_IS_ACTIVE }">
-        <button type="button" class="sidebar-item" (click)="goToFlowWebhooks()"
-          [attr.aria-current]="FLOWS_WEBHOOK_ROUTE_IS_ACTIVE ? 'page' : null">
-          <mat-icon aria-hidden="true" svgIcon="td-webhook" class="settings-sidebar-icons"></mat-icon>
-          <span class="custom_paragraph">
-            Webhooks
-          </span>
-          <span class="sidebar-item-s">{{ flowWebhooksCount }}</span>
-        </button>
-      </li>
-
-
       <!-- <li class="sidebar-item-wpr" [ngClass]="{'active-item': BOTS_MYCHATBOT_CUSTOMER_SATISFACTION_ROUTE_IS_ACTIVE}"
         (click)="goToBotCustomerSatisfactionBots()">
         <a class="sidebar-item">

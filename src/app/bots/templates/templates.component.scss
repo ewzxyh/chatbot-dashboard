@@ -1,6 +1,7 @@
 .templates-page {
     color: #30405d;
     font-size: 14px;
+    padding: 0 36px 40px !important;
 }
 
 .templates-container {
@@ -17,7 +18,7 @@
     flex: 1 1 auto;
     min-width: 0;
     width: 100%;
-    padding: 24px 36px 40px;
+    padding: 24px 0 0;
 }
 
 .templates-header {
@@ -452,8 +453,12 @@
 }
 
 @media (max-width: 900px) {
+    .templates-page {
+        padding: 0 24px 32px !important;
+    }
+
     .templates-content {
-        padding: 24px 24px 32px;
+        padding: 20px 0 0;
     }
 
     .community-entry {
@@ -469,7 +474,7 @@
 
 @media (max-width: 640px) {
     .templates-content {
-        padding: 24px 24px 28px;
+        padding: 20px 0 0;
     }
 
     .templates-header,
@@ -520,5 +525,11 @@
 
     .community-entry-cta {
         width: 100%;
+    }
+}
+
+@media (max-width: 360px) {
+    .templates-page {
+        padding: 0 6px !important;
     }
 }
