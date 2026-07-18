@@ -31,12 +31,8 @@ export class TemplateDetailComponent extends PricingBaseComponent implements OnI
   // public templateName: string;
   // public templateDescription: string;
   private unsubscribe$: Subject<any> = new Subject<any>();
-  UPLOAD_ENGINE_IS_FIREBASE: boolean;
-  storageBucket: string;
-  baseUrl: string;
   public template: any
 
-  public TESTSITE_BASE_URL: string;
   public project: any;
   public projectId: string;
   public projectName: string;
@@ -122,11 +118,9 @@ export class TemplateDetailComponent extends PricingBaseComponent implements OnI
   }
 
   ngOnInit(): void {
-    this.getTestSiteUrl()
     this.getCurrentProjectAndThenGetDeptsByProjectId()
     this.getProjectUserRole()
     this.getLoggedUser();
-    this.getImageBaseUrl()
     this.getProjectPlan()
     this.getFaqKbByProjectId();
     this.traslateString()
@@ -153,24 +147,6 @@ export class TemplateDetailComponent extends PricingBaseComponent implements OnI
     })
   }
 
-
-  getImageBaseUrl() {
-    if (this.appConfigService.getConfig().uploadEngine === 'firebase') {
-
-      this.UPLOAD_ENGINE_IS_FIREBASE = true;
-      const firebase_conf = this.appConfigService.getConfig().firebase;
-      this.storageBucket = firebase_conf['storageBucket'];
-      this.logger.log('[TEMPLATE DETAIL] - IMAGE STORAGE ', this.storageBucket, 'usecase firebase')
-
-
-    } else {
-
-      this.UPLOAD_ENGINE_IS_FIREBASE = false;
-      this.baseUrl = this.appConfigService.getConfig().baseImageUrl;
-      this.logger.log('[TEMPLATE DETAIL] - IMAGE STORAGE ', this.baseUrl, 'usecase native')
-    
-    }
-  }
 
   getLoggedUser() {
     this.auth.user_bs
@@ -242,27 +218,6 @@ export class TemplateDetailComponent extends PricingBaseComponent implements OnI
         }
       });
   }
-
-  getTestSiteUrl() {
-    this.TESTSITE_BASE_URL = this.appConfigService.getConfig().WIDGET_BASE_URL + 'assets/twp/index.html';
-    this.logger.log('[TEMPLATE DETAIL] AppConfigService getAppConfig TESTSITE_BASE_URL', this.TESTSITE_BASE_URL);
-  }
-
-  openTestSiteInPopupWindow() {
-    // this.logger.log('openTestSiteInPopupWindow TESTSITE_BASE_URL', this.TESTSITE_BASE_URL)
-    const testItOutBaseUrl = this.TESTSITE_BASE_URL.substring(0, this.TESTSITE_BASE_URL.lastIndexOf('/'));
-    const testItOutUrl = testItOutBaseUrl + '/chatbot-panel.html'
-    // const url = testItOutUrl + '?tiledesk_projectid=' + "635b97cc7d7275001a2ab3e0" + '&tiledesk_participants=bot_' + this.templateid + "&tiledesk_departmentID=635b97cc7d7275001a2ab3e4"
-    const url = testItOutUrl + '?tiledesk_projectid=' + this.templateProjectId + '&tiledesk_participants=bot_' + this.templateid + "&tiledesk_departmentID=" + "63d7911ca7b3d3001a4a9408"
-    // this.logger.log('openTestSiteInPopupWindow URL ', url)
-    let left = (screen.width - 830) / 2;
-    let top = (screen.height - 727) / 4;
-
-    // let params = `toolbar=no,menubar=no,width=815,height=727,left=100,top=100`;
-    let params = `toolbar=no,menubar=no,width=830,height=727,left=${left},top=${top}`;
-    window.open(url, '_blank', params);
-  }
-
 
   importTempalte() {
     this.importError = undefined;

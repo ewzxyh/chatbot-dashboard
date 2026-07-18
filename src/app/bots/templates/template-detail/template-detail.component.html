@@ -8,19 +8,7 @@
     <section class="template-detail">
         <header class="template-detail-header">
             <div class="template-detail-image">
-                <img *ngIf="template?.bigImage"
-                    [src]="template.bigImage"
-                    [alt]="template.name">
-                <ng-container *ngIf="!template?.bigImage">
-                    <img *ngIf="UPLOAD_ENGINE_IS_FIREBASE"
-                        [src]="'https://firebasestorage.googleapis.com/v0/b/' + storageBucket + '/o/profiles%2F' + template?._id + '%2Fphoto.jpg?alt=media'"
-                        [alt]="template.name"
-                        onerror="this.src='assets/img/avatar_bot_chatcase.svg'">
-                    <img *ngIf="!UPLOAD_ENGINE_IS_FIREBASE"
-                        [src]="baseUrl + 'files?path=uploads%2Fusers%2F' + template?._id + '%2Fimages%2Fthumbnails_200_200-photo.jpg'"
-                        [alt]="template.name"
-                        onerror="this.src='assets/img/avatar_bot_chatcase.svg'">
-                </ng-container>
+                <img src="assets/img/logos/chatcase-icon.svg" alt="ChatCase">
             </div>
             <div class="template-detail-heading">
                 <p class="template-detail-eyebrow">Modelo pronto</p>
@@ -39,10 +27,6 @@
                 [disabled]="isImporting">
                 <mat-icon aria-hidden="true">add_circle_outline</mat-icon>
                 <span>{{ isImporting ? 'Criando fluxo...' : 'Criar fluxo' }}</span>
-            </button>
-            <button type="button" class="template-detail-secondary" (click)="openTestSiteInPopupWindow()">
-                <mat-icon aria-hidden="true">play_circle_outline</mat-icon>
-                <span>Testar modelo</span>
             </button>
         </div>
 

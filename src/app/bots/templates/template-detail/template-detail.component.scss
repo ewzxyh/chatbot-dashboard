@@ -42,8 +42,10 @@
 }
 
 .template-detail-image img {
+    box-sizing: border-box;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
+    padding: 8px;
     width: 100%;
 }
 
@@ -103,7 +105,6 @@
 }
 
 .template-detail-primary,
-.template-detail-secondary,
 .template-detail-error button {
     align-items: center;
     border-radius: 6px;
@@ -132,18 +133,7 @@
     opacity: .65;
 }
 
-.template-detail-secondary {
-    background: #fff;
-    border: 1px solid #b9cde2;
-    color: #126fba;
-}
-
-.template-detail-secondary:hover {
-    background: #f4f8fc;
-}
-
-.template-detail-primary mat-icon,
-.template-detail-secondary mat-icon {
+.template-detail-primary mat-icon {
     font-size: 18px;
     height: 18px;
     width: 18px;

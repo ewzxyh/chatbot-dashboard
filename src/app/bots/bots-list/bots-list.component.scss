@@ -1462,6 +1462,13 @@ input[type="checkbox"]:disabled {
   margin: 0 !important;
 }
 
+.bots-list-new-flow .dropdown-item {
+  font-size: 16px !important;
+  line-height: 22px;
+  min-height: 40px;
+  padding: 9px 16px;
+}
+
 .bots-list-content .card.card--no-border {
   margin-top: 16px !important;
   border: 0;

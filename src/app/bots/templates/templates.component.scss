@@ -17,7 +17,7 @@
     flex: 1 1 auto;
     min-width: 0;
     width: 100%;
-    padding: 32px 36px 40px;
+    padding: 24px 36px 40px;
 }
 
 .templates-header {
@@ -25,15 +25,15 @@
     display: flex;
     gap: 24px;
     justify-content: space-between;
-    margin: 0 0 22px;
+    margin: 0 0 16px;
 }
 
 .templates-eyebrow {
-    color: #1f78c8;
+    color: #0b6bcb;
     font-size: 13px;
     font-weight: 700;
-    letter-spacing: .04em;
-    margin: 0 0 6px;
+    line-height: 18px;
+    margin: 0;
     text-transform: uppercase;
 }
 
@@ -47,8 +47,10 @@
 }
 
 .templates-header h1 {
-    font-size: 28px;
-    line-height: 34px;
+    color: #25364d;
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 28px;
 }
 
 .templates-intro,
@@ -59,6 +61,12 @@
     margin: 6px 0 0;
     max-width: 650px;
     text-wrap: pretty;
+}
+
+.templates-intro {
+    font-size: 14px;
+    line-height: 20px;
+    margin-top: 4px;
 }
 
 .templates-count {
@@ -445,7 +453,7 @@
 
 @media (max-width: 900px) {
     .templates-content {
-        padding: 28px 24px 32px;
+        padding: 24px 24px 32px;
     }
 
     .community-entry {
@@ -469,11 +477,6 @@
         align-items: flex-start;
         flex-direction: column;
         gap: 10px;
-    }
-
-    .templates-header h1 {
-        font-size: 24px;
-        line-height: 30px;
     }
 
     .templates-count {
