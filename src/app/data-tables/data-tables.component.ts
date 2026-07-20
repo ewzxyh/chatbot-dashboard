@@ -44,6 +44,8 @@ interface ColumnTypeOption {
 export class DataTablesComponent implements OnInit {
 
   readonly maxTableRows = 200;
+  readonly rowsPageSize = 40;
+  currentRowsPage = 1;
 
   tables: DataTable[] = [];
   selectedTable: DataTable | null = null;
@@ -58,6 +60,19 @@ export class DataTablesComponent implements OnInit {
 
   get isTableRowLimitReached(): boolean {
     return this.totalTableRowCount >= this.maxTableRows;
+  }
+
+  get totalRowsPages(): number {
+    return Math.max(1, Math.ceil(this.rows.length / this.rowsPageSize));
+  }
+
+  get pagedRows(): EditableRow[] {
+    const start = (this.currentRowsPage - 1) * this.rowsPageSize;
+    return this.rows.slice(start, start + this.rowsPageSize);
+  }
+
+  get showRowsPagination(): boolean {
+    return !this.isLoadingRows && this.rows.length > this.rowsPageSize;
   }
 
   // Add Column popover (toolbar)
@@ -134,6 +149,7 @@ export class DataTablesComponent implements OnInit {
   }
 
   private loadTableRows(table: DataTable): void {
+    this.currentRowsPage = 1;
     if (!table._id) {
       this.rows = this.buildRowsFromLoaded(table.schema, []);
       this.totalTableRowCount = 0;
@@ -305,8 +321,21 @@ export class DataTablesComponent implements OnInit {
 
   onAddRow(): void {
     if (!this.selectedTable?.schema || this.isTableRowLimitReached) { return; }
-    this.rows = [...this.rows, this.createEmptyRow(this.selectedTable.schema)];
+    this.rows = [this.createEmptyRow(this.selectedTable.schema), ...this.rows];
     this.totalTableRowCount += 1;
+    this.currentRowsPage = 1;
+  }
+
+  prevRowsPage(): void {
+    if (this.currentRowsPage > 1) {
+      this.currentRowsPage -= 1;
+    }
+  }
+
+  nextRowsPage(): void {
+    if (this.currentRowsPage < this.totalRowsPages) {
+      this.currentRowsPage += 1;
+    }
   }
 
   onCellBlur(row: EditableRow, columnName: string): void {

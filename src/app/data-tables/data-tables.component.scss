@@ -178,6 +178,30 @@
   overflow: auto;
 }
 
+.dt-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.dt-pagination-btn {
+  align-items: center;
+  background: var(--blue-20);
+  box-shadow: none;
+  display: inline-flex;
+  justify-content: center;
+  min-width: 40px;
+}
+
+.dt-pagination-status {
+  align-items: center;
+  background: var(--blue-20);
+  display: inline-flex;
+  min-height: 40px;
+  padding: 0 12px;
+}
+
 .dt-columns-table {
   width: 100%;
   border-collapse: collapse;

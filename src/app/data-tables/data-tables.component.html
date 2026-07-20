@@ -144,7 +144,7 @@
                 </tr>
 
                 <ng-container *ngIf="!isLoadingRows">
-                  <tr *ngFor="let row of rows; trackBy: trackByRowId" class="dt-data-row">
+                  <tr *ngFor="let row of pagedRows; trackBy: trackByRowId" class="dt-data-row">
                     <td *ngFor="let col of getColumns(selectedTable); trackBy: trackByColumnName"
                         class="dt-data-cell">
                       <input type="text"
@@ -164,6 +164,26 @@
               </tbody>
             </table>
           </div>
+
+          <nav class="dt-pagination"
+               *ngIf="showRowsPagination"
+               [attr.aria-label]="('VisitorsPage.ConversationPagination' | translate)">
+            <button type="button"
+                    class="btn dt-pagination-btn"
+                    (click)="prevRowsPage()"
+                    [disabled]="currentRowsPage === 1"
+                    [attr.aria-label]="('VisitorsPage.PreviousPage' | translate)">
+              <span class="material-icons" aria-hidden="true">keyboard_arrow_left</span>
+            </button>
+            <span class="dt-pagination-status">{{ currentRowsPage }} / {{ totalRowsPages }}</span>
+            <button type="button"
+                    class="btn dt-pagination-btn"
+                    (click)="nextRowsPage()"
+                    [disabled]="currentRowsPage === totalRowsPages"
+                    [attr.aria-label]="('VisitorsPage.NextPage' | translate)">
+              <span class="material-icons" aria-hidden="true">keyboard_arrow_right</span>
+            </button>
+          </nav>
 
           <mat-menu #columnMenu="matMenu" class="dt-col-menu">
             <button mat-menu-item (click)="onRenameColumn(columnMenuTarget)">
