@@ -134,11 +134,12 @@
                       </button>
                     </div>
                   </th>
+                  <th *ngIf="getColumns(selectedTable).length" class="dt-actions-th"></th>
                 </tr>
               </thead>
               <tbody>
                 <tr *ngIf="isLoadingRows">
-                  <td [attr.colspan]="getColumns(selectedTable).length || 1" class="dt-empty-cell">
+                  <td [attr.colspan]="getColumns(selectedTable).length + 1 || 1" class="dt-empty-cell">
                     {{ 'Processing' | translate }}
                   </td>
                 </tr>
@@ -152,6 +153,15 @@
                              [(ngModel)]="row.data[col.name]"
                              (blur)="onCellBlur(row, col.name)"
                              [attr.aria-label]="col.name">
+                    </td>
+                    <td class="dt-actions-cell">
+                      <button type="button"
+                              class="dt-delete-row-btn"
+                              [disabled]="isDeletingRow(row)"
+                              (click)="onDeleteRow(row)"
+                              [attr.aria-label]="('Delete' | translate)">
+                        <mat-icon aria-hidden="true">delete</mat-icon>
+                      </button>
                     </td>
                   </tr>
 

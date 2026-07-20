@@ -57,6 +57,7 @@ export class DataTablesComponent implements OnInit {
 
   isLoadingTables = false;
   isLoadingRows = false;
+  deletingRowId: string | null = null;
 
   get isTableRowLimitReached(): boolean {
     return this.totalTableRowCount >= this.maxTableRows;
@@ -336,6 +337,60 @@ export class DataTablesComponent implements OnInit {
     if (this.currentRowsPage < this.totalRowsPages) {
       this.currentRowsPage += 1;
     }
+  }
+
+  isDeletingRow(row: EditableRow): boolean {
+    return this.deletingRowId === row.localId;
+  }
+
+  onDeleteRow(row: EditableRow): void {
+    if (this.deletingRowId) { return; }
+
+    Swal.fire({
+      title: this.translate.instant('AreYouSure') + '?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: this.translate.instant('Delete'),
+      cancelButtonText: this.translate.instant('Cancel'),
+      reverseButtons: true,
+      focusCancel: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.deleteRow(row);
+      }
+    });
+  }
+
+  private deleteRow(row: EditableRow): void {
+    const tableId = this.selectedTable?._id;
+    const removeLocally = (): void => {
+      this.rows = this.rows.filter((item) => item.localId !== row.localId);
+      this.totalTableRowCount = Math.max(0, this.totalTableRowCount - 1);
+      this.currentRowsPage = Math.min(this.currentRowsPage, this.totalRowsPages);
+    };
+
+    if (!tableId || !row._id) {
+      removeLocally();
+      return;
+    }
+
+    this.deletingRowId = row.localId;
+    this.dataTablesService.deleteRow(tableId, { id_row: row._id, data: {} }).subscribe({
+      next: () => {
+        this.deletingRowId = null;
+        removeLocally();
+        this.logger.log('[DATA-TABLES] row deleted', row._id);
+      },
+      error: (err) => {
+        this.deletingRowId = null;
+        this.logger.error('[DATA-TABLES] deleteRow error', err);
+        this.notify.showWidgetStyleUpdateNotification(
+          this.translate.instant('Error'),
+          4,
+          'report_problem',
+        );
+      },
+    });
   }
 
   onCellBlur(row: EditableRow, columnName: string): void {
