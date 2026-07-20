@@ -43,15 +43,22 @@ interface ColumnTypeOption {
 })
 export class DataTablesComponent implements OnInit {
 
+  readonly maxTableRows = 200;
+
   tables: DataTable[] = [];
   selectedTable: DataTable | null = null;
   /** Stable id for sidebar highlight — avoids reference mismatch after getTable(). */
   selectedTableId: string | null = null;
   rows: EditableRow[] = [];
+  totalTableRowCount = 0;
   columnMenuTarget: ColumnView | null = null;
 
   isLoadingTables = false;
   isLoadingRows = false;
+
+  get isTableRowLimitReached(): boolean {
+    return this.totalTableRowCount >= this.maxTableRows;
+  }
 
   // Add Column popover (toolbar)
   isAddColumnPopoverOpen = false;
@@ -129,6 +136,7 @@ export class DataTablesComponent implements OnInit {
   private loadTableRows(table: DataTable): void {
     if (!table._id) {
       this.rows = this.buildRowsFromLoaded(table.schema, []);
+      this.totalTableRowCount = 0;
       return;
     }
 
@@ -136,11 +144,13 @@ export class DataTablesComponent implements OnInit {
     this.dataTablesService.listRows(table._id).subscribe({
       next: (loaded) => {
         this.rows = this.buildRowsFromLoaded(table.schema, loaded || []);
+        this.totalTableRowCount = (loaded || []).length;
         this.isLoadingRows = false;
       },
       error: (err) => {
         this.isLoadingRows = false;
         this.rows = this.buildRowsFromLoaded(table.schema, []);
+        this.totalTableRowCount = 0;
         this.logger.error('[DATA-TABLES] listRows error', err);
       },
     });
@@ -294,8 +304,9 @@ export class DataTablesComponent implements OnInit {
   // ─── Grid actions ───────────────────────────────────────────────────────
 
   onAddRow(): void {
-    if (!this.selectedTable?.schema) { return; }
+    if (!this.selectedTable?.schema || this.isTableRowLimitReached) { return; }
     this.rows = [...this.rows, this.createEmptyRow(this.selectedTable.schema)];
+    this.totalTableRowCount += 1;
   }
 
   onCellBlur(row: EditableRow, columnName: string): void {

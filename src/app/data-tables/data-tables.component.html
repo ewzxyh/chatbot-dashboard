@@ -45,11 +45,14 @@
             <div class="dt-toolbar">
               <button  class="btn btn-tdblu-no-boxshadow"
                       (click)="onAddRow()"
-                      [disabled]="!getColumns(selectedTable).length"
+                      [disabled]="!getColumns(selectedTable).length || isTableRowLimitReached"
                       style="border: unset;">
                 <!-- <mat-icon>add</mat-icon> -->
                 {{ 'DataTables.AddRow' | translate }}
               </button>
+              <span class="dt-row-count" [class.dt-row-count--limit]="isTableRowLimitReached">
+                {{ totalTableRowCount }} / {{ maxTableRows }}
+              </span>
               <button  class="btn btn-outlined"
                       #addColumnTrigger="cdkOverlayOrigin"
                       cdkOverlayOrigin

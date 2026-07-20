@@ -148,6 +148,17 @@
   gap: 8px;
 }
 
+.dt-row-count {
+  color: #667085;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.dt-row-count--limit {
+  color: #c62828;
+}
+
 .dt-toolbar-btn {
   display: inline-flex;
   align-items: center;
