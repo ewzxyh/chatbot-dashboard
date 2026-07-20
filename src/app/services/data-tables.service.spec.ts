@@ -32,4 +32,16 @@ describe('DataTablesService', () => {
     const options = httpClient.get.calls.mostRecent().args[1];
     expect(options.headers.get('Authorization')).toBe('test-token');
   });
+
+  it('uses the server row contract when inserting a row', () => {
+    httpClient.post.and.returnValue(of({ _id: 'row-1', data: { name: 'Ana' } }));
+
+    service.insertRow('table-1', { data: { name: 'Ana' } }).subscribe();
+
+    expect(httpClient.post).toHaveBeenCalledWith(
+      'https://api.chatcase.test/project-123/tables/table-1/row/insert',
+      { data: { name: 'Ana' } },
+      jasmine.any(Object),
+    );
+  });
 });

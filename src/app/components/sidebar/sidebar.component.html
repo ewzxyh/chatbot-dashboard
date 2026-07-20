@@ -212,6 +212,21 @@
       </a>
     </div>
 
+    <!-- Data tables -->
+    <ng-container *ngIf="USER_ROLE !== 'agent'">
+      <div id="data-tables-anchor-wpr" *ngIf="project"
+        matTooltipClass="sb-mat-tooltip"
+        matTooltip="{{ 'DataTables.DataTables' | translate }}"
+        #tooltip="matTooltip"
+        matTooltipPosition="right"
+        matTooltipHideDelay="100"
+        routerLinkActive="item-active">
+        <a class="customAncor" routerLink="project/{{ project._id }}/data-tables">
+          <span class="material-icons-outlined data-tables-sidebar-icon">grid_on</span>
+        </a>
+      </div>
+    </ng-container>
+
     <!-- ----------------------------- -->
     <!-- CONTACTS (LEADS)  -->
     <!-- ----------------------------- -->

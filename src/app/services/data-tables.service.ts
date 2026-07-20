@@ -6,12 +6,13 @@ import { AppConfigService } from './app-config.service';
 import { LoggerService } from './logger/logger.service';
 import {
   ApiSuccessMessage,
+  ColumnInput,
   CreateTableRequest,
   DataTable,
-  DataTableWithRows,
+  RowDocument,
   InsertRowRequest,
-  RowData,
-  TableRow,
+  RowListItem,
+  TableWithRows,
   UpdateTableRequest,
   UpsertRowRequest,
   RowMutationRequest,
@@ -55,10 +56,10 @@ export class DataTablesService {
     return this.httpClient.post<DataTable>(url, body, this.httpOptions());
   }
 
-  getTable(tableId: string, projectId?: string): Observable<DataTableWithRows> {
+  getTable(tableId: string, projectId?: string): Observable<TableWithRows> {
     const url = `${this.tablesBaseUrl(projectId)}/${tableId}`;
     this.logger.log('[DATA-TABLES-SERV] getTable URL', url);
-    return this.httpClient.get<DataTableWithRows>(url, this.httpOptions());
+    return this.httpClient.get<TableWithRows>(url, this.httpOptions());
   }
 
   updateTable(tableId: string, body: UpdateTableRequest, projectId?: string): Observable<DataTable> {
@@ -68,48 +69,47 @@ export class DataTablesService {
   }
 
   deleteTable(tableId: string, projectId?: string): Observable<ApiSuccessMessage> {
-    const url = `${this.tablesBaseUrl(projectId)}/${tableId}/delete`;
+    const url = `${this.tablesBaseUrl(projectId)}/${tableId}`;
     this.logger.log('[DATA-TABLES-SERV] deleteTable URL', url);
     return this.httpClient.delete<ApiSuccessMessage>(url, this.httpOptions());
   }
 
   // ─── Rows ──────────────────────────────────────────────────────────────────
 
-  listRows(tableId: string, projectId?: string): Observable<RowData[]> {
-    const url = `${this.tablesBaseUrl(projectId)}/${tableId}/rows`;
+  addColumn(tableId: string, body: ColumnInput, projectId?: string): Observable<DataTable> {
+    const url = `${this.tablesBaseUrl(projectId)}/${tableId}/columns`;
+    this.logger.log('[DATA-TABLES-SERV] addColumn URL', url, body);
+    return this.httpClient.post<DataTable>(url, body, this.httpOptions());
+  }
+
+  listRows(tableId: string, projectId?: string): Observable<RowListItem[]> {
+    const url = `${this.tablesBaseUrl(projectId)}/${tableId}/rows/list`;
     this.logger.log('[DATA-TABLES-SERV] listRows URL', url);
-    return this.httpClient.get<RowData[]>(url, this.httpOptions());
+    return this.httpClient.get<RowListItem[]>(url, this.httpOptions());
   }
 
-  /** Placeholder endpoint (not yet implemented on server). */
-  getRow(tableId: string, projectId?: string): Observable<{ success?: boolean; message?: string }> {
-    const url = `${this.tablesBaseUrl(projectId)}/${tableId}/row`;
-    this.logger.log('[DATA-TABLES-SERV] getRow URL', url);
-    return this.httpClient.get<{ success?: boolean; message?: string }>(url, this.httpOptions());
-  }
-
-  insertRow(tableId: string, body: InsertRowRequest, projectId?: string): Observable<TableRow> {
-    const url = `${this.tablesBaseUrl(projectId)}/${tableId}/insert`;
+  insertRow(tableId: string, body: InsertRowRequest, projectId?: string): Observable<RowDocument> {
+    const url = `${this.tablesBaseUrl(projectId)}/${tableId}/row/insert`;
     this.logger.log('[DATA-TABLES-SERV] insertRow URL', url, body);
-    return this.httpClient.put<TableRow>(url, body, this.httpOptions());
+    return this.httpClient.post<RowDocument>(url, body, this.httpOptions());
   }
 
-  updateRow(tableId: string, body: RowMutationRequest, projectId?: string): Observable<TableRow> {
-    const url = `${this.tablesBaseUrl(projectId)}/${tableId}/update`;
+  updateRow(tableId: string, body: RowMutationRequest, projectId?: string): Observable<RowDocument> {
+    const url = `${this.tablesBaseUrl(projectId)}/${tableId}/row/update`;
     this.logger.log('[DATA-TABLES-SERV] updateRow URL', url, body);
-    return this.httpClient.put<TableRow>(url, body, this.httpOptions());
+    return this.httpClient.put<RowDocument>(url, body, this.httpOptions());
   }
 
-  upsertRow(tableId: string, body: UpsertRowRequest, projectId?: string): Observable<TableRow | TableRow[]> {
-    const url = `${this.tablesBaseUrl(projectId)}/${tableId}/upsert`;
+  upsertRow(tableId: string, body: UpsertRowRequest, projectId?: string): Observable<RowDocument | RowDocument[]> {
+    const url = `${this.tablesBaseUrl(projectId)}/${tableId}/row/upsert`;
     this.logger.log('[DATA-TABLES-SERV] upsertRow URL', url, body);
-    return this.httpClient.put<TableRow | TableRow[]>(url, body, this.httpOptions());
+    return this.httpClient.put<RowDocument | RowDocument[]>(url, body, this.httpOptions());
   }
 
-  deleteRow(tableId: string, body: InsertRowRequest, projectId?: string): Observable<TableRow | null> {
-    const url = `${this.tablesBaseUrl(projectId)}/${tableId}/delete`;
+  deleteRow(tableId: string, body: InsertRowRequest, projectId?: string): Observable<RowDocument | null> {
+    const url = `${this.tablesBaseUrl(projectId)}/${tableId}/row/delete`;
     this.logger.log('[DATA-TABLES-SERV] deleteRow URL', url, body);
-    return this.httpClient.put<TableRow | null>(url, body, this.httpOptions());
+    return this.httpClient.put<RowDocument | null>(url, body, this.httpOptions());
   }
 
   // ─── Init / helpers ──────────────────────────────────────────────────────

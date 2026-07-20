@@ -1,34 +1,45 @@
-/** Types aligned with `.cursor/openapi-tables.yaml` */
+export type ColumnType = 'string' | 'number' | 'boolean' | 'datetime';
 
-export type TableSchema = Record<string, string>;
+export interface Column {
+  id: string;
+  name: string;
+  type: ColumnType;
+  index: number;
+}
+
+export interface ColumnInput {
+  name: string;
+  type: ColumnType;
+  index?: number;
+}
 
 export interface DataTable {
   _id?: string;
   id_project?: string;
   name?: string;
-  schema?: TableSchema;
+  schema?: Column[];
   createdBy?: string;
   createdAt?: string;
   updatedAt?: string;
 }
 
-export interface DataTableWithRows extends DataTable {
+export interface TableWithRows extends DataTable {
   rows?: RowData[];
 }
 
 export interface CreateTableRequest {
   name: string;
-  schema: TableSchema;
+  schema?: ColumnInput[];
 }
 
 export interface UpdateTableRequest {
   name?: string;
-  schema?: TableSchema;
+  schema?: Array<Column | ColumnInput>;
 }
 
 export type RowData = Record<string, unknown>;
 
-export interface TableRow {
+export interface RowDocument {
   _id?: string;
   id_project?: string;
   id_table?: string;
@@ -39,22 +50,22 @@ export interface TableRow {
 
 export interface InsertRowRequest {
   data: RowData;
+  id_row?: string;
 }
 
-export type ConditionOperator =
-  | 'Equal'
-  | 'Not equal'
-  | 'Greater than'
-  | 'Greater or equal'
-  | 'Less than'
-  | 'Less or equal'
-  | 'Contains';
+export interface RowListItem {
+  _id?: string;
+  [key: string]: unknown;
+}
+
+export type ConditionOperator = 'equal' | 'not_equal' | 'greater_than'
+  | 'greater_or_equal' | 'less_than' | 'less_or_equal' | 'contains';
 
 export type MustMatch = 'all' | 'any';
 
 export interface RowCondition {
   column: string;
-  condition: ConditionOperator;
+  operator: ConditionOperator;
   value: string | number | boolean;
 }
 
