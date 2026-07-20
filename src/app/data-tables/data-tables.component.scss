@@ -142,6 +142,16 @@
   color: var(--text-color);
 }
 
+.dt-title-row {
+  align-items: center;
+  display: flex;
+  min-width: 0;
+}
+
+.dt-table-menu-btn {
+  flex: 0 0 auto;
+}
+
 .dt-toolbar {
   display: flex;
   align-items: center;

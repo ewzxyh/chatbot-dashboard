@@ -41,7 +41,27 @@
         <ng-container *ngIf="selectedTable; else noTableSelected">
 
           <div class="dt-header">
-            <h2 class="dt-title">{{ selectedTable.name }}</h2>
+            <div class="dt-title-row">
+              <h2 class="dt-title">{{ selectedTable.name }}</h2>
+              <button mat-icon-button
+                      type="button"
+                      class="dt-table-menu-btn"
+                      [matMenuTriggerFor]="tableMenu"
+                      [disabled]="isMutatingTable"
+                      [attr.aria-label]="('ViewOption' | translate)">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+            </div>
+            <mat-menu #tableMenu="matMenu" class="dt-col-menu">
+              <button mat-menu-item (click)="onRenameTable()">
+                <mat-icon>edit</mat-icon>
+                <span>{{ 'DataTables.RenameTable' | translate }}</span>
+              </button>
+              <button mat-menu-item (click)="onDeleteTable()">
+                <mat-icon>delete</mat-icon>
+                <span>{{ 'DataTables.DeleteTable' | translate }}</span>
+              </button>
+            </mat-menu>
             <div class="dt-toolbar">
               <button  class="btn btn-tdblu-no-boxshadow"
                       (click)="onAddRow()"

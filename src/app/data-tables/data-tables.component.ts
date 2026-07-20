@@ -58,6 +58,7 @@ export class DataTablesComponent implements OnInit {
   isLoadingTables = false;
   isLoadingRows = false;
   deletingRowId: string | null = null;
+  isMutatingTable = false;
 
   get isTableRowLimitReached(): boolean {
     return this.totalTableRowCount >= this.maxTableRows;
@@ -316,6 +317,86 @@ export class DataTablesComponent implements OnInit {
         this.logger.error('[DATA-TABLES] createTable error', err);
       },
     });
+  }
+
+  onRenameTable(): void {
+    const table = this.selectedTable;
+    if (!table?._id || this.isMutatingTable) { return; }
+
+    Swal.fire({
+      title: this.translate.instant('DataTables.RenameTable'),
+      input: 'text',
+      inputValue: table.name,
+      showCancelButton: true,
+      confirmButtonText: this.translate.instant('Save'),
+      cancelButtonText: this.translate.instant('Cancel'),
+      reverseButtons: true,
+      inputValidator: (value) => value?.trim()
+        ? null
+        : this.translate.instant('DataTables.RequiredField'),
+    }).then((result) => {
+      if (!result.isConfirmed) { return; }
+
+      const name = (result.value || '').trim();
+      if (!name || name === table.name) { return; }
+
+      this.isMutatingTable = true;
+      this.dataTablesService.updateTable(table._id!, { name }).subscribe({
+        next: (updated) => {
+          this.isMutatingTable = false;
+          const merged: DataTable = { ...table, ...updated, name: updated?.name || name };
+          this.tables = this.tables.map((item) => item._id === table._id ? merged : item);
+          this.selectedTable = merged;
+          this.logger.log('[DATA-TABLES] table renamed', table._id);
+        },
+        error: (err) => {
+          this.isMutatingTable = false;
+          this.logger.error('[DATA-TABLES] renameTable error', err);
+          this.showTableMutationError();
+        },
+      });
+    });
+  }
+
+  onDeleteTable(): void {
+    const table = this.selectedTable;
+    if (!table?._id || this.isMutatingTable) { return; }
+
+    Swal.fire({
+      title: this.translate.instant('DataTables.DeleteTable'),
+      text: this.translate.instant('DataTables.DeleteTableConfirm', { name: table.name }),
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: this.translate.instant('Delete'),
+      cancelButtonText: this.translate.instant('Cancel'),
+      reverseButtons: true,
+      focusCancel: true,
+    }).then((result) => {
+      if (!result.isConfirmed) { return; }
+
+      this.isMutatingTable = true;
+      this.dataTablesService.deleteTable(table._id!).subscribe({
+        next: () => {
+          this.isMutatingTable = false;
+          this.tables = this.tables.filter((item) => item._id !== table._id);
+          this.selectInitialTable();
+          this.logger.log('[DATA-TABLES] table deleted', table._id);
+        },
+        error: (err) => {
+          this.isMutatingTable = false;
+          this.logger.error('[DATA-TABLES] deleteTable error', err);
+          this.showTableMutationError();
+        },
+      });
+    });
+  }
+
+  private showTableMutationError(): void {
+    this.notify.showWidgetStyleUpdateNotification(
+      this.translate.instant('Error'),
+      4,
+      'report_problem',
+    );
   }
 
   // ─── Grid actions ───────────────────────────────────────────────────────
