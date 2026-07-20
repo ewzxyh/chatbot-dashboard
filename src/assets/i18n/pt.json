@@ -58,6 +58,8 @@
         "CurrentlyNoItemsExist": "Nenhuma coluna adicionada",
         "RemoveColumn": "Remover coluna",
         "CreateColumnError": "Não foi possível criar a coluna",
+        "ColumnMutationError": "Não foi possível atualizar a coluna",
+        "DeleteColumnConfirm": "A coluna {{name}} e seus dados serão excluídos.",
         "RequiredField": "Campo obrigatório"
     },
     "SelectAkB": "Selecione uma Base de Conhecimentos",

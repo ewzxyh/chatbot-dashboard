@@ -6,7 +6,7 @@ describe('DataTablesService', () => {
   let service: DataTablesService;
 
   beforeEach(() => {
-    httpClient = jasmine.createSpyObj('HttpClient', ['get', 'post', 'put', 'delete']);
+    httpClient = jasmine.createSpyObj('HttpClient', ['get', 'post', 'put', 'patch', 'delete']);
     httpClient.get.and.returnValue(of([]));
 
     service = new DataTablesService(
@@ -41,6 +41,24 @@ describe('DataTablesService', () => {
     expect(httpClient.post).toHaveBeenCalledWith(
       'https://api.chatcase.test/project-123/tables/table-1/row/insert',
       { data: { name: 'Ana' } },
+      jasmine.any(Object),
+    );
+  });
+
+  it('uses the column id contract when renaming and deleting a column', () => {
+    httpClient.patch.and.returnValue(of({}));
+    httpClient.delete.and.returnValue(of({}));
+
+    service.renameColumn('table-1', 'column-1', { name: 'renamed' }).subscribe();
+    service.deleteColumn('table-1', 'column-1').subscribe();
+
+    expect(httpClient.patch).toHaveBeenCalledWith(
+      'https://api.chatcase.test/project-123/tables/table-1/columns/column-1',
+      { name: 'renamed' },
+      jasmine.any(Object),
+    );
+    expect(httpClient.delete).toHaveBeenCalledWith(
+      'https://api.chatcase.test/project-123/tables/table-1/columns/column-1',
       jasmine.any(Object),
     );
   });

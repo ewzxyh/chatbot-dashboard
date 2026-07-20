@@ -58,6 +58,8 @@
         "CurrentlyNoItemsExist": "Nessuna colonna aggiunta",
         "RemoveColumn": "Rimuovi colonna",
         "CreateColumnError": "Si è verificato un errore durante la creazione della colonna",
+        "ColumnMutationError": "Impossibile aggiornare la colonna",
+        "DeleteColumnConfirm": "La colonna {{name}} e i relativi dati verranno eliminati.",
         "RequiredField": "Campo richiesto"
     },
     "SelectAkB": "Seleziona una Knowledge Base",

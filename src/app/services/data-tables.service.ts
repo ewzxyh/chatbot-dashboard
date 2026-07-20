@@ -82,6 +82,18 @@ export class DataTablesService {
     return this.httpClient.post<DataTable>(url, body, this.httpOptions());
   }
 
+  renameColumn(tableId: string, columnId: string, body: { name: string }, projectId?: string): Observable<DataTable> {
+    const url = `${this.tablesBaseUrl(projectId)}/${tableId}/columns/${columnId}`;
+    this.logger.log('[DATA-TABLES-SERV] renameColumn URL', url, body);
+    return this.httpClient.patch<DataTable>(url, body, this.httpOptions());
+  }
+
+  deleteColumn(tableId: string, columnId: string, projectId?: string): Observable<DataTable> {
+    const url = `${this.tablesBaseUrl(projectId)}/${tableId}/columns/${columnId}`;
+    this.logger.log('[DATA-TABLES-SERV] deleteColumn URL', url);
+    return this.httpClient.delete<DataTable>(url, this.httpOptions());
+  }
+
   listRows(tableId: string, projectId?: string): Observable<RowListItem[]> {
     const url = `${this.tablesBaseUrl(projectId)}/${tableId}/rows/list`;
     this.logger.log('[DATA-TABLES-SERV] listRows URL', url);

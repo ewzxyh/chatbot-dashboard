@@ -60,6 +60,8 @@
         "CurrentlyNoItemsExist": "No columns added yet",
         "RemoveColumn": "Remove column",
         "CreateColumnError": "An error occurred while creating column",
+        "ColumnMutationError": "The column could not be updated",
+        "DeleteColumnConfirm": "The column {{name}} and its data will be deleted.",
         "RequiredField": "Required field"
     },
     "SelectAkB": "Select a Knowledge Base",

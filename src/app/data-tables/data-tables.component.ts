@@ -10,9 +10,11 @@ import { LocalDbService } from 'app/services/users-local-db.service';
 import { DataTablesService } from 'app/services/data-tables.service';
 import { Column, ColumnInput, DataTable, RowData, RowListItem } from 'app/models/data-tables.model';
 import { CreateTableModalComponent, CreateTableModalResult } from './modals/create-table-modal.component';
+import Swal from 'sweetalert2';
 
 /** Visual column model for the table view (derived from DataTable.schema). */
 interface ColumnView {
+  id: string;
   name: string;
   type: string;
 }
@@ -251,7 +253,7 @@ export class DataTablesComponent implements OnInit {
     if (!table || !table.schema) { return []; }
     return [...table.schema]
       .sort((a, b) => a.index - b.index)
-      .map((column) => ({ name: column.name, type: column.type }));
+      .map((column) => ({ id: column.id, name: column.name, type: column.type }));
   }
 
   trackByColumnName = (_: number, c: ColumnView): string => c.name;
@@ -420,12 +422,87 @@ export class DataTablesComponent implements OnInit {
     );
   }
 
-  onRenameColumn(col: ColumnView): void {
-    this.logger.log('[DATA-TABLES] rename column — not implemented yet', col);
+  onRenameColumn(col: ColumnView | null): void {
+    const table = this.selectedTable;
+    if (!col || !table?._id || !table.schema) { return; }
+
+    Swal.fire({
+      title: this.translate.instant('DataTables.RenameColumn'),
+      input: 'text',
+      inputValue: col.name,
+      showCancelButton: true,
+      confirmButtonText: this.translate.instant('Save'),
+      cancelButtonText: this.translate.instant('Cancel'),
+      reverseButtons: true,
+      inputValidator: (value) => value?.trim()
+        ? null
+        : this.translate.instant('DataTables.RequiredField'),
+    }).then((result) => {
+      if (!result.isConfirmed) { return; }
+
+      const newName = (result.value || '').trim();
+      if (newName === col.name) { return; }
+
+      const duplicate = table.schema.some((column) =>
+        column.id !== col.id && column.name.toLowerCase() === newName.toLowerCase()
+      );
+      if (duplicate) {
+        this.notify.showWidgetStyleUpdateNotification(
+          this.translate.instant('DataTables.DuplicateColumnName'),
+          4,
+          'report_problem',
+        );
+        return;
+      }
+
+      this.dataTablesService.renameColumn(table._id, col.id, { name: newName }).subscribe({
+        next: (updated) => this.applyPersistedTable(table, updated),
+        error: (err) => {
+          this.logger.error('[DATA-TABLES] renameColumn error', err);
+          this.showColumnMutationError();
+        },
+      });
+    });
   }
 
-  onDeleteColumn(col: ColumnView): void {
-    this.logger.log('[DATA-TABLES] delete column — not implemented yet', col);
+  onDeleteColumn(col: ColumnView | null): void {
+    const table = this.selectedTable;
+    if (!col || !table?._id) { return; }
+
+    Swal.fire({
+      title: this.translate.instant('AreYouSure') + '?',
+      text: this.translate.instant('DataTables.DeleteColumnConfirm', { name: col.name }),
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: this.translate.instant('Delete'),
+      cancelButtonText: this.translate.instant('Cancel'),
+      reverseButtons: true,
+    }).then((result) => {
+      if (!result.isConfirmed) { return; }
+
+      this.dataTablesService.deleteColumn(table._id, col.id).subscribe({
+        next: (updated) => this.applyPersistedTable(table, updated),
+        error: (err) => {
+          this.logger.error('[DATA-TABLES] deleteColumn error', err);
+          this.showColumnMutationError();
+        },
+      });
+    });
+  }
+
+  private applyPersistedTable(current: DataTable, updated: DataTable): void {
+    const merged: DataTable = { ...current, ...updated };
+    this.tables = this.tables.map((table) => table._id === current._id ? merged : table);
+    this.selectedTable = merged;
+    this.loadTableRows(merged);
+  }
+
+  private showColumnMutationError(): void {
+    this.notify.showWidgetStyleUpdateNotification(
+      this.translate.instant('DataTables.ColumnMutationError'),
+      4,
+      'report_problem',
+    );
   }
 }
 
