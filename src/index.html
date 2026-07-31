@@ -8,6 +8,17 @@
     window.dataLayer = window.dataLayer || [];
     window.gtag = window.gtag || function () {};
     window.rewardful = window.rewardful || function () {};
+
+    document.addEventListener('play', function (event) {
+      if (window.location.hash.indexOf('/request-for-panel/') === -1 ||
+          !(event.target instanceof HTMLMediaElement)) {
+        return;
+      }
+
+      event.target.muted = true;
+      event.target.pause();
+      event.target.currentTime = 0;
+    }, true);
   </script>
 
   <base href='/'>
