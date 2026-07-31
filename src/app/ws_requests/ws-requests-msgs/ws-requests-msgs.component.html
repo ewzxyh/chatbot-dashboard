@@ -24,7 +24,7 @@
 
     <div>
       <div class="row">
-        <div class="col-sm-7 chat-col"
+        <div *ngIf="CHAT_PANEL_MODE === false" class="col-sm-7 chat-col"
           [ngClass]="{'hidden-if-chat-panel-mode' : CHAT_PANEL_MODE === true, 'chat-col-normal-mode': CHAT_PANEL_MODE === false }">
           <div class="card chat-card" [ngClass]="{'chat-card-normal-mode': CHAT_PANEL_MODE === false}"
             style="padding-top:0px; padding-bottom:0px;">
