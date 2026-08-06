@@ -178,6 +178,8 @@ export class DepartmentEditAddComponent extends PricingBaseComponent implements 
   channelBindingsDetails: any[] = [];
   channelInstances: any[] = [];
   channelInstancesLoading = false;
+  channelInstancesLoaded = false;
+  channelInstancesErrorProviders: string[] = [];
   channelInstancesError = '';
   channelProviders = [
     { key: 'casezap', label: 'CaseZap' },
@@ -1813,19 +1815,32 @@ export class DepartmentEditAddComponent extends PricingBaseComponent implements 
 
   loadChannelInstances() {
     this.channelInstancesLoading = true;
+    this.channelInstancesLoaded = false;
+    this.channelInstancesErrorProviders = [];
     this.channelInstancesError = '';
 
     forkJoin({
-      casezap: this.integrationService.getIntegrationInstances('casezap').pipe(catchError(() => of([]))),
-      whatsapp: this.integrationService.getIntegrationInstances('whatsapp').pipe(catchError(() => of([])))
+      casezap: this.integrationService.getIntegrationInstances('casezap').pipe(catchError(() => {
+        this.channelInstancesErrorProviders.push('casezap');
+        this.channelInstancesError = 'Não foi possível carregar as instâncias conectadas.';
+        return of([]);
+      })),
+      whatsapp: this.integrationService.getIntegrationInstances('whatsapp').pipe(catchError(() => {
+        this.channelInstancesErrorProviders.push('whatsapp');
+        this.channelInstancesError = 'Não foi possível carregar as instâncias conectadas.';
+        return of([]);
+      }))
     }).pipe(takeUntil(this.unsubscribe$))
       .subscribe((instances: any) => {
         this.channelInstances = []
           .concat(this.normalizeChannelInstances('casezap', instances.casezap))
           .concat(this.normalizeChannelInstances('whatsapp', instances.whatsapp));
+        this.channelInstancesLoaded = true;
         this.channelInstancesLoading = false;
       }, () => {
         this.channelInstancesError = 'Não foi possível carregar as instâncias conectadas.';
+        this.channelInstancesErrorProviders = ['casezap', 'whatsapp'];
+        this.channelInstancesLoaded = true;
         this.channelInstancesLoading = false;
       });
   }
@@ -1864,9 +1879,13 @@ export class DepartmentEditAddComponent extends PricingBaseComponent implements 
       return null;
     }
 
-    const availableInstances = this.getChannelInstancesByProvider(this.channelBindingsProvider);
+    const useAvailableInstances = this.channelInstancesLoaded &&
+      this.channelInstancesErrorProviders.indexOf(this.channelBindingsProvider) === -1;
+    const instancesToSerialize = useAvailableInstances
+      ? this.getChannelInstancesByProvider(this.channelBindingsProvider)
+      : this.channelBindingsDetails;
     const selectedInstances = this.channelBindingsInstances
-      .map((id) => availableInstances.find((instance) => instance.id === id) || this.channelBindingsDetails.find((instance) => instance.id === id))
+      .map((id) => instancesToSerialize.find((instance) => instance.id === id))
       .filter((instance) => !!instance)
       .map((instance) => ({
         id: instance.id,
